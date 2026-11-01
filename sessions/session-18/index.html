@@ -1,0 +1,2359 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>جلسه ۱۸ — شبکه عصبی و Backpropagation | دکتر مسعود گوهری منش</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+<script>
+window.MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']],
+    displayMath: [['$$', '$$'], ['\\[', '\\]']],
+    processEscapes: true
+  },
+  options: { skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'] },
+  svg: { fontCache: 'global' }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" async></script>
+
+<style>
+:root {
+  --primary: #00d4aa;
+  --secondary: #06b6d4;
+  --tertiary: #a855f7;
+  --gold: #ffb700;
+  --success: #22c55e;
+  --danger: #ff4757;
+  --pink: #ec4899;
+  --dark: #050818;
+  --darker: #020410;
+  --card-bg: rgba(255, 255, 255, 0.05);
+  --card-border: rgba(255, 255, 255, 0.1);
+  --text: #e8eef7;
+  --text-dim: #9aa7bd;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { overflow: hidden; height: 100%; }
+body {
+  font-family: 'Vazirmatn', sans-serif;
+  background: var(--dark);
+  color: var(--text);
+  direction: rtl;
+  line-height: 1.8;
+}
+#bgCanvas { position: fixed; inset: 0; z-index: -2; background: radial-gradient(ellipse at top, #0a1230 0%, var(--darker) 50%, #000 100%); }
+.glow-orb { position: fixed; border-radius: 50%; filter: blur(120px); opacity: 0.3; z-index: -1; pointer-events: none; animation: floatOrb 25s ease-in-out infinite; }
+.orb1 { width: 600px; height: 600px; background: var(--primary); top: -200px; right: -200px; }
+.orb2 { width: 500px; height: 500px; background: var(--gold); bottom: -150px; left: -150px; animation-delay: -8s; }
+.orb3 { width: 400px; height: 400px; background: var(--tertiary); top: 30%; left: 25%; animation-delay: -15s; opacity: 0.12; }
+@keyframes floatOrb { 0%, 100% { transform: translate(0, 0) scale(1); } 33% { transform: translate(50px, -40px) scale(1.15); } 66% { transform: translate(-40px, 50px) scale(0.9); } }
+
+.top-header { position: fixed; top: 0; left: 0; right: 0; height: 82px; background: rgba(5, 8, 24, 0.9); backdrop-filter: blur(15px); border-bottom: 1px solid var(--card-border); display: flex; align-items: center; justify-content: space-between; padding: 0 18px; z-index: 100; }
+.header-left { display: flex; align-items: center; gap: 14px; }
+.header-signature { height: 60px; width: auto; max-width: 170px; object-fit: contain; filter: drop-shadow(0 0 10px rgba(0, 212, 170, 0.4)); border-radius: 8px; background: rgba(255, 255, 255, 0.05); padding: 4px; }
+.header-text { display: flex; flex-direction: column; line-height: 1.35; }
+.header-name { font-size: 0.88rem; color: var(--gold); font-weight: 800; white-space: nowrap; }
+.header-univ { font-size: 0.7rem; color: var(--text-dim); font-weight: 500; }
+.header-controls { display: flex; gap: 8px; flex-shrink: 0; align-items: center; }
+.ctrl-btn { width: 38px; height: 38px; border-radius: 10px; border: 1px solid var(--card-border); background: var(--card-bg); backdrop-filter: blur(10px); color: var(--text); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; transition: all 0.3s ease; position: relative; }
+.ctrl-btn:hover { background: var(--primary); color: var(--dark); transform: translateY(-2px); }
+.ctrl-btn.active { background: var(--primary); color: var(--dark); }
+
+.print-menu-wrap { position: relative; }
+.print-menu {
+  position: absolute; top: 46px; left: 0;
+  background: rgba(10, 18, 40, 0.98);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  padding: 6px;
+  min-width: 200px;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6);
+  opacity: 0; pointer-events: none;
+  transform: translateY(-8px);
+  transition: all 0.3s ease;
+  z-index: 200;
+}
+.print-menu.show { opacity: 1; pointer-events: auto; transform: translateY(0); }
+.print-menu button {
+  display: flex; align-items: center; gap: 10px;
+  width: 100%; padding: 10px 14px;
+  background: transparent; border: none;
+  color: var(--text); font-family: inherit;
+  font-size: 0.82rem; font-weight: 600;
+  border-radius: 8px; cursor: pointer;
+  text-align: right;
+  transition: all 0.2s ease;
+}
+.print-menu button:hover { background: rgba(0, 212, 170, 0.15); color: var(--primary); }
+.print-menu button i { color: var(--gold); font-size: 0.9rem; width: 18px; text-align: center; }
+
+@media print {
+  @page { size: A4 landscape; margin: 10mm; }
+  html, body { overflow: visible !important; height: auto !important; background: white !important; }
+  #bgCanvas, .glow-orb, .top-header, .topic-nav, .progress-top, .bottom-nav,
+  .toast-container, .star-container, .ctrl-btn, .print-menu, .lightbox,
+  .modal-overlay, .slide:not(.print-visible) { display: none !important; }
+  .slide-container { position: static !important; inset: auto !important; overflow: visible !important; }
+  .slide {
+    position: relative !important;
+    opacity: 1 !important;
+    transform: none !important;
+    pointer-events: auto !important;
+    page-break-after: always;
+    padding: 15px 25px !important;
+    overflow: visible !important;
+    background: white !important;
+    color: #1a1a1a !important;
+    inset: auto !important;
+    height: auto !important;
+  }
+  .slide::before {
+    content: '';
+    position: fixed;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%) rotate(-30deg);
+    width: 600px; height: 300px;
+    background-image: url('images/signature.png');
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+    opacity: 0.08;
+    pointer-events: none;
+    z-index: 9999;
+    filter: grayscale(100%);
+  }
+  .slide-h1, .slide-h3, .slide-text, .card { color: #1a1a1a !important; }
+  .card { border-color: #ccc !important; background: #f9f9f9 !important; }
+  .math-box { background: #f5f5f5 !important; border-color: #999 !important; }
+  .slide-num { background: #e0e0e0 !important; color: #333 !important; }
+  .code-content { background: #f5f5f5 !important; color: #1a1a1a !important; }
+}
+
+.lightbox {
+  position: fixed; inset: 0;
+  background: rgba(0, 0, 0, 0.92);
+  backdrop-filter: blur(8px);
+  z-index: 10000;
+  display: flex; align-items: center; justify-content: center;
+  padding: 40px;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+.lightbox.active { opacity: 1; pointer-events: auto; }
+.lightbox-img {
+  max-width: 90vw; max-height: 85vh;
+  border-radius: 16px;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.8), 0 0 60px rgba(0, 212, 170, 0.3);
+  border: 2px solid var(--primary);
+  transform: scale(0.85);
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.lightbox.active .lightbox-img { transform: scale(1); }
+.lightbox-close {
+  position: absolute; top: 24px; left: 24px;
+  width: 46px; height: 46px;
+  border-radius: 50%;
+  background: rgba(255, 71, 87, 0.9);
+  border: none; color: #fff;
+  font-size: 1.2rem; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.3s ease;
+  z-index: 10001;
+}
+.lightbox-close:hover { background: var(--danger); transform: rotate(90deg); }
+.lightbox-caption {
+  position: absolute; bottom: 30px; left: 50%;
+  transform: translateX(-50%);
+  background: rgba(10, 18, 40, 0.95);
+  border: 1px solid var(--card-border);
+  color: var(--text);
+  padding: 10px 24px;
+  border-radius: 30px;
+  font-size: 0.85rem; font-weight: 600;
+}
+
+.img-box, .hero-img, .star-img { cursor: zoom-in; transition: all 0.3s ease; }
+.img-box:hover { transform: scale(1.02); border-color: var(--primary); }
+
+.modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(10px);
+  z-index: 9500;
+  display: flex; align-items: center; justify-content: center;
+  padding: 30px;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+.modal-overlay.active { opacity: 1; pointer-events: auto; }
+.modal-box {
+  background: linear-gradient(145deg, rgba(10, 18, 40, 0.98), rgba(5, 8, 24, 0.98));
+  border: 1px solid var(--gold);
+  border-radius: 22px;
+  padding: 30px;
+  max-width: 720px;
+  width: 100%;
+  max-height: 85vh;
+  overflow-y: auto;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.8), 0 0 50px rgba(255, 183, 0, 0.2);
+  position: relative;
+  transform: scale(0.92);
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.modal-overlay.active .modal-box { transform: scale(1); }
+.modal-close {
+  position: absolute; top: 18px; left: 18px;
+  width: 38px; height: 38px;
+  border-radius: 50%;
+  background: rgba(255, 71, 87, 0.2);
+  border: 1px solid rgba(255, 71, 87, 0.5);
+  color: var(--danger);
+  font-size: 1rem; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.3s ease;
+}
+.modal-close:hover { background: var(--danger); color: #fff; transform: rotate(90deg); }
+.modal-title {
+  font-size: 1.3rem; font-weight: 900;
+  color: var(--gold);
+  margin-bottom: 18px;
+  display: flex; align-items: center; gap: 12px;
+  padding-right: 40px;
+}
+.modal-title i { font-size: 1.5rem; }
+.modal-section { margin-bottom: 18px; }
+.modal-section-title {
+  font-size: 0.95rem; font-weight: 800;
+  color: var(--primary);
+  margin-bottom: 8px;
+  display: flex; align-items: center; gap: 8px;
+}
+.modal-section-title i { color: var(--primary); }
+.modal-section p {
+  font-size: 0.88rem;
+  color: var(--text-dim);
+  line-height: 2;
+  margin-bottom: 8px;
+}
+.modal-section ul { list-style: none; padding: 0; }
+.modal-section ul li {
+  padding: 6px 24px 6px 10px;
+  position: relative;
+  font-size: 0.85rem;
+  color: var(--text-dim);
+  line-height: 1.9;
+}
+.modal-section ul li::before {
+  content: '◆';
+  position: absolute; right: 4px;
+  color: var(--gold);
+  font-size: 0.7rem;
+}
+
+.concept-word {
+  color: var(--gold);
+  font-weight: 900;
+  cursor: pointer;
+  text-decoration: underline dotted var(--gold);
+  text-underline-offset: 5px;
+  transition: all 0.3s ease;
+  padding: 0 2px;
+  border-radius: 4px;
+}
+.concept-word:hover {
+  background: rgba(255, 183, 0, 0.15);
+  text-shadow: 0 0 12px rgba(255, 183, 0, 0.8);
+}
+
+.topic-nav { position: fixed; top: 82px; left: 0; right: 0; height: 36px; background: rgba(5, 8, 24, 0.9); backdrop-filter: blur(10px); border-bottom: 1px solid var(--card-border); z-index: 99; display: flex; align-items: center; gap: 6px; padding: 0 18px; overflow-x: auto; scrollbar-width: none; }
+.topic-nav::-webkit-scrollbar { display: none; }
+.topic-pill { padding: 4px 11px; border-radius: 20px; font-size: 0.7rem; font-weight: 600; white-space: nowrap; color: var(--text-dim); background: rgba(255, 255, 255, 0.04); border: 1px solid transparent; transition: all 0.3s ease; }
+.topic-pill.active { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: var(--dark); font-weight: 800; box-shadow: 0 3px 10px rgba(0, 212, 170, 0.35); }
+.topic-pill.done { color: var(--primary); border-color: rgba(0, 212, 170, 0.3); }
+
+.progress-top { position: fixed; top: 118px; left: 0; right: 0; height: 3px; background: rgba(255, 255, 255, 0.05); z-index: 98; }
+.progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--primary), var(--secondary), var(--tertiary)); transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 0 12px var(--primary); }
+
+.slide-container { position: fixed; inset: 121px 0 0 0; overflow: hidden; }
+.slide { position: absolute; inset: 0; padding: 24px 50px 90px; opacity: 0; transform: translateX(-40px); pointer-events: none; transition: opacity 0.5s ease, transform 0.5s cubic-bezier(0.4, 0, 0.2, 1); overflow-y: auto; overflow-x: hidden; }
+.slide.active { opacity: 1; transform: translateX(0); pointer-events: auto; }
+.slide.prev { transform: translateX(40px); }
+.slide::-webkit-scrollbar { width: 6px; }
+.slide::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 3px; }
+.slide-inner { max-width: 1200px; margin: 0 auto; animation: contentFade 0.6s ease; }
+@keyframes contentFade { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+.slide-num { display: inline-block; padding: 5px 14px; border-radius: 20px; background: rgba(0, 212, 170, 0.15); color: var(--primary); font-size: 0.72rem; font-weight: 700; margin-bottom: 10px; }
+.slide-h1 { font-size: clamp(1.3rem, 3.2vw, 2rem); font-weight: 900; background: linear-gradient(135deg, var(--primary), var(--secondary), var(--tertiary), var(--gold)); background-size: 300% 300%; -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; animation: gradientShift 6s ease infinite; margin-bottom: 16px; line-height: 1.35; }
+@keyframes gradientShift { 0%, 100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
+.slide-h3 { font-size: 0.98rem; font-weight: 700; color: var(--text); margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+.slide-h3 i { color: var(--gold); font-size: 0.88rem; }
+.slide-text { font-size: 0.9rem; color: var(--text-dim); line-height: 2; margin-bottom: 12px; }
+
+.card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 18px; padding: 18px; backdrop-filter: blur(12px); transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1); }
+.card:hover { transform: translateY(-4px); border-color: rgba(0, 212, 170, 0.4); box-shadow: 0 15px 35px rgba(0, 212, 170, 0.12); }
+.grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+.grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; }
+.grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; }
+
+.title-slide { text-align: center; padding-top: 5px; }
+.title-slide .hero-img { width: 100%; max-width: 520px; height: 170px; object-fit: contain; background: rgba(0, 0, 0, 0.2); padding: 6px; border-radius: 20px; margin: 0 auto 12px; display: block; border: 1px solid var(--card-border); box-shadow: 0 20px 40px rgba(0, 212, 170, 0.15); }
+.title-slide .bismillah { font-size: 1.2rem; font-weight: 500; background: linear-gradient(90deg, var(--gold), var(--primary), var(--secondary)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 4px; }
+.title-slide .hoval { font-size: 0.82rem; color: var(--text-dim); margin-bottom: 16px; letter-spacing: 1px; }
+.title-slide .main-title { font-size: clamp(1.5rem, 3.8vw, 2.3rem); font-weight: 900; background: linear-gradient(135deg, var(--primary), var(--gold), var(--tertiary)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 10px; line-height: 1.3; }
+.title-slide .subtitle { font-size: clamp(0.9rem, 2vw, 1.05rem); color: var(--text-dim); margin-bottom: 18px; }
+.title-slide .euler-box { display: inline-block; padding: 12px 30px; border-radius: 18px; background: var(--card-bg); border: 1px solid var(--card-border); backdrop-filter: blur(15px); margin-bottom: 16px; }
+.title-slide .instructor-line { font-size: 0.92rem; color: var(--gold); font-weight: 700; margin-bottom: 3px; }
+.title-slide .instructor-title-line { font-size: 0.78rem; color: var(--text-dim); margin-bottom: 12px; }
+.title-slide .semester { display: inline-block; padding: 6px 18px; border-radius: 50px; background: var(--card-bg); border: 1px solid var(--card-border); font-size: 0.78rem; color: var(--text-dim); }
+
+.star-container { position: fixed; top: 150px; left: 40px; z-index: 90; cursor: pointer; }
+.star-core {
+  width: 40px; height: 40px; border-radius: 50%;
+  background: radial-gradient(circle at 50% 50%, #fff 0%, var(--gold) 30%, var(--gold) 50%, rgba(255, 183, 0, 0.2) 80%, transparent 100%);
+  box-shadow: 0 0 25px var(--gold), 0 0 50px rgba(255, 183, 0, 0.5), 0 0 80px rgba(255, 183, 0, 0.3);
+  animation: starPulse 3s ease-in-out infinite;
+  position: relative;
+}
+.star-core::before {
+  content: ''; position: absolute; inset: -20px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 183, 0, 0.3) 0%, transparent 70%);
+  animation: starHalo 4s ease-in-out infinite;
+}
+@keyframes starPulse {
+  0%, 100% { transform: scale(1); box-shadow: 0 0 25px var(--gold), 0 0 50px rgba(255, 183, 0, 0.5), 0 0 80px rgba(255, 183, 0, 0.3); }
+  50% { transform: scale(1.15); box-shadow: 0 0 35px var(--gold), 0 0 70px rgba(255, 183, 0, 0.7), 0 0 100px rgba(255, 183, 0, 0.5); }
+}
+@keyframes starHalo {
+  0%, 100% { transform: scale(1); opacity: 0.5; }
+  50% { transform: scale(1.3); opacity: 0.8; }
+}
+.star-tooltip {
+  position: absolute; top: 55px; left: 0;
+  width: 240px;
+  background: linear-gradient(145deg, rgba(10, 18, 40, 0.98), rgba(5, 8, 24, 0.98));
+  border: 1px solid var(--gold);
+  border-radius: 16px; padding: 16px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7), 0 0 30px rgba(255, 183, 0, 0.3);
+  opacity: 0; pointer-events: none;
+  transform: translateY(-10px) scale(0.95);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.star-container:hover .star-tooltip {
+  opacity: 1; transform: translateY(0) scale(1); pointer-events: auto;
+}
+.star-img {
+  width: 100%; height: 180px; object-fit: contain;
+  border-radius: 12px; background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 183, 0, 0.3);
+  margin-bottom: 10px; padding: 6px;
+}
+.star-name { font-size: 0.95rem; font-weight: 800; color: var(--gold); text-align: center; margin-bottom: 4px; }
+.star-title { font-size: 0.75rem; color: var(--text-dim); text-align: center; margin-bottom: 6px; font-style: italic; }
+.star-years { font-size: 0.72rem; color: var(--primary); text-align: center; font-family: 'Courier New', monospace; padding-top: 6px; border-top: 1px solid rgba(255, 183, 0, 0.2); }
+.star-tooltip::before {
+  content: ''; position: absolute; top: -8px; left: 20px;
+  width: 16px; height: 16px;
+  background: rgba(10, 18, 40, 0.98);
+  border-top: 1px solid var(--gold);
+  border-right: 1px solid var(--gold);
+  transform: rotate(-45deg);
+}
+
+.math-box { background: rgba(0, 212, 170, 0.06); border: 1px solid rgba(0, 212, 170, 0.25); border-radius: 14px; padding: 16px 22px; margin: 12px 0; text-align: center; direction: ltr; position: relative; overflow-x: auto; overflow-y: hidden; }
+.math-box::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--primary), var(--secondary), var(--tertiary)); }
+.math-box .MathJax, .math-box mjx-container { color: var(--primary) !important; font-size: 1em !important; }
+.math-box.gold-math .MathJax, .math-box.gold-math mjx-container { color: var(--gold) !important; }
+.math-box.purple-math .MathJax, .math-box.purple-math mjx-container { color: var(--tertiary) !important; }
+.math-box.pink-math .MathJax, .math-box.pink-math mjx-container { color: var(--pink) !important; }
+.math-box.danger-math .MathJax, .math-box.danger-math mjx-container { color: var(--danger) !important; }
+.math-note { font-family: 'Vazirmatn', sans-serif; font-size: 0.76rem; color: var(--text-dim); direction: rtl; margin-top: 8px; font-style: italic; text-align: center; }
+
+.simulator { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 18px; padding: 16px; margin: 12px 0; backdrop-filter: blur(12px); }
+.sim-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; flex-wrap: wrap; gap: 10px; }
+.sim-title { font-size: 0.9rem; font-weight: 700; color: var(--gold); display: flex; align-items: center; gap: 8px; }
+.sim-controls { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.slider-group { display: flex; align-items: center; gap: 8px; background: rgba(0, 0, 0, 0.3); padding: 6px 12px; border-radius: 10px; border: 1px solid var(--card-border); }
+.slider-group label { font-size: 0.72rem; color: var(--text-dim); white-space: nowrap; }
+.slider-group input[type="range"] { width: 100px; accent-color: var(--primary); cursor: pointer; }
+.slider-value { font-family: 'Courier New', monospace; font-size: 0.78rem; color: var(--primary); font-weight: 700; min-width: 30px; text-align: center; }
+.canvas-wrapper { position: relative; width: 100%; height: 260px; background: rgba(0, 0, 0, 0.4); border-radius: 12px; overflow: hidden; border: 1px solid var(--card-border); }
+.canvas-wrapper canvas { width: 100%; height: 100%; display: block; }
+
+.img-box { width: 100%; max-height: 280px; border-radius: 16px; border: 1px solid var(--card-border); margin: 12px 0; display: block; object-fit: contain; background: rgba(0, 0, 0, 0.3); padding: 8px; }
+
+.step-container { background: rgba(0, 0, 0, 0.2); border-radius: 14px; padding: 16px 20px; margin: 12px 0; border-right: 3px solid var(--gold); }
+.step-title { font-size: 0.88rem; font-weight: 800; color: var(--gold); margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+.step-content { font-size: 0.85rem; color: var(--text-dim); line-height: 2; }
+.step-content .math-box { margin: 8px 0; padding: 12px 16px; }
+
+.exercise-block { border-radius: 16px; padding: 16px; border: 1px solid; position: relative; overflow: hidden; margin-bottom: 12px; }
+.exercise-block::before { content: ''; position: absolute; top: 0; right: 0; width: 4px; height: 100%; }
+.ex-yellow { background: rgba(255, 217, 61, 0.06); border-color: rgba(255, 217, 61, 0.25); }
+.ex-yellow::before { background: #ffd93d; }
+.ex-green { background: rgba(107, 207, 127, 0.06); border-color: rgba(107, 207, 127, 0.25); }
+.ex-green::before { background: #6bcf7f; }
+.ex-purple { background: rgba(168, 85, 247, 0.06); border-color: rgba(168, 85, 247, 0.25); }
+.ex-purple::before { background: var(--tertiary); }
+.ex-red { background: rgba(255, 107, 107, 0.06); border-color: rgba(255, 107, 107, 0.25); }
+.ex-red::before { background: #ff6b6b; }
+.ex-header { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+.ex-num { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 0.8rem; color: var(--dark); flex-shrink: 0; }
+.ex-yellow .ex-num { background: #ffd93d; }
+.ex-green .ex-num { background: #6bcf7f; }
+.ex-purple .ex-num { background: var(--tertiary); color: #fff; }
+.ex-red .ex-num { background: #ff6b6b; color: #fff; }
+.ex-title { font-size: 0.92rem; font-weight: 800; }
+.ex-list { list-style: none; padding: 0; counter-reset: item; }
+.ex-list li { position: relative; padding: 7px 34px 7px 10px; font-size: 0.83rem; color: var(--text-dim); line-height: 1.8; border-bottom: 1px dashed rgba(255, 255, 255, 0.05); }
+.ex-list li:last-child { border-bottom: none; }
+.ex-list li::before { counter-increment: item; content: counter(item); position: absolute; right: 4px; top: 9px; width: 22px; height: 22px; border-radius: 50%; background: rgba(255, 255, 255, 0.08); color: var(--text); font-size: 0.7rem; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+.email-banner { margin-top: 12px; padding: 12px; border-radius: 14px; background: linear-gradient(135deg, rgba(0, 212, 170, 0.1), rgba(168, 85, 247, 0.1)); border: 1px dashed rgba(0, 212, 170, 0.4); text-align: center; }
+.email-banner p { font-size: 0.8rem; color: var(--text); margin-bottom: 5px; }
+.email-banner code { display: inline-block; padding: 5px 12px; border-radius: 8px; background: rgba(0, 0, 0, 0.4); color: var(--primary); font-family: 'Courier New', monospace; font-size: 0.76rem; direction: ltr; margin-top: 3px; }
+
+.code-tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--card-border); }
+.code-tab { padding: 8px 16px; border-radius: 10px 10px 0 0; background: transparent; border: none; color: var(--text-dim); font-family: inherit; font-size: 0.8rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; }
+.code-tab.active { background: rgba(0, 212, 170, 0.1); color: var(--primary); border-bottom: 2px solid var(--primary); }
+.code-content { display: none; background: #0a0f24; border: 1px solid var(--card-border); border-top: none; border-radius: 0 0 12px 12px; padding: 14px; overflow-x: auto; direction: ltr; text-align: left; }
+.code-content.active { display: block; }
+.code-content pre { margin: 0; font-family: 'Courier New', Consolas, monospace; font-size: 0.76rem; line-height: 1.6; color: #e8eef7; white-space: pre; }
+.code-content .kw { color: #ff79c6; }
+.code-content .fn { color: #50fa7b; }
+.code-content .num { color: #bd93f9; }
+.code-content .str { color: #f1fa8c; }
+.code-content .cm { color: #6272a4; font-style: italic; }
+.code-content .cls { color: #8be9fd; }
+
+.bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; height: 58px; background: rgba(5, 8, 24, 0.9); backdrop-filter: blur(15px); border-top: 1px solid var(--card-border); display: flex; align-items: center; justify-content: space-between; padding: 0 20px; z-index: 100; }
+.nav-btn { padding: 8px 18px; border-radius: 12px; border: 1px solid var(--card-border); background: var(--card-bg); color: var(--text); cursor: pointer; font-family: inherit; font-size: 0.82rem; font-weight: 600; display: flex; align-items: center; gap: 7px; transition: all 0.3s ease; }
+.nav-btn:hover:not(:disabled) { background: var(--primary); color: var(--dark); transform: translateY(-2px); }
+.nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+.dots-nav { display: flex; gap: 4px; flex-wrap: wrap; justify-content: center; max-width: 60%; }
+.dot-nav { width: 8px; height: 8px; border-radius: 50%; background: rgba(255, 255, 255, 0.15); cursor: pointer; border: none; padding: 0; transition: all 0.3s ease; }
+.dot-nav.active { background: var(--primary); width: 22px; border-radius: 5px; box-shadow: 0 0 10px var(--primary); }
+.slide-counter { font-size: 0.78rem; color: var(--text-dim); font-family: 'Courier New', monospace; min-width: 60px; text-align: center; }
+.slide-counter span { color: var(--primary); font-weight: 800; }
+
+.toast-container { position: fixed; bottom: 76px; left: 24px; z-index: 9999; display: flex; flex-direction: column; gap: 8px; }
+.toast { background: rgba(10, 18, 40, 0.95); border: 1px solid var(--primary); border-radius: 14px; padding: 11px 16px; color: var(--text); font-size: 0.82rem; backdrop-filter: blur(12px); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); display: flex; align-items: center; gap: 8px; animation: slideIn 0.35s ease; max-width: 320px; }
+.toast i { color: var(--primary); }
+@keyframes slideIn { from { opacity: 0; transform: translateX(-60px); } to { opacity: 1; transform: translateX(0); } }
+
+.lecture-note {
+  background: rgba(0, 212, 170, 0.06);
+  border: 1px solid rgba(0, 212, 170, 0.3);
+  border-radius: 12px; padding: 12px 16px; margin: 10px 0;
+  display: flex; gap: 10px; align-items: flex-start;
+}
+.lecture-note i { color: var(--primary); font-size: 1.1rem; margin-top: 3px; }
+.lecture-note-content { flex: 1; font-size: 0.85rem; color: var(--text-dim); line-height: 1.9; }
+
+.method-badge {
+  display: inline-block; padding: 3px 10px; border-radius: 6px;
+  font-size: 0.7rem; font-weight: 700; margin-bottom: 8px;
+}
+.badge-ml { background: rgba(0, 212, 170, 0.15); color: var(--primary); }
+.badge-nn { background: rgba(255, 183, 0, 0.15); color: var(--gold); }
+.badge-dl { background: rgba(168, 85, 247, 0.15); color: var(--tertiary); }
+.badge-opt { background: rgba(236, 72, 153, 0.15); color: var(--pink); }
+
+@media (max-width: 768px) {
+  .slide { padding: 16px 14px 90px; }
+  .header-univ { display: none; }
+  .header-name { font-size: 0.75rem; }
+  .header-signature { height: 45px; max-width: 110px; }
+  .nav-btn { padding: 7px 11px; font-size: 0.72rem; }
+  .nav-btn span { display: none; }
+  .dots-nav { max-width: 45%; }
+  .slide-counter { font-size: 0.68rem; min-width: 45px; }
+  .canvas-wrapper { height: 210px; }
+  .topic-pill { font-size: 0.64rem; padding: 3px 8px; }
+  .star-container { top: 130px; left: 20px; }
+  .star-core { width: 32px; height: 32px; }
+  .star-tooltip { width: 200px; }
+  .modal-box { padding: 20px; }
+}
+@media (max-width: 480px) {
+  .ctrl-btn { width: 34px; height: 34px; font-size: 0.8rem; }
+  .header-signature { display: none; }
+  .star-container { top: 120px; left: 12px; }
+  .star-core { width: 28px; height: 28px; }
+  .star-tooltip { width: 180px; padding: 12px; }
+  .star-img { height: 140px; }
+  .lightbox-caption { font-size: 0.75rem; padding: 8px 16px; }
+}
+</style>
+</head>
+<body>
+
+<canvas id="bgCanvas"></canvas>
+<div class="glow-orb orb1"></div>
+<div class="glow-orb orb2"></div>
+<div class="glow-orb orb3"></div>
+
+<!-- ═══ ستاره درخشان ابن سینا ═══ -->
+<div class="star-container" id="starContainer">
+  <div class="star-core"></div>
+  <div class="star-tooltip">
+    <img src="images/star.png" alt="ابن سینا" class="star-img img-clickable" onerror="this.style.background='linear-gradient(135deg, #ffb700, #a855f7)'; this.style.minHeight='140px';" data-caption="ابن سینا — پیشگام منطق استنتاجی و زنجیره معکوس">
+    <div class="star-name">ابن سینا</div>
+    <div class="star-title">فیلسوف، پزشک و ریاضی‌دان — پیشگام زنجیره استنتاج</div>
+    <div class="star-years">۹۸۰ — ۱۰۳۷ میلادی</div>
+  </div>
+</div>
+
+<div class="top-header">
+  <div class="header-left">
+    <img src="images/signature.png" alt="امضا" class="header-signature" onerror="this.style.display='none'">
+    <div class="header-text">
+      <span class="header-name">دکتر مسعود گوهری منش</span>
+      <span class="header-univ">دانشیار گروه مهندسی مکانیک — دانشگاه تربت حیدریه</span>
+    </div>
+  </div>
+  <div class="header-controls">
+    <button class="ctrl-btn" id="soundToggle" title="صدا"><i class="fas fa-volume-up"></i></button>
+    <button class="ctrl-btn" id="fullscreenToggle" title="تمام‌صفحه"><i class="fas fa-expand"></i></button>
+    <div class="print-menu-wrap">
+      <button class="ctrl-btn" id="printToggle" title="چاپ"><i class="fas fa-print"></i></button>
+      <div class="print-menu" id="printMenu">
+        <button id="printCurrentBtn"><i class="fas fa-file"></i> چاپ این صفحه</button>
+        <button id="printAllBtn"><i class="fas fa-layer-group"></i> چاپ همه صفحات</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="topic-nav" id="topicNav">
+  <span class="topic-pill" data-topic="1">مقدمه</span>
+  <span class="topic-pill" data-topic="2">MLP</span>
+  <span class="topic-pill" data-topic="3">Forward</span>
+  <span class="topic-pill" data-topic="4">Computational Graph</span>
+  <span class="topic-pill" data-topic="5">Backprop</span>
+  <span class="topic-pill" data-topic="6">مشکلات گرادیان</span>
+  <span class="topic-pill" data-topic="7">بهینه‌سازها</span>
+  <span class="topic-pill" data-topic="8">کد</span>
+  <span class="topic-pill" data-topic="9">تمرین</span>
+  <span class="topic-pill" data-topic="10">جمع‌بندی</span>
+</div>
+
+<div class="progress-top"><div class="progress-fill" id="progressFill"></div></div>
+
+<div class="slide-container" id="slideContainer">
+
+  <!-- ۱ — عنوان -->
+  <div class="slide active" data-slide="1" data-topic="1">
+    <div class="slide-inner title-slide">
+      <div class="bismillah">بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِیم</div>
+      <div class="hoval">هُوَ الخَلّاقُ العَلیم</div>
+      <img src="images/hero-backprop.png" alt="Backpropagation" class="hero-img img-clickable" onerror="this.style.display='none'" data-caption="Backpropagation">
+      <h1 class="main-title">شبکه عصبی و Backpropagation</h1>
+      <p class="subtitle">(Neural Networks & Backpropagation) — جلسه ۱۸</p>
+      <div class="euler-box"><div style="direction: ltr; font-size: 1rem;">$$\delta^{(l)} = (W^{(l+1)})^T \delta^{(l+1)} \odot \sigma'(z^{(l)})$$</div></div>
+      <p class="instructor-line">دکتر مسعود گوهری منش</p>
+      <p class="instructor-title-line">دانشیار گروه مهندسی مکانیک — دانشگاه تربت حیدریه</p>
+      <div class="semester">نیمسال اول ۱۴۰۵–۱۴۰۶</div>
+      <div class="lecture-note" style="margin-top: 20px; max-width: 600px; margin-left: auto; margin-right: auto; text-align: right;">
+        <i class="fas fa-star" style="color: var(--gold);"></i>
+        <div class="lecture-note-content">
+          <strong style="color: var(--gold);">💫 ستاره امروز:</strong> به ستاره درخشان گوشه صفحه هاور کنید تا <strong>ابن سینا</strong>، پیشگام منطق استنتاج و زنجیره معکوس را ببینید.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۲ — مرور جلسه ۱۷ -->
+  <div class="slide" data-slide="2" data-topic="1">
+    <div class="slide-inner">
+      <span class="slide-num">مرور</span>
+      <h2 class="slide-h1">از نرون ساده به شبکه چندلایه</h2>
+
+      <div class="grid-2">
+        <div class="card" style="background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3);">
+          <div class="slide-h3" style="color: var(--primary);"><i class="fas fa-check-circle"></i> دستاوردهای جلسه ۱۷</div>
+          <ul style="list-style: none; padding: 0; font-size: 0.85rem; color: var(--text-dim); line-height: 2;">
+            <li>✅ انواع یادگیری ماشین</li>
+            <li>✅ Feature، Label، Dataset</li>
+            <li>✅ Loss function (MSE، Cross-Entropy)</li>
+            <li>✅ Gradient Descent</li>
+            <li>✅ نرون ساده (Perceptron)</li>
+          </ul>
+        </div>
+        <div class="card" style="background: rgba(255, 183, 0, 0.06); border-color: rgba(255, 183, 0, 0.3);">
+          <div class="slide-h3" style="color: var(--gold);"><i class="fas fa-rocket"></i> امروز — جلسه ۱۸</div>
+          <ul style="list-style: none; padding: 0; font-size: 0.85rem; color: var(--text-dim); line-height: 2;">
+            <li>🔹 معماری شبکه چندلایه (MLP)</li>
+            <li>🔹 Forward Propagation</li>
+            <li>🔹 <b>Backpropagation</b> — قلب آموزش</li>
+            <li>🔹 گرادیان ناپدید/منفجر</li>
+            <li>🔹 بهینه‌سازهای پیشرفته (Adam)</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top: 16px; background: rgba(168, 85, 247, 0.06); border-color: rgba(168, 85, 247, 0.3);">
+        <div class="slide-h3" style="color: var(--tertiary);"><i class="fas fa-bullseye"></i> چرا Backpropagation مهم است؟</div>
+        <p class="slide-text" style="font-size: 0.9rem;">
+          <b>Backpropagation</b> قلب آموزش شبکه‌های عصبی است. این الگوریتم، <strong>خطا را از خروجی به ورودی</strong> منتقل می‌کند و به هر نرون می‌گوید چقدر در خطا نقش داشته است. بدون این الگوریتم، شبکه‌های عصبی نمی‌توانند یاد بگیرند.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۳ — چرا شبکه عمیق -->
+  <div class="slide" data-slide="3" data-topic="1">
+    <div class="slide-inner">
+      <span class="slide-num">انگیزه</span>
+      <h2 class="slide-h1">چرا شبکه چندلایه؟</h2>
+
+      <img src="images/why-deep-networks.png" alt="Why Deep Networks" class="img-box img-clickable" onerror="this.style.display='none'" data-caption="چرا شبکه عمیق">
+
+      <p class="slide-text">
+        <strong>قضیه تقریب جهانی (Universal Approximation Theorem)</strong> می‌گوید: یک شبکه عصبی با <b>یک لایه پنهان</b> و تعداد کافی نرون، می‌تواند <strong>هر تابع پیوسته</strong> را با دقت دلخواه تقریب بزند.
+      </p>
+
+      <div class="math-box gold-math" style="padding: 16px;">
+        <div style="font-size: 1rem;">
+          $$\forall f \in C([0,1]^n)، \forall \epsilon > 0، \exists N: \|f - f_{NN}\| < \epsilon$$
+        </div>
+      </div>
+
+      <div class="grid-3" style="margin-top: 14px;">
+        <div class="card" style="background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3); text-align: center; padding: 14px;">
+          <i class="fas fa-layer-group" style="font-size: 1.5rem; color: var(--primary); display: block; margin-bottom: 8px;"></i>
+          <div class="slide-h3" style="justify-content: center; font-size: 0.85rem;">لایه‌های بیشتر</div>
+          <p class="slide-text" style="font-size: 0.75rem;">ویژگی‌های پیچیده‌تر</p>
+        </div>
+        <div class="card" style="background: rgba(255, 183, 0, 0.06); border-color: rgba(255, 183, 0, 0.3); text-align: center; padding: 14px;">
+          <i class="fas fa-chart-line" style="font-size: 1.5rem; color: var(--gold); display: block; margin-bottom: 8px;"></i>
+          <div class="slide-h3" style="justify-content: center; font-size: 0.85rem;">غیرخطی قوی‌تر</div>
+          <p class="slide-text" style="font-size: 0.75rem;">مدل‌سازی پیچیدگی</p>
+        </div>
+        <div class="card" style="background: rgba(168, 85, 247, 0.06); border-color: rgba(168, 85, 247, 0.3); text-align: center; padding: 14px;">
+          <i class="fas fa-brain" style="font-size: 1.5rem; color: var(--tertiary); display: block; margin-bottom: 8px;"></i>
+          <div class="slide-h3" style="justify-content: center; font-size: 0.85rem;">یادگیری عمیق</div>
+          <p class="slide-text" style="font-size: 0.75rem;">الهام از مغز انسان</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۴ — معماری MLP -->
+  <div class="slide" data-slide="4" data-topic="2">
+    <div class="slide-inner">
+      <span class="slide-num">معماری</span>
+      <span class="method-badge badge-nn" style="display: inline-block; margin-right: 8px;">MLP</span>
+      <h2 class="slide-h1">معماری شبکه چندلایه (MLP)</h2>
+
+      <img src="images/mlp-architecture.png" alt="MLP Architecture" class="img-box img-clickable" onerror="this.style.display='none'" data-caption="معماری MLP">
+
+      <div class="grid-3" style="margin-top: 14px;">
+        <div class="card" style="background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3);">
+          <div class="slide-h3" style="color: var(--primary);"><i class="fas fa-sign-in-alt"></i> Input Layer</div>
+          <p class="slide-text" style="font-size: 0.82rem;">
+            دریافت داده‌های ورودی. تعداد نرون = تعداد features.
+          </p>
+          <p class="slide-text" style="font-size: 0.72rem; color: var(--primary);">
+            مثال نانو انبرک: ۵ نرون
+          </p>
+        </div>
+        <div class="card" style="background: rgba(255, 183, 0, 0.06); border-color: rgba(255, 183, 0, 0.3);">
+          <div class="slide-h3" style="color: var(--gold);"><i class="fas fa-layer-group"></i> Hidden Layers</div>
+          <p class="slide-text" style="font-size: 0.82rem;">
+            لایه‌های میانی که ویژگی‌ها را استخراج می‌کنند.
+          </p>
+          <p class="slide-text" style="font-size: 0.72rem; color: var(--gold);">
+            مثال: ۳۲ → ۱۶ نرون
+          </p>
+        </div>
+        <div class="card" style="background: rgba(168, 85, 247, 0.06); border-color: rgba(168, 85, 247, 0.3);">
+          <div class="slide-h3" style="color: var(--tertiary);"><i class="fas fa-sign-out-alt"></i> Output Layer</div>
+          <p class="slide-text" style="font-size: 0.82rem;">
+            خروجی نهایی — پیش‌بینی یا طبقه‌بندی.
+          </p>
+          <p class="slide-text" style="font-size: 0.72rem; color: var(--tertiary);">
+            مثال: ۱ نرون ($V_{pull-in}$)
+          </p>
+        </div>
+      </div>
+
+      <div class="math-box gold-math" style="margin-top: 14px; padding: 14px;">
+        <div style="font-size: 0.95rem;">
+          $$\mathbf{a}^{(l)} = \sigma\left(\mathbf{W}^{(l)} \mathbf{a}^{(l-1)} + \mathbf{b}^{(l)}\right)$$
+        </div>
+        <p class="math-note">Forward Propagation — انتشار رو به جلو</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۵ — Forward Propagation -->
+  <div class="slide" data-slide="5" data-topic="3">
+    <div class="slide-inner">
+      <span class="slide-num">Forward</span>
+      <span class="method-badge badge-nn" style="display: inline-block; margin-right: 8px;">Forward Pass</span>
+      <h2 class="slide-h1">Forward Propagation</h2>
+
+      <img src="images/forward-propagation.png" alt="Forward Propagation" class="img-box img-clickable" onerror="this.style.display='none'" data-caption="Forward Propagation">
+
+      <p class="slide-text">
+        در <b>Forward Pass</b>، داده از ورودی به خروجی منتقل می‌شود و در هر لایه تبدیل خطی + غیرخطی انجام می‌شود:
+      </p>
+
+      <div class="step-container">
+        <div class="step-title"><i class="fas fa-1"></i> لایه اول (از ورودی به hidden 1)</div>
+        <div class="step-content">
+          <div class="math-box" style="padding: 12px;">
+            $$\mathbf{z}^{(1)} = \mathbf{W}^{(1)} \mathbf{x} + \mathbf{b}^{(1)}$$
+            $$\mathbf{a}^{(1)} = \sigma(\mathbf{z}^{(1)})$$
+          </div>
+        </div>
+      </div>
+
+      <div class="step-container" style="border-right-color: var(--primary);">
+        <div class="step-title" style="color: var(--primary);"><i class="fas fa-2"></i> لایه دوم (از hidden 1 به hidden 2)</div>
+        <div class="step-content">
+          <div class="math-box" style="padding: 12px;">
+            $$\mathbf{z}^{(2)} = \mathbf{W}^{(2)} \mathbf{a}^{(1)} + \mathbf{b}^{(2)}$$
+            $$\mathbf{a}^{(2)} = \sigma(\mathbf{z}^{(2)})$$
+          </div>
+        </div>
+      </div>
+
+      <div class="step-container" style="border-right-color: var(--gold);">
+        <div class="step-title"><i class="fas fa-3"></i> خروجی نهایی</div>
+        <div class="step-content">
+          <div class="math-box gold-math" style="padding: 12px;">
+            $$\hat{y} = \mathbf{a}^{(L)} = \sigma(\mathbf{W}^{(L)} \mathbf{a}^{(L-1)} + \mathbf{b}^{(L)})$$
+          </div>
+        </div>
+      </div>
+
+      <div class="lecture-note">
+        <i class="fas fa-info-circle"></i>
+        <div class="lecture-note-content">
+          <strong>نکته:</strong> در Forward Pass، پارامترهای $\mathbf{W}$ و $\mathbf{b}$ ثابت هستند. هدف فقط محاسبه خروجی $\hat{y}$ و سپس <strong>Loss</strong> است.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۶ — شبیه‌ساز Forward -->
+  <div class="slide" data-slide="6" data-topic="3">
+    <div class="slide-inner">
+      <span class="slide-num">شبیه‌ساز تعاملی</span>
+      <h2 class="slide-h1">شبیه‌ساز Forward Propagation</h2>
+
+      <div class="simulator">
+        <div class="sim-header">
+          <div class="sim-title"><i class="fas fa-sign-in-alt"></i> عبور داده از لایه‌ها</div>
+          <div class="sim-controls">
+            <div class="slider-group">
+              <label>ورودی x₁:</label>
+              <input type="range" id="fwdX1" min="-2" max="2" value="1" step="0.1">
+              <span class="slider-value" id="fwdX1Value">۱.۰</span>
+            </div>
+            <div class="slider-group">
+              <label>ورودی x₂:</label>
+              <input type="range" id="fwdX2" min="-2" max="2" value="-0.5" step="0.1">
+              <span class="slider-value" id="fwdX2Value">-۰.۵</span>
+            </div>
+          </div>
+        </div>
+        <div class="canvas-wrapper" style="height: 320px;"><canvas id="fwdCanvas"></canvas></div>
+        <div class="grid-3" style="margin-top: 12px;">
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 0.72rem; color: var(--text-dim);">خروجی نهایی ŷ</div>
+            <div id="fwdOutput" style="font-size: 1rem; color: var(--gold); font-weight: 800; font-family: 'Courier New', monospace;">—</div>
+          </div>
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 0.72rem; color: var(--text-dim);">فعال‌سازی لایه ۱</div>
+            <div id="fwdA1" style="font-size: 0.9rem; color: var(--primary); font-weight: 800; font-family: 'Courier New', monospace;">—</div>
+          </div>
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 0.72rem; color: var(--text-dim);">فعال‌سازی لایه ۲</div>
+            <div id="fwdA2" style="font-size: 0.9rem; color: var(--tertiary); font-weight: 800; font-family: 'Courier New', monospace;">—</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۷ — Computational Graph -->
+  <div class="slide" data-slide="7" data-topic="4">
+    <div class="slide-inner">
+      <span class="slide-num">گراف</span>
+      <span class="method-badge badge-dl" style="display: inline-block; margin-right: 8px;">Computational Graph</span>
+      <h2 class="slide-h1">گراف محاسباتی</h2>
+
+      <img src="images/computational-graph.png" alt="Computational Graph" class="img-box img-clickable" onerror="this.style.display='none'" data-caption="گراف محاسباتی">
+
+      <p class="slide-text">
+        یک <b>computational graph</b> نمایش گرافیکی از عملیات‌های ریاضی است که در Forward Pass انجام می‌شوند. هر گره یک عملیات، و هر یال یک تانسور (داده) است.
+      </p>
+
+      <div class="step-container">
+        <div class="step-title"><i class="fas fa-1"></i> مثال: یک نرون ساده</div>
+        <div class="step-content">
+          <div class="math-box" style="padding: 12px; font-size: 0.9rem;">
+            $$z = w \cdot x + b$$
+            $$y = \sigma(z)$$
+            $$\mathcal{L} = (y - y_{true})^2$$
+          </div>
+        </div>
+      </div>
+
+      <div class="grid-3" style="margin-top: 14px;">
+        <div class="card" style="background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3); text-align: center; padding: 12px;">
+          <i class="fas fa-arrow-right" style="font-size: 1.5rem; color: var(--primary); display: block; margin-bottom: 8px;"></i>
+          <div class="slide-h3" style="justify-content: center; font-size: 0.82rem;">Forward</div>
+          <p class="slide-text" style="font-size: 0.72rem;">محاسبه خروجی</p>
+        </div>
+        <div class="card" style="background: rgba(255, 183, 0, 0.06); border-color: rgba(255, 183, 0, 0.3); text-align: center; padding: 12px;">
+          <i class="fas fa-chart-line" style="font-size: 1.5rem; color: var(--gold); display: block; margin-bottom: 8px;"></i>
+          <div class="slide-h3" style="justify-content: center; font-size: 0.82rem;">Loss</div>
+          <p class="slide-text" style="font-size: 0.72rem;">محاسبه خطا</p>
+        </div>
+        <div class="card" style="background: rgba(168, 85, 247, 0.06); border-color: rgba(168, 85, 247, 0.3); text-align: center; padding: 12px;">
+          <i class="fas fa-arrow-left" style="font-size: 1.5rem; color: var(--tertiary); display: block; margin-bottom: 8px;"></i>
+          <div class="slide-h3" style="justify-content: center; font-size: 0.82rem;">Backward</div>
+          <p class="slide-text" style="font-size: 0.72rem;">محاسبه گرادیان</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۸ — قاعده زنجیره‌ای -->
+  <div class="slide" data-slide="8" data-topic="4">
+    <div class="slide-inner">
+      <span class="slide-num">ریاضیات</span>
+      <h2 class="slide-h1">قاعده زنجیره‌ای (Chain Rule)</h2>
+
+      <img src="images/chain-rule-visual.png" alt="Chain Rule" class="img-box img-clickable" style="max-height: 180px;" onerror="this.style.display='none'" data-caption="قاعده زنجیره‌ای">
+
+      <p class="slide-text">
+        <b>Chain Rule</b> پایه‌ی <b>Backpropagation</b> است. اگر $y = f(g(h(x)))$، آنگاه:
+      </p>
+
+      <div class="math-box gold-math" style="padding: 16px;">
+        <div style="font-size: 1.05rem;">
+          $$\frac{dy}{dx} = \frac{dy}{du} \cdot \frac{du}{dv} \cdot \frac{dv}{dx}$$
+        </div>
+        <p class="math-note">که $u = g(v)$ و $v = h(x)$</p>
+      </div>
+
+      <p class="slide-text" style="font-size: 0.85rem;">
+        <strong>مثال عددی:</strong> فرض کنید $y = (2x + 1)^2$ و $x = 3$.
+      </p>
+
+      <div class="step-container">
+        <div class="step-title"><i class="fas fa-1"></i> روش زنجیره‌ای</div>
+        <div class="step-content">
+          <div class="math-box" style="padding: 12px; font-size: 0.85rem;">
+            $$u = 2x + 1 \quad \Rightarrow \quad y = u^2$$
+            $$\frac{dy}{dx} = \frac{dy}{du} \cdot \frac{du}{dx} = 2u \cdot 2 = 4u$$
+            $$\text{در } x = 3: u = 7 \Rightarrow \frac{dy}{dx} = 28$$
+          </div>
+        </div>
+      </div>
+
+      <div class="lecture-note">
+        <i class="fas fa-star"></i>
+        <div class="lecture-note-content">
+          <strong>در شبکه عصبی:</strong> گرادیان Loss نسبت به وزن‌های لایه‌های اولیه، از طریق <strong>ضرب زنجیره‌ای</strong> مشتقات محلی به‌دست می‌آید.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۹ — گرادیان لایه آخر -->
+  <div class="slide" data-slide="9" data-topic="5">
+    <div class="slide-inner">
+      <span class="slide-num">مرحله ۱</span>
+      <h2 class="slide-h1">گرادیان در لایه آخر</h2>
+
+      <img src="images/gradient-last-layer.png" alt="Gradient Last Layer" class="img-box img-clickable" style="max-height: 180px;" onerror="this.style.display='none'" data-caption="گرادیان لایه آخر">
+
+      <p class="slide-text">
+        ابتدا گرادیان Loss نسبت به خروجی ($\hat{y}$) محاسبه می‌شود. برای MSE:
+      </p>
+
+      <div class="math-box danger-math" style="padding: 14px;">
+        $$\frac{\partial \mathcal{L}}{\partial \hat{y}} = \frac{\partial}{\partial \hat{y}} \left[(\hat{y} - y)^2\right] = 2(\hat{y} - y)$$
+      </div>
+
+      <p class="slide-text" style="font-size: 0.85rem;">
+        سپس برای لایه آخر، گرادیان نسبت به $z^{(L)}$:
+      </p>
+
+      <div class="math-box danger-math" style="padding: 14px;">
+        $$\delta^{(L)} = \frac{\partial \mathcal{L}}{\partial z^{(L)}} = \frac{\partial \mathcal{L}}{\partial \hat{y}} \odot \sigma'(z^{(L)})$$
+      </div>
+
+      <div class="lecture-note">
+        <i class="fas fa-info-circle"></i>
+        <div class="lecture-note-content">
+          <strong>نماد $\delta^{(l)}$:</strong> گرادیان Loss نسبت به $z^{(l)}$ (ورودی تابع فعال‌سازی لایه $l$). این نماد، پایه‌ی فرمول بازگشتی Backprop است.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۱۰ — ایده Backprop -->
+  <div class="slide" data-slide="10" data-topic="5">
+    <div class="slide-inner">
+      <span class="slide-num">ایده اصلی</span>
+      <span class="method-badge badge-dl" style="display: inline-block; margin-right: 8px;">Backprop</span>
+      <h2 class="slide-h1">ایده <span class="concept-word" data-concept>Backpropagation</span></h2>
+
+      <img src="images/backprop-idea.png" alt="Backprop Idea" class="img-box img-clickable" onerror="this.style.display='none'" data-caption="ایده Backpropagation">
+
+      <p class="slide-text">
+        Backpropagation یک الگوریتم <strong>بازگشتی</strong> است که گرادیان Loss را نسبت به همه پارامترها محاسبه می‌کند:
+      </p>
+
+      <div class="step-container">
+        <div class="step-title"><i class="fas fa-1"></i> گام ۱: Forward Pass</div>
+        <div class="step-content">
+          <p style="font-size: 0.85rem;">محاسبه خروجی $\hat{y}$ و Loss $\mathcal{L}$</p>
+        </div>
+      </div>
+
+      <div class="step-container" style="border-right-color: var(--primary);">
+        <div class="step-title" style="color: var(--primary);"><i class="fas fa-2"></i> گام ۲: گرادیان لایه آخر</div>
+        <div class="step-content">
+          <div class="math-box" style="padding: 10px; font-size: 0.85rem;">
+            $$\delta^{(L)} = \nabla_{\hat{y}} \mathcal{L} \odot \sigma'(z^{(L)})$$
+          </div>
+        </div>
+      </div>
+
+      <div class="step-container" style="border-right-color: var(--gold);">
+        <div class="step-title"><i class="fas fa-3"></i> گام ۳: انتشار معکوس</div>
+        <div class="step-content">
+          <div class="math-box gold-math" style="padding: 10px; font-size: 0.85rem;">
+            $$\delta^{(l)} = (W^{(l+1)})^T \delta^{(l+1)} \odot \sigma'(z^{(l)})$$
+          </div>
+          <p style="font-size: 0.82rem;">از لایه $L-1$ تا لایه $1$</p>
+        </div>
+      </div>
+
+      <div class="step-container" style="border-right-color: var(--tertiary);">
+        <div class="step-title" style="color: var(--tertiary);"><i class="fas fa-4"></i> گام ۴: گرادیان پارامترها</div>
+        <div class="step-content">
+          <div class="math-box purple-math" style="padding: 10px; font-size: 0.85rem;">
+            $$\frac{\partial \mathcal{L}}{\partial W^{(l)}} = \delta^{(l)} (a^{(l-1)})^T$$
+            $$\frac{\partial \mathcal{L}}{\partial b^{(l)}} = \delta^{(l)}$$
+          </div>
+        </div>
+      </div>
+
+      <div class="lecture-note">
+        <i class="fas fa-star"></i>
+        <div class="lecture-note-content">
+          <strong>نکته کلیدی:</strong> Backprop <strong>یک بار</strong> اجرا می‌شود و گرادیان <strong>همه پارامترها</strong> را محاسبه می‌کند. این کارایی، پایه‌ی موفقیت شبکه‌های عمیق است.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۱۱ — فرمول‌های Backprop -->
+  <div class="slide" data-slide="11" data-topic="5">
+    <div class="slide-inner">
+      <span class="slide-num">فرمول‌ها</span>
+      <h2 class="slide-h1">فرمول‌های کامل Backprop</h2>
+
+      <img src="images/backprop-formulas.png" alt="Backprop Formulas" class="img-box img-clickable" style="max-height: 180px;" onerror="this.style.display='none'" data-caption="فرمول‌های Backprop">
+
+      <div class="math-box gold-math" style="padding: 16px;">
+        <div style="font-size: 1.05rem;">
+          $$\delta^{(L)} = \nabla_{\hat{y}} \mathcal{L} \odot \sigma'(z^{(L)})$$
+        </div>
+        <p class="math-note">گرادیان لایه آخر</p>
+      </div>
+
+      <div class="math-box gold-math" style="padding: 16px;">
+        <div style="font-size: 1.05rem;">
+          $$\delta^{(l)} = (W^{(l+1)})^T \delta^{(l+1)} \odot \sigma'(z^{(l)})$$
+        </div>
+        <p class="math-note">فرمول بازگشتی برای لایه‌های میانی</p>
+      </div>
+
+      <div class="math-box purple-math" style="padding: 16px;">
+        <div style="font-size: 1.05rem;">
+          $$\frac{\partial \mathcal{L}}{\partial W^{(l)}} = \delta^{(l)} (a^{(l-1)})^T$$
+        </div>
+      </div>
+
+      <div class="math-box purple-math" style="padding: 16px;">
+        <div style="font-size: 1.05rem;">
+          $$\frac{\partial \mathcal{L}}{\partial b^{(l)}} = \delta^{(l)}$$
+        </div>
+      </div>
+
+      <div class="lecture-note">
+        <i class="fas fa-info-circle"></i>
+        <div class="lecture-note-content">
+          <strong>نماد $\odot$:</strong> ضرب عنصر به عنصر (Hadamard product). این ضرب، مشتق تابع فعال‌سازی را با گرادیان لایه بعد ترکیب می‌کند.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۱۲ — شبیه‌ساز Backprop -->
+  <div class="slide" data-slide="12" data-topic="5">
+    <div class="slide-inner">
+      <span class="slide-num">شبیه‌ساز تعاملی</span>
+      <h2 class="slide-h1">شبیه‌ساز زنجیره گرادیان</h2>
+
+      <div class="simulator">
+        <div class="sim-header">
+          <div class="sim-title"><i class="fas fa-arrow-left"></i> انتشار معکوس گرادیان</div>
+          <div class="sim-controls">
+            <div class="slider-group">
+              <label>Loss اولیه:</label>
+              <input type="range" id="bpLoss" min="0.1" max="2" value="1" step="0.1">
+              <span class="slider-value" id="bpLossValue">۱.۰</span>
+            </div>
+          </div>
+        </div>
+        <div class="canvas-wrapper" style="height: 320px;"><canvas id="bpCanvas"></canvas></div>
+        <div class="grid-2" style="margin-top: 12px;">
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 0.72rem; color: var(--text-dim);">گرادیان لایه‌ها</div>
+            <div id="bpGradients" style="font-size: 0.82rem; color: var(--primary); font-weight: 700; font-family: 'Courier New', monospace;">—</div>
+          </div>
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 0.72rem; color: var(--text-dim);">وضعیت</div>
+            <div id="bpStatus" style="font-size: 0.9rem; color: var(--gold); font-weight: 800;">—</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۱۳ — Gradient Vanishing -->
+  <div class="slide" data-slide="13" data-topic="6">
+    <div class="slide-inner">
+      <span class="slide-num">مشکل ۱</span>
+      <span class="method-badge badge-dl" style="display: inline-block; margin-right: 8px;">Vanishing</span>
+      <h2 class="slide-h1">مشکل گرادیان ناپدید</h2>
+
+      <img src="images/vanishing-gradient.png" alt="Vanishing Gradient" class="img-box img-clickable" onerror="this.style.display='none'" data-caption="گرادیان ناپدید">
+
+      <p class="slide-text">
+        در شبکه‌های عمیق با تابع فعال‌سازی <b>Sigmoid</b> یا <b>Tanh</b>، گرادیان در هر لایه کوچک‌تر می‌شود و در لایه‌های اولیه به صفر میل می‌کند.
+      </p>
+
+      <div class="math-box danger-math" style="padding: 14px;">
+        <div style="font-size: 0.9rem;">
+          $$\delta^{(l)} = \prod_{k=l+1}^{L} (W^{(k)})^T \sigma'(z^{(k-1)}) \cdot \delta^{(L)}$$
+        </div>
+        <p class="math-note">هر ضرب، گرادیان را کوچک‌تر می‌کند</p>
+      </div>
+
+      <div class="grid-2" style="margin-top: 14px;">
+        <div class="card" style="background: rgba(255, 71, 87, 0.06); border-color: rgba(255, 71, 87, 0.3);">
+          <div class="slide-h3" style="color: var(--danger);"><i class="fas fa-exclamation-triangle"></i> علت</div>
+          <ul style="list-style: none; padding: 0; font-size: 0.82rem; color: var(--text-dim); line-height: 2;">
+            <li>🔹 مشتق Sigmoid $< 0.25$</li>
+            <li>🔹 وزن‌های کوچک (نزدیک به صفر)</li>
+            <li>🔹 عمق زیاد شبکه</li>
+          </ul>
+        </div>
+        <div class="card" style="background: rgba(34, 197, 94, 0.06); border-color: rgba(34, 197, 94, 0.3);">
+          <div class="slide-h3" style="color: var(--success);"><i class="fas fa-lightbulb"></i> نتیجه</div>
+          <ul style="list-style: none; padding: 0; font-size: 0.82rem; color: var(--text-dim); line-height: 2;">
+            <li>🔹 لایه‌های اولیه یاد نمی‌گیرند</li>
+            <li>🔹 آموزش کند و ناپایدار</li>
+            <li>🔹 نیاز به راه‌حل</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۱۴ — Gradient Exploding -->
+  <div class="slide" data-slide="14" data-topic="6">
+    <div class="slide-inner">
+      <span class="slide-num">مشکل ۲</span>
+      <span class="method-badge badge-dl" style="display: inline-block; margin-right: 8px;">Exploding</span>
+      <h2 class="slide-h1">مشکل گرادیان منفجر</h2>
+
+      <img src="images/exploding-gradient.png" alt="Exploding Gradient" class="img-box img-clickable" onerror="this.style.display='none'" data-caption="گرادیان منفجر">
+
+      <p class="slide-text">
+        اگر وزن‌ها بزرگ باشند یا تعداد لایه‌ها زیاد باشد، گرادیان <strong>به‌صورت نمایی</strong> رشد می‌کند و باعث <b>NaN</b> یا نوسان شدید می‌شود.
+      </p>
+
+      <div class="math-box danger-math" style="padding: 14px;">
+        <div style="font-size: 0.95rem;">
+          $$\|\delta^{(l)}\| \gg 1 \quad \Rightarrow \quad \text{NaNs، oscillation}$$
+        </div>
+      </div>
+
+      <div class="lecture-note">
+        <i class="fas fa-exclamation-triangle"></i>
+        <div class="lecture-note-content">
+          <strong>تفاوت:</strong> Vanishing = گرادیان به صفر می‌رود (لایه‌های اولیه یاد نمی‌گیرند). Exploding = گرادیان به بی‌نهایت می‌رود (آموزش ناپایدار). هر دو مشکل جدی هستند.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۱۵ — راه‌حل‌ها -->
+  <div class="slide" data-slide="15" data-topic="6">
+    <div class="slide-inner">
+      <span class="slide-num">راه‌حل‌ها</span>
+      <h2 class="slide-h1">راه‌حل‌های مشکلات گرادیان</h2>
+
+      <img src="images/solutions-gradient-issues.png" alt="Solutions" class="img-box img-clickable" onerror="this.style.display='none'" data-caption="راه‌حل‌ها">
+
+      <div class="grid-3" style="margin-top: 14px;">
+        <div class="card" style="background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3);">
+          <div class="slide-h3" style="color: var(--primary);"><i class="fas fa-bolt"></i> ReLU</div>
+          <div class="math-box" style="padding: 10px; font-size: 0.82rem;">
+            $$\text{ReLU}'(x) = 1 \text{ for } x > 0$$
+          </div>
+          <p class="slide-text" style="font-size: 0.78rem;">مشتق ثابت — گرادیان ناپدید نمی‌شود</p>
+        </div>
+        <div class="card" style="background: rgba(255, 183, 0, 0.06); border-color: rgba(255, 183, 0, 0.3);">
+          <div class="slide-h3" style="color: var(--gold);"><i class="fas fa-balance-scale"></i> Batch Norm</div>
+          <p class="slide-text" style="font-size: 0.78rem;">نرمال‌سازی ورودی هر لایه — گرادیان متعادل</p>
+        </div>
+        <div class="card" style="background: rgba(168, 85, 247, 0.06); border-color: rgba(168, 85, 247, 0.3);">
+          <div class="slide-h3" style="color: var(--tertiary);"><i class="fas fa-link"></i> Residual</div>
+          <p class="slide-text" style="font-size: 0.78rem;">Skip Connection — گرادیان مستقیم به لایه‌های اولیه</p>
+        </div>
+      </div>
+
+      <div class="lecture-note" style="margin-top: 14px;">
+        <i class="fas fa-star"></i>
+        <div class="lecture-note-content">
+          <strong>ترکیب راه‌حل‌ها:</strong> ReLU + Batch Norm + Residual Connection — این سه تکنیک با هم، آموزش شبکه‌های بسیار عمیق (مثل ResNet با ۱۵۲ لایه) را ممکن می‌کنند.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۱۶ — SGD -->
+  <div class="slide" data-slide="16" data-topic="7">
+    <div class="slide-inner">
+      <span class="slide-num">بهینه‌سازها</span>
+      <span class="method-badge badge-opt" style="display: inline-block; margin-right: 8px;">SGD</span>
+      <h2 class="slide-h1">SGD — Stochastic Gradient Descent</h2>
+
+      <img src="images/sgd-momentum-adam.png" alt="Optimizers" class="img-box img-clickable" onerror="this.style.display='none'" data-caption="مقایسه بهینه‌سازها">
+
+      <div class="math-box" style="padding: 14px;">
+        <div style="font-size: 1rem;">
+          $$\theta_{n+1} = \theta_n - \eta \nabla_\theta \mathcal{L}$$
+        </div>
+        <p class="math-note">ساده‌ترین بهینه‌ساز</p>
+      </div>
+
+      <div class="grid-2" style="margin-top: 14px;">
+        <div class="card" style="background: rgba(255, 183, 0, 0.06); border-color: rgba(255, 183, 0, 0.3);">
+          <div class="slide-h3" style="color: var(--gold);"><i class="fas fa-bolt"></i> Batch GD</div>
+          <p class="slide-text" style="font-size: 0.82rem;">همه داده در هر گام — دقیق ولی کند</p>
+        </div>
+        <div class="card" style="background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3);">
+          <div class="slide-h3" style="color: var(--primary);"><i class="fas fa-random"></i> Stochastic GD</div>
+          <p class="slide-text" style="font-size: 0.82rem;">یک نمونه در هر گام — سریع ولی نویزی</p>
+        </div>
+      </div>
+
+      <div class="lecture-note">
+        <i class="fas fa-info-circle"></i>
+        <div class="lecture-note-content">
+          <strong>در عمل:</strong> از <b>Mini-Batch GD</b> استفاده می‌کنیم (مثلاً ۳۲ یا ۶۴ نمونه در هر گام). تعادل خوبی بین سرعت و پایداری.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۱۷ — Momentum -->
+  <div class="slide" data-slide="17" data-topic="7">
+    <div class="slide-inner">
+      <span class="slide-num">بهینه‌سازها</span>
+      <span class="method-badge badge-opt" style="display: inline-block; margin-right: 8px;">Momentum</span>
+      <h2 class="slide-h1">Momentum — تجمع گرادیان</h2>
+
+      <p class="slide-text">
+        Momentum گرادیان‌های قبلی را جمع می‌کند تا از local minimum و نوسان جلوگیری کند:
+      </p>
+
+      <div class="math-box gold-math" style="padding: 16px;">
+        <div style="font-size: 1rem;">
+          $$v_{n+1} = \beta v_n + \eta \nabla_\theta \mathcal{L}$$
+        </div>
+        <div style="font-size: 1rem; margin-top: 8px;">
+          $$\theta_{n+1} = \theta_n - v_{n+1}$$
+        </div>
+        <p class="math-note">$\beta \in [0.9، 0.99]$ — ضریب اصطکاک</p>
+      </div>
+
+      <div class="grid-3" style="margin-top: 14px;">
+        <div class="card" style="background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3); text-align: center; padding: 12px;">
+          <div class="slide-h3" style="justify-content: center; font-size: 0.82rem;">سریع‌تر</div>
+          <p class="slide-text" style="font-size: 0.72rem;">همگرایی سریع‌تر</p>
+        </div>
+        <div class="card" style="background: rgba(255, 183, 0, 0.06); border-color: rgba(255, 183, 0, 0.3); text-align: center; padding: 12px;">
+          <div class="slide-h3" style="justify-content: center; font-size: 0.82rem;">کمتر نوسان</div>
+          <p class="slide-text" style="font-size: 0.72rem;">پایدارتر</p>
+        </div>
+        <div class="card" style="background: rgba(168, 85, 247, 0.06); border-color: rgba(168, 85, 247, 0.3); text-align: center; padding: 12px;">
+          <div class="slide-h3" style="justify-content: center; font-size: 0.82rem;">عبور از local min</div>
+          <p class="slide-text" style="font-size: 0.72rem;">بهتر</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۱۸ — Adam -->
+  <div class="slide" data-slide="18" data-topic="7">
+    <div class="slide-inner">
+      <span class="slide-num">بهینه‌سازها</span>
+      <span class="method-badge badge-opt" style="display: inline-block; margin-right: 8px;">Adam</span>
+      <h2 class="slide-h1">Adam — استاندارد صنعتی</h2>
+
+      <img src="images/adam-algorithm.png" alt="Adam" class="img-box img-clickable" style="max-height: 180px;" onerror="this.style.display='none'" data-caption="الگوریتم Adam">
+
+      <p class="slide-text">
+        <b>Adam</b> (Adaptive Moment Estimation) ترکیبی از Momentum و RMSProp است. امروز <strong>استاندارد صنعتی</strong> برای آموزش شبکه‌های عصبی.
+      </p>
+
+      <div class="math-box gold-math" style="padding: 12px; font-size: 0.85rem;">
+        $$m_t = \beta_1 m_{t-1} + (1-\beta_1) g_t$$
+        $$v_t = \beta_2 v_{t-1} + (1-\beta_2) g_t^2$$
+      </div>
+
+      <div class="math-box purple-math" style="padding: 12px; font-size: 0.85rem;">
+        $$\hat{m}_t = \frac{m_t}{1 - \beta_1^t}, \quad \hat{v}_t = \frac{v_t}{1 - \beta_2^t}$$
+      </div>
+
+      <div class="math-box gold-math" style="padding: 12px; font-size: 0.9rem;">
+        $$\theta_{t+1} = \theta_t - \eta \frac{\hat{m}_t}{\sqrt{\hat{v}_t} + \epsilon}$$
+      </div>
+
+      <div class="lecture-note">
+        <i class="fas fa-star"></i>
+        <div class="lecture-note-content">
+          <strong>مزایا:</strong> نرخ یادگیری تطبیقی برای هر پارامتر، مقاوم به choice اولیه، سریع و پایدار. در PyTorch: <code style="background: rgba(0,0,0,0.4); padding: 2px 8px; border-radius: 5px;">torch.optim.Adam</code>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۱۹ — شبیه‌ساز بهینه‌ساز -->
+  <div class="slide" data-slide="19" data-topic="7">
+    <div class="slide-inner">
+      <span class="slide-num">شبیه‌ساز تعاملی</span>
+      <h2 class="slide-h1">مقایسه بهینه‌سازها</h2>
+
+      <div class="simulator">
+        <div class="sim-header">
+          <div class="sim-title"><i class="fas fa-chart-line"></i> SGD vs Momentum vs Adam</div>
+          <div class="sim-controls">
+            <div class="slider-group">
+              <label>نرخ یادگیری:</label>
+              <input type="range" id="optLR" min="0.01" max="0.5" value="0.1" step="0.01">
+              <span class="slider-value" id="optLRValue">۰.۱۰</span>
+            </div>
+          </div>
+        </div>
+        <div class="canvas-wrapper" style="height: 320px;"><canvas id="optCanvas"></canvas></div>
+        <div class="grid-3" style="margin-top: 12px;">
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 0.72rem; color: var(--text-dim);">SGD</div>
+            <div id="optSGD" style="font-size: 0.9rem; color: var(--gold); font-weight: 800; font-family: 'Courier New', monospace;">—</div>
+          </div>
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 0.72rem; color: var(--text-dim);">Momentum</div>
+            <div id="optMom" style="font-size: 0.9rem; color: var(--tertiary); font-weight: 800; font-family: 'Courier New', monospace;">—</div>
+          </div>
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 0.72rem; color: var(--text-dim);">Adam</div>
+            <div id="optAdam" style="font-size: 0.9rem; color: var(--primary); font-weight: 800; font-family: 'Courier New', monospace;">—</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۲۰ — کد NumPy -->
+  <div class="slide" data-slide="20" data-topic="8">
+    <div class="slide-inner">
+      <span class="slide-num">کد</span>
+      <h2 class="slide-h1">پیاده‌سازی Backprop با NumPy</h2>
+
+      <div class="code-tabs">
+        <button class="code-tab active" data-code="numpy-bp"><i class="fas fa-square"></i> NumPy (از صفر)</button>
+        <button class="code-tab" data-code="pytorch-bp"><i class="fas fa-fire"></i> PyTorch</button>
+      </div>
+
+      <div class="code-content active" id="code-numpy-bp">
+<pre><span class="cm"># ============================================</span>
+<span class="cm"># Neural Network with Backprop from scratch</span>
+<span class="cm"># ============================================</span>
+<span class="kw">import</span> numpy <span class="kw">as</span> np
+
+<span class="cm"># --- داده مصنوعی ---</span>
+np.random.<span class="fn">seed</span>(<span class="num">42</span>)
+N = <span class="num">500</span>
+
+<span class="cm"># Features: [L, b, h, E, g] — پارامترهای نانو انبرک</span>
+L = np.random.uniform(<span class="num">30e-6</span>, <span class="num">100e-6</span>, N)
+b = np.random.uniform(<span class="num">3e-6</span>, <span class="num">10e-6</span>, N)
+h = np.random.uniform(<span class="num">0.3e-6</span>, <span class="num">1.5e-6</span>, N)
+E = np.random.uniform(<span class="num">100e9</span>, <span class="num">200e9</span>, N)
+g = np.random.uniform(<span class="num">100e-9</span>, <span class="num">400e-9</span>, N)
+
+<span class="cm"># Label: V_pull-in</span>
+eps0 = <span class="num">8.854e-12</span>
+I = b * h**<span class="num">3</span> / <span class="num">12</span>
+k_eq = <span class="num">8</span> * E * I / L**<span class="num">4</span>
+V_pullin = np.sqrt(<span class="num">8</span> * k_eq * g**<span class="num">3</span> / (<span class="num">27</span> * eps0 * b * L))
+
+<span class="cm"># Normalization</span>
+X = np.stack([L, b, h, E, g], axis=<span class="num">1</span>)
+X_mean, X_std = X.mean(<span class="num">0</span>), X.std(<span class="num">0</span>)
+X_norm = (X - X_mean) / X_std
+y_mean, y_std = V_pullin.mean(), V_pullin.std()
+y_norm = ((V_pullin - y_mean) / y_std).reshape(-<span class="num">1</span>, <span class="num">1</span>)
+
+<span class="cm"># --- معماری ---</span>
+n_in = <span class="num">5</span>
+n_h1 = <span class="num">32</span>
+n_h2 = <span class="num">16</span>
+n_out = <span class="num">1</span>
+
+<span class="kw">def</span> <span class="fn">init_params</span>():
+    <span class="kw">return</span> {
+        <span class="str">'W1'</span>: np.random.randn(n_in, n_h1) * np.sqrt(<span class="num">2</span>/n_in),
+        <span class="str">'b1'</span>: np.zeros((<span class="num">1</span>, n_h1)),
+        <span class="str">'W2'</span>: np.random.randn(n_h1, n_h2) * np.sqrt(<span class="num">2</span>/n_h1),
+        <span class="str">'b2'</span>: np.zeros((<span class="num">1</span>, n_h2)),
+        <span class="str">'W3'</span>: np.random.randn(n_h2, n_out) * np.sqrt(<span class="num">2</span>/n_h2),
+        <span class="str">'b3'</span>: np.zeros((<span class="num">1</span>, n_out)),
+    }
+
+<span class="kw">def</span> <span class="fn">relu</span>(x):
+    <span class="kw">return</span> np.maximum(<span class="num">0</span>, x)
+
+<span class="cm"># --- Forward pass ---</span>
+<span class="kw">def</span> <span class="fn">forward</span>(X, params):
+    z1 = X @ params[<span class="str">'W1'</span>] + params[<span class="str">'b1'</span>]
+    a1 = <span class="fn">relu</span>(z1)
+    z2 = a1 @ params[<span class="str">'W2'</span>] + params[<span class="str">'b2'</span>]
+    a2 = <span class="fn">relu</span>(z2)
+    z3 = a2 @ params[<span class="str">'W3'</span>] + params[<span class="str">'b3'</span>]
+    <span class="kw">return</span> z3, (X, z1, a1, z2, a2, z3)
+
+<span class="cm"># --- Backward pass ---</span>
+<span class="kw">def</span> <span class="fn">backward</span>(y_true, y_pred, cache, params):
+    X, z1, a1, z2, a2, z3 = cache
+    N = X.shape[<span class="num">0</span>]
+
+    <span class="cm"># گرادیان Loss</span>
+    dz3 = <span class="num">2</span> * (y_pred - y_true) / N
+    dW3 = a2.T @ dz3
+    db3 = dz3.sum(<span class="num">0</span>, keepdims=<span class="kw">True</span>)
+
+    da2 = dz3 @ params[<span class="str">'W3'</span>].T
+    dz2 = da2 * (z2 > <span class="num">0</span>)
+    dW2 = a1.T @ dz2
+    db2 = dz2.sum(<span class="num">0</span>, keepdims=<span class="kw">True</span>)
+
+    da1 = dz2 @ params[<span class="str">'W2'</span>].T
+    dz1 = da1 * (z1 > <span class="num">0</span>)
+    dW1 = X.T @ dz1
+    db1 = dz1.sum(<span class="num">0</span>, keepdims=<span class="kw">True</span>)
+
+    <span class="kw">return</span> {<span class="str">'W1'</span>: dW1, <span class="str">'b1'</span>: db1, <span class="str">'W2'</span>: dW2, <span class="str">'b2'</span>: db2, 
+            <span class="str">'W3'</span>: dW3, <span class="str">'b3'</span>: db3}
+
+<span class="cm"># --- آموزش ---</span>
+params = <span class="fn">init_params</span>()
+lr = <span class="num">0.01</span>
+epochs = <span class="num">300</span>
+
+<span class="kw">for</span> epoch <span class="kw">in</span> <span class="fn">range</span>(epochs):
+    y_pred, cache = <span class="fn">forward</span>(X_norm, params)
+    loss = np.mean((y_norm - y_pred)**<span class="num">2</span>)
+    grads = <span class="fn">backward</span>(y_norm, y_pred, cache, params)
+
+    <span class="kw">for</span> k <span class="kw">in</span> params:
+        params[k] -= lr * grads[k]
+
+    <span class="kw">if</span> epoch % <span class="num">50</span> == <span class="num">0</span>:
+        <span class="fn">print</span>(<span class="str">f'Epoch {epoch}: Loss = {loss:.6f}'</span>)
+
+<span class="fn">print</span>(<span class="str">f'Final Loss: {loss:.6f}'</span>)</pre>
+      </div>
+
+      <div class="code-content" id="code-pytorch-bp">
+<pre><span class="cm"># ============================================</span>
+<span class="cm"># Neural Network with PyTorch + Adam</span>
+<span class="cm"># ============================================</span>
+<span class="kw">import</span> torch
+<span class="kw">import</span> torch.nn <span class="kw">as</span> nn
+<span class="kw">import</span> torch.optim <span class="kw">as</span> optim
+<span class="kw">import</span> numpy <span class="kw">as</span> np
+
+<span class="cm"># --- داده مصنوعی ---</span>
+np.random.<span class="fn">seed</span>(<span class="num">42</span>)
+N = <span class="num">500</span>
+L = np.random.uniform(<span class="num">30e-6</span>, <span class="num">100e-6</span>, N)
+b = np.random.uniform(<span class="num">3e-6</span>, <span class="num">10e-6</span>, N)
+h = np.random.uniform(<span class="num">0.3e-6</span>, <span class="num">1.5e-6</span>, N)
+E = np.random.uniform(<span class="num">100e9</span>, <span class="num">200e9</span>, N)
+g = np.random.uniform(<span class="num">100e-9</span>, <span class="num">400e-9</span>, N)
+
+eps0 = <span class="num">8.854e-12</span>
+I = b * h**<span class="num">3</span> / <span class="num">12</span>
+k_eq = <span class="num">8</span> * E * I / L**<span class="num">4</span>
+V_pullin = np.sqrt(<span class="num">8</span> * k_eq * g**<span class="num">3</span> / (<span class="num">27</span> * eps0 * b * L))
+
+X = np.stack([L, b, h, E, g], axis=<span class="num">1</span>).astype(np.float32)
+y = V_pullin.astype(np.float32).reshape(-<span class="num">1</span>, <span class="num">1</span>)
+
+X_mean, X_std = X.mean(<span class="num">0</span>), X.std(<span class="num">0</span>)
+y_mean, y_std = y.mean(), y.std()
+X = (X - X_mean) / X_std
+y = (y - y_mean) / y_std
+
+X_t = torch.<span class="fn">tensor</span>(X)
+y_t = torch.<span class="fn">tensor</span>(y)
+
+<span class="cm"># --- شبکه ---</span>
+<span class="kw">class</span> <span class="cls">BackpropNet</span>(nn.Module):
+    <span class="kw">def</span> <span class="fn">__init__</span>(self):
+        <span class="fn">super</span>().<span class="fn">__init__</span>()
+        self.net = nn.<span class="fn">Sequential</span>(
+            nn.<span class="fn">Linear</span>(<span class="num">5</span>, <span class="num">32</span>),
+            nn.<span class="fn">ReLU</span>(),
+            nn.<span class="fn">Linear</span>(<span class="num">32</span>, <span class="num">16</span>),
+            nn.<span class="fn">ReLU</span>(),
+            nn.<span class="fn">Linear</span>(<span class="num">16</span>, <span class="num">1</span>)
+        )
+    <span class="kw">def</span> <span class="fn">forward</span>(self, x):
+        <span class="kw">return</span> self.<span class="fn">net</span>(x)
+
+model = <span class="fn">BackpropNet</span>()
+loss_fn = nn.<span class="fn">MSELoss</span>()
+optimizer = optim.<span class="fn">Adam</span>(model.<span class="fn">parameters</span>(), lr=<span class="num">1e-3</span>)
+
+<span class="cm"># --- آموزش ---</span>
+epochs = <span class="num">500</span>
+<span class="kw">for</span> epoch <span class="kw">in</span> <span class="fn">range</span>(epochs):
+    model.<span class="fn">train</span>()
+    y_pred = <span class="fn">model</span>(X_t)
+    loss = <span class="fn">loss_fn</span>(y_pred, y_t)
+    
+    optimizer.<span class="fn">zero_grad</span>()      <span class="cm"># پاک کردن گرادیان‌های قبلی</span>
+    loss.<span class="fn">backward</span>()             <span class="cm"># محاسبه گرادیان (Backprop)</span>
+    optimizer.<span class="fn">step</span>()             <span class="cm"># به‌روزرسانی پارامترها</span>
+
+    <span class="kw">if</span> epoch % <span class="num">50</span> == <span class="num">0</span>:
+        <span class="fn">print</span>(<span class="str">f'Epoch {epoch}: Loss = {loss.item():.6f}'</span>)
+
+<span class="fn">print</span>(<span class="str">f'Final Loss: {loss.item():.6f}'</span>)</pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۲۱ — کد PyTorch (تکمیلی) -->
+  <div class="slide" data-slide="21" data-topic="8">
+    <div class="slide-inner">
+      <span class="slide-num">کد</span>
+      <h2 class="slide-h1">آموزش کامل با PyTorch</h2>
+
+      <p class="slide-text">
+        حلقه آموزش در PyTorch تنها <strong>سه خط کد</strong> است:
+      </p>
+
+      <div class="code-tabs">
+        <button class="code-tab active" data-code="pytorch-full"><i class="fas fa-fire"></i> PyTorch — حلقه آموزش</button>
+      </div>
+
+      <div class="code-content active" id="code-pytorch-full">
+<pre><span class="cm"># ============================================</span>
+<span class="cm"># Complete PyTorch Training Loop</span>
+<span class="cm"># ============================================</span>
+<span class="kw">import</span> torch
+<span class="kw">import</span> torch.nn <span class="kw">as</span> nn
+<span class="kw">import</span> torch.optim <span class="kw">as</span> optim
+<span class="kw">from</span> torch.utils.data <span class="kw">import</span> DataLoader, TensorDataset
+
+<span class="cm"># --- داده و شبکه (از قبل) ---</span>
+<span class="cm"># X_t، y_t آماده هستند</span>
+dataset = <span class="fn">TensorDataset</span>(X_t, y_t)
+loader = <span class="fn">DataLoader</span>(dataset, batch_size=<span class="num">32</span>, shuffle=<span class="kw">True</span>)
+
+model = <span class="fn">BackpropNet</span>()
+loss_fn = nn.<span class="fn">MSELoss</span>()
+optimizer = optim.<span class="fn">Adam</span>(model.<span class="fn">parameters</span>(), lr=<span class="num">1e-3</span>)
+
+<span class="cm"># --- آموزش با Mini-Batch ---</span>
+epochs = <span class="num">200</span>
+train_losses = []
+
+<span class="kw">for</span> epoch <span class="kw">in</span> <span class="fn">range</span>(epochs):
+    model.<span class="fn">train</span>()
+    epoch_loss = <span class="num">0</span>
+    <span class="kw">for</span> X_batch, y_batch <span class="kw">in</span> loader:
+        optimizer.<span class="fn">zero_grad</span>()
+        y_pred = <span class="fn">model</span>(X_batch)
+        loss = <span class="fn">loss_fn</span>(y_pred, y_batch)
+        loss.<span class="fn">backward</span>()
+        optimizer.<span class="fn">step</span>()
+        epoch_loss += loss.<span class="fn">item</span>()
+    
+    avg_loss = epoch_loss / <span class="fn">len</span>(loader)
+    train_losses.<span class="fn">append</span>(avg_loss)
+    <span class="kw">if</span> epoch % <span class="num">20</span> == <span class="num">0</span>:
+        <span class="fn">print</span>(<span class="str">f'Epoch {epoch}: Loss = {avg_loss:.6f}'</span>)
+
+<span class="cm"># --- ارزیابی ---</span>
+model.<span class="fn">eval</span>()
+<span class="kw">with</span> torch.<span class="fn">no_grad</span>():
+    y_pred = <span class="fn">model</span>(X_t)
+    test_loss = <span class="fn">loss_fn</span>(y_pred, y_t)
+    <span class="fn">print</span>(<span class="str">f'\nTest Loss: {test_loss.item():.6f}'</span>)
+
+<span class="cm"># --- ذخیره مدل ---</span>
+torch.<span class="fn">save</span>(model.<span class="fn">state_dict</span>(), <span class="str">'pullin_model.pth'</span>)
+<span class="fn">print</span>(<span class="str">'Model saved.'</span>)
+
+<span class="cm"># --- بارگذاری مدل ---</span>
+<span class="cm"># model = BackpropNet()</span>
+<span class="cm"># model.load_state_dict(torch.load('pullin_model.pth'))</span>
+<span class="cm"># model.eval()</span></pre>
+      </div>
+
+      <div class="lecture-note" style="margin-top: 14px;">
+        <i class="fas fa-star"></i>
+        <div class="lecture-note-content">
+          <strong>سه خط طلایی PyTorch:</strong>
+          <br>1️⃣ <code style="background: rgba(0,0,0,0.4); padding: 2px 8px; border-radius: 5px;">optimizer.zero_grad()</code> — پاک کردن گرادیان‌های قبلی
+          <br>2️⃣ <code style="background: rgba(0,0,0,0.4); padding: 2px 8px; border-radius: 5px;">loss.backward()</code> — Backpropagation
+          <br>3️⃣ <code style="background: rgba(0,0,0,0.4); padding: 2px 8px; border-radius: 5px;">optimizer.step()</code> — به‌روزرسانی پارامترها
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۲۲ — تمرین‌ها -->
+  <div class="slide" data-slide="22" data-topic="9">
+    <div class="slide-inner">
+      <span class="slide-num">تمرین</span>
+      <h2 class="slide-h1">تمرین‌های جلسه ۱۸</h2>
+
+      <div class="exercise-block ex-yellow">
+        <div class="ex-header"><div class="ex-num">الف</div><div><div class="ex-title">سؤالات مفهومی</div></div></div>
+        <ol class="ex-list">
+          <li>تفاوت <b>Forward Pass</b> و <b>Backward Pass</b> چیست؟</li>
+          <li>چرا <b>Backpropagation</b> بسیار کارآمد است؟</li>
+          <li>مشکل <b>Gradient Vanishing</b> چه پیامدهایی دارد؟</li>
+          <li>چرا <b>Adam</b> استاندارد صنعتی است؟</li>
+        </ol>
+      </div>
+
+      <div class="exercise-block ex-green">
+        <div class="ex-header"><div class="ex-num">ب</div><div><div class="ex-title">تمرین‌های عملی</div></div></div>
+        <ol class="ex-list">
+          <li>یک شبکه با ۱ لایه پنهان (۸ نرون) بسازید و برای پیش‌بینی Pull-in آموزش دهید.</li>
+          <li>شبکه را با SGD، Momentum و Adam آموزش دهید و مقایسه کنید.</li>
+          <li>اثر عمق شبکه (۱، ۲، ۳ لایه) را بر زمان آموزش بررسی کنید.</li>
+          <li>عملکرد ReLU و Tanh را در شبکه‌های عمیق مقایسه کنید.</li>
+        </ol>
+      </div>
+
+      <div class="exercise-block ex-purple">
+        <div class="ex-header"><div class="ex-num">ج</div><div><div class="ex-title">تمرین‌های نوشتاری</div></div></div>
+        <ol class="ex-list">
+          <li>با <b>Chain Rule</b> اثبات کنید که $\delta^{(l)} = (W^{(l+1)})^T \delta^{(l+1)} \odot \sigma'(z^{(l)})$.</li>
+          <li>گرادیان Loss نسبت به $W^{(L)}$ را برای MSE استخراج کنید.</li>
+          <li>الگوریتم Adam را از فرمول تا پیاده‌سازی توضیح دهید.</li>
+        </ol>
+      </div>
+
+      <div class="exercise-block ex-red">
+        <div class="ex-header"><div class="ex-num">★</div><div><div class="ex-title">چالش خلاقانه</div></div></div>
+        <ol class="ex-list">
+          <li>یک شبکه با <b>Skip Connection</b> (ResNet) بسازید و با شبکه معمولی مقایسه کنید.</li>
+          <li>مشکل گرادیان ناپدید را در یک شبکه ۱۰ لایه شبیه‌سازی کنید و راه‌حل ارائه دهید.</li>
+          <li>PINN ساده برای حل PDE گرما با Backprop بنویسید.</li>
+        </ol>
+      </div>
+
+      <div class="email-banner">
+        <p><i class="fas fa-envelope" style="color: var(--primary);"></i> ارسال تمرین‌ها:</p>
+        <code>m.goharimanesh@gmail.com</code>
+        <p style="margin-top: 8px; font-size: 0.78rem;">Subject الزامی:</p>
+        <code>[Advanced Engineering Mathematics] HW18 - نام و نام خانوادگی - شماره دانشجویی</code>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۲۳ — نقشه راه پژوهش -->
+  <div class="slide" data-slide="23" data-topic="9">
+    <div class="slide-inner">
+      <span class="slide-num">نقشه راه</span>
+      <h2 class="slide-h1">کاربرد Backprop در پژوهش</h2>
+
+      <div class="grid-2">
+        <div class="card" style="background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3);">
+          <div class="slide-h3" style="color: var(--primary);"><i class="fas fa-atom"></i> کاربرد در NEMS</div>
+          <ul style="list-style: none; padding: 0; font-size: 0.82rem; color: var(--text-dim); line-height: 2;">
+            <li>🔹 پیش‌بینی Pull-in با شبکه عمیق</li>
+            <li>🔹 طراحی معکوس نانو انبرک</li>
+            <li>🔹 تخمین پارامتر از داده</li>
+            <li>🔹 سنسورهای هوشمند</li>
+          </ul>
+        </div>
+        <div class="card" style="background: rgba(255, 183, 0, 0.06); border-color: rgba(255, 183, 0, 0.3);">
+          <div class="slide-h3" style="color: var(--gold);"><i class="fas fa-brain"></i> PINN — آینده</div>
+          <ul style="list-style: none; padding: 0; font-size: 0.82rem; color: var(--text-dim); line-height: 2;">
+            <li>🔹 حل PDE با شبکه عصبی</li>
+            <li>🔹 ترکیب فیزیک + داده</li>
+            <li>🔹 Inverse problems</li>
+            <li>🔹 Real-time simulation</li>
+          </ul>
+        </div>
+        <div class="card" style="background: rgba(168, 85, 247, 0.06); border-color: rgba(168, 85, 247, 0.3);">
+          <div class="slide-h3" style="color: var(--tertiary);"><i class="fas fa-robot"></i> رباتیک</div>
+          <ul style="list-style: none; padding: 0; font-size: 0.82rem; color: var(--text-dim); line-height: 2;">
+            <li>🔹 کنترل تطبیقی</li>
+            <li>🔹 بینایی ماشین</li>
+            <li>🔹 Reinforcement Learning</li>
+            <li>🔹 همکاری ربات و انسان</li>
+          </ul>
+        </div>
+        <div class="card" style="background: rgba(236, 72, 153, 0.06); border-color: rgba(236, 72, 153, 0.3);">
+          <div class="slide-h3" style="color: var(--pink);"><i class="fas fa-file-alt"></i> جهت‌های مقاله</div>
+          <ul style="list-style: none; padding: 0; font-size: 0.82rem; color: var(--text-dim); line-height: 2;">
+            <li>🔹 PINN برای نانو انبرک</li>
+            <li>🔹 DeepONet برای MEMS</li>
+            <li>🔹 Hybrid PINN-FEM</li>
+            <li>🔹 Inverse PINN</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="lecture-note" style="margin-top: 14px;">
+        <i class="fas fa-bullseye"></i>
+        <div class="lecture-note-content">
+          <strong>پیشنهاد استاد:</strong> تسلط بر Backprop و پیاده‌سازی NumPy آن، پایه‌ی درک عمیق PINN است. هفته آینده (جلسه ۱۹) با PINN، این مفاهیم را در حل PDE به‌کار می‌بریم.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۲۴ — خداحافظی -->
+  <div class="slide" data-slide="24" data-topic="10">
+    <div class="slide-inner title-slide">
+      <div style="font-size: 3.5rem; color: var(--gold); margin-bottom: 18px;">
+        <i class="fas fa-check-circle"></i>
+      </div>
+      <h2 class="slide-h1">پایان جلسه ۱۸ — Backprop</h2>
+      <p class="slide-text" style="font-size: 1rem;">
+        امروز قلب یادگیری عمیق را شناختید — حالا آماده‌ی PINN هستید! 🌟
+      </p>
+
+      <div class="grid-4" style="margin-top: 20px; max-width: 900px; margin-left: auto; margin-right: auto;">
+        <div class="card" style="text-align: center; padding: 12px;">
+          <i class="fas fa-arrow-right" style="font-size: 1.4rem; color: var(--primary); display: block; margin-bottom: 6px;"></i>
+          <div style="font-size: 0.82rem; font-weight: 700; color: var(--primary);">Forward</div>
+        </div>
+        <div class="card" style="text-align: center; padding: 12px;">
+          <i class="fas fa-chart-line" style="font-size: 1.4rem; color: var(--gold); display: block; margin-bottom: 6px;"></i>
+          <div style="font-size: 0.82rem; font-weight: 700; color: var(--gold);">Loss</div>
+        </div>
+        <div class="card" style="text-align: center; padding: 12px;">
+          <i class="fas fa-arrow-left" style="font-size: 1.4rem; color: var(--tertiary); display: block; margin-bottom: 6px;"></i>
+          <div style="font-size: 0.82rem; font-weight: 700; color: var(--tertiary);">Backward</div>
+        </div>
+        <div class="card" style="text-align: center; padding: 12px;">
+          <i class="fas fa-sync" style="font-size: 1.4rem; color: var(--pink); display: block; margin-bottom: 6px;"></i>
+          <div style="font-size: 0.82rem; font-weight: 700; color: var(--pink);">Update</div>
+        </div>
+      </div>
+
+      <div class="math-box gold-math" style="margin-top: 22px; background: rgba(255, 183, 0, 0.08); padding: 22px; max-width: 700px; margin-left: auto; margin-right: auto;">
+        <div style="font-size: 1.05rem;">
+          $$\delta^{(l)} = (W^{(l+1)})^T \delta^{(l+1)} \odot \sigma'(z^{(l)})$$
+        </div>
+        <p class="math-note">قلب آموزش شبکه — Backpropagation</p>
+      </div>
+
+      <div class="card" style="margin-top: 20px; max-width: 700px; margin-left: auto; margin-right: auto; background: rgba(236, 72, 153, 0.06); border-color: rgba(236, 72, 153, 0.3);">
+        <div class="slide-h3" style="justify-content: center; color: var(--pink);"><i class="fas fa-arrow-left"></i> جلسه ۱۹</div>
+        <p class="slide-text" style="font-size: 0.88rem;">
+          <strong style="color: var(--primary);">PINN — فرمول‌بندی و Loss فیزیکی</strong>
+        </p>
+        <ul style="list-style: none; padding: 0; font-size: 0.82rem; color: var(--text-dim); line-height: 2; margin-top: 8px;">
+          <li>🔹 ایده Physics-Informed Neural Networks</li>
+          <li>🔹 Loss فیزیکی (PDE Residual)</li>
+          <li>🔹 حل PDE گرما با PINN</li>
+          <li>🔹 مسئله مستقیم و معکوس</li>
+        </ul>
+      </div>
+
+      <p class="instructor-line" style="margin-top: 22px;">دکتر مسعود گوهری منش</p>
+      <p class="instructor-title-line">دانشیار گروه مهندسی مکانیک — دانشگاه تربت حیدریه</p>
+
+      <p style="font-size: 0.95rem; color: var(--gold); margin-top: 24px; font-weight: 800;">
+        🇮🇷 با افتخار برای دانشجویان مکاترونیک 🇮🇷
+      </p>
+    </div>
+  </div>
+
+</div>
+
+<div class="bottom-nav">
+  <button class="nav-btn" id="prevBtn" disabled><i class="fas fa-arrow-right"></i><span>قبلی</span></button>
+  <div class="dots-nav" id="dotsNav"></div>
+  <div class="slide-counter"><span id="currentSlide">۱</span> / ۲۴</div>
+  <button class="nav-btn" id="nextBtn"><span>بعدی</span><i class="fas fa-arrow-left"></i></button>
+</div>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- Lightbox -->
+<div class="lightbox" id="lightbox">
+  <button class="lightbox-close" id="lightboxClose"><i class="fas fa-times"></i></button>
+  <img src="" alt="" class="lightbox-img" id="lightboxImg">
+  <div class="lightbox-caption" id="lightboxCaption"></div>
+</div>
+
+<!-- Modal Backpropagation -->
+<div class="modal-overlay" id="conceptModal">
+  <div class="modal-box">
+    <button class="modal-close" id="conceptClose"><i class="fas fa-times"></i></button>
+    <h2 class="modal-title"><i class="fas fa-book-open"></i> Backpropagation و پیوند با ابن سینا</h2>
+
+    <div class="modal-section">
+      <div class="modal-section-title"><i class="fas fa-history"></i> ریشه‌شناسی Backpropagation</div>
+      <p>
+        <b>Backpropagation</b> (پس‌انتشار) از دو کلمه ساخته شده: <b>Back</b> (به عقب) + <b>Propagation</b> (انتشار). این نام، به‌طور دقیق الگوریتم را توصیف می‌کند: خطا از خروجی به ورودی منتشر می‌شود.
+      </p>
+      <p>
+        این ایده در سال ۱۹۷۰ توسط <b>Seppo Linnainmaa</b> در رساله دکتری‌اش مطرح شد و در سال ۱۹۸۶ توسط <b>Rumelhart، Hinton و Williams</b> در مقاله معروفشان در مجله <i>Nature</i> به‌طور کامل معرفی شد.
+      </p>
+    </div>
+
+    <div class="modal-section">
+      <div class="modal-section-title"><i class="fas fa-brain"></i> پیوند با ابن سینا</div>
+      <p>
+        <b>ابن سینا</b> در کتاب <b>«الاشارات و التنبیهات»</b> و <b>«الشفاء»</b> مفهوم <strong>زنجیره‌ی استنتاج</strong> را به‌طور سیستماتیک تدوین کرد:
+      </p>
+      <ul>
+        <li><strong>قیاس پیش‌رو (Forward):</strong> از مقدمات به نتیجه — مشابه Forward Pass</li>
+        <li><strong>قیاس معکوس (Backward):</strong> از نتیجه به مقدمات — مشابه Backpropagation</li>
+        <li><strong>زنجیره‌ی علی:</strong> هر نتیجه، اثر علل خود را نشان می‌دهد</li>
+        <li><strong>الگوریتم استنتاج:</strong> روش گام‌به‌گام برای رسیدن به نتیجه</li>
+      </ul>
+    </div>
+
+    <div class="modal-section">
+      <div class="modal-section-title"><i class="fas fa-users"></i> تقارب معنایی علم و فلسفه</div>
+      <p>
+        همان‌طور که ابن سینا در <strong>منطق</strong> نشان داد که برای فهم یک نتیجه، باید زنجیره‌ی علل آن را دنبال کرد، در <b>Backpropagation</b> نیز برای آموزش یک شبکه، باید خطا را از خروجی به ورودی دنبال کنیم تا بفهمیم هر پارامتر چقدر در خطا نقش داشته است.
+      </p>
+      <p>
+        این <strong>تقارب معنایی</strong> بین منطق قرن ۱۱ میلادی و یادگیری عمیق قرن ۲۱، نشان می‌دهد که <strong>تفکر انسانی، ریشه‌های مشترکی دارد</strong> — همان‌طور که ابن سینا در پی فهم جهان بود، شبکه‌های عصبی امروز نیز در پی کشف الگوهای پنهان هستند.
+      </p>
+    </div>
+
+    <div class="modal-section">
+      <div class="modal-section-title"><i class="fas fa-lightbulb"></i> چرا این تقارب مهم است؟</div>
+      <p>
+        این پیوند نشان می‌دهد که <strong>علم، جزیره‌ای جدا نیست</strong> — بلکه بخشی از یک <strong>سنت فکری انسانی</strong> است که هزاران سال ادامه داشته. از منطق ارسطو و ابن سینا تا شبکه‌های عصبی امروز، همه در پی یک چیز هستند: <strong>فهم الگوها و روابط در جهان</strong>.
+      </p>
+    </div>
+
+    <div class="lecture-note" style="margin-top: 16px;">
+      <i class="fas fa-star"></i>
+      <div class="lecture-note-content">
+        <strong>درس امروز:</strong> وقتی Backpropagation را می‌نویسید، به یاد بیاورید که این ایده، ریشه در سنت هزار ساله‌ی <strong>منطق و استنتاج</strong> دارد. علم، سفر پیوسته‌ی انسان برای فهم است.
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ═══ ناوبری ═══ */
+const slides = document.querySelectorAll('.slide');
+const totalSlides = slides.length;
+let currentSlide = 0;
+const topicPills = document.querySelectorAll('.topic-pill');
+
+const dotsNav = document.getElementById('dotsNav');
+for (let i = 0; i < totalSlides; i++) {
+  const dot = document.createElement('button');
+  dot.className = 'dot-nav' + (i === 0 ? ' active' : '');
+  dot.addEventListener('click', () => goToSlide(i));
+  dotsNav.appendChild(dot);
+}
+
+function goToSlide(n) {
+  if (n < 0 || n >= totalSlides) return;
+  slides.forEach((s, i) => {
+    s.classList.remove('active', 'prev');
+    if (i < n) s.classList.add('prev');
+    if (i === n) s.classList.add('active');
+  });
+  currentSlide = n;
+  updateNav();
+  playTransition();
+  setTimeout(() => {
+    initVisibleCharts();
+    if (window.MathJax && window.MathJax.typesetPromise) window.MathJax.typesetPromise();
+  }, 100);
+}
+
+function updateNav() {
+  document.querySelectorAll('.dot-nav').forEach((d, i) => d.classList.toggle('active', i === currentSlide));
+  document.getElementById('currentSlide').textContent = toFa(currentSlide + 1);
+  document.getElementById('prevBtn').disabled = currentSlide === 0;
+  document.getElementById('nextBtn').disabled = currentSlide === totalSlides - 1;
+  document.getElementById('progressFill').style.width = ((currentSlide + 1) / totalSlides * 100) + '%';
+  const currentTopic = slides[currentSlide].dataset.topic;
+  topicPills.forEach(pill => {
+    const t = parseInt(pill.dataset.topic);
+    const ct = parseInt(currentTopic);
+    pill.classList.toggle('active', t === ct);
+    pill.classList.toggle('done', t < ct);
+    if (t === ct) pill.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+  });
+}
+
+document.getElementById('prevBtn').addEventListener('click', () => goToSlide(currentSlide - 1));
+document.getElementById('nextBtn').addEventListener('click', () => goToSlide(currentSlide + 1));
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowLeft') { e.preventDefault(); goToSlide(currentSlide + 1); }
+  else if (e.key === 'ArrowRight') { e.preventDefault(); goToSlide(currentSlide - 1); }
+  else if (e.key === ' ') { e.preventDefault(); goToSlide(currentSlide + 1); }
+  else if (e.key === 'Home') { e.preventDefault(); goToSlide(0); }
+  else if (e.key === 'End') { e.preventDefault(); goToSlide(totalSlides - 1); }
+  else if (e.key === 'Escape') {
+    if (document.fullscreenElement) document.exitFullscreen();
+    closeLightbox();
+    closeConceptModal();
+    printMenu.classList.remove('show');
+  }
+});
+
+let touchStartX = 0, touchStartY = 0;
+document.addEventListener('touchstart', e => {
+  touchStartX = e.changedTouches[0].screenX;
+  touchStartY = e.changedTouches[0].screenY;
+}, { passive: true });
+document.addEventListener('touchend', e => {
+  const dx = e.changedTouches[0].screenX - touchStartX;
+  const dy = e.changedTouches[0].screenY - touchStartY;
+  if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy)) {
+    if (dx < 0) goToSlide(currentSlide + 1);
+    else goToSlide(currentSlide - 1);
+  }
+}, { passive: true });
+
+/* ═══ Lightbox ═══ */
+const lightbox = document.getElementById('lightbox');
+const lightboxImg = document.getElementById('lightboxImg');
+const lightboxCaption = document.getElementById('lightboxCaption');
+
+document.querySelectorAll('.img-clickable').forEach(img => {
+  img.addEventListener('click', e => {
+    e.stopPropagation();
+    const src = img.getAttribute('src');
+    const caption = img.getAttribute('data-caption') || img.getAttribute('alt') || '';
+    if (src) {
+      lightboxImg.src = src;
+      lightboxCaption.textContent = caption;
+      lightbox.classList.add('active');
+    }
+  });
+});
+
+document.getElementById('lightboxClose').addEventListener('click', closeLightbox);
+lightbox.addEventListener('click', e => {
+  if (e.target === lightbox) closeLightbox();
+});
+
+function closeLightbox() { lightbox.classList.remove('active'); }
+
+/* ═══ Modal ═══ */
+const conceptModal = document.getElementById('conceptModal');
+document.querySelectorAll('[data-concept]').forEach(el => {
+  el.addEventListener('click', e => {
+    e.stopPropagation();
+    conceptModal.classList.add('active');
+  });
+});
+document.getElementById('conceptClose').addEventListener('click', closeConceptModal);
+conceptModal.addEventListener('click', e => {
+  if (e.target === conceptModal) closeConceptModal();
+});
+function closeConceptModal() { conceptModal.classList.remove('active'); }
+
+/* ═══ Print Menu ═══ */
+const printToggle = document.getElementById('printToggle');
+const printMenu = document.getElementById('printMenu');
+
+printToggle.addEventListener('click', e => {
+  e.stopPropagation();
+  printMenu.classList.toggle('show');
+});
+
+document.addEventListener('click', e => {
+  if (!printMenu.contains(e.target) && e.target !== printToggle) {
+    printMenu.classList.remove('show');
+  }
+});
+
+document.getElementById('printCurrentBtn').addEventListener('click', () => {
+  printMenu.classList.remove('show');
+  slides.forEach(s => s.classList.remove('print-visible'));
+  slides[currentSlide].classList.add('print-visible');
+  showToast('آماده‌سازی چاپ این صفحه...');
+  setTimeout(() => {
+    window.print();
+    setTimeout(() => slides.forEach(s => s.classList.remove('print-visible')), 500);
+  }, 300);
+});
+
+document.getElementById('printAllBtn').addEventListener('click', () => {
+  printMenu.classList.remove('show');
+  slides.forEach(s => s.classList.add('print-visible'));
+  showToast('آماده‌سازی چاپ همه صفحات...');
+  setTimeout(() => {
+    window.print();
+    setTimeout(() => slides.forEach(s => s.classList.remove('print-visible')), 500);
+  }, 300);
+});
+
+/* ═══ Audio ═══ */
+let audioCtx = null, soundEnabled = true;
+function initAudio() { if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
+function playTransition() {
+  if (!soundEnabled) return;
+  initAudio();
+  [440, 554.37].forEach((freq, i) => {
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.connect(gain); gain.connect(audioCtx.destination);
+    osc.frequency.value = freq; osc.type = 'sine';
+    const t = audioCtx.currentTime + i * 0.06;
+    gain.gain.setValueAtTime(0.04, t);
+    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.18);
+    osc.start(t); osc.stop(t + 0.22);
+  });
+}
+document.getElementById('soundToggle').addEventListener('click', function() {
+  soundEnabled = !soundEnabled;
+  this.classList.toggle('active', soundEnabled);
+  this.innerHTML = soundEnabled ? '<i class="fas fa-volume-up"></i>' : '<i class="fas fa-volume-mute"></i>';
+  showToast(soundEnabled ? 'صدا فعال' : 'صدا غیرفعال');
+});
+document.getElementById('fullscreenToggle').addEventListener('click', function() {
+  if (!document.fullscreenElement) { document.documentElement.requestFullscreen(); this.innerHTML = '<i class="fas fa-compress"></i>'; }
+  else { document.exitFullscreen(); this.innerHTML = '<i class="fas fa-expand"></i>'; }
+});
+function showToast(msg) {
+  const container = document.getElementById('toastContainer');
+  const toast = document.createElement('div');
+  toast.className = 'toast';
+  toast.innerHTML = `<i class="fas fa-info-circle"></i> ${msg}`;
+  container.appendChild(toast);
+  setTimeout(() => { toast.style.opacity = '0'; toast.style.transform = 'translateX(-60px)'; setTimeout(() => toast.remove(), 300); }, 2400);
+}
+function toFa(n) { const fa = ['۰','۱','۲','۳','۴','۵','۶','۷','۸','۹']; return String(n).replace(/\d/g, d => fa[d]); }
+
+/* ═══ Background Canvas ═══ */
+const bgCanvas = document.getElementById('bgCanvas');
+const bgCtx = bgCanvas.getContext('2d');
+let particles = [];
+function resizeBg() { bgCanvas.width = window.innerWidth; bgCanvas.height = window.innerHeight; }
+resizeBg();
+window.addEventListener('resize', resizeBg);
+class Particle {
+  constructor() { this.reset(); }
+  reset() {
+    this.x = Math.random() * bgCanvas.width;
+    this.y = Math.random() * bgCanvas.height;
+    this.size = Math.random() * 1.6 + 0.4;
+    this.speedX = (Math.random() - 0.5) * 0.3;
+    this.speedY = (Math.random() - 0.5) * 0.3;
+    this.opacity = Math.random() * 0.5 + 0.15;
+    const colors = ['#00d4aa', '#06b6d4', '#a855f7', '#ffb700'];
+    this.color = colors[Math.floor(Math.random() * colors.length)];
+  }
+  update() { this.x += this.speedX; this.y += this.speedY; if (this.x < 0 || this.x > bgCanvas.width || this.y < 0 || this.y > bgCanvas.height) this.reset(); }
+  draw() { bgCtx.beginPath(); bgCtx.arc(this.x, this.y, this.size, 0, Math.PI*2); bgCtx.fillStyle = this.color; bgCtx.globalAlpha = this.opacity; bgCtx.fill(); bgCtx.globalAlpha = 1; }
+}
+for (let i = 0; i < 50; i++) particles.push(new Particle());
+function animateBg() { bgCtx.clearRect(0, 0, bgCanvas.width, bgCanvas.height); particles.forEach(p => { p.update(); p.draw(); }); requestAnimationFrame(animateBg); }
+animateBg();
+
+/* ═══ Helper ═══ */
+function setupCanvas(canvasId) {
+  const canvas = document.getElementById(canvasId);
+  if (!canvas) return null;
+  const dpr = window.devicePixelRatio || 1;
+  const rect = canvas.getBoundingClientRect();
+  canvas.width = rect.width * dpr; canvas.height = rect.height * dpr;
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+  return { ctx, w: rect.width, h: rect.height };
+}
+
+/* ═══ Forward Propagation Simulator ═══ */
+function drawFwd() {
+  const s = setupCanvas('fwdCanvas');
+  if (!s) return;
+  const { ctx, w, h } = s;
+  ctx.clearRect(0, 0, w, h);
+
+  const x1 = parseFloat(document.getElementById('fwdX1').value);
+  const x2 = parseFloat(document.getElementById('fwdX2').value);
+
+  // شبکه ساده: 2 → 3 → 2 → 1
+  const W1 = [[0.5, -0.3, 0.8], [-0.2, 0.6, -0.4]];
+  const b1 = [0.1, -0.1, 0.2];
+  const W2 = [[0.7, -0.5], [-0.3, 0.6], [0.4, 0.2]];
+  const b2 = [0.1, -0.2];
+  const W3 = [[0.6], [-0.4]];
+  const b3 = [0.1];
+
+  // Forward
+  const z1 = W1[0].map((_, j) => x1 * W1[0][j] + x2 * W1[1][j] + b1[j]);
+  const a1 = z1.map(v => Math.max(0, v));
+  const z2 = W2[0].map((_, j) => a1[0] * W2[0][j] + a1[1] * W2[1][j] + a1[2] * W2[2][j] + b2[j]);
+  const a2 = z2.map(v => Math.max(0, v));
+  const z3 = a1[0] * W3[0][0] + a2[0] * W3[0][0] + a2[1] * W3[1][0] + b3[0];
+  const y = z3;
+
+  // Draw
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+  ctx.fillRect(0, 0, w, h);
+
+  const layers = [
+    { nodes: 2, x: w * 0.15, label: 'Input' },
+    { nodes: 3, x: w * 0.4, label: 'Hidden 1' },
+    { nodes: 2, x: w * 0.65, label: 'Hidden 2' },
+    { nodes: 1, x: w * 0.9, label: 'Output' }
+  ];
+
+  // Draw connections
+  ctx.strokeStyle = 'rgba(255, 183, 0, 0.2)';
+  ctx.lineWidth = 1;
+  for (let l = 0; l < layers.length - 1; l++) {
+    const current = layers[l];
+    const next = layers[l + 1];
+    const currentSpacing = (h - 100) / (current.nodes + 1);
+    const nextSpacing = (h - 100) / (next.nodes + 1);
+    for (let i = 0; i < current.nodes; i++) {
+      for (let j = 0; j < next.nodes; j++) {
+        const y1 = 50 + (i + 1) * currentSpacing;
+        const y2 = 50 + (j + 1) * nextSpacing;
+        ctx.beginPath();
+        ctx.moveTo(current.x, y1);
+        ctx.lineTo(next.x, y2);
+        ctx.stroke();
+      }
+    }
+  }
+
+  // Draw nodes
+  layers.forEach((layer, l) => {
+    const spacing = (h - 100) / (layer.nodes + 1);
+    for (let i = 0; i < layer.nodes; i++) {
+      const y = 50 + (i + 1) * spacing;
+      const color = l === 0 ? '#00d4aa' : l === layers.length - 1 ? '#a855f7' : '#ffb700';
+      ctx.fillStyle = color;
+      ctx.shadowColor = color;
+      ctx.shadowBlur = 10;
+      ctx.beginPath();
+      ctx.arc(layer.x, y, 15, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.shadowBlur = 0;
+      ctx.strokeStyle = '#fff';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+    }
+  });
+
+  // Labels
+  ctx.fillStyle = '#9aa7bd';
+  ctx.font = 'bold 12px Vazirmatn';
+  ctx.textAlign = 'center';
+  layers.forEach(layer => {
+    ctx.fillText(layer.label, layer.x, 30);
+  });
+
+  // Update displays
+  document.getElementById('fwdX1Value').textContent = toFa(x1.toFixed(1));
+  document.getElementById('fwdX2Value').textContent = toFa(x2.toFixed(1));
+  document.getElementById('fwdOutput').textContent = toFa(y.toFixed(4));
+  document.getElementById('fwdA1').textContent = toFa(a1[0].toFixed(2)) + '، ' + toFa(a1[1].toFixed(2)) + '، ' + toFa(a1[2].toFixed(2));
+  document.getElementById('fwdA2').textContent = toFa(a2[0].toFixed(2)) + '، ' + toFa(a2[1].toFixed(2));
+}
+
+/* ═══ Backprop Simulator ═══ */
+function drawBP() {
+  const s = setupCanvas('bpCanvas');
+  if (!s) return;
+  const { ctx, w, h } = s;
+  ctx.clearRect(0, 0, w, h);
+
+  const loss0 = parseFloat(document.getElementById('bpLoss').value);
+
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+  ctx.fillRect(0, 0, w, h);
+
+  const numLayers = 4;
+  const padX = 60;
+  const layerGap = (w - 2 * padX) / (numLayers - 1);
+  const centerY = h / 2;
+
+  // محاسبه گرادیان‌ها (شبیه‌سازی)
+  const gradients = [];
+  let currentLoss = loss0;
+  for (let l = 0; l < numLayers; l++) {
+    gradients.push(currentLoss);
+    currentLoss = currentLoss * 0.6; // کاهش تدریجی
+  }
+
+  const maxGrad = Math.max(...gradients);
+
+  // رسم لایه‌ها و گرادیان‌ها
+  for (let l = 0; l < numLayers; l++) {
+    const x = padX + l * layerGap;
+    const ratio = gradients[l] / maxGrad;
+    const radius = 20 + ratio * 25;
+
+    // لایه
+    ctx.beginPath();
+    ctx.fillStyle = l === 0 ? '#00d4aa' : l === numLayers - 1 ? '#a855f7' : '#ffb700';
+    ctx.shadowColor = ctx.fillStyle;
+    ctx.shadowBlur = 15;
+    ctx.arc(x, centerY, radius, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.shadowBlur = 0;
+    ctx.strokeStyle = '#fff';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    // برچسب گرادیان
+    ctx.fillStyle = '#e8eef7';
+    ctx.font = 'bold 12px Vazirmatn';
+    ctx.textAlign = 'center';
+    ctx.fillText(toFa(gradients[l].toFixed(3)), x, centerY + radius + 25);
+
+    // لایه
+    ctx.fillStyle = '#9aa7bd';
+    ctx.font = '11px Vazirmatn';
+    ctx.fillText('L' + toFa(l + 1), x, centerY - radius - 15);
+  }
+
+  // فلش‌های Backward
+  ctx.strokeStyle = '#ff4757';
+  ctx.lineWidth = 3;
+  ctx.setLineDash([6, 4]);
+  for (let l = numLayers - 1; l > 0; l--) {
+    const x1 = padX + l * layerGap - 30;
+    const x2 = padX + (l - 1) * layerGap + 30;
+    ctx.beginPath();
+    ctx.moveTo(x1, centerY - 50);
+    ctx.lineTo(x2, centerY - 50);
+    ctx.stroke();
+    // Head
+    ctx.beginPath();
+    ctx.moveTo(x2 + 10, centerY - 55);
+    ctx.lineTo(x2, centerY - 50);
+    ctx.lineTo(x2 + 10, centerY - 45);
+    ctx.stroke();
+  }
+  ctx.setLineDash([]);
+
+  // برچسب Backward
+  ctx.fillStyle = '#ff4757';
+  ctx.font = 'bold 13px Vazirmatn';
+  ctx.textAlign = 'center';
+  ctx.fillText('← Backward Flow of Gradients ←', w / 2, 30);
+
+  document.getElementById('bpLossValue').textContent = toFa(loss0.toFixed(1));
+  document.getElementById('bpGradients').textContent = gradients.map(g => toFa(g.toFixed(2))).join(' → ');
+  const statusEl = document.getElementById('bpStatus');
+  if (gradients[numLayers - 1] < 0.1) {
+    statusEl.textContent = '⚠ گرادیان ناپدید!';
+    statusEl.style.color = 'var(--danger)';
+  } else {
+    statusEl.textContent = '✓ گرادیان خوب';
+    statusEl.style.color = 'var(--success)';
+  }
+}
+
+/* ═══ Optimizers Simulator ═══ */
+function drawOpt() {
+  const s = setupCanvas('optCanvas');
+  if (!s) return;
+  const { ctx, w, h } = s;
+  ctx.clearRect(0, 0, w, h);
+
+  const lr = parseFloat(document.getElementById('optLR').value);
+
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+  ctx.fillRect(0, 0, w, h);
+
+  // Loss landscape
+  const padX = 50, padY_top = 30, padY_bot = 50;
+  const plotW = w - 2 * padX;
+  const plotH = h - padY_top - padY_bot;
+  const xToPx = (x) => padX + x * plotW;
+  const yToPy = (y) => padY_top + plotH / 2 - y * (plotH / 2 - 20) * 0.5;
+
+  // Landscape (دو minimum)
+  ctx.beginPath();
+  ctx.strokeStyle = 'rgba(0, 212, 170, 0.4)';
+  ctx.lineWidth = 2;
+  for (let i = 0; i <= 200; i++) {
+    const x = i / 200;
+    const y = (x - 0.7)**2 * 2 + 0.3 * Math.sin(x * 20);
+    const px = xToPx(x);
+    const py = yToPy(y);
+    if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+  }
+  ctx.stroke();
+
+  // SGD path
+  let xSGD = 0.1;
+  const sgdPath = [{ x: xSGD }];
+  for (let i = 0; i < 20; i++) {
+    const grad = 4 * (xSGD - 0.7) + 0.6 * Math.cos(xSGD * 20);
+    xSGD -= lr * grad;
+    sgdPath.push({ x: xSGD });
+  }
+
+  // Momentum path
+  let xMom = 0.1, v = 0;
+  const momPath = [{ x: xMom }];
+  for (let i = 0; i < 20; i++) {
+    const grad = 4 * (xMom - 0.7) + 0.6 * Math.cos(xMom * 20);
+    v = 0.9 * v + lr * grad;
+    xMom -= v;
+    momPath.push({ x: xMom });
+  }
+
+  // Adam path
+  let xAdam = 0.1, m = 0, v2 = 0, t = 0;
+  const adamPath = [{ x: xAdam }];
+  for (let i = 0; i < 20; i++) {
+    const grad = 4 * (xAdam - 0.7) + 0.6 * Math.cos(xAdam * 20);
+    m = 0.9 * m + 0.1 * grad;
+    v2 = 0.999 * v2 + 0.001 * grad * grad;
+    t++;
+    const m_hat = m / (1 - Math.pow(0.9, t));
+    const v_hat = v2 / (1 - Math.pow(0.999, t));
+    xAdam -= lr * m_hat / (Math.sqrt(v_hat) + 1e-8);
+    adamPath.push({ x: xAdam });
+  }
+
+  // Draw paths
+  const drawPath = (path, color) => {
+    ctx.beginPath();
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 2;
+    ctx.setLineDash(color === '#ffb700' ? [4, 3] : color === '#a855f7' ? [8, 4] : []);
+    path.forEach((p, i) => {
+      const px = xToPx(p.x);
+      const py = yToPy((p.x - 0.7)**2 * 2 + 0.3 * Math.sin(p.x * 20));
+      if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+    });
+    ctx.stroke();
+    ctx.setLineDash([]);
+  };
+
+  drawPath(sgdPath, '#ffb700');
+  drawPath(momPath, '#a855f7');
+  drawPath(adamPath, '#00d4aa');
+
+  // Labels
+  ctx.fillStyle = '#9aa7bd';
+  ctx.font = '11px Vazirmatn';
+  ctx.textAlign = 'center';
+  ctx.fillText('Parameter Space', padX + plotW / 2, padY_top + plotH + 25);
+
+  ctx.font = 'bold 11px Vazirmatn';
+  ctx.textAlign = 'right';
+  ctx.fillStyle = '#ffb700';
+  ctx.fillText('SGD', w - 20, 22);
+  ctx.fillStyle = '#a855f7';
+  ctx.fillText('Momentum', w - 70, 22);
+  ctx.fillStyle = '#00d4aa';
+  ctx.fillText('Adam', w - 180, 22);
+
+  // Final results
+  document.getElementById('optLRValue').textContent = toFa(lr.toFixed(2));
+  document.getElementById('optSGD').textContent = toFa(sgdPath[sgdPath.length - 1].x.toFixed(3));
+  document.getElementById('optMom').textContent = toFa(momPath[momPath.length - 1].x.toFixed(3));
+  document.getElementById('optAdam').textContent = toFa(adamPath[adamPath.length - 1].x.toFixed(3));
+}
+
+/* ═══ Events ═══ */
+document.getElementById('fwdX1').addEventListener('input', drawFwd);
+document.getElementById('fwdX2').addEventListener('input', drawFwd);
+document.getElementById('bpLoss').addEventListener('input', drawBP);
+document.getElementById('optLR').addEventListener('input', drawOpt);
+
+/* ═══ Code Tabs ═══ */
+document.querySelectorAll('.code-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    const parent = tab.parentElement;
+    parent.querySelectorAll('.code-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    const contentId = 'code-' + tab.dataset.code;
+    const content = document.getElementById(contentId);
+    if (content) {
+      const allContents = parent.parentElement.querySelectorAll('.code-content');
+      allContents.forEach(c => c.classList.remove('active'));
+      content.classList.add('active');
+    }
+  });
+});
+
+/* ═══ Render ═══ */
+function initVisibleCharts() {
+  const activeSlide = document.querySelector('.slide.active');
+  if (!activeSlide) return;
+  const num = activeSlide.dataset.slide;
+  if (num === '6') drawFwd();
+  else if (num === '12') drawBP();
+  else if (num === '19') drawOpt();
+}
+
+/* ═══ Init ═══ */
+updateNav();
+setTimeout(() => {
+  initVisibleCharts();
+  if (window.MathJax && window.MathJax.typesetPromise) window.MathJax.typesetPromise();
+}, 400);
+setTimeout(() => showToast('به جلسه ۱۸ خوش آمدید — Backpropagation 🧠'), 1000);
+
+window.addEventListener('resize', () => setTimeout(() => {
+  initVisibleCharts();
+  if (window.MathJax && window.MathJax.typesetPromise) window.MathJax.typesetPromise();
+}, 200));
+</script>
+
+</body>
+</html>

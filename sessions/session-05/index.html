@@ -1,0 +1,2110 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>جلسه ۵ — دسته‌بندی و آشنایی با PDE | دکتر مسعود گوهری منش</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+<script>
+window.MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']],
+    displayMath: [['$$', '$$'], ['\\[', '\\]']],
+    processEscapes: true
+  },
+  options: { skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'] },
+  svg: { fontCache: 'global' }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" async></script>
+
+<style>
+:root {
+  --primary: #00d4aa;
+  --secondary: #06b6d4;
+  --tertiary: #a855f7;
+  --gold: #ffb700;
+  --success: #22c55e;
+  --danger: #ff4757;
+  --pink: #ec4899;
+  --dark: #050818;
+  --darker: #020410;
+  --card-bg: rgba(255, 255, 255, 0.05);
+  --card-border: rgba(255, 255, 255, 0.1);
+  --text: #e8eef7;
+  --text-dim: #9aa7bd;
+  --elliptic: #00d4aa;
+  --parabolic: #ffb700;
+  --hyperbolic: #ec4899;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { overflow: hidden; height: 100%; }
+body {
+  font-family: 'Vazirmatn', sans-serif;
+  background: var(--dark);
+  color: var(--text);
+  direction: rtl;
+  line-height: 1.8;
+}
+#bgCanvas { position: fixed; inset: 0; z-index: -2; background: radial-gradient(ellipse at top, #0a1230 0%, var(--darker) 50%, #000 100%); }
+.glow-orb { position: fixed; border-radius: 50%; filter: blur(120px); opacity: 0.3; z-index: -1; pointer-events: none; animation: floatOrb 25s ease-in-out infinite; }
+.orb1 { width: 600px; height: 600px; background: var(--primary); top: -200px; right: -200px; }
+.orb2 { width: 500px; height: 500px; background: var(--hyperbolic); bottom: -150px; left: -150px; animation-delay: -8s; }
+.orb3 { width: 400px; height: 400px; background: var(--parabolic); top: 30%; left: 25%; animation-delay: -15s; opacity: 0.12; }
+@keyframes floatOrb { 0%, 100% { transform: translate(0, 0) scale(1); } 33% { transform: translate(50px, -40px) scale(1.15); } 66% { transform: translate(-40px, 50px) scale(0.9); } }
+
+.top-header { position: fixed; top: 0; left: 0; right: 0; height: 82px; background: rgba(5, 8, 24, 0.9); backdrop-filter: blur(15px); border-bottom: 1px solid var(--card-border); display: flex; align-items: center; justify-content: space-between; padding: 0 18px; z-index: 100; }
+.header-left { display: flex; align-items: center; gap: 14px; }
+.header-signature { height: 60px; width: auto; max-width: 170px; object-fit: contain; filter: drop-shadow(0 0 10px rgba(0, 212, 170, 0.4)); border-radius: 8px; background: rgba(255, 255, 255, 0.05); padding: 4px; }
+.header-text { display: flex; flex-direction: column; line-height: 1.35; }
+.header-name { font-size: 0.88rem; color: var(--gold); font-weight: 800; white-space: nowrap; }
+.header-univ { font-size: 0.7rem; color: var(--text-dim); font-weight: 500; }
+.header-controls { display: flex; gap: 8px; flex-shrink: 0; }
+.ctrl-btn { width: 38px; height: 38px; border-radius: 10px; border: 1px solid var(--card-border); background: var(--card-bg); backdrop-filter: blur(10px); color: var(--text); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; transition: all 0.3s ease; }
+.ctrl-btn:hover { background: var(--primary); color: var(--dark); transform: translateY(-2px); }
+.ctrl-btn.active { background: var(--primary); color: var(--dark); }
+
+.topic-nav { position: fixed; top: 82px; left: 0; right: 0; height: 36px; background: rgba(5, 8, 24, 0.9); backdrop-filter: blur(10px); border-bottom: 1px solid var(--card-border); z-index: 99; display: flex; align-items: center; gap: 6px; padding: 0 18px; overflow-x: auto; scrollbar-width: none; }
+.topic-nav::-webkit-scrollbar { display: none; }
+.topic-pill { padding: 4px 11px; border-radius: 20px; font-size: 0.7rem; font-weight: 600; white-space: nowrap; color: var(--text-dim); background: rgba(255, 255, 255, 0.04); border: 1px solid transparent; transition: all 0.3s ease; }
+.topic-pill.active { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: var(--dark); font-weight: 800; box-shadow: 0 3px 10px rgba(0, 212, 170, 0.35); }
+.topic-pill.done { color: var(--primary); border-color: rgba(0, 212, 170, 0.3); }
+
+.progress-top { position: fixed; top: 118px; left: 0; right: 0; height: 3px; background: rgba(255, 255, 255, 0.05); z-index: 98; }
+.progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--primary), var(--secondary), var(--tertiary)); transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 0 12px var(--primary); }
+
+.slide-container { position: fixed; inset: 121px 0 0 0; overflow: hidden; }
+.slide { position: absolute; inset: 0; padding: 24px 50px 90px; opacity: 0; transform: translateX(-40px); pointer-events: none; transition: opacity 0.5s ease, transform 0.5s cubic-bezier(0.4, 0, 0.2, 1); overflow-y: auto; overflow-x: hidden; }
+.slide.active { opacity: 1; transform: translateX(0); pointer-events: auto; }
+.slide.prev { transform: translateX(40px); }
+.slide::-webkit-scrollbar { width: 6px; }
+.slide::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 3px; }
+.slide-inner { max-width: 1200px; margin: 0 auto; animation: contentFade 0.6s ease; }
+@keyframes contentFade { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+.slide-num { display: inline-block; padding: 5px 14px; border-radius: 20px; background: rgba(0, 212, 170, 0.15); color: var(--primary); font-size: 0.72rem; font-weight: 700; margin-bottom: 10px; }
+.slide-h1 { font-size: clamp(1.3rem, 3.2vw, 2rem); font-weight: 900; background: linear-gradient(135deg, var(--primary), var(--secondary), var(--tertiary), var(--gold)); background-size: 300% 300%; -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; animation: gradientShift 6s ease infinite; margin-bottom: 16px; line-height: 1.35; }
+@keyframes gradientShift { 0%, 100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
+.slide-h3 { font-size: 0.98rem; font-weight: 700; color: var(--text); margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+.slide-h3 i { color: var(--gold); font-size: 0.88rem; }
+.slide-text { font-size: 0.9rem; color: var(--text-dim); line-height: 2; margin-bottom: 12px; }
+
+.card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 18px; padding: 18px; backdrop-filter: blur(12px); transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1); }
+.card:hover { transform: translateY(-4px); border-color: rgba(0, 212, 170, 0.4); box-shadow: 0 15px 35px rgba(0, 212, 170, 0.12); }
+.grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+.grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; }
+
+.title-slide { text-align: center; padding-top: 5px; }
+.title-slide .hero-img { width: 100%; max-width: 520px; height: 170px; object-fit: contain; background: rgba(0, 0, 0, 0.2); padding: 6px; border-radius: 20px; margin: 0 auto 12px; display: block; border: 1px solid var(--card-border); box-shadow: 0 20px 40px rgba(0, 212, 170, 0.15); }
+.title-slide .bismillah { font-size: 1.2rem; font-weight: 500; background: linear-gradient(90deg, var(--gold), var(--primary), var(--secondary)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 4px; }
+.title-slide .hoval { font-size: 0.82rem; color: var(--text-dim); margin-bottom: 16px; letter-spacing: 1px; }
+.title-slide .main-title { font-size: clamp(1.7rem, 4.2vw, 2.6rem); font-weight: 900; background: linear-gradient(135deg, var(--primary), var(--secondary), var(--gold)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 10px; line-height: 1.3; }
+.title-slide .subtitle { font-size: clamp(0.9rem, 2vw, 1.05rem); color: var(--text-dim); margin-bottom: 18px; }
+.title-slide .euler-box { display: inline-block; padding: 12px 30px; border-radius: 18px; background: var(--card-bg); border: 1px solid var(--card-border); backdrop-filter: blur(15px); margin-bottom: 16px; }
+.title-slide .instructor-line { font-size: 0.92rem; color: var(--gold); font-weight: 700; margin-bottom: 3px; }
+.title-slide .instructor-title-line { font-size: 0.78rem; color: var(--text-dim); margin-bottom: 12px; }
+.title-slide .semester { display: inline-block; padding: 6px 18px; border-radius: 50px; background: var(--card-bg); border: 1px solid var(--card-border); font-size: 0.78rem; color: var(--text-dim); }
+
+.math-box { background: rgba(0, 212, 170, 0.06); border: 1px solid rgba(0, 212, 170, 0.25); border-radius: 14px; padding: 16px 22px; margin: 12px 0; text-align: center; direction: ltr; position: relative; overflow-x: auto; overflow-y: hidden; }
+.math-box::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--primary), var(--secondary), var(--tertiary)); }
+.math-box .MathJax, .math-box mjx-container { color: var(--primary) !important; font-size: 1em !important; }
+.math-box.gold-math .MathJax, .math-box.gold-math mjx-container { color: var(--gold) !important; }
+.math-box.purple-math .MathJax, .math-box.purple-math mjx-container { color: var(--tertiary) !important; }
+.math-box.pink-math .MathJax, .math-box.pink-math mjx-container { color: var(--hyperbolic) !important; }
+.math-note { font-family: 'Vazirmatn', sans-serif; font-size: 0.76rem; color: var(--text-dim); direction: rtl; margin-top: 8px; font-style: italic; text-align: center; }
+
+.simulator { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 18px; padding: 16px; margin: 12px 0; backdrop-filter: blur(12px); }
+.sim-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; flex-wrap: wrap; gap: 10px; }
+.sim-title { font-size: 0.9rem; font-weight: 700; color: var(--gold); display: flex; align-items: center; gap: 8px; }
+.sim-controls { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.slider-group { display: flex; align-items: center; gap: 8px; background: rgba(0, 0, 0, 0.3); padding: 6px 12px; border-radius: 10px; border: 1px solid var(--card-border); }
+.slider-group label { font-size: 0.72rem; color: var(--text-dim); white-space: nowrap; }
+.slider-group input[type="range"] { width: 100px; accent-color: var(--primary); cursor: pointer; }
+.slider-value { font-family: 'Courier New', monospace; font-size: 0.78rem; color: var(--primary); font-weight: 700; min-width: 30px; text-align: center; }
+.canvas-wrapper { position: relative; width: 100%; height: 260px; background: rgba(0, 0, 0, 0.4); border-radius: 12px; overflow: hidden; border: 1px solid var(--card-border); }
+.canvas-wrapper canvas { width: 100%; height: 100%; display: block; }
+
+.img-box { width: 100%; max-height: 280px; border-radius: 16px; border: 1px solid var(--card-border); margin: 12px 0; display: block; object-fit: contain; background: rgba(0, 0, 0, 0.3); padding: 8px; }
+
+.exercise-block { border-radius: 16px; padding: 16px; border: 1px solid; position: relative; overflow: hidden; margin-bottom: 12px; }
+.exercise-block::before { content: ''; position: absolute; top: 0; right: 0; width: 4px; height: 100%; }
+.ex-yellow { background: rgba(255, 217, 61, 0.06); border-color: rgba(255, 217, 61, 0.25); }
+.ex-yellow::before { background: #ffd93d; }
+.ex-green { background: rgba(107, 207, 127, 0.06); border-color: rgba(107, 207, 127, 0.25); }
+.ex-green::before { background: #6bcf7f; }
+.ex-purple { background: rgba(168, 85, 247, 0.06); border-color: rgba(168, 85, 247, 0.25); }
+.ex-purple::before { background: var(--tertiary); }
+.ex-red { background: rgba(255, 107, 107, 0.06); border-color: rgba(255, 107, 107, 0.25); }
+.ex-red::before { background: #ff6b6b; }
+.ex-header { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+.ex-num { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 0.8rem; color: var(--dark); flex-shrink: 0; }
+.ex-yellow .ex-num { background: #ffd93d; }
+.ex-green .ex-num { background: #6bcf7f; }
+.ex-purple .ex-num { background: var(--tertiary); color: #fff; }
+.ex-red .ex-num { background: #ff6b6b; color: #fff; }
+.ex-title { font-size: 0.92rem; font-weight: 800; }
+.ex-list { list-style: none; padding: 0; counter-reset: item; }
+.ex-list li { position: relative; padding: 7px 34px 7px 10px; font-size: 0.83rem; color: var(--text-dim); line-height: 1.8; border-bottom: 1px dashed rgba(255, 255, 255, 0.05); }
+.ex-list li:last-child { border-bottom: none; }
+.ex-list li::before { counter-increment: item; content: counter(item); position: absolute; right: 4px; top: 9px; width: 22px; height: 22px; border-radius: 50%; background: rgba(255, 255, 255, 0.08); color: var(--text); font-size: 0.7rem; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+.email-banner { margin-top: 12px; padding: 12px; border-radius: 14px; background: linear-gradient(135deg, rgba(0, 212, 170, 0.1), rgba(168, 85, 247, 0.1)); border: 1px dashed rgba(0, 212, 170, 0.4); text-align: center; }
+.email-banner p { font-size: 0.8rem; color: var(--text); margin-bottom: 5px; }
+.email-banner code { display: inline-block; padding: 5px 12px; border-radius: 8px; background: rgba(0, 0, 0, 0.4); color: var(--primary); font-family: 'Courier New', monospace; font-size: 0.76rem; direction: ltr; margin-top: 3px; }
+
+.code-tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--card-border); }
+.code-tab { padding: 8px 16px; border-radius: 10px 10px 0 0; background: transparent; border: none; color: var(--text-dim); font-family: inherit; font-size: 0.8rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; }
+.code-tab.active { background: rgba(0, 212, 170, 0.1); color: var(--primary); border-bottom: 2px solid var(--primary); }
+.code-content { display: none; background: #0a0f24; border: 1px solid var(--card-border); border-top: none; border-radius: 0 0 12px 12px; padding: 14px; overflow-x: auto; direction: ltr; text-align: left; }
+.code-content.active { display: block; }
+.code-content pre { margin: 0; font-family: 'Courier New', Consolas, monospace; font-size: 0.76rem; line-height: 1.6; color: #e8eef7; white-space: pre; }
+.code-content .kw { color: #ff79c6; }
+.code-content .fn { color: #50fa7b; }
+.code-content .num { color: #bd93f9; }
+.code-content .str { color: #f1fa8c; }
+.code-content .cm { color: #6272a4; font-style: italic; }
+
+.bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; height: 58px; background: rgba(5, 8, 24, 0.9); backdrop-filter: blur(15px); border-top: 1px solid var(--card-border); display: flex; align-items: center; justify-content: space-between; padding: 0 20px; z-index: 100; }
+.nav-btn { padding: 8px 18px; border-radius: 12px; border: 1px solid var(--card-border); background: var(--card-bg); color: var(--text); cursor: pointer; font-family: inherit; font-size: 0.82rem; font-weight: 600; display: flex; align-items: center; gap: 7px; transition: all 0.3s ease; }
+.nav-btn:hover:not(:disabled) { background: var(--primary); color: var(--dark); transform: translateY(-2px); }
+.nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+.dots-nav { display: flex; gap: 4px; flex-wrap: wrap; justify-content: center; max-width: 60%; }
+.dot-nav { width: 8px; height: 8px; border-radius: 50%; background: rgba(255, 255, 255, 0.15); cursor: pointer; border: none; padding: 0; transition: all 0.3s ease; }
+.dot-nav.active { background: var(--primary); width: 22px; border-radius: 5px; box-shadow: 0 0 10px var(--primary); }
+.slide-counter { font-size: 0.78rem; color: var(--text-dim); font-family: 'Courier New', monospace; min-width: 60px; text-align: center; }
+.slide-counter span { color: var(--primary); font-weight: 800; }
+
+.toast-container { position: fixed; bottom: 76px; left: 24px; z-index: 9999; display: flex; flex-direction: column; gap: 8px; }
+.toast { background: rgba(10, 18, 40, 0.95); border: 1px solid var(--primary); border-radius: 14px; padding: 11px 16px; color: var(--text); font-size: 0.82rem; backdrop-filter: blur(12px); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); display: flex; align-items: center; gap: 8px; animation: slideIn 0.35s ease; max-width: 320px; }
+.toast i { color: var(--primary); }
+@keyframes slideIn { from { opacity: 0; transform: translateX(-60px); } to { opacity: 1; transform: translateX(0); } }
+
+.acronym-box { display: inline-block; padding: 3px 10px; border-radius: 8px; background: rgba(255, 183, 0, 0.15); border: 1px solid rgba(255, 183, 0, 0.4); color: var(--gold); font-family: 'Courier New', monospace; font-size: 0.78rem; font-weight: 700; direction: ltr; margin: 0 4px; }
+.acronym-full { font-size: 0.72rem; color: var(--text-dim); font-style: italic; }
+
+.type-badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 0.78rem; font-weight: 800; margin: 4px 4px 4px 0; }
+.type-elliptic { background: rgba(0, 212, 170, 0.15); color: var(--elliptic); border: 1px solid var(--elliptic); }
+.type-parabolic { background: rgba(255, 183, 0, 0.15); color: var(--parabolic); border: 1px solid var(--parabolic); }
+.type-hyperbolic { background: rgba(236, 72, 153, 0.15); color: var(--hyperbolic); border: 1px solid var(--hyperbolic); }
+
+.note-btn { padding: 8px 14px; border-radius: 10px; border: 1px solid var(--card-border); background: linear-gradient(145deg, rgba(168, 85, 247, 0.15), rgba(168, 85, 247, 0.05)); color: var(--text); font-family: 'Vazirmatn', sans-serif; font-size: 0.8rem; font-weight: 700; cursor: pointer; transition: all 0.25s ease; }
+.note-btn:hover { background: var(--tertiary); color: #fff; transform: translateY(-2px); box-shadow: 0 6px 15px rgba(168, 85, 247, 0.3); }
+.note-btn:active { transform: scale(0.95); }
+.note-btn.playing { background: var(--gold); color: var(--dark); animation: pulseNote 0.6s ease; }
+@keyframes pulseNote { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
+
+.artist-item { display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-radius: 12px; border: 1px solid var(--card-border); background: rgba(0, 0, 0, 0.2); cursor: pointer; transition: all 0.3s ease; }
+.artist-item:hover { background: rgba(255, 183, 0, 0.1); border-color: var(--gold); transform: translateX(-4px); }
+.artist-item.playing { background: rgba(255, 183, 0, 0.2); border-color: var(--gold); box-shadow: 0 0 20px rgba(255, 183, 0, 0.3); }
+.artist-icon { width: 42px; height: 42px; border-radius: 50%; background: linear-gradient(135deg, var(--gold), var(--tertiary)); display: flex; align-items: center; justify-content: center; color: var(--dark); font-size: 1.1rem; flex-shrink: 0; }
+.artist-info { flex: 1; }
+.artist-name { font-size: 0.88rem; font-weight: 800; color: var(--text); }
+.artist-desc { font-size: 0.72rem; color: var(--text-dim); }
+.artist-play { width: 32px; height: 32px; border-radius: 50%; background: var(--primary); color: var(--dark); display: flex; align-items: center; justify-content: center; font-size: 0.8rem; flex-shrink: 0; }
+
+@media (max-width: 768px) {
+  .slide { padding: 16px 14px 90px; }
+  .header-univ { display: none; }
+  .header-name { font-size: 0.75rem; }
+  .header-signature { height: 45px; max-width: 110px; }
+  .nav-btn { padding: 7px 11px; font-size: 0.72rem; }
+  .nav-btn span { display: none; }
+  .dots-nav { max-width: 45%; }
+  .slide-counter { font-size: 0.68rem; min-width: 45px; }
+  .canvas-wrapper { height: 210px; }
+  .topic-pill { font-size: 0.64rem; padding: 3px 8px; }
+}
+@media (max-width: 480px) {
+  .ctrl-btn { width: 32px; height: 32px; font-size: 0.75rem; }
+  .header-signature { display: none; }
+}
+</style>
+</head>
+<body>
+
+<canvas id="bgCanvas"></canvas>
+<div class="glow-orb orb1"></div>
+<div class="glow-orb orb2"></div>
+<div class="glow-orb orb3"></div>
+
+<div class="top-header">
+  <div class="header-left">
+    <img src="images/signature-blue.png" alt="امضا" class="header-signature" onerror="this.src='images/signature.png'; this.onerror=function(){this.style.display='none'}">
+    <div class="header-text">
+      <span class="header-name">دکتر مسعود گوهری منش</span>
+      <span class="header-univ">دانشیار گروه مهندسی مکانیک — دانشگاه تربت حیدریه</span>
+    </div>
+  </div>
+  <div class="header-controls">
+    <button class="ctrl-btn" id="soundToggle" title="صدا"><i class="fas fa-volume-up"></i></button>
+    <button class="ctrl-btn" id="fullscreenToggle" title="تمام‌صفحه"><i class="fas fa-expand"></i></button>
+  </div>
+</div>
+
+<div class="topic-nav" id="topicNav">
+  <span class="topic-pill" data-topic="1">مقدمه</span>
+  <span class="topic-pill" data-topic="2">تعریف PDE</span>
+  <span class="topic-pill" data-topic="3">دسته‌بندی</span>
+  <span class="topic-pill" data-topic="4">سه نوع اصلی</span>
+  <span class="topic-pill" data-topic="5">شرایط مرزی</span>
+  <span class="topic-pill" data-topic="6">برهم‌نهی</span>
+  <span class="topic-pill" data-topic="7">کاربرد و موسیقی</span>
+</div>
+
+<div class="progress-top"><div class="progress-fill" id="progressFill"></div></div>
+
+<div class="slide-container" id="slideContainer">
+
+  <!-- ۱ — عنوان -->
+  <div class="slide active" data-slide="1" data-topic="1">
+    <div class="slide-inner title-slide">
+      <div class="bismillah">بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِیم</div>
+      <div class="hoval">هُوَ الخَلّاقُ العَلیم</div>
+      <img src="images/hero-pde.png" alt="PDE" class="hero-img" onerror="this.style.display='none'">
+      <h1 class="main-title">دسته‌بندی و آشنایی با PDE</h1>
+      <p class="subtitle">ریاضیات مهندسی پیشرفته — جلسه ۵ (آغاز فاز ۲)</p>
+      <div class="euler-box"><div style="direction: ltr; font-size: 1.6rem;">$$e^{i\pi} + 1 = 0$$</div></div>
+      <p class="instructor-line">دکتر مسعود گوهری منش</p>
+      <p class="instructor-title-line">دانشیار گروه مهندسی مکانیک — دانشگاه تربت حیدریه</p>
+      <div class="semester">نیمسال اول ۱۴۰۵–۱۴۰۶</div>
+    </div>
+  </div>
+
+  <!-- ۲ — مقدمه فاز ۲ -->
+  <div class="slide" data-slide="2" data-topic="1">
+    <div class="slide-inner">
+      <span class="slide-num">مقدمه</span>
+      <h2 class="slide-h1">ورود به فاز ۲ — PDE های کلاسیک</h2>
+      <div class="grid-2">
+        <div class="card" style="background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3);">
+          <div class="slide-h3" style="color: var(--primary);"><i class="fas fa-flag-checkered"></i> پایان فاز ۱</div>
+          <ul style="list-style: none; padding: 0; font-size: 0.85rem; color: var(--text-dim); line-height: 2;">
+            <li>✅ سری و تبدیل فوریه</li>
+            <li>✅ فضای برداری و تبدیل خطی</li>
+            <li>✅ مقدار ویژه و SVD</li>
+            <li>✅ ابزارهای حل PDE آماده است</li>
+          </ul>
+        </div>
+        <div class="card" style="background: rgba(255, 183, 0, 0.06); border-color: rgba(255, 183, 0, 0.3);">
+          <div class="slide-h3" style="color: var(--gold);"><i class="fas fa-rocket"></i> فاز ۲ — جلسات ۵ تا ۸</div>
+          <ul style="list-style: none; padding: 0; font-size: 0.85rem; color: var(--text-dim); line-height: 2;">
+            <li>🔹 جلسه ۵: دسته‌بندی PDE (امروز)</li>
+            <li>🔹 جلسه ۶: معادله گرما</li>
+            <li>🔹 جلسه ۷: معادله موج</li>
+            <li>🔹 جلسه ۸: معادله لاپلاس و پواسون</li>
+          </ul>
+        </div>
+      </div>
+      <div class="card" style="margin-top: 16px; background: rgba(168, 85, 247, 0.06); border-color: rgba(168, 85, 247, 0.3);">
+        <div class="slide-h3" style="color: var(--tertiary);"><i class="fas fa-brain"></i> چرا PDE مهم است؟</div>
+        <p class="slide-text" style="font-size: 0.85rem;">
+          تقریباً تمام پدیده‌های فیزیکی در مکاترونیک با PDE توصیف می‌شوند: <strong>انتقال حرارت، ارتعاشات، الکترواستاتیک، دینامیک سیالات، و دینامیک سازه</strong>.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۳ — PDE vs ODE + دانشمندان -->
+  <div class="slide" data-slide="3" data-topic="2">
+    <div class="slide-inner">
+      <span class="slide-num">۲. تعریف</span>
+      <h2 class="slide-h1">PDE چیست؟ تفاوت با ODE</h2>
+
+      <img src="images/ode-pde-comparison.png" alt="ODE vs PDE" class="img-box" onerror="this.style.display='none'">
+
+      <div class="grid-2">
+        <div class="card" style="background: rgba(255, 183, 0, 0.06); border-color: rgba(255, 183, 0, 0.3);">
+          <div class="slide-h3" style="color: var(--gold);"><i class="fas fa-cube"></i> PDE — Partial Differential Equation</div>
+          <p class="slide-text" style="font-size: 0.82rem;">
+            معادله دیفرانسیل <strong>جزئی</strong> — شامل <strong>دو یا چند متغیر مستقل</strong>:
+          </p>
+          <div class="math-box gold-math" style="padding: 10px; font-size: 0.85rem;">
+            $$\frac{\partial u}{\partial t} = \alpha \frac{\partial^2 u}{\partial x^2}$$
+          </div>
+          <p class="slide-text" style="font-size: 0.78rem;">
+            🔍 متغیرها: $x$ (مکان)، $t$ (زمان)، $u(x,t)$ (دما)
+          </p>
+        </div>
+        <div class="card" style="background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3);">
+          <div class="slide-h3" style="color: var(--primary);"><i class="fas fa-wave-square"></i> ODE — Ordinary Differential Equation</div>
+          <p class="slide-text" style="font-size: 0.82rem;">
+            معادله دیفرانسیل <strong>معمولی</strong> — شامل <strong>یک متغیر مستقل</strong>:
+          </p>
+          <div class="math-box" style="padding: 10px; font-size: 0.85rem;">
+            $$m\ddot{x} + c\dot{x} + kx = F(t)$$
+          </div>
+          <p class="slide-text" style="font-size: 0.78rem;">
+            🔍 متغیر: $t$ (زمان)، $x(t)$ (موقعیت)
+          </p>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top: 14px; background: rgba(168, 85, 247, 0.06); border-color: rgba(168, 85, 247, 0.3);">
+        <div class="slide-h3" style="color: var(--tertiary);"><i class="fas fa-user"></i> پیشگامان این حوزه</div>
+        <div class="grid-2" style="margin-top: 10px;">
+          <div style="display: flex; gap: 12px; align-items: center; padding: 10px; border-radius: 12px; background: rgba(0,0,0,0.2);">
+            <img src="images/fourier-portrait.png" alt="Fourier" style="width: 90px; height: 90px; border-radius: 12px; border: 2px solid var(--gold); object-fit: cover;" onerror="this.style.display='none'">
+            <div>
+              <div style="font-weight: 800; color: var(--gold); font-size: 0.9rem;">Joseph Fourier</div>
+              <div style="font-size: 0.7rem; color: var(--primary);">(1768–1830)</div>
+              <div style="font-size: 0.72rem; color: var(--text-dim); line-height: 1.7; margin-top: 4px;">
+                ریاضیدان و فیزیکدان فرانسوی. با مطالعه انتقال حرارت، پایه سری فوریه و تبدیل فوریه را بنا نهاد.
+              </div>
+            </div>
+          </div>
+          <div style="display: flex; gap: 12px; align-items: center; padding: 10px; border-radius: 12px; background: rgba(0,0,0,0.2);">
+            <img src="images/vonneumann-portrait.png" alt="Von Neumann" style="width: 90px; height: 90px; border-radius: 12px; border: 2px solid var(--primary); object-fit: cover;" onerror="this.style.display='none'">
+            <div>
+              <div style="font-weight: 800; color: var(--primary); font-size: 0.9rem;">John von Neumann</div>
+              <div style="font-size: 0.7rem; color: var(--secondary);">(1903–1957)</div>
+              <div style="font-size: 0.72rem; color: var(--text-dim); line-height: 1.7; margin-top: 4px;">
+                ریاضیدان مجارستانی-آمریکایی. پیشگام تحلیل پایداری عددی PDE و معماری کامپیوتر.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۴ — دسته‌بندی -->
+  <div class="slide" data-slide="4" data-topic="3">
+    <div class="slide-inner">
+      <span class="slide-num">۳. دسته‌بندی</span>
+      <h2 class="slide-h1">دسته‌بندی PDE</h2>
+
+      <img src="images/pde-classification-tree.png" alt="Classification Tree" class="img-box" onerror="this.style.display='none'">
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="slide-h3"><i class="fas fa-sort-numeric-up"></i> مرتبه (Order)</div>
+          <ul style="list-style: none; padding: 0; font-size: 0.82rem; color: var(--text-dim); line-height: 2;">
+            <li>🔹 <strong>مرتبه اول</strong>: بالاترین مشتق = ۱</li>
+            <li>🔹 <strong>مرتبه دوم</strong>: بالاترین مشتق = ۲</li>
+            <li>🔹 <strong>مرتبه n</strong>: بالاترین مشتق = n</li>
+          </ul>
+          <div class="math-box" style="padding: 10px; font-size: 0.82rem;">
+            $$u_t + c u_x = 0 \text{ (مرتبه ۱)}$$
+            $$u_{tt} = c^2 u_{xx} \text{ (مرتبه ۲)}$$
+          </div>
+        </div>
+        <div class="card">
+          <div class="slide-h3"><i class="fas fa-balance-scale"></i> خطی بودن (Linearity)</div>
+          <ul style="list-style: none; padding: 0; font-size: 0.82rem; color: var(--text-dim); line-height: 2;">
+            <li>🔹 <strong>خطی (Linear)</strong>: توان ۱ در $u$</li>
+            <li>🔹 <strong>نیمه‌خطی (Semi-linear)</strong>: ضرایب وابسته</li>
+            <li>🔹 <strong>غیرخطی (Nonlinear)</strong>: توان بالاتر</li>
+          </ul>
+          <div class="math-box" style="padding: 10px; font-size: 0.82rem;">
+            $$u_t = u_{xx} \text{ (خطی)}$$
+            $$u_t = u \cdot u_x \text{ (غیرخطی)}$$
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top: 14px;">
+        <div class="slide-h3"><i class="fas fa-check-circle"></i> همگن (Homogeneous) و ناهمگن (Non-homogeneous)</div>
+        <p class="slide-text" style="font-size: 0.82rem;">
+          <strong>همگن:</strong> $L[u] = 0$ — <strong>ناهمگن:</strong> $L[u] = f(x,t)$ (عبارت منبع)
+        </p>
+        <div class="math-box" style="padding: 10px; font-size: 0.85rem;">
+          $$u_{tt} - c^2 u_{xx} = 0 \text{ (همگن)}$$
+          $$u_{tt} - c^2 u_{xx} = F(x,t) \text{ (ناهمگن)}$$
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۵ — سه نوع اصلی -->
+  <div class="slide" data-slide="5" data-topic="4">
+    <div class="slide-inner">
+      <span class="slide-num">۴. سه نوع اصلی</span>
+      <h2 class="slide-h1">بیضوی، سهموی، هذلولوی</h2>
+
+      <p class="slide-text">برای PDE مرتبه دوم خطی به فرم عمومی:</p>
+      <div class="math-box">
+        $$A u_{xx} + B u_{xy} + C u_{yy} + \cdots = 0$$
+      </div>
+      <p class="slide-text">دسته‌بندی بر اساس <strong>ممیز</strong> $\Delta = B^2 - 4AC$:</p>
+
+      <img src="images/pde-types-3d.png" alt="PDE Types 3D" class="img-box" onerror="this.style.display='none'">
+
+      <div class="grid-3">
+        <div class="card" style="text-align: center; border-color: rgba(0, 212, 170, 0.3);">
+          <span class="type-badge type-elliptic">بیضوی (Elliptic)</span>
+          <p class="slide-text" style="font-size: 0.8rem; margin-top: 8px;">$\Delta < 0$<br>مثال: لاپلاس</p>
+          <div class="math-box" style="padding: 8px; font-size: 0.8rem;">$$u_{xx} + u_{yy} = 0$$</div>
+        </div>
+        <div class="card" style="text-align: center; border-color: rgba(255, 183, 0, 0.3);">
+          <span class="type-badge type-parabolic">سهموی (Parabolic)</span>
+          <p class="slide-text" style="font-size: 0.8rem; margin-top: 8px;">$\Delta = 0$<br>مثال: گرما</p>
+          <div class="math-box gold-math" style="padding: 8px; font-size: 0.8rem;">$$u_t = \alpha u_{xx}$$</div>
+        </div>
+        <div class="card" style="text-align: center; border-color: rgba(236, 72, 153, 0.3);">
+          <span class="type-badge type-hyperbolic">هذلولوی (Hyperbolic)</span>
+          <p class="slide-text" style="font-size: 0.8rem; margin-top: 8px;">$\Delta > 0$<br>مثال: موج</p>
+          <div class="math-box pink-math" style="padding: 8px; font-size: 0.8rem;">$$u_{tt} = c^2 u_{xx}$$</div>
+        </div>
+      </div>
+
+      <img src="images/elliptic-parabolic-hyperbolic.png" alt="Three Types" class="img-box" style="margin-top: 12px;" onerror="this.style.display='none'">
+    </div>
+  </div>
+
+  <!-- ۶ — شبیه‌ساز تشخیص نوع PDE -->
+  <div class="slide" data-slide="6" data-topic="4">
+    <div class="slide-inner">
+      <span class="slide-num">۴. شبیه‌ساز</span>
+      <h2 class="slide-h1">شبیه‌ساز تشخیص نوع PDE</h2>
+      <p class="slide-text">ضرایب A، B، C را تغییر دهید و نوع PDE را تشخیص دهید.</p>
+      <div class="simulator">
+        <div class="sim-header">
+          <div class="sim-title"><i class="fas fa-sliders-h"></i> ضرایب PDE مرتبه دوم</div>
+          <div class="sim-controls">
+            <div class="slider-group">
+              <label>A:</label>
+              <input type="range" id="pdeA" min="-5" max="5" value="1" step="0.1">
+              <span class="slider-value" id="pdeAValue">۱.۰</span>
+            </div>
+            <div class="slider-group">
+              <label>B:</label>
+              <input type="range" id="pdeB" min="-5" max="5" value="0" step="0.1">
+              <span class="slider-value" id="pdeBValue">۰.۰</span>
+            </div>
+            <div class="slider-group">
+              <label>C:</label>
+              <input type="range" id="pdeC" min="-5" max="5" value="1" step="0.1">
+              <span class="slider-value" id="pdeCValue">۱.۰</span>
+            </div>
+          </div>
+        </div>
+        <div class="canvas-wrapper" style="height: 280px;"><canvas id="pdeTypeCanvas"></canvas></div>
+        <div class="grid-3" style="margin-top: 12px;">
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 0.75rem; color: var(--text-dim);">PDE نمونه</div>
+            <div id="pdeExample" style="font-size: 0.85rem; color: var(--text); font-weight: 600; direction: ltr;">u_xx + u_yy = 0</div>
+          </div>
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 0.75rem; color: var(--text-dim);">نوع</div>
+            <div id="pdeTypeLabel" style="font-size: 1.1rem; color: var(--primary); font-weight: 800;">بیضوی (Elliptic)</div>
+          </div>
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 0.75rem; color: var(--text-dim);">ممیز Δ = B² - 4AC</div>
+            <div id="discriminant" style="font-size: 1.4rem; color: var(--gold); font-weight: 800; font-family: 'Courier New', monospace;">—</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۷ — معادله گرما + استخراج کامل -->
+  <div class="slide" data-slide="7" data-topic="4">
+    <div class="slide-inner">
+      <span class="slide-num">۴. مثال ۱ + استخراج</span>
+      <h2 class="slide-h1">معادله گرما — از کجا می‌آید؟</h2>
+
+      <img src="images/heat-rod-temperature.png" alt="Heat Rod" class="img-box" onerror="this.style.display='none'">
+
+      <div class="card" style="background: rgba(255, 183, 0, 0.06); border-color: rgba(255, 183, 0, 0.3);">
+        <div class="slide-h3" style="color: var(--gold);"><i class="fas fa-calculator"></i> گام ۱: قانون بقای انرژی</div>
+        <p class="slide-text" style="font-size: 0.85rem;">در یک قطعه کوچک از میله با طول $\Delta x$:</p>
+        <div class="math-box gold-math" style="padding: 12px;">
+          $$\text{تغییر انرژی} = \text{شار ورودی} - \text{شار خروجی}$$
+        </div>
+      </div>
+
+      <div class="card" style="margin-top: 12px; background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3);">
+        <div class="slide-h3" style="color: var(--primary);"><i class="fas fa-calculator"></i> گام ۲: قانون فوریه (شار حرارتی)</div>
+        <p class="slide-text" style="font-size: 0.85rem;">شار حرارتی متناسب با گرادیان دما:</p>
+        <div class="math-box" style="padding: 12px;">
+          $$q = -k \frac{\partial u}{\partial x}$$
+        </div>
+        <p class="slide-text" style="font-size: 0.78rem;">$k$ = ضریب هدایت حرارتی — <strong>علامت منفی</strong>: گرما از گرم به سرد می‌رود</p>
+      </div>
+
+      <div class="card" style="margin-top: 12px; background: rgba(168, 85, 247, 0.06); border-color: rgba(168, 85, 247, 0.3);">
+        <div class="slide-h3" style="color: var(--tertiary);"><i class="fas fa-calculator"></i> گام ۳: ترکیب و حدگیری</div>
+        <p class="slide-text" style="font-size: 0.85rem;">با $\Delta x \to 0$:</p>
+        <div class="math-box purple-math" style="padding: 12px;">
+          $$\rho c_p \frac{\partial u}{\partial t} = k \frac{\partial^2 u}{\partial x^2}$$
+        </div>
+        <p class="slide-text" style="font-size: 0.82rem;">با تعریف $\alpha = \frac{k}{\rho c_p}$ (ضریب نفوذ حرارتی):</p>
+        <div class="math-box gold-math" style="padding: 12px; font-size: 1.05rem;">
+          $$\boxed{\frac{\partial u}{\partial t} = \alpha \frac{\partial^2 u}{\partial x^2}}$$
+        </div>
+      </div>
+
+      <div class="card" style="margin-top: 14px;">
+        <div class="slide-h3"><i class="fas fa-flask"></i> کاربرد مکاترونیکی</div>
+        <ul style="list-style: none; padding: 0; font-size: 0.82rem; color: var(--text-dim); line-height: 2;">
+          <li>🔹 انتقال حرارت در عملگر پیزوالکتریک</li>
+          <li>🔹 خنک‌سازی مدار الکترونیکی</li>
+          <li>🔹 تحلیل حرارتی موتور</li>
+        </ul>
+      </div>
+
+      <div class="simulator" style="margin-top: 14px;">
+        <div class="sim-header">
+          <div class="sim-title"><i class="fas fa-fire"></i> انتشار گرما در میله</div>
+          <div class="sim-controls">
+            <div class="slider-group">
+              <label>α (نفوذ):</label>
+              <input type="range" id="heatAlpha" min="0.01" max="0.5" value="0.1" step="0.01">
+              <span class="slider-value" id="heatAlphaValue">۰.۱۰</span>
+            </div>
+          </div>
+        </div>
+        <div class="canvas-wrapper" style="height: 240px;"><canvas id="heatCanvas"></canvas></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۸ — معادله موج + استخراج -->
+  <div class="slide" data-slide="8" data-topic="4">
+    <div class="slide-inner">
+      <span class="slide-num">۴. مثال ۲ + استخراج</span>
+      <h2 class="slide-h1">معادله موج — از قانون دوم نیوتن</h2>
+
+      <img src="images/wave-packet-fourier.png" alt="Wave Packet" class="img-box" onerror="this.style.display='none'">
+
+      <div class="card" style="background: rgba(236, 72, 153, 0.06); border-color: rgba(236, 72, 153, 0.3);">
+        <div class="slide-h3" style="color: var(--hyperbolic);"><i class="fas fa-calculator"></i> گام ۱: نیروی کشش تار</div>
+        <p class="slide-text" style="font-size: 0.85rem;">در یک قطعه کوچک از تار با طول $\Delta x$، نیروی کشش $T$ در دو سر:</p>
+        <div class="math-box pink-math" style="padding: 12px;">
+          $$\sum F_y = T\sin\theta_2 - T\sin\theta_1$$
+        </div>
+      </div>
+
+      <div class="card" style="margin-top: 12px; background: rgba(236, 72, 153, 0.06); border-color: rgba(236, 72, 153, 0.3);">
+        <div class="slide-h3" style="color: var(--hyperbolic);"><i class="fas fa-calculator"></i> گام ۲: تقریب زاویه کوچک</div>
+        <p class="slide-text" style="font-size: 0.85rem;">برای جابجایی‌های کوچک: $\sin\theta \approx \tan\theta = \frac{\partial u}{\partial x}$</p>
+        <div class="math-box pink-math" style="padding: 12px;">
+          $$\sum F_y \approx T\left[\frac{\partial u}{\partial x}\Big|_{x+\Delta x} - \frac{\partial u}{\partial x}\Big|_{x}\right]$$
+        </div>
+      </div>
+
+      <div class="card" style="margin-top: 12px; background: rgba(236, 72, 153, 0.06); border-color: rgba(236, 72, 153, 0.3);">
+        <div class="slide-h3" style="color: var(--hyperbolic);"><i class="fas fa-calculator"></i> گام ۳: قانون دوم نیوتن</div>
+        <p class="slide-text" style="font-size: 0.85rem;">$F = ma$ که $m = \rho \Delta x$ و $a = \frac{\partial^2 u}{\partial t^2}$:</p>
+        <div class="math-box pink-math" style="padding: 12px;">
+          $$\rho \Delta x \frac{\partial^2 u}{\partial t^2} = T \Delta x \frac{\partial^2 u}{\partial x^2}$$
+        </div>
+        <p class="slide-text" style="font-size: 0.82rem;">با $c = \sqrt{T/\rho}$:</p>
+        <div class="math-box pink-math" style="padding: 12px; font-size: 1.05rem;">
+          $$\boxed{\frac{\partial^2 u}{\partial t^2} = c^2 \frac{\partial^2 u}{\partial x^2}}$$
+        </div>
+      </div>
+
+      <div class="card" style="margin-top: 14px; background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3);">
+        <div class="slide-h3" style="color: var(--primary);"><i class="fas fa-info-circle"></i> نکته کلیدی</div>
+        <p class="slide-text" style="font-size: 0.85rem;">
+          این معادله، پایه <strong>سازهای زهی</strong> (تار، گیتار، ویولن) و همچنین <strong>ارتعاش تیر</strong> در مکاترونیک است.
+        </p>
+      </div>
+
+      <div class="simulator" style="margin-top: 14px;">
+        <div class="sim-header">
+          <div class="sim-title"><i class="fas fa-water"></i> انتشار موج در سیم</div>
+          <div class="sim-controls">
+            <div class="slider-group">
+              <label>c (سرعت):</label>
+              <input type="range" id="waveC" min="0.5" max="3" value="1" step="0.1">
+              <span class="slider-value" id="waveCValue">۱.۰</span>
+            </div>
+          </div>
+        </div>
+        <div class="canvas-wrapper" style="height: 240px;"><canvas id="waveCanvas"></canvas></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۹ — معادله لاپلاس -->
+  <div class="slide" data-slide="9" data-topic="4">
+    <div class="slide-inner">
+      <span class="slide-num">۴. مثال ۳</span>
+      <h2 class="slide-h1">معادله لاپلاس و پواسون</h2>
+
+      <div class="grid-2" style="align-items: start;">
+        <div>
+          <img src="images/laplace-contour.png" alt="Laplace" class="img-box" onerror="this.style.display='none'">
+        </div>
+        <div>
+          <div class="card" style="background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3);">
+            <div class="slide-h3" style="color: var(--elliptic);"><i class="fas fa-square"></i> لاپلاس (Laplace) — بدون منبع</div>
+            <div class="math-box" style="padding: 12px;">
+              $$\nabla^2 u = \frac{\partial^2 u}{\partial x^2} + \frac{\partial^2 u}{\partial y^2} = 0$$
+            </div>
+          </div>
+          <div class="card" style="margin-top: 10px; background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3);">
+            <div class="slide-h3" style="color: var(--elliptic);"><i class="fas fa-bolt"></i> پواسون (Poisson) — با منبع</div>
+            <div class="math-box" style="padding: 12px;">
+              $$\nabla^2 u = f(x, y)$$
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <img src="images/contour-potential.png" alt="Contour" class="img-box" style="margin-top: 12px;" onerror="this.style.display='none'">
+
+      <div class="simulator" style="margin-top: 14px;">
+        <div class="sim-header">
+          <div class="sim-title"><i class="fas fa-square"></i> توزیع پتانسیل روی صفحه</div>
+        </div>
+        <div class="canvas-wrapper" style="height: 240px;"><canvas id="laplaceCanvas"></canvas></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۱۰ — شرایط مرزی -->
+  <div class="slide" data-slide="10" data-topic="5">
+    <div class="slide-inner">
+      <span class="slide-num">۵. شرایط مرزی</span>
+      <h2 class="slide-h1">شرایط مرزی (Boundary Conditions)</h2>
+
+      <img src="images/boundary-conditions-3.png" alt="Boundary Conditions" class="img-box" onerror="this.style.display='none'">
+
+      <div class="grid-3" style="margin-top: 14px;">
+        <div class="card" style="background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3);">
+          <div class="slide-h3" style="color: var(--primary);"><i class="fas fa-anchor"></i> دیریکله (Dirichlet)</div>
+          <p class="slide-text" style="font-size: 0.8rem;">مقدار تابع در مرز مشخص است:</p>
+          <div class="math-box" style="padding: 8px; font-size: 0.85rem;">$$u(0, t) = u_0$$</div>
+          <p class="slide-text" style="font-size: 0.75rem; margin-top: 6px;">📌 مثال: دمای ثابت انتهای میله</p>
+        </div>
+        <div class="card" style="background: rgba(255, 183, 0, 0.06); border-color: rgba(255, 183, 0, 0.3);">
+          <div class="slide-h3" style="color: var(--gold);"><i class="fas fa-arrow-up"></i> نویمان (Neumann)</div>
+          <p class="slide-text" style="font-size: 0.8rem;">مشتق تابع در مرز مشخص است:</p>
+          <div class="math-box gold-math" style="padding: 8px; font-size: 0.85rem;">$$u_x(0, t) = q_0$$</div>
+          <p class="slide-text" style="font-size: 0.75rem; margin-top: 6px;">📌 مثال: شار حرارتی ثابت</p>
+        </div>
+        <div class="card" style="background: rgba(168, 85, 247, 0.06); border-color: rgba(168, 85, 247, 0.3);">
+          <div class="slide-h3" style="color: var(--tertiary);"><i class="fas fa-mix"></i> رابین (Robin)</div>
+          <p class="slide-text" style="font-size: 0.8rem;">ترکیب مقدار و مشتق:</p>
+          <div class="math-box purple-math" style="padding: 8px; font-size: 0.85rem;">$$u_x + h u = q_0$$</div>
+          <p class="slide-text" style="font-size: 0.75rem; margin-top: 6px;">📌 مثال: انتقال حرارت جابجایی</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۱۱ — شرایط اولیه -->
+  <div class="slide" data-slide="11" data-topic="5">
+    <div class="slide-inner">
+      <span class="slide-num">۵. شرایط اولیه</span>
+      <h2 class="slide-h1">شرایط اولیه (Initial Conditions)</h2>
+
+      <img src="images/initial-conditions.png" alt="Initial Conditions" class="img-box" onerror="this.style.display='none'">
+
+      <div class="grid-2" style="margin-top: 14px;">
+        <div class="card" style="background: rgba(255, 183, 0, 0.06); border-color: rgba(255, 183, 0, 0.3);">
+          <div class="slide-h3" style="color: var(--gold);"><i class="fas fa-play-circle"></i> معادله گرما (مرتبه اول در t)</div>
+          <p class="slide-text" style="font-size: 0.82rem;">یک شرط اولیه:</p>
+          <div class="math-box gold-math" style="padding: 10px; font-size: 0.85rem;">$$u(x, 0) = f(x)$$</div>
+        </div>
+        <div class="card" style="background: rgba(236, 72, 153, 0.06); border-color: rgba(236, 72, 153, 0.3);">
+          <div class="slide-h3" style="color: var(--hyperbolic);"><i class="fas fa-play-circle"></i> معادله موج (مرتبه دوم در t)</div>
+          <p class="slide-text" style="font-size: 0.82rem;">دو شرط اولیه:</p>
+          <div class="math-box pink-math" style="padding: 10px; font-size: 0.85rem;">
+            $$u(x, 0) = f(x)$$
+            $$u_t(x, 0) = g(x)$$
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top: 14px; background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3);">
+        <div class="slide-h3" style="color: var(--primary);"><i class="fas fa-lightbulb"></i> قاعده کلی</div>
+        <p class="slide-text" style="font-size: 0.85rem;">
+          تعداد شرایط اولیه = <strong>مرتبه بالاترین مشتق زمانی</strong><br>
+          تعداد شرایط مرزی = <strong>مرتبه بالاترین مشتق مکانی</strong>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۱۲ — شبیه‌ساز شرایط مرزی -->
+  <div class="slide" data-slide="12" data-topic="5">
+    <div class="slide-inner">
+      <span class="slide-num">۵. شبیه‌ساز</span>
+      <h2 class="slide-h1">شبیه‌ساز شرایط مرزی</h2>
+      <div class="simulator">
+        <div class="sim-header">
+          <div class="sim-title"><i class="fas fa-sliders-h"></i> مقدار مرزی</div>
+          <div class="sim-controls">
+            <div class="slider-group">
+              <label>مقدار:</label>
+              <input type="range" id="bcValue" min="0" max="100" value="100" step="5">
+              <span class="slider-value" id="bcValueValue">۱۰۰</span>
+            </div>
+          </div>
+        </div>
+        <div class="grid-3">
+          <div>
+            <p class="math-note" style="text-align: center; margin-bottom: 6px; color: var(--primary);">دیریکله (Dirichlet)</p>
+            <div class="canvas-wrapper" style="height: 180px;"><canvas id="bcDirichlet"></canvas></div>
+          </div>
+          <div>
+            <p class="math-note" style="text-align: center; margin-bottom: 6px; color: var(--gold);">نویمان (Neumann)</p>
+            <div class="canvas-wrapper" style="height: 180px;"><canvas id="bcNeumann"></canvas></div>
+          </div>
+          <div>
+            <p class="math-note" style="text-align: center; margin-bottom: 6px; color: var(--tertiary);">رابین (Robin)</p>
+            <div class="canvas-wrapper" style="height: 180px;"><canvas id="bcRobin"></canvas></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۱۳ — اصل برهم‌نهی -->
+  <div class="slide" data-slide="13" data-topic="6">
+    <div class="slide-inner">
+      <span class="slide-num">۶. اصل برهم‌نهی</span>
+      <h2 class="slide-h1">اصل برهم‌نهی (Superposition Principle)</h2>
+      <p class="slide-text">برای PDE های <strong>خطی و همگن</strong>، اگر $u_1$ و $u_2$ جواب باشند، هر ترکیب خطی نیز جواب است:</p>
+      <div class="math-box purple-math" style="background: rgba(168, 85, 247, 0.1); border-color: rgba(168, 85, 247, 0.4);">
+        $$L[u_1] = 0, \quad L[u_2] = 0 \;\Longrightarrow\; L[c_1 u_1 + c_2 u_2] = 0$$
+      </div>
+      <img src="images/superposition-principle.png" alt="Superposition" class="img-box" onerror="this.style.display='none'">
+      <div class="grid-2" style="margin-top: 14px;">
+        <div class="card" style="background: rgba(168, 85, 247, 0.06); border-color: rgba(168, 85, 247, 0.3);">
+          <div class="slide-h3" style="color: var(--tertiary);"><i class="fas fa-lightbulb"></i> چرا مهم است؟</div>
+          <p class="slide-text" style="font-size: 0.82rem;">پایه <strong>حل تحلیلی PDE با سری فوریه</strong> است.</p>
+        </div>
+        <div class="card">
+          <div class="slide-h3"><i class="fas fa-info-circle"></i> محدودیت</div>
+          <p class="slide-text" style="font-size: 0.82rem;">برای PDE های <strong>غیرخطی</strong> کار نمی‌کند.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۱۴ — شبیه‌ساز برهم‌نهی -->
+  <div class="slide" data-slide="14" data-topic="6">
+    <div class="slide-inner">
+      <span class="slide-num">۶. شبیه‌ساز</span>
+      <h2 class="slide-h1">شبیه‌ساز برهم‌نهی</h2>
+      <div class="simulator">
+        <div class="sim-header">
+          <div class="sim-title"><i class="fas fa-wave-square"></i> پارامترهای موج</div>
+          <div class="sim-controls">
+            <div class="slider-group">
+              <label>فرکانس ۱:</label>
+              <input type="range" id="superF1" min="1" max="10" value="2" step="1">
+              <span class="slider-value" id="superF1Value">۲</span>
+            </div>
+            <div class="slider-group">
+              <label>فرکانس ۲:</label>
+              <input type="range" id="superF2" min="1" max="10" value="3" step="1">
+              <span class="slider-value" id="superF2Value">۳</span>
+            </div>
+          </div>
+        </div>
+        <div class="canvas-wrapper" style="height: 260px;"><canvas id="superCanvas"></canvas></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۱۵ — کاربرد مکاترونیکی -->
+  <div class="slide" data-slide="15" data-topic="7">
+    <div class="slide-inner">
+      <span class="slide-num">۷. کاربرد مکاترونیکی</span>
+      <h2 class="slide-h1">PDE در مکاترونیک</h2>
+      <img src="images/pde-applications-3panel.png" alt="PDE Applications" class="img-box" onerror="this.style.display='none'">
+      <div class="grid-3" style="margin-top: 14px;">
+        <div class="card" style="text-align: center; background: rgba(236, 72, 153, 0.06); border-color: rgba(236, 72, 153, 0.3);">
+          <i class="fas fa-wave-square" style="font-size: 1.8rem; color: var(--hyperbolic); display: block; margin-bottom: 10px;"></i>
+          <div class="slide-h3" style="justify-content: center;">ارتعاش تیر</div>
+          <p class="slide-text" style="font-size: 0.78rem;">معادله موج + مودها</p>
+        </div>
+        <div class="card" style="text-align: center; background: rgba(255, 183, 0, 0.06); border-color: rgba(255, 183, 0, 0.3);">
+          <i class="fas fa-fire" style="font-size: 1.8rem; color: var(--parabolic); display: block; margin-bottom: 10px;"></i>
+          <div class="slide-h3" style="justify-content: center;">عملگر حرارتی</div>
+          <p class="slide-text" style="font-size: 0.78rem;">معادله گرما</p>
+        </div>
+        <div class="card" style="text-align: center; background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3);">
+          <i class="fas fa-robot" style="font-size: 1.8rem; color: var(--elliptic); display: block; margin-bottom: 10px;"></i>
+          <div class="slide-h3" style="justify-content: center;">دینامیک ربات</div>
+          <p class="slide-text" style="font-size: 0.78rem;">PDE کوپل</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۱۶ — نقشه راه -->
+  <div class="slide" data-slide="16" data-topic="7">
+    <div class="slide-inner">
+      <span class="slide-num">۷. نقشه راه</span>
+      <h2 class="slide-h1">نقشه راه فاز ۲</h2>
+      <img src="images/pde-roadmap.png" alt="PDE Roadmap" class="img-box" onerror="this.style.display='none'">
+      <div class="grid-3" style="margin-top: 14px;">
+        <div class="card" style="text-align: center; background: rgba(0, 212, 170, 0.08); border-color: rgba(0, 212, 170, 0.4);">
+          <div class="slide-h3" style="justify-content: center; color: var(--primary);">جلسه ۵ (امروز)</div>
+          <p class="slide-text" style="font-size: 0.8rem;">دسته‌بندی و مقدمه</p>
+        </div>
+        <div class="card" style="text-align: center;">
+          <div class="slide-h3" style="justify-content: center;">جلسه ۶</div>
+          <p class="slide-text" style="font-size: 0.8rem;">معادله گرما + جداسازی متغیرها</p>
+        </div>
+        <div class="card" style="text-align: center;">
+          <div class="slide-h3" style="justify-content: center;">جلسه ۷</div>
+          <p class="slide-text" style="font-size: 0.8rem;">معادله موج + دالامبر</p>
+        </div>
+        <div class="card" style="text-align: center;">
+          <div class="slide-h3" style="justify-content: center;">جلسه ۸</div>
+          <p class="slide-text" style="font-size: 0.8rem;">لاپلاس + پواسون</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۱۷ — کد MATLAB/Python -->
+  <div class="slide" data-slide="17" data-topic="7">
+    <div class="slide-inner">
+      <span class="slide-num">۷. کد</span>
+      <h2 class="slide-h1">حل عددی PDE ساده</h2>
+      <p class="slide-text">یک PDE ساده را با <strong>روش تفاضل محدود (Finite Difference Method)</strong> حل می‌کنیم.</p>
+      <div class="code-tabs">
+        <button class="code-tab active" data-code="matlab-pde"><i class="fas fa-square"></i> MATLAB</button>
+        <button class="code-tab" data-code="python-pde"><i class="fab fa-python"></i> Python</button>
+      </div>
+      <div class="code-content active" id="code-matlab-pde">
+<pre><span class="cm">% === حل عددی معادله گرما ===</span>
+<span class="fn">clear</span>; <span class="fn">clc</span>; <span class="fn">close all</span>;
+L = <span class="num">1</span>; Nx = <span class="num">50</span>; alpha = <span class="num">0.01</span>; T = <span class="num">1</span>; Nt = <span class="num">1000</span>;
+dx = L/(Nx-<span class="num">1</span>); dt = T/Nt;
+r = alpha * dt / dx^<span class="num">2</span>;
+<span class="kw">if</span> r > <span class="num">0.5</span>
+    <span class="fn">error</span>(<span class="str">'شرط پایداری نقض شده!'</span>);
+<span class="kw">end</span>
+x = <span class="fn">linspace</span>(<span class="num">0</span>, L, Nx);
+u = <span class="fn">sin</span>(pi*x);
+<span class="kw">for</span> n = <span class="num">1</span>:Nt
+    u_new = u;
+    <span class="kw">for</span> i = <span class="num">2</span>:Nx-<span class="num">1</span>
+        u_new(i) = u(i) + r*(u(i+<span class="num">1</span>) - <span class="num">2</span>*u(i) + u(i-<span class="num">1</span>));
+    <span class="kw">end</span>
+    u = u_new;
+<span class="kw">end</span>
+<span class="fn">plot</span>(x, u, <span class="str">'linewidth'</span>, <span class="num">2</span>);</pre>
+      </div>
+      <div class="code-content" id="code-python-pde">
+<pre><span class="kw">import</span> numpy <span class="kw">as</span> np
+<span class="kw">import</span> matplotlib.pyplot <span class="kw">as</span> plt
+L = <span class="num">1.0</span>; Nx = <span class="num">50</span>; alpha = <span class="num">0.01</span>; T = <span class="num">1.0</span>; Nt = <span class="num">1000</span>
+dx = L / (Nx - <span class="num">1</span>); dt = T / Nt
+r = alpha * dt / dx**<span class="num">2</span>
+<span class="kw">if</span> r > <span class="num">0.5</span>:
+    <span class="fn">raise</span> ValueError(<span class="str">'شرط پایداری نقض شده!'</span>)
+x = np.linspace(<span class="num">0</span>, L, Nx)
+u = np.sin(np.pi * x)
+<span class="kw">for</span> n <span class="kw">in</span> <span class="fn">range</span>(Nt):
+    u[<span class="num">1</span>:-<span class="num">1</span>] = u[<span class="num">1</span>:-<span class="num">1</span>] + r * (u[<span class="num">2</span>:] - <span class="num">2</span>*u[<span class="num">1</span>:-<span class="num">1</span>] + u[:-<span class="num">2</span>])
+plt.plot(x, u, linewidth=<span class="num">2</span>, color=<span class="str">'#ffb700'</span>)
+plt.savefig(<span class="str">'heat.png'</span>, dpi=<span class="num">600</span>)</pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۱۸ — تمرین‌ها -->
+  <div class="slide" data-slide="18" data-topic="7">
+    <div class="slide-inner">
+      <span class="slide-num">تمرین</span>
+      <h2 class="slide-h1">تمرین‌های جلسه ۵</h2>
+      <div class="exercise-block ex-yellow">
+        <div class="ex-header"><div class="ex-num">الف</div><div><div class="ex-title">سؤالات مفهومی</div></div></div>
+        <ol class="ex-list">
+          <li>تفاوت PDE و ODE چیست؟</li>
+          <li>سه نوع اصلی PDE را نام ببرید و ممیز هر کدام را بنویسید.</li>
+          <li>چرا تعداد شرایط اولیه به مرتبه مشتق زمانی بستگی دارد؟</li>
+          <li>تفاوت شرایط مرزی دیریکله و نویمان چیست؟</li>
+        </ol>
+      </div>
+      <div class="exercise-block ex-green">
+        <div class="ex-header"><div class="ex-num">ب</div><div><div class="ex-title">تمرین‌های عملی</div></div></div>
+        <ol class="ex-list">
+          <li>PDE زیر را دسته‌بندی کنید: $u_{xx} + 4u_{xy} + 4u_{yy} = 0$</li>
+          <li>معادله گرما را با $\alpha = 0.01$ در بازه $[0, 1]$ با شرط $u(x, 0) = \sin(2\pi x)$ حل کنید.</li>
+          <li>معادله موج را با $c = 1$ و شرایط $u(x, 0) = \sin(\pi x)$ و $u_t(x, 0) = 0$ شبیه‌سازی کنید.</li>
+          <li>در شبیه‌ساز جرم-فنر-دمپر، سه حالت میرایی را با تغییر c مقایسه کنید.</li>
+        </ol>
+      </div>
+      <div class="exercise-block ex-purple">
+        <div class="ex-header"><div class="ex-num">ج</div><div><div class="ex-title">تمرین‌های نوشتاری</div></div></div>
+        <ol class="ex-list">
+          <li>ثابت کنید هر PDE خطی، اصل برهم‌نهی را ارضا می‌کند.</li>
+          <li>معادله لاپلاس را در مختصات قطبی بنویسید.</li>
+          <li>برای معادله گرما، شرط پایداری روش صریح ($r \leq 0.5$) را اثبات کنید.</li>
+        </ol>
+      </div>
+      <div class="exercise-block ex-red">
+        <div class="ex-header"><div class="ex-num">★</div><div><div class="ex-title">چالش خلاقانه</div></div></div>
+        <ol class="ex-list">
+          <li>یک PDE از پروژه پایانی خود انتخاب کنید و آن را دسته‌بندی کنید.</li>
+          <li>فرکانس نُت La (440 Hz) را با استفاده از رابطه $f = \frac{1}{2L}\sqrt{T/\rho}$ محاسبه کنید.</li>
+          <li>در شبیه‌ساز نُت، طول تار را تغییر دهید و رابطه بین طول و فرکانس را بنویسید.</li>
+        </ol>
+      </div>
+      <div class="email-banner">
+        <p><i class="fas fa-envelope" style="color: var(--primary);"></i> ارسال تمرین‌ها:</p>
+        <code>m.goharimanesh@gmail.com</code>
+        <p style="margin-top: 8px; font-size: 0.78rem;">Subject الزامی:</p>
+        <code>[Advanced Engineering Mathematics] HW05 - نام و نام خانوادگی - شماره دانشجویی</code>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۱۹ — جمع‌بندی -->
+  <div class="slide" data-slide="19" data-topic="7">
+    <div class="slide-inner">
+      <h2 class="slide-h1">جمع‌بندی جلسه ۵</h2>
+      <div class="grid-3">
+        <div class="card" style="text-align: center;">
+          <i class="fas fa-cube" style="font-size: 1.8rem; color: var(--primary); display: block; margin-bottom: 10px;"></i>
+          <div class="slide-h3" style="justify-content: center;">PDE چیست</div>
+          <p class="slide-text" style="font-size: 0.8rem;">چند متغیر مستقل</p>
+        </div>
+        <div class="card" style="text-align: center;">
+          <i class="fas fa-sort-numeric-up" style="font-size: 1.8rem; color: var(--gold); display: block; margin-bottom: 10px;"></i>
+          <div class="slide-h3" style="justify-content: center;">دسته‌بندی</div>
+          <p class="slide-text" style="font-size: 0.8rem;">مرتبه، خطی بودن</p>
+        </div>
+        <div class="card" style="text-align: center;">
+          <i class="fas fa-shapes" style="font-size: 1.8rem; color: var(--tertiary); display: block; margin-bottom: 10px;"></i>
+          <div class="slide-h3" style="justify-content: center;">سه نوع</div>
+          <p class="slide-text" style="font-size: 0.8rem;">بیضوی، سهموی، هذلولوی</p>
+        </div>
+        <div class="card" style="text-align: center;">
+          <i class="fas fa-anchor" style="font-size: 1.8rem; color: var(--pink); display: block; margin-bottom: 10px;"></i>
+          <div class="slide-h3" style="justify-content: center;">شرایط مرزی</div>
+          <p class="slide-text" style="font-size: 0.8rem;">دیریکله، نویمان، رابین</p>
+        </div>
+        <div class="card" style="text-align: center;">
+          <i class="fas fa-plus" style="font-size: 1.8rem; color: var(--primary); display: block; margin-bottom: 10px;"></i>
+          <div class="slide-h3" style="justify-content: center;">برهم‌نهی</div>
+          <p class="slide-text" style="font-size: 0.8rem;">پایه حل خطی</p>
+        </div>
+        <div class="card" style="text-align: center;">
+          <i class="fas fa-music" style="font-size: 1.8rem; color: var(--gold); display: block; margin-bottom: 10px;"></i>
+          <div class="slide-h3" style="justify-content: center;">موسیقی</div>
+          <p class="slide-text" style="font-size: 0.8rem;">کاربرد واقعی PDE</p>
+        </div>
+      </div>
+      <div class="card" style="margin-top: 16px;">
+        <div class="slide-h3"><i class="fas fa-arrow-left"></i> جلسه بعد</div>
+        <p class="slide-text" style="font-size: 0.88rem;">
+          <strong style="color: var(--primary);">جلسه ۶ — معادله گرما و جداسازی متغیرها</strong>
+        </p>
+      </div>
+      <div class="math-box gold-math" style="margin-top: 20px; background: rgba(255, 183, 0, 0.08); padding: 22px;">
+        $$\frac{\partial u}{\partial t} = \alpha \frac{\partial^2 u}{\partial x^2}$$
+      </div>
+    </div>
+  </div>
+
+  <!-- ۲۰ — ODE: جرم-فنر-دمپر -->
+  <div class="slide" data-slide="20" data-topic="7">
+    <div class="slide-inner">
+      <span class="slide-num">۷. مرور ODE</span>
+      <h2 class="slide-h1">جرم-فنر-دمپر (Mass-Spring-Damper)</h2>
+      <img src="images/mass-spring-damper-diagram.png" alt="MSD" class="img-box" onerror="this.style.display='none'">
+      <div class="grid-2" style="margin-top: 14px;">
+        <div>
+          <div class="card" style="background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3);">
+            <div class="slide-h3" style="color: var(--primary);"><i class="fas fa-calculator"></i> معادله حرکت</div>
+            <div class="math-box" style="padding: 12px;">$$m\ddot{x} + c\dot{x} + kx = F(t)$$</div>
+          </div>
+          <div class="card" style="margin-top: 10px;">
+            <div class="slide-h3"><i class="fas fa-lightbulb"></i> پارامترها</div>
+            <div class="math-box" style="padding: 10px; font-size: 0.85rem;">
+              $$\omega_n = \sqrt{k/m}, \quad \zeta = \frac{c}{2\sqrt{mk}}$$
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="card" style="background: rgba(255, 183, 0, 0.06); border-color: rgba(255, 183, 0, 0.3);">
+            <div class="slide-h3" style="color: var(--gold);"><i class="fas fa-star"></i> سه حالت میرایی (Damping)</div>
+            <ul style="list-style: none; padding: 0; font-size: 0.82rem; color: var(--text-dim); line-height: 2;">
+              <li>🔹 <strong>کم‌میرا (Underdamped)</strong>: $\zeta < 1$</li>
+              <li>🔹 <strong>بحرانی (Critically damped)</strong>: $\zeta = 1$</li>
+              <li>🔹 <strong>بیش‌میرا (Overdamped)</strong>: $\zeta > 1$</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="simulator" style="margin-top: 14px;">
+        <div class="sim-header">
+          <div class="sim-title"><i class="fas fa-flask"></i> شبیه‌ساز تعاملی</div>
+          <div class="sim-controls">
+            <div class="slider-group">
+              <label>m:</label>
+              <input type="range" id="msdM" min="0.5" max="3" value="1" step="0.1">
+              <span class="slider-value" id="msdMValue">۱.۰</span>
+            </div>
+            <div class="slider-group">
+              <label>c:</label>
+              <input type="range" id="msdC" min="0" max="2" value="0.3" step="0.05">
+              <span class="slider-value" id="msdCValue">۰.۳۰</span>
+            </div>
+            <div class="slider-group">
+              <label>k:</label>
+              <input type="range" id="msdK" min="1" max="10" value="4" step="0.5">
+              <span class="slider-value" id="msdKValue">۴.۰</span>
+            </div>
+          </div>
+        </div>
+        <div class="canvas-wrapper" style="height: 240px;"><canvas id="msdCanvas"></canvas></div>
+        <div class="grid-3" style="margin-top: 10px;">
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 0.75rem; color: var(--text-dim);">ω_n (فرکانس طبیعی)</div>
+            <div id="msdOmega" style="font-size: 1.1rem; color: var(--gold); font-weight: 800; font-family: 'Courier New', monospace;">—</div>
+          </div>
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 0.75rem; color: var(--text-dim);">ζ (نسبت میرایی)</div>
+            <div id="msdZeta" style="font-size: 1.1rem; color: var(--primary); font-weight: 800; font-family: 'Courier New', monospace;">—</div>
+          </div>
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 0.75rem; color: var(--text-dim);">حالت</div>
+            <div id="msdType" style="font-size: 0.85rem; color: var(--tertiary); font-weight: 800;">کم‌میرا</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۲۱ — دینامیک خودرو -->
+  <div class="slide" data-slide="21" data-topic="7">
+    <div class="slide-inner">
+      <span class="slide-num">۷. کاربرد: خودرو</span>
+      <h2 class="slide-h1">مدل دوچرخه‌ای خودرو (Bicycle Model)</h2>
+      <p class="slide-text">برای تحلیل <strong>شتاب جانبی</strong> و <strong>چرخش (Yaw)</strong> خودرو، از مدل ساده‌شده دوچرخه‌ای استفاده می‌شود:</p>
+      <img src="images/bicycle-model-vehicle.png" alt="Bicycle Model" class="img-box" onerror="this.style.display='none'">
+      <div class="grid-2" style="margin-top: 14px;">
+        <div>
+          <div class="card" style="background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3);">
+            <div class="slide-h3" style="color: var(--primary);"><i class="fas fa-calculator"></i> معادلات حرکت</div>
+            <div class="math-box" style="padding: 12px; font-size: 0.82rem;">
+              $$m(\dot{v}_y + v_x r) = F_{yf} + F_{yr}$$
+              $$I_z \dot{r} = l_f F_{yf} - l_r F_{yr}$$
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="card">
+            <div class="slide-h3"><i class="fas fa-info-circle"></i> معادله کوپل نهایی</div>
+            <div class="math-box" style="padding: 12px; font-size: 0.78rem;">
+              $$\begin{pmatrix} \dot{v}_y \\ \dot{r} \end{pmatrix} = A \begin{pmatrix} v_y \\ r \end{pmatrix} + B \delta$$
+            </div>
+            <p class="slide-text" style="font-size: 0.78rem;">$\delta$ = زاویه فرمان</p>
+          </div>
+          <div class="card" style="margin-top: 10px; background: rgba(255, 183, 0, 0.06); border-color: rgba(255, 183, 0, 0.3);">
+            <div class="slide-h3" style="color: var(--gold);"><i class="fas fa-link"></i> اتصال به Simulink/CarSim</div>
+            <p class="slide-text" style="font-size: 0.8rem;">این معادلات در <strong>Simulink</strong> پیاده‌سازی و در <strong>CarSim</strong> برای فرمان‌دهی ساده تست می‌شوند.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۲۲ — تار مرتعش و سازهای ایرانی -->
+  <div class="slide" data-slide="22" data-topic="7">
+    <div class="slide-inner">
+      <span class="slide-num">۷. کاربرد: موسیقی</span>
+      <h2 class="slide-h1">معادله تار مرتعش و سازهای ایرانی</h2>
+      <p class="slide-text">معادله موج یک‌بعدی، پایه فیزیکی <strong>سازهای زهی</strong> مانند تار و سه‌تار است:</p>
+      <div class="math-box pink-math" style="background: rgba(236, 72, 153, 0.1); border-color: rgba(236, 72, 153, 0.4);">
+        $$\frac{\partial^2 u}{\partial t^2} = c^2 \frac{\partial^2 u}{\partial x^2}, \quad c = \sqrt{\frac{T}{\rho}}$$
+      </div>
+      <p class="slide-text">$T$ = کشش تار، $\rho$ = چگالی خطی. <strong>فرکانس پایه</strong>:</p>
+      <div class="math-box gold-math" style="background: rgba(255, 183, 0, 0.1);">
+        $$f_1 = \frac{c}{2L} = \frac{1}{2L}\sqrt{\frac{T}{\rho}}$$
+      </div>
+      <img src="images/string-vibration-length.png" alt="String Vibration" class="img-box" onerror="this.style.display='none'">
+      <div class="grid-2" style="margin-top: 14px;">
+        <div><img src="images/târ-persian-instrument.png" alt="Tar" class="img-box" onerror="this.style.display='none'"></div>
+        <div><img src="images/guitar-acoustic.png" alt="Guitar" class="img-box" onerror="this.style.display='none'"></div>
+      </div>
+      <div class="card" style="margin-top: 14px; background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3);">
+        <div class="slide-h3" style="color: var(--primary);"><i class="fas fa-music"></i> ساز تار ایرانی</div>
+        <p class="slide-text" style="font-size: 0.85rem;">
+          تار از سازهای زهی مضرابی است که با <strong>تغییر طول تار</strong> (با حرکت دست روی دسته) فرکانس و نُت تغییر می‌کند.
+        </p>
+      </div>
+      <img src="images/persian-masters.png" alt="Persian Masters" class="img-box" style="margin-top: 14px; max-height: 220px;" onerror="this.style.display='none'">
+    </div>
+  </div>
+
+  <!-- ۲۳ — گالری موسیقی + موج دایره‌ای -->
+  <div class="slide" data-slide="23" data-topic="7">
+    <div class="slide-inner">
+      <span class="slide-num">۷. موسیقی تعاملی</span>
+      <h2 class="slide-h1">🎵 گالری موسیقی و موج دایره‌ای</h2>
+      <p class="slide-text">روی نام هر استاد کلیک کنید تا یک نمونه کوتاه پخش شود و <strong>موج دایره‌ای زنده</strong> آن را ببینید.</p>
+      <div class="grid-2" style="align-items: stretch;">
+        <div>
+          <div class="card" style="background: rgba(255, 183, 0, 0.06); border-color: rgba(255, 183, 0, 0.3);">
+            <div class="slide-h3" style="color: var(--gold);"><i class="fas fa-music"></i> استادان موسیقی ایرانی</div>
+            <div id="musicGallery" style="display: flex; flex-direction: column; gap: 8px; margin-top: 10px;"></div>
+          </div>
+          <div class="card" style="margin-top: 12px; background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3);">
+            <div class="slide-h3" style="color: var(--primary);"><i class="fas fa-guitar"></i> موسیقی جهان</div>
+            <div id="globalGallery" style="display: flex; flex-direction: column; gap: 8px; margin-top: 10px;"></div>
+          </div>
+        </div>
+        <div>
+          <p class="math-note" style="text-align: center; margin-bottom: 8px;">
+            <i class="fas fa-wave-square"></i> موج دایره‌ای زنده
+          </p>
+          <div class="canvas-wrapper" style="height: 340px; background: rgba(0,0,0,0.5);">
+            <canvas id="circularWaveCanvas"></canvas>
+          </div>
+          <div class="grid-2" style="margin-top: 12px;">
+            <div class="card" style="text-align: center; padding: 12px;">
+              <div style="font-size: 0.7rem; color: var(--text-dim);">نوازنده فعلی</div>
+              <div id="currentArtist" style="font-size: 0.9rem; color: var(--gold); font-weight: 800;">—</div>
+            </div>
+            <div class="card" style="text-align: center; padding: 12px;">
+              <div style="font-size: 0.7rem; color: var(--text-dim);">وضعیت</div>
+              <div id="playStatus" style="font-size: 0.9rem; color: var(--primary); font-weight: 800;">آماده</div>
+            </div>
+          </div>
+          <div class="card" style="margin-top: 12px; background: rgba(168, 85, 247, 0.06); border-color: rgba(168, 85, 247, 0.3);">
+            <div class="slide-h3" style="color: var(--tertiary);"><i class="fas fa-piano"></i> شبیه‌ساز نُت مصنوعی</div>
+            <p class="slide-text" style="font-size: 0.78rem; margin-bottom: 8px;">یک نُت را انتخاب کنید:</p>
+            <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+              <button class="note-btn" data-note="262" data-name="Do (C4)">Do</button>
+              <button class="note-btn" data-note="294" data-name="Re (D4)">Re</button>
+              <button class="note-btn" data-note="330" data-name="Mi (E4)">Mi</button>
+              <button class="note-btn" data-note="349" data-name="Fa (F4)">Fa</button>
+              <button class="note-btn" data-note="392" data-name="Sol (G4)">Sol</button>
+              <button class="note-btn" data-note="440" data-name="La (A4)">La</button>
+              <button class="note-btn" data-note="494" data-name="Si (B4)">Si</button>
+              <button class="note-btn" data-note="523" data-name="Do (C5)">Do↑</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <img src="images/fourier-wave-decomposition.png" alt="Fourier Wave Decomposition" class="img-box" style="margin-top: 14px;" onerror="this.style.display='none'">
+      <div class="card" style="margin-top: 14px; background: rgba(236, 72, 153, 0.06); border-color: rgba(236, 72, 153, 0.3);">
+        <div class="slide-h3" style="color: var(--hyperbolic);"><i class="fas fa-lightbulb"></i> پیوند با PDE</div>
+        <p class="slide-text" style="font-size: 0.85rem;">
+          صدایی که می‌شنوید، نتیجه <strong>حل معادله موج</strong> در تار است. فرکانس پایه هر نُت از رابطه $f = \frac{1}{2L}\sqrt{T/\rho}$ به دست می‌آید.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۲۴ — شبیه‌ساز نُت -->
+  <div class="slide" data-slide="24" data-topic="7">
+    <div class="slide-inner">
+      <span class="slide-num">۷. شبیه‌ساز نُت</span>
+      <h2 class="slide-h1">شبیه‌ساز تعاملی ارتعاش تار</h2>
+      <p class="slide-text">طول تار را تغییر دهید و ببینید چگونه فرکانس و نُت تغییر می‌کند.</p>
+      <div class="simulator">
+        <div class="sim-header">
+          <div class="sim-title"><i class="fas fa-music"></i> تار مرتعش</div>
+          <div class="sim-controls">
+            <div class="slider-group">
+              <label>موقعیت انگشت (x/L):</label>
+              <input type="range" id="stringPos" min="0.05" max="0.95" value="0.5" step="0.01">
+              <span class="slider-value" id="stringPosValue">۰.۵۰</span>
+            </div>
+          </div>
+        </div>
+        <div class="canvas-wrapper" style="height: 240px;"><canvas id="stringCanvas"></canvas></div>
+        <div class="grid-3" style="margin-top: 12px;">
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 0.75rem; color: var(--text-dim);">طول مؤثر تار</div>
+            <div id="stringLength" style="font-size: 1.1rem; color: var(--gold); font-weight: 800; font-family: 'Courier New', monospace;">—</div>
+          </div>
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 0.75rem; color: var(--text-dim);">فرکانس (Hz)</div>
+            <div id="stringFreq" style="font-size: 1.1rem; color: var(--primary); font-weight: 800; font-family: 'Courier New', monospace;">—</div>
+          </div>
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 0.75rem; color: var(--text-dim);">نُت موسیقی</div>
+            <div id="stringNote" style="font-size: 1.1rem; color: var(--tertiary); font-weight: 800;">—</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۲۵ — استخراج ضرایب فوریه -->
+  <div class="slide" data-slide="25" data-topic="7">
+    <div class="slide-inner">
+      <span class="slide-num">مرور — استخراج</span>
+      <h2 class="slide-h1">استخراج گام‌به‌گام ضرایب فوریه</h2>
+      <p class="slide-text">
+        سری فوریه: $f(x) = \frac{a_0}{2} + \sum_{n=1}^{\infty}\left[a_n \cos(n\omega x) + b_n \sin(n\omega x)\right]$
+      </p>
+      <div class="card" style="background: rgba(255, 183, 0, 0.06); border-color: rgba(255, 183, 0, 0.3);">
+        <div class="slide-h3" style="color: var(--gold);"><i class="fas fa-calculator"></i> گام ۱: تعامد پایه‌ها</div>
+        <div class="math-box gold-math" style="padding: 12px; font-size: 0.82rem;">
+          $$\int_{-L}^{L} \sin\!\left(\frac{m\pi x}{L}\right)\sin\!\left(\frac{n\pi x}{L}\right) dx = L\delta_{mn}$$
+          $$\int_{-L}^{L} \cos\!\left(\frac{m\pi x}{L}\right)\cos\!\left(\frac{n\pi x}{L}\right) dx = L\delta_{mn}$$
+          $$\int_{-L}^{L} \sin\!\left(\frac{m\pi x}{L}\right)\cos\!\left(\frac{n\pi x}{L}\right) dx = 0$$
+        </div>
+      </div>
+      <div class="card" style="margin-top: 12px; background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3);">
+        <div class="slide-h3" style="color: var(--primary);"><i class="fas fa-calculator"></i> گام ۲: ضرب در cos و انتگرال</div>
+        <p class="slide-text" style="font-size: 0.85rem;">
+          ضرب دو طرف در $\cos\!\left(\frac{n\pi x}{L}\right)$ و انتگرال از $-L$ تا $L$:
+        </p>
+        <div class="math-box" style="padding: 12px; font-size: 0.82rem;">
+          $$\int_{-L}^{L} f(x)\cos\!\left(\frac{n\pi x}{L}\right) dx = \int_{-L}^{L} a_n \cos^2\!\left(\frac{n\pi x}{L}\right) dx$$
+        </div>
+        <p class="slide-text" style="font-size: 0.82rem;">← جواب:</p>
+        <div class="math-box gold-math" style="padding: 12px;">
+          $$\boxed{a_n = \frac{1}{L}\int_{-L}^{L} f(x)\cos\!\left(\frac{n\pi x}{L}\right) dx}$$
+        </div>
+      </div>
+      <div class="card" style="margin-top: 12px; background: rgba(168, 85, 247, 0.06); border-color: rgba(168, 85, 247, 0.3);">
+        <div class="slide-h3" style="color: var(--tertiary);"><i class="fas fa-calculator"></i> گام ۳: به‌طور مشابه برای $a_0$ و $b_n$</div>
+        <div class="math-box purple-math" style="padding: 12px;">
+          $$\boxed{a_0 = \frac{1}{L}\int_{-L}^{L} f(x) dx}$$
+          $$\boxed{b_n = \frac{1}{L}\int_{-L}^{L} f(x)\sin\!\left(\frac{n\pi x}{L}\right) dx}$$
+        </div>
+      </div>
+      <div class="card" style="margin-top: 14px; background: rgba(236, 72, 153, 0.06); border-color: rgba(236, 72, 153, 0.3);">
+        <div class="slide-h3" style="color: var(--hyperbolic);"><i class="fas fa-lightbulb"></i> چرا مهم است؟</div>
+        <p class="slide-text" style="font-size: 0.85rem;">
+          ضرایب فوریه، <strong>تصویر</strong> تابع $f$ روی پایه‌های متعامد $\{\cos(n\omega x), \sin(n\omega x)\}$ است — این همان مفهوم <strong>فضای برداری</strong> است که در جلسه ۳ دیدیم.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۲۶ — تمرین تکمیلی: استخراج -->
+  <div class="slide" data-slide="26" data-topic="7">
+    <div class="slide-inner">
+      <span class="slide-num">تکمیلی</span>
+      <h2 class="slide-h1">استخراج معادله گرما در ۳ بعد</h2>
+      <p class="slide-text">
+        تعمیم معادله گرما به سه بُعد:
+      </p>
+      <div class="math-box gold-math" style="background: rgba(255, 183, 0, 0.1); border-color: rgba(255, 183, 0, 0.4);">
+        $$\frac{\partial u}{\partial t} = \alpha \left(\frac{\partial^2 u}{\partial x^2} + \frac{\partial^2 u}{\partial y^2} + \frac{\partial^2 u}{\partial z^2}\right) = \alpha \nabla^2 u$$
+      </div>
+      <div class="card" style="margin-top: 14px; background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3);">
+        <div class="slide-h3" style="color: var(--primary);"><i class="fas fa-calculator"></i> گام ۱: بقای انرژی در ۳ بعد</div>
+        <p class="slide-text" style="font-size: 0.85rem;">
+          برای حجم کوچک $V$ با سطح $\partial V$:
+        </p>
+        <div class="math-box" style="padding: 12px;">
+          $$\frac{d}{dt}\int_V \rho c_p u \, dV = -\int_{\partial V} \vec{q} \cdot d\vec{A}$$
+        </div>
+      </div>
+      <div class="card" style="margin-top: 12px; background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3);">
+        <div class="slide-h3" style="color: var(--primary);"><i class="fas fa-calculator"></i> گام ۲: قضیه واگرایی (Divergence Theorem)</div>
+        <div class="math-box" style="padding: 12px;">
+          $$\int_V \left[\rho c_p \frac{\partial u}{\partial t} + \nabla \cdot \vec{q}\right] dV = 0$$
+        </div>
+        <p class="slide-text" style="font-size: 0.82rem;">چون برای هر حجمی برقرار است:</p>
+        <div class="math-box gold-math" style="padding: 12px;">
+          $$\rho c_p \frac{\partial u}{\partial t} = -\nabla \cdot \vec{q} = \nabla \cdot (k \nabla u)$$
+        </div>
+      </div>
+      <div class="card" style="margin-top: 12px; background: rgba(168, 85, 247, 0.06); border-color: rgba(168, 85, 247, 0.3);">
+        <div class="slide-h3" style="color: var(--tertiary);"><i class="fas fa-check-circle"></i> نتیجه نهایی</div>
+        <div class="math-box purple-math" style="padding: 12px; font-size: 1.05rem;">
+          $$\boxed{\frac{\partial u}{\partial t} = \alpha \nabla^2 u}$$
+        </div>
+        <p class="slide-text" style="font-size: 0.82rem;">$\alpha = \frac{k}{\rho c_p}$ = ضریب نفوذ حرارتی</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۲۷ — جمع‌بندی نهایی -->
+  <div class="slide" data-slide="27" data-topic="7">
+    <div class="slide-inner">
+      <h2 class="slide-h1">جمع‌بندی کلی جلسه ۵</h2>
+      <div class="grid-3">
+        <div class="card" style="text-align: center;">
+          <i class="fas fa-cube" style="font-size: 1.8rem; color: var(--primary); display: block; margin-bottom: 10px;"></i>
+          <div class="slide-h3" style="justify-content: center;">PDE چیست</div>
+          <p class="slide-text" style="font-size: 0.8rem;">تعریف و تفاوت با ODE</p>
+        </div>
+        <div class="card" style="text-align: center;">
+          <i class="fas fa-sort-numeric-up" style="font-size: 1.8rem; color: var(--gold); display: block; margin-bottom: 10px;"></i>
+          <div class="slide-h3" style="justify-content: center;">دسته‌بندی</div>
+          <p class="slide-text" style="font-size: 0.8rem;">مرتبه، خطی، همگن</p>
+        </div>
+        <div class="card" style="text-align: center;">
+          <i class="fas fa-shapes" style="font-size: 1.8rem; color: var(--tertiary); display: block; margin-bottom: 10px;"></i>
+          <div class="slide-h3" style="justify-content: center;">سه نوع</div>
+          <p class="slide-text" style="font-size: 0.8rem;">بیضوی، سهموی، هذلولوی</p>
+        </div>
+        <div class="card" style="text-align: center;">
+          <i class="fas fa-calculator" style="font-size: 1.8rem; color: var(--pink); display: block; margin-bottom: 10px;"></i>
+          <div class="slide-h3" style="justify-content: center;">استخراج</div>
+          <p class="slide-text" style="font-size: 0.8rem;">گرما، موج، لاپلاس</p>
+        </div>
+        <div class="card" style="text-align: center;">
+          <i class="fas fa-anchor" style="font-size: 1.8rem; color: var(--primary); display: block; margin-bottom: 10px;"></i>
+          <div class="slide-h3" style="justify-content: center;">شرایط</div>
+          <p class="slide-text" style="font-size: 0.8rem;">مرزی و اولیه</p>
+        </div>
+        <div class="card" style="text-align: center;">
+          <i class="fas fa-music" style="font-size: 1.8rem; color: var(--gold); display: block; margin-bottom: 10px;"></i>
+          <div class="slide-h3" style="justify-content: center;">کاربردها</div>
+          <p class="slide-text" style="font-size: 0.8rem;">خودرو، موسیقی، رباتیک</p>
+        </div>
+      </div>
+      <div class="card" style="margin-top: 16px;">
+        <div class="slide-h3"><i class="fas fa-arrow-left"></i> جلسه بعد</div>
+        <p class="slide-text" style="font-size: 0.88rem;">
+          <strong style="color: var(--primary);">جلسه ۶ — معادله گرما و جداسازی متغیرها</strong>
+        </p>
+        <ul style="list-style: none; padding: 0; font-size: 0.82rem; color: var(--text-dim); line-height: 2; margin-top: 8px;">
+          <li>🔹 حل تحلیلی با جداسازی متغیرها</li>
+          <li>🔹 سری فوریه در حل PDE</li>
+          <li>🔹 شرایط مرزی مختلف</li>
+          <li>🔹 کاربرد در عملگر پیزو</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۲۸ — خداحافظی -->
+  <div class="slide" data-slide="28" data-topic="7">
+    <div class="slide-inner title-slide">
+      <div style="font-size: 3.5rem; color: var(--gold); margin-bottom: 18px;">
+        <i class="fas fa-check-circle"></i>
+      </div>
+      <h2 class="slide-h1">تا جلسه بعد</h2>
+      <p class="slide-text" style="font-size: 1rem;">
+        با زیبایی ریاضیات همراه باشید 🌟
+      </p>
+      <div class="math-box gold-math" style="margin-top: 22px; background: rgba(255, 183, 0, 0.08); padding: 22px;">
+        $$\int_{-\infty}^{+\infty} e^{-x^2} dx = \sqrt{\pi}$$
+      </div>
+      <p class="instructor-line" style="margin-top: 22px;">دکتر مسعود گوهری منش</p>
+      <p class="instructor-title-line">دانشیار گروه مهندسی مکانیک — دانشگاه تربت حیدریه</p>
+      <p style="font-size: 0.8rem; color: var(--text-dim); margin-top: 18px;">
+        جلسه بعد: <strong style="color: var(--primary);">معادله گرما و جداسازی متغیرها</strong>
+      </p>
+    </div>
+  </div>
+
+</div>
+
+<div class="bottom-nav">
+  <button class="nav-btn" id="prevBtn" disabled><i class="fas fa-arrow-right"></i><span>قبلی</span></button>
+  <div class="dots-nav" id="dotsNav"></div>
+  <div class="slide-counter"><span id="currentSlide">۱</span> / ۲۸</div>
+  <button class="nav-btn" id="nextBtn"><span>بعدی</span><i class="fas fa-arrow-left"></i></button>
+</div>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+/* ═══ ناوبری ═══ */
+const slides = document.querySelectorAll('.slide');
+const totalSlides = slides.length;
+let currentSlide = 0;
+const topicPills = document.querySelectorAll('.topic-pill');
+
+const dotsNav = document.getElementById('dotsNav');
+for (let i = 0; i < totalSlides; i++) {
+  const dot = document.createElement('button');
+  dot.className = 'dot-nav' + (i === 0 ? ' active' : '');
+  dot.addEventListener('click', () => goToSlide(i));
+  dotsNav.appendChild(dot);
+}
+
+function goToSlide(n) {
+  if (n < 0 || n >= totalSlides) return;
+  slides.forEach((s, i) => {
+    s.classList.remove('active', 'prev');
+    if (i < n) s.classList.add('prev');
+    if (i === n) s.classList.add('active');
+  });
+  currentSlide = n;
+  updateNav();
+  playTransition();
+  setTimeout(() => {
+    initVisibleCharts();
+    if (window.MathJax && window.MathJax.typesetPromise) window.MathJax.typesetPromise();
+  }, 100);
+}
+
+function updateNav() {
+  document.querySelectorAll('.dot-nav').forEach((d, i) => d.classList.toggle('active', i === currentSlide));
+  document.getElementById('currentSlide').textContent = toFa(currentSlide + 1);
+  document.getElementById('prevBtn').disabled = currentSlide === 0;
+  document.getElementById('nextBtn').disabled = currentSlide === totalSlides - 1;
+  document.getElementById('progressFill').style.width = ((currentSlide + 1) / totalSlides * 100) + '%';
+  const currentTopic = slides[currentSlide].dataset.topic;
+  topicPills.forEach(pill => {
+    const t = parseInt(pill.dataset.topic);
+    const ct = parseInt(currentTopic);
+    pill.classList.toggle('active', t === ct);
+    pill.classList.toggle('done', t < ct);
+    if (t === ct) pill.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+  });
+}
+
+document.getElementById('prevBtn').addEventListener('click', () => goToSlide(currentSlide - 1));
+document.getElementById('nextBtn').addEventListener('click', () => goToSlide(currentSlide + 1));
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowLeft') { e.preventDefault(); goToSlide(currentSlide + 1); }
+  else if (e.key === 'ArrowRight') { e.preventDefault(); goToSlide(currentSlide - 1); }
+  else if (e.key === ' ') { e.preventDefault(); goToSlide(currentSlide + 1); }
+  else if (e.key === 'Home') { e.preventDefault(); goToSlide(0); }
+  else if (e.key === 'End') { e.preventDefault(); goToSlide(totalSlides - 1); }
+  else if (e.key === 'Escape' && document.fullscreenElement) document.exitFullscreen();
+});
+
+let touchStartX = 0, touchStartY = 0;
+document.addEventListener('touchstart', e => {
+  touchStartX = e.changedTouches[0].screenX;
+  touchStartY = e.changedTouches[0].screenY;
+}, { passive: true });
+document.addEventListener('touchend', e => {
+  const dx = e.changedTouches[0].screenX - touchStartX;
+  const dy = e.changedTouches[0].screenY - touchStartY;
+  if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy)) {
+    if (dx < 0) goToSlide(currentSlide + 1);
+    else goToSlide(currentSlide - 1);
+  }
+}, { passive: true });
+
+/* ═══ صدا ═══ */
+let audioCtx = null, soundEnabled = true;
+function initAudio() { if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
+function playTransition() {
+  if (!soundEnabled) return;
+  initAudio();
+  [440, 554.37].forEach((freq, i) => {
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.connect(gain); gain.connect(audioCtx.destination);
+    osc.frequency.value = freq; osc.type = 'sine';
+    const t = audioCtx.currentTime + i * 0.06;
+    gain.gain.setValueAtTime(0.04, t);
+    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.18);
+    osc.start(t); osc.stop(t + 0.22);
+  });
+}
+document.getElementById('soundToggle').addEventListener('click', function() {
+  soundEnabled = !soundEnabled;
+  this.classList.toggle('active', soundEnabled);
+  this.innerHTML = soundEnabled ? '<i class="fas fa-volume-up"></i>' : '<i class="fas fa-volume-mute"></i>';
+  showToast(soundEnabled ? 'صدا فعال' : 'صدا غیرفعال');
+});
+document.getElementById('fullscreenToggle').addEventListener('click', function() {
+  if (!document.fullscreenElement) { document.documentElement.requestFullscreen(); this.innerHTML = '<i class="fas fa-compress"></i>'; }
+  else { document.exitFullscreen(); this.innerHTML = '<i class="fas fa-expand"></i>'; }
+});
+function showToast(msg) {
+  const container = document.getElementById('toastContainer');
+  const toast = document.createElement('div');
+  toast.className = 'toast';
+  toast.innerHTML = `<i class="fas fa-info-circle"></i> ${msg}`;
+  container.appendChild(toast);
+  setTimeout(() => { toast.style.opacity = '0'; toast.style.transform = 'translateX(-60px)'; setTimeout(() => toast.remove(), 300); }, 2400);
+}
+function toFa(n) { const fa = ['۰','۱','۲','۳','۴','۵','۶','۷','۸','۹']; return String(n).replace(/\d/g, d => fa[d]); }
+
+/* ═══ پس‌زمینه ═══ */
+const bgCanvas = document.getElementById('bgCanvas');
+const bgCtx = bgCanvas.getContext('2d');
+let particles = [];
+function resizeBg() { bgCanvas.width = window.innerWidth; bgCanvas.height = window.innerHeight; }
+resizeBg();
+window.addEventListener('resize', resizeBg);
+class Particle {
+  constructor() { this.reset(); }
+  reset() {
+    this.x = Math.random() * bgCanvas.width;
+    this.y = Math.random() * bgCanvas.height;
+    this.size = Math.random() * 1.6 + 0.4;
+    this.speedX = (Math.random() - 0.5) * 0.3;
+    this.speedY = (Math.random() - 0.5) * 0.3;
+    this.opacity = Math.random() * 0.5 + 0.15;
+    const colors = ['#00d4aa', '#06b6d4', '#a855f7', '#ffb700'];
+    this.color = colors[Math.floor(Math.random() * colors.length)];
+  }
+  update() { this.x += this.speedX; this.y += this.speedY; if (this.x < 0 || this.x > bgCanvas.width || this.y < 0 || this.y > bgCanvas.height) this.reset(); }
+  draw() { bgCtx.beginPath(); bgCtx.arc(this.x, this.y, this.size, 0, Math.PI*2); bgCtx.fillStyle = this.color; bgCtx.globalAlpha = this.opacity; bgCtx.fill(); bgCtx.globalAlpha = 1; }
+}
+for (let i = 0; i < 50; i++) particles.push(new Particle());
+function animateBg() { bgCtx.clearRect(0, 0, bgCanvas.width, bgCanvas.height); particles.forEach(p => { p.update(); p.draw(); }); requestAnimationFrame(animateBg); }
+animateBg();
+
+/* ═══ ابزار ═══ */
+function setupCanvas(canvasId) {
+  const canvas = document.getElementById(canvasId);
+  if (!canvas) return null;
+  const dpr = window.devicePixelRatio || 1;
+  const rect = canvas.getBoundingClientRect();
+  canvas.width = rect.width * dpr; canvas.height = rect.height * dpr;
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+  return { ctx, w: rect.width, h: rect.height };
+}
+function drawGrid(ctx, w, h, cols = 10, rows = 10) {
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)'; ctx.lineWidth = 1;
+  for (let i = 0; i <= cols; i++) { ctx.beginPath(); ctx.moveTo((w/cols)*i, 0); ctx.lineTo((w/cols)*i, h); ctx.stroke(); }
+  for (let i = 0; i <= rows; i++) { ctx.beginPath(); ctx.moveTo(0, (h/rows)*i); ctx.lineTo(w, (h/rows)*i); ctx.stroke(); }
+}
+
+/* ═══ شبیه‌ساز تشخیص نوع PDE ═══ */
+function drawPDEType() {
+  const s = setupCanvas('pdeTypeCanvas'); if (!s) return;
+  const { ctx, w, h } = s; ctx.clearRect(0, 0, w, h);
+  drawGrid(ctx, w, h, 10, 10);
+  const cx = w/2, cy = h/2;
+  const scale = Math.min(w, h) / 6;
+  const A = parseFloat(document.getElementById('pdeA').value);
+  const B = parseFloat(document.getElementById('pdeB').value);
+  const C = parseFloat(document.getElementById('pdeC').value);
+  const delta = B*B - 4*A*C;
+  let type, color, label, example;
+  if (delta < -0.01) { type = 'elliptic'; color = '#00d4aa'; label = 'بیضوی (Elliptic)'; example = 'u_xx + u_yy = 0'; }
+  else if (Math.abs(delta) <= 0.01) { type = 'parabolic'; color = '#ffb700'; label = 'سهموی (Parabolic)'; example = 'u_t = α·u_xx'; }
+  else { type = 'hyperbolic'; color = '#ec4899'; label = 'هذلولوی (Hyperbolic)'; example = 'u_tt = c²·u_xx'; }
+  document.getElementById('discriminant').textContent = delta.toFixed(2);
+  document.getElementById('discriminant').style.color = color;
+  document.getElementById('pdeTypeLabel').textContent = label;
+  document.getElementById('pdeTypeLabel').style.color = color;
+  document.getElementById('pdeExample').textContent = example;
+  ctx.strokeStyle = color; ctx.lineWidth = 3; ctx.shadowColor = color; ctx.shadowBlur = 15;
+  if (type === 'elliptic') {
+    ctx.beginPath(); ctx.ellipse(cx, cy, scale*1.5, scale, 0, 0, Math.PI*2); ctx.stroke();
+    ctx.beginPath(); ctx.ellipse(cx, cy, scale, scale*0.6, 0, 0, Math.PI*2); ctx.stroke();
+  } else if (type === 'parabolic') {
+    for (let k = -2; k <= 2; k += 0.5) {
+      ctx.beginPath();
+      for (let t = -3; t <= 3; t += 0.05) {
+        const x = t; const y = k + 0.3 * t * t;
+        const px = cx + x * scale * 0.8; const py = cy - y * scale * 0.8;
+        if (t === -3) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+      }
+      ctx.stroke();
+    }
+  } else {
+    for (let k = -2; k <= 2; k += 0.5) {
+      ctx.beginPath();
+      for (let t = -3; t <= 3; t += 0.05) {
+        if (Math.abs(t) < 0.01) continue;
+        const x = t; const y = k + 1/Math.max(0.1, Math.abs(x)) * Math.sign(x);
+        const px = cx + x * scale * 0.8; const py = cy - y * scale * 0.4;
+        if (t === -3) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+      }
+      ctx.stroke();
+    }
+  }
+  ctx.shadowBlur = 0;
+  ctx.fillStyle = color; ctx.font = 'bold 16px Vazirmatn'; ctx.textAlign = 'center';
+  ctx.fillText(label, cx, 30);
+}
+['pdeA', 'pdeB', 'pdeC'].forEach(id => {
+  const el = document.getElementById(id);
+  if (el) el.addEventListener('input', function() {
+    document.getElementById(id + 'Value').textContent = toFa(parseFloat(this.value).toFixed(1));
+    drawPDEType();
+  });
+});
+
+/* ═══ شبیه‌ساز گرما ═══ */
+let heatTime = 0; let heatAnimId = null;
+function drawHeat(alpha) {
+  const s = setupCanvas('heatCanvas'); if (!s) return;
+  const { ctx, w, h } = s; ctx.clearRect(0, 0, w, h);
+  drawGrid(ctx, w, h, 10, 5);
+  const Nx = 100; const L = 1;
+  ctx.beginPath(); ctx.strokeStyle = '#ffb700'; ctx.lineWidth = 2.5;
+  ctx.shadowColor = '#ffb700'; ctx.shadowBlur = 8;
+  for (let i = 0; i <= Nx; i++) {
+    const x = i / Nx; const t = heatTime;
+    const u = Math.sin(Math.PI * x) * Math.exp(-alpha * Math.PI * Math.PI * t);
+    const px = x * w; const py = h - 20 - u * (h - 40);
+    if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+  }
+  ctx.stroke(); ctx.shadowBlur = 0;
+  ctx.fillStyle = '#ffb700'; ctx.font = 'bold 12px Vazirmatn'; ctx.textAlign = 'left';
+  ctx.fillText(`t = ${heatTime.toFixed(2)}`, 12, 22);
+}
+function animateHeat() {
+  const alpha = parseFloat(document.getElementById('heatAlpha').value);
+  heatTime += 0.02; if (heatTime > 2) heatTime = 0;
+  drawHeat(alpha); heatAnimId = requestAnimationFrame(animateHeat);
+}
+function startHeat() { if (heatAnimId) cancelAnimationFrame(heatAnimId); heatTime = 0; animateHeat(); }
+const heatAlphaEl = document.getElementById('heatAlpha');
+if (heatAlphaEl) heatAlphaEl.addEventListener('input', function() { document.getElementById('heatAlphaValue').textContent = toFa(parseFloat(this.value).toFixed(2)); });
+
+/* ═══ شبیه‌ساز موج ═══ */
+let waveTime = 0; let waveAnimId = null;
+function drawWave(c) {
+  const s = setupCanvas('waveCanvas'); if (!s) return;
+  const { ctx, w, h } = s; ctx.clearRect(0, 0, w, h);
+  drawGrid(ctx, w, h, 10, 5);
+  ctx.beginPath(); ctx.strokeStyle = '#ec4899'; ctx.lineWidth = 2.5;
+  ctx.shadowColor = '#ec4899'; ctx.shadowBlur = 8;
+  const Nx = 200;
+  for (let i = 0; i <= Nx; i++) {
+    const x = i / Nx;
+    const u = Math.sin(Math.PI * x) * Math.cos(c * Math.PI * waveTime);
+    const px = x * w; const py = h/2 - u * (h * 0.35);
+    if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+  }
+  ctx.stroke(); ctx.shadowBlur = 0;
+  ctx.fillStyle = '#ec4899'; ctx.font = 'bold 12px Vazirmatn'; ctx.textAlign = 'left';
+  ctx.fillText(`t = ${waveTime.toFixed(2)}`, 12, 22);
+}
+function animateWave() {
+  const c = parseFloat(document.getElementById('waveC').value);
+  waveTime += 0.02; if (waveTime > 4) waveTime = 0;
+  drawWave(c); waveAnimId = requestAnimationFrame(animateWave);
+}
+function startWave() { if (waveAnimId) cancelAnimationFrame(waveAnimId); waveTime = 0; animateWave(); }
+const waveCEl = document.getElementById('waveC');
+if (waveCEl) waveCEl.addEventListener('input', function() { document.getElementById('waveCValue').textContent = toFa(parseFloat(this.value).toFixed(1)); });
+
+/* ═══ شبیه‌ساز لاپلاس ═══ */
+function drawLaplace() {
+  const s = setupCanvas('laplaceCanvas'); if (!s) return;
+  const { ctx, w, h } = s; ctx.clearRect(0, 0, w, h);
+  const N = 40; const cellW = w / N; const cellH = h / N;
+  for (let i = 0; i < N; i++) {
+    for (let j = 0; j < N; j++) {
+      const x = j / (N - 1); const y = i / (N - 1);
+      const val = (Math.sin(Math.PI * x) * Math.sinh(Math.PI * y) / Math.sinh(Math.PI) +
+                   0.5 * Math.sin(2 * Math.PI * x) * Math.sinh(2 * Math.PI * y) / Math.sinh(2 * Math.PI)) / 1.5;
+      const intensity = Math.max(0, Math.min(1, val));
+      const r = Math.round(intensity * 255); const g = Math.round(212 * intensity); const b = Math.round(170 * intensity);
+      ctx.fillStyle = `rgb(${r}, ${g}, ${b})`;
+      ctx.fillRect(j * cellW, i * cellH, cellW + 1, cellH + 1);
+    }
+  }
+}
+
+/* ═══ شبیه‌ساز شرایط مرزی ═══ */
+function drawBC(value) {
+  const v = value / 100;
+  const s1 = setupCanvas('bcDirichlet');
+  if (s1) {
+    const { ctx, w, h } = s1; ctx.clearRect(0, 0, w, h);
+    drawGrid(ctx, w, h, 6, 4);
+    ctx.beginPath(); ctx.strokeStyle = '#00d4aa'; ctx.lineWidth = 2.5; ctx.shadowColor = '#00d4aa'; ctx.shadowBlur = 8;
+    for (let i = 0; i <= 100; i++) {
+      const x = i / 100; const u = v;
+      const px = x * w; const py = h - 20 - u * (h - 40);
+      if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+    }
+    ctx.stroke(); ctx.shadowBlur = 0;
+    ctx.fillStyle = '#00d4aa'; ctx.font = 'bold 11px Vazirmatn'; ctx.textAlign = 'left';
+    ctx.fillText(`u = ${value}`, 10, 20);
+  }
+  const s2 = setupCanvas('bcNeumann');
+  if (s2) {
+    const { ctx, w, h } = s2; ctx.clearRect(0, 0, w, h);
+    drawGrid(ctx, w, h, 6, 4);
+    ctx.beginPath(); ctx.strokeStyle = '#ffb700'; ctx.lineWidth = 2.5; ctx.shadowColor = '#ffb700'; ctx.shadowBlur = 8;
+    for (let i = 0; i <= 100; i++) {
+      const x = i / 100; const u = v * x;
+      const px = x * w; const py = h - 20 - u * (h - 40);
+      if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+    }
+    ctx.stroke(); ctx.shadowBlur = 0;
+    ctx.fillStyle = '#ffb700'; ctx.font = 'bold 11px Vazirmatn'; ctx.textAlign = 'left';
+    ctx.fillText(`u' = ${value}`, 10, 20);
+  }
+  const s3 = setupCanvas('bcRobin');
+  if (s3) {
+    const { ctx, w, h } = s3; ctx.clearRect(0, 0, w, h);
+    drawGrid(ctx, w, h, 6, 4);
+    ctx.beginPath(); ctx.strokeStyle = '#a855f7'; ctx.lineWidth = 2.5; ctx.shadowColor = '#a855f7'; ctx.shadowBlur = 8;
+    for (let i = 0; i <= 100; i++) {
+      const x = i / 100; const u = v * (1 - Math.exp(-3*x));
+      const px = x * w; const py = h - 20 - u * (h - 40);
+      if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+    }
+    ctx.stroke(); ctx.shadowBlur = 0;
+    ctx.fillStyle = '#a855f7'; ctx.font = 'bold 11px Vazirmatn'; ctx.textAlign = 'left';
+    ctx.fillText(`u'+hu = ${value}`, 10, 20);
+  }
+}
+const bcValueEl = document.getElementById('bcValue');
+if (bcValueEl) bcValueEl.addEventListener('input', function() {
+  document.getElementById('bcValueValue').textContent = toFa(this.value);
+  drawBC(parseInt(this.value));
+});
+
+/* ═══ شبیه‌ساز برهم‌نهی ═══ */
+function drawSuperposition(f1, f2) {
+  const s = setupCanvas('superCanvas'); if (!s) return;
+  const { ctx, w, h } = s; ctx.clearRect(0, 0, w, h);
+  drawGrid(ctx, w, h, 10, 5);
+  const Nx = 200;
+  ctx.beginPath(); ctx.strokeStyle = 'rgba(0, 212, 170, 0.6)'; ctx.lineWidth = 1.5;
+  for (let i = 0; i <= Nx; i++) {
+    const x = i / Nx; const u = Math.sin(2 * Math.PI * f1 * x);
+    const px = x * w; const py = h/2 - u * (h * 0.25);
+    if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+  }
+  ctx.stroke();
+  ctx.beginPath(); ctx.strokeStyle = 'rgba(255, 183, 0, 0.6)'; ctx.lineWidth = 1.5;
+  for (let i = 0; i <= Nx; i++) {
+    const x = i / Nx; const u = Math.sin(2 * Math.PI * f2 * x);
+    const px = x * w; const py = h/2 - u * (h * 0.25);
+    if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+  }
+  ctx.stroke();
+  ctx.beginPath(); ctx.strokeStyle = '#a855f7'; ctx.lineWidth = 3; ctx.shadowColor = '#a855f7'; ctx.shadowBlur = 10;
+  for (let i = 0; i <= Nx; i++) {
+    const x = i / Nx; const u = Math.sin(2 * Math.PI * f1 * x) + Math.sin(2 * Math.PI * f2 * x);
+    const px = x * w; const py = h/2 - u * (h * 0.25);
+    if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+  }
+  ctx.stroke(); ctx.shadowBlur = 0;
+  ctx.font = 'bold 11px Vazirmatn'; ctx.textAlign = 'right';
+  ctx.fillStyle = '#00d4aa'; ctx.fillText(`sin(2π·${f1}·x)`, w - 12, 20);
+  ctx.fillStyle = '#ffb700'; ctx.fillText(`sin(2π·${f2}·x)`, w - 12, 38);
+  ctx.fillStyle = '#a855f7'; ctx.fillText('مجموع', w - 12, 56);
+}
+const superF1El = document.getElementById('superF1');
+const superF2El = document.getElementById('superF2');
+if (superF1El) superF1El.addEventListener('input', function() {
+  document.getElementById('superF1Value').textContent = toFa(this.value);
+  drawSuperposition(parseInt(this.value), parseInt(superF2El.value));
+});
+if (superF2El) superF2El.addEventListener('input', function() {
+  document.getElementById('superF2Value').textContent = toFa(this.value);
+  drawSuperposition(parseInt(superF1El.value), parseInt(this.value));
+});
+
+/* ═══ شبیه‌ساز جرم-فنر-دمپر ═══ */
+function drawMSD() {
+  const s = setupCanvas('msdCanvas'); if (!s) return;
+  const { ctx, w, h } = s; ctx.clearRect(0, 0, w, h);
+  drawGrid(ctx, w, h, 10, 5);
+  const m = parseFloat(document.getElementById('msdM').value);
+  const c = parseFloat(document.getElementById('msdC').value);
+  const k = parseFloat(document.getElementById('msdK').value);
+  const omega_n = Math.sqrt(k / m);
+  const zeta = c / (2 * Math.sqrt(m * k));
+  const omega_d = zeta < 1 ? omega_n * Math.sqrt(1 - zeta*zeta) : omega_n;
+  document.getElementById('msdOmega').textContent = omega_n.toFixed(2);
+  document.getElementById('msdZeta').textContent = zeta.toFixed(2);
+  let type = 'کم‌میرا (Underdamped)';
+  let typeColor = 'var(--primary)';
+  if (Math.abs(zeta - 1) < 0.05) { type = 'بحرانی (Critical)'; typeColor = 'var(--gold)'; }
+  else if (zeta > 1) { type = 'بیش‌میرا (Overdamped)'; typeColor = 'var(--danger)'; }
+  const typeEl = document.getElementById('msdType');
+  typeEl.textContent = type;
+  typeEl.style.color = typeColor;
+  ctx.beginPath(); ctx.strokeStyle = typeColor; ctx.lineWidth = 2.5;
+  ctx.shadowColor = typeColor; ctx.shadowBlur = 8;
+  const N = 200;
+  for (let i = 0; i <= N; i++) {
+    const t = (i / N) * 10;
+    let x;
+    if (zeta < 1) { x = Math.exp(-zeta * omega_n * t) * Math.cos(omega_d * t); }
+    else {
+      const r1 = -omega_n * (zeta - Math.sqrt(zeta*zeta - 1));
+      const r2 = -omega_n * (zeta + Math.sqrt(zeta*zeta - 1));
+      x = (r2 * Math.exp(r1 * t) - r1 * Math.exp(r2 * t)) / (r2 - r1);
+    }
+    const px = (t / 10) * w; const py = h/2 - x * (h * 0.35);
+    if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+  }
+  ctx.stroke(); ctx.shadowBlur = 0;
+  ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+  ctx.beginPath(); ctx.moveTo(0, h/2); ctx.lineTo(w, h/2); ctx.stroke();
+  ctx.fillStyle = typeColor; ctx.font = 'bold 12px Vazirmatn'; ctx.textAlign = 'left';
+  ctx.fillText(`ζ = ${zeta.toFixed(2)}, ω_n = ${omega_n.toFixed(2)}`, 12, 22);
+}
+['msdM', 'msdC', 'msdK'].forEach(id => {
+  const el = document.getElementById(id);
+  if (el) el.addEventListener('input', function() {
+    document.getElementById(id + 'Value').textContent = toFa(parseFloat(this.value).toFixed(2));
+    drawMSD();
+  });
+});
+
+/* ═══ گالری موسیقی + موج دایره‌ای ═══ */
+const artistsData = [
+  { id: 'alizadeh', name: 'حسین علیزاده', desc: 'آهنگساز و نوازنده تار و سه‌تار', audio: 'audio/alizadeh.mp3', icon: 'fa-music' },
+  { id: 'shahnaz', name: 'جلیل شهناز', desc: 'استاد بی‌بدیل تار — صدای جادویی', audio: 'audio/shahnaz.mp3', icon: 'fa-guitar' },
+  { id: 'lotfi', name: 'محمدرضا لطفی', desc: 'نوازنده تار و آهنگساز', audio: 'audio/lotfi.mp3', icon: 'fa-music' },
+  { id: 'sharif', name: 'فرهنگ شریف', desc: 'استاد تار — تکنیک بی‌نظیر', audio: 'audio/sharif.mp3', icon: 'fa-guitar' }
+];
+const globalArtistsData = [
+  { id: 'hendrix', name: 'Jimi Hendrix', desc: 'اسطوره گیتار الکتریک', audio: 'audio/hendrix.mp3', icon: 'fa-guitar' }
+];
+let currentAudio = null;
+let currentArtistId = null;
+let circularTime = 0;
+let circularAnimId = null;
+let waveEnergy = 0;
+
+function renderArtistGallery() {
+  const gallery = document.getElementById('musicGallery');
+  const globalGallery = document.getElementById('globalGallery');
+  if (!gallery || !globalGallery) return;
+  gallery.innerHTML = '';
+  artistsData.forEach(a => {
+    const item = document.createElement('div');
+    item.className = 'artist-item';
+    item.dataset.artistId = a.id;
+    item.innerHTML = `
+      <div class="artist-icon"><i class="fas ${a.icon}"></i></div>
+      <div class="artist-info">
+        <div class="artist-name">${a.name}</div>
+        <div class="artist-desc">${a.desc}</div>
+      </div>
+      <div class="artist-play"><i class="fas fa-play"></i></div>
+    `;
+    item.addEventListener('click', () => playArtist(a));
+    gallery.appendChild(item);
+  });
+  globalGallery.innerHTML = '';
+  globalArtistsData.forEach(a => {
+    const item = document.createElement('div');
+    item.className = 'artist-item';
+    item.dataset.artistId = a.id;
+    item.innerHTML = `
+      <div class="artist-icon" style="background: linear-gradient(135deg, var(--primary), var(--secondary));"><i class="fas ${a.icon}"></i></div>
+      <div class="artist-info">
+        <div class="artist-name" style="direction: ltr; text-align: right;">${a.name}</div>
+        <div class="artist-desc">${a.desc}</div>
+      </div>
+      <div class="artist-play" style="background: var(--secondary);"><i class="fas fa-play"></i></div>
+    `;
+    item.addEventListener('click', () => playArtist(a));
+    globalGallery.appendChild(item);
+  });
+}
+
+function playArtist(artist) {
+  if (currentArtistId === artist.id && currentAudio) {
+    currentAudio.pause();
+    currentAudio = null;
+    currentArtistId = null;
+    document.querySelectorAll('.artist-item').forEach(el => el.classList.remove('playing'));
+    document.getElementById('currentArtist').textContent = '—';
+    document.getElementById('playStatus').textContent = 'آماده';
+    return;
+  }
+  if (currentAudio) { currentAudio.pause(); currentAudio = null; }
+  currentArtistId = artist.id;
+  document.querySelectorAll('.artist-item').forEach(el => {
+    el.classList.toggle('playing', el.dataset.artistId === artist.id);
+  });
+  document.getElementById('currentArtist').textContent = artist.name;
+  document.getElementById('playStatus').textContent = 'در حال پخش...';
+  document.getElementById('playStatus').style.color = 'var(--gold)';
+  currentAudio = new Audio(artist.audio);
+  currentAudio.volume = 0.7;
+  currentAudio.addEventListener('error', () => {
+    document.getElementById('playStatus').textContent = 'فایل یافت نشد — پخش مصنوعی';
+    document.getElementById('playStatus').style.color = 'var(--danger)';
+    playSyntheticWave(440, 3000);
+  });
+  currentAudio.play().then(() => {
+    waveEnergy = 1.0;
+    currentAudio.addEventListener('ended', () => {
+      currentArtistId = null;
+      document.getElementById('currentArtist').textContent = '—';
+      document.getElementById('playStatus').textContent = 'پایان';
+      document.querySelectorAll('.artist-item').forEach(el => el.classList.remove('playing'));
+      waveEnergy = 0.3;
+    });
+  }).catch(err => {
+    document.getElementById('playStatus').textContent = 'خطا — پخش مصنوعی';
+    document.getElementById('playStatus').style.color = 'var(--danger)';
+    playSyntheticWave(440, 3000);
+  });
+}
+
+function playSyntheticWave(freq, duration) {
+  if (!audioCtx) initAudio();
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+  osc.connect(gain); gain.connect(audioCtx.destination);
+  osc.frequency.value = freq; osc.type = 'sine';
+  const t = audioCtx.currentTime;
+  gain.gain.setValueAtTime(0.15, t);
+  gain.gain.exponentialRampToValueAtTime(0.001, t + duration / 1000);
+  osc.start(t); osc.stop(t + duration / 1000);
+  waveEnergy = 1.0;
+  setTimeout(() => waveEnergy = Math.max(0.2, waveEnergy - 0.6), duration);
+}
+
+document.querySelectorAll('.note-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const freq = parseFloat(btn.dataset.note);
+    const name = btn.dataset.name;
+    btn.classList.add('playing');
+    setTimeout(() => btn.classList.remove('playing'), 600);
+    playSyntheticWave(freq, 800);
+    document.getElementById('currentArtist').textContent = `نُت ${name}`;
+    document.getElementById('playStatus').textContent = `فرکانس ${freq} Hz`;
+    document.getElementById('playStatus').style.color = 'var(--tertiary)';
+    showToast(`نُت ${name} — ${freq} Hz`);
+  });
+});
+
+function drawCircularWave() {
+  const s = setupCanvas('circularWaveCanvas'); if (!s) return;
+  const { ctx, w, h } = s;
+  ctx.clearRect(0, 0, w, h);
+  const cx = w / 2; const cy = h / 2;
+  const maxR = Math.min(w, h) * 0.42;
+  const bgGrad = ctx.createRadialGradient(cx, cy, 0, cx, cy, maxR);
+  bgGrad.addColorStop(0, 'rgba(0, 212, 170, 0.15)');
+  bgGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+  ctx.fillStyle = bgGrad;
+  ctx.fillRect(0, 0, w, h);
+  const numWaves = 8;
+  for (let i = 0; i < numWaves; i++) {
+    const phase = (circularTime + i * 0.15) % 1;
+    const r = phase * maxR;
+    const alpha = (1 - phase) * waveEnergy * 0.8;
+    if (alpha < 0.05) continue;
+    ctx.beginPath();
+    ctx.arc(cx, cy, r, 0, Math.PI * 2);
+    ctx.strokeStyle = `rgba(0, 212, 170, ${alpha})`;
+    ctx.lineWidth = 2 + alpha * 2;
+    ctx.stroke();
+  }
+  for (let i = 0; i < 4; i++) {
+    const phase = ((circularTime * 1.3 + i * 0.25) % 1);
+    const r = phase * maxR;
+    const alpha = (1 - phase) * waveEnergy * 0.6;
+    if (alpha < 0.05) continue;
+    ctx.beginPath();
+    ctx.arc(cx, cy, r, 0, Math.PI * 2);
+    ctx.strokeStyle = `rgba(255, 183, 0, ${alpha})`;
+    ctx.lineWidth = 1.5 + alpha * 2;
+    ctx.stroke();
+  }
+  const coreGrad = ctx.createRadialGradient(cx, cy, 0, cx, cy, 40);
+  coreGrad.addColorStop(0, `rgba(255, 183, 0, ${0.8 + waveEnergy * 0.2})`);
+  coreGrad.addColorStop(0.5, `rgba(255, 183, 0, ${0.3 + waveEnergy * 0.3})`);
+  coreGrad.addColorStop(1, 'rgba(255, 183, 0, 0)');
+  ctx.fillStyle = coreGrad;
+  ctx.beginPath(); ctx.arc(cx, cy, 40, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = '#ffb700';
+  ctx.shadowColor = '#ffb700'; ctx.shadowBlur = 20 + waveEnergy * 20;
+  ctx.beginPath(); ctx.arc(cx, cy, 10, 0, Math.PI * 2); ctx.fill();
+  ctx.shadowBlur = 0;
+  ctx.fillStyle = '#050818';
+  ctx.font = 'bold 12px Font Awesome 6 Free';
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillText('\uf001', cx, cy);
+  ctx.fillStyle = `rgba(0, 212, 170, ${0.5 + waveEnergy * 0.5})`;
+  ctx.font = 'bold 11px Vazirmatn';
+  ctx.textAlign = 'right'; ctx.textBaseline = 'top';
+  ctx.fillText(`انرژی: ${(waveEnergy * 100).toFixed(0)}٪`, w - 12, 12);
+  circularTime += 0.008 + waveEnergy * 0.012;
+  if (waveEnergy > 0.05 && !currentAudio) {
+    waveEnergy *= 0.995;
+    if (waveEnergy < 0.05) waveEnergy = 0.05;
+  }
+}
+function animateCircularWave() { drawCircularWave(); circularAnimId = requestAnimationFrame(animateCircularWave); }
+function startCircularWave() { if (circularAnimId) cancelAnimationFrame(circularAnimId); circularTime = 0; waveEnergy = 0.3; animateCircularWave(); }
+function stopCircularWave() { if (circularAnimId) { cancelAnimationFrame(circularAnimId); circularAnimId = null; } }
+
+/* ═══ شبیه‌ساز نُت ═══ */
+function drawString() {
+  const s = setupCanvas('stringCanvas'); if (!s) return;
+  const { ctx, w, h } = s; ctx.clearRect(0, 0, w, h);
+  drawGrid(ctx, w, h, 10, 5);
+  const xL = parseFloat(document.getElementById('stringPos').value);
+  const lengthRatio = xL;
+  const baseFreq = 440;
+  const freq = baseFreq / lengthRatio;
+  const noteNames = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+  const noteIndex = Math.round(12 * Math.log2(freq / 440)) % 12;
+  const octave = 4 + Math.floor(Math.log2(freq / 440));
+  const note = noteNames[(noteIndex + 12) % 12] + octave;
+  document.getElementById('stringLength').textContent = toFa(lengthRatio.toFixed(2));
+  document.getElementById('stringFreq').textContent = toFa(Math.round(freq));
+  document.getElementById('stringNote').textContent = note;
+  ctx.beginPath();
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+  ctx.lineWidth = 1;
+  ctx.moveTo(0, h/2); ctx.lineTo(w, h/2); ctx.stroke();
+  const fingerX = xL * w;
+  ctx.fillStyle = '#ffb700';
+  ctx.beginPath(); ctx.arc(fingerX, h/2, 8, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath();
+  ctx.strokeStyle = '#00d4aa'; ctx.lineWidth = 2.5;
+  ctx.shadowColor = '#00d4aa'; ctx.shadowBlur = 8;
+  for (let i = 0; i <= 100; i++) {
+    const x = (i / 100) * xL;
+    const amplitude = 30 * Math.sin(Math.PI * (x / xL));
+    const px = x * w;
+    const py = h/2 - amplitude * Math.sin(2 * Math.PI * 3);
+    if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+  }
+  ctx.stroke(); ctx.shadowBlur = 0;
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+  ctx.font = 'bold 11px Vazirmatn'; ctx.textAlign = 'right';
+  ctx.fillText(`نُت: ${note}`, w - 12, 22);
+}
+const stringPosEl = document.getElementById('stringPos');
+if (stringPosEl) stringPosEl.addEventListener('input', function() {
+  document.getElementById('stringPosValue').textContent = toFa(parseFloat(this.value).toFixed(2));
+  drawString();
+});
+
+/* ═══ تب‌های کد ═══ */
+document.querySelectorAll('.code-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    const parent = tab.parentElement;
+    parent.querySelectorAll('.code-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    const contentId = 'code-' + tab.dataset.code;
+    const content = document.getElementById(contentId);
+    if (content) {
+      const allContents = parent.parentElement.querySelectorAll('.code-content');
+      allContents.forEach(c => c.classList.remove('active'));
+      content.classList.add('active');
+    }
+  });
+});
+
+/* ═══ رندر ═══ */
+function initVisibleCharts() {
+  const activeSlide = document.querySelector('.slide.active');
+  if (!activeSlide) return;
+  const num = activeSlide.dataset.slide;
+  if (heatAnimId) { cancelAnimationFrame(heatAnimId); heatAnimId = null; }
+  if (waveAnimId) { cancelAnimationFrame(waveAnimId); waveAnimId = null; }
+  if (num !== '23') stopCircularWave();
+  if (num === '6') drawPDEType();
+  else if (num === '7') startHeat();
+  else if (num === '8') startWave();
+  else if (num === '9') drawLaplace();
+  else if (num === '12') drawBC(parseInt(document.getElementById('bcValue').value));
+  else if (num === '14') drawSuperposition(parseInt(document.getElementById('superF1').value), parseInt(document.getElementById('superF2').value));
+  else if (num === '20') drawMSD();
+  else if (num === '23') { renderArtistGallery(); startCircularWave(); }
+  else if (num === '24') drawString();
+}
+
+/* ═══ راه‌اندازی ═══ */
+updateNav();
+setTimeout(() => {
+  initVisibleCharts();
+  if (window.MathJax && window.MathJax.typesetPromise) window.MathJax.typesetPromise();
+}, 400);
+setTimeout(() => showToast('به جلسه ۵ خوش آمدید — آغاز فاز ۲ 🌟'), 1000);
+
+window.addEventListener('resize', () => setTimeout(() => {
+  initVisibleCharts();
+  if (window.MathJax && window.MathJax.typesetPromise) window.MathJax.typesetPromise();
+}, 200));
+</script>
+
+</body>
+</html>

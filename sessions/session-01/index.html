@@ -1,0 +1,3076 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>جلسه ۱ — آنالیز فوریه | دکتر مسعود گوهری منش</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+<script>
+window.MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']],
+    displayMath: [['$$', '$$'], ['\\[', '\\]']],
+    processEscapes: true,
+    processEnvironments: true
+  },
+  options: {
+    skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+    ignoreHtmlClass: 'no-mathjax'
+  },
+  svg: { fontCache: 'global' }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" async></script>
+
+<style>
+:root {
+  --primary: #00d4aa;
+  --secondary: #06b6d4;
+  --tertiary: #a855f7;
+  --gold: #ffb700;
+  --success: #22c55e;
+  --danger: #ff4757;
+  --pink: #ec4899;
+  --dark: #050818;
+  --darker: #020410;
+  --card-bg: rgba(255, 255, 255, 0.05);
+  --card-border: rgba(255, 255, 255, 0.1);
+  --text: #e8eef7;
+  --text-dim: #9aa7bd;
+  --yellow: #ffd93d;
+  --green: #6bcf7f;
+  --purple: #a855f7;
+  --red: #ff6b6b;
+  --robot: #ffb700;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { overflow: hidden; height: 100%; }
+body {
+  font-family: 'Vazirmatn', sans-serif;
+  background: var(--dark);
+  color: var(--text);
+  direction: rtl;
+  line-height: 1.8;
+}
+
+#bgCanvas {
+  position: fixed; inset: 0;
+  z-index: -2;
+  background: radial-gradient(ellipse at top, #0a1230 0%, var(--darker) 50%, #000 100%);
+}
+.glow-orb {
+  position: fixed; border-radius: 50%;
+  filter: blur(120px); opacity: 0.3;
+  z-index: -1; pointer-events: none;
+  animation: floatOrb 25s ease-in-out infinite;
+}
+.orb1 { width: 600px; height: 600px; background: var(--primary); top: -200px; right: -200px; }
+.orb2 { width: 500px; height: 500px; background: var(--tertiary); bottom: -150px; left: -150px; animation-delay: -8s; }
+.orb3 { width: 400px; height: 400px; background: var(--gold); top: 30%; left: 25%; animation-delay: -15s; opacity: 0.12; }
+@keyframes floatOrb {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(50px, -40px) scale(1.15); }
+  66% { transform: translate(-40px, 50px) scale(0.9); }
+}
+
+.top-header {
+  position: fixed; top: 0; left: 0; right: 0;
+  height: 82px;
+  background: rgba(5, 8, 24, 0.9);
+  backdrop-filter: blur(15px);
+  border-bottom: 1px solid var(--card-border);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 18px;
+  z-index: 100;
+}
+.header-left { display: flex; align-items: center; gap: 14px; }
+.header-signature {
+  height: 60px; width: auto; max-width: 150px;
+  object-fit: contain;
+  filter: drop-shadow(0 0 8px rgba(255, 183, 0, 0.3));
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.03);
+  padding: 4px;
+}
+.header-text { display: flex; flex-direction: column; line-height: 1.35; }
+.header-name { font-size: 0.88rem; color: var(--gold); font-weight: 800; white-space: nowrap; }
+.header-univ { font-size: 0.7rem; color: var(--text-dim); font-weight: 500; }
+.header-controls { display: flex; gap: 8px; flex-shrink: 0; }
+.ctrl-btn {
+  width: 38px; height: 38px;
+  border-radius: 10px;
+  border: 1px solid var(--card-border);
+  background: var(--card-bg);
+  backdrop-filter: blur(10px);
+  color: var(--text);
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+}
+.ctrl-btn:hover { background: var(--primary); color: var(--dark); transform: translateY(-2px); }
+.ctrl-btn.active { background: var(--primary); color: var(--dark); }
+
+.topic-nav {
+  position: fixed;
+  top: 82px; left: 0; right: 0;
+  height: 36px;
+  background: rgba(5, 8, 24, 0.9);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--card-border);
+  z-index: 99;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 18px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.topic-nav::-webkit-scrollbar { display: none; }
+.topic-pill {
+  padding: 4px 11px;
+  border-radius: 20px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  white-space: nowrap;
+  color: var(--text-dim);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid transparent;
+  transition: all 0.3s ease;
+}
+.topic-pill.active {
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  color: var(--dark);
+  font-weight: 800;
+  box-shadow: 0 3px 10px rgba(0, 212, 170, 0.35);
+}
+.topic-pill.done { color: var(--primary); border-color: rgba(0, 212, 170, 0.3); }
+
+.progress-top {
+  position: fixed;
+  top: 118px; left: 0; right: 0;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.05);
+  z-index: 98;
+}
+.progress-fill {
+  height: 100%; width: 0%;
+  background: linear-gradient(90deg, var(--primary), var(--secondary), var(--tertiary));
+  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 0 12px var(--primary);
+}
+
+.slide-container {
+  position: fixed;
+  inset: 121px 0 0 0;
+  overflow: hidden;
+}
+.slide {
+  position: absolute; inset: 0;
+  padding: 24px 50px 90px;
+  opacity: 0;
+  transform: translateX(-40px);
+  pointer-events: none;
+  transition: opacity 0.5s ease, transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+.slide.active { opacity: 1; transform: translateX(0); pointer-events: auto; }
+.slide.prev { transform: translateX(40px); }
+.slide::-webkit-scrollbar { width: 6px; }
+.slide::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 3px; }
+
+.slide-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  animation: contentFade 0.6s ease;
+}
+@keyframes contentFade {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.slide-num {
+  display: inline-block;
+  padding: 5px 14px;
+  border-radius: 20px;
+  background: rgba(0, 212, 170, 0.15);
+  color: var(--primary);
+  font-size: 0.72rem;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+.slide-h1 {
+  font-size: clamp(1.3rem, 3.2vw, 2rem);
+  font-weight: 900;
+  background: linear-gradient(135deg, var(--primary), var(--secondary), var(--tertiary), var(--gold));
+  background-size: 300% 300%;
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: gradientShift 6s ease infinite;
+  margin-bottom: 16px;
+  line-height: 1.35;
+}
+@keyframes gradientShift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+.slide-h2 {
+  font-size: clamp(1rem, 2.2vw, 1.3rem);
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 12px;
+  display: flex; align-items: center; gap: 10px;
+}
+.slide-h2 i { color: var(--primary); }
+.slide-h3 {
+  font-size: 0.98rem; font-weight: 700;
+  color: var(--text); margin-bottom: 10px;
+  display: flex; align-items: center; gap: 8px;
+}
+.slide-h3 i { color: var(--gold); font-size: 0.88rem; }
+.slide-text {
+  font-size: 0.9rem; color: var(--text-dim);
+  line-height: 2; margin-bottom: 12px;
+}
+
+.card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 18px;
+  padding: 18px;
+  backdrop-filter: blur(12px);
+  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(0, 212, 170, 0.4);
+  box-shadow: 0 15px 35px rgba(0, 212, 170, 0.12);
+}
+.grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+.grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; }
+
+.title-slide { text-align: center; padding-top: 5px; }
+.title-slide .hero-img {
+  width: 100%; max-width: 480px; height: 150px;
+  object-fit: cover; border-radius: 20px;
+  margin: 0 auto 12px; display: block;
+  border: 1px solid var(--card-border);
+  box-shadow: 0 20px 40px rgba(0, 212, 170, 0.15);
+}
+.title-slide .bismillah {
+  font-size: 1.2rem; font-weight: 500;
+  background: linear-gradient(90deg, var(--gold), var(--primary), var(--secondary));
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 4px;
+}
+.title-slide .hoval {
+  font-size: 0.82rem; color: var(--text-dim);
+  margin-bottom: 16px; letter-spacing: 1px;
+}
+.title-slide .main-title {
+  font-size: clamp(1.7rem, 4.2vw, 2.6rem);
+  font-weight: 900;
+  background: linear-gradient(135deg, var(--primary), var(--secondary), var(--gold));
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 10px; line-height: 1.3;
+}
+.title-slide .subtitle {
+  font-size: clamp(0.9rem, 2vw, 1.05rem);
+  color: var(--text-dim); margin-bottom: 18px;
+}
+.title-slide .euler-box {
+  display: inline-block;
+  padding: 12px 30px; border-radius: 18px;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  backdrop-filter: blur(15px);
+  margin-bottom: 16px;
+}
+.title-slide .instructor-line {
+  font-size: 0.92rem; color: var(--gold);
+  font-weight: 700; margin-bottom: 3px;
+}
+.title-slide .instructor-title-line {
+  font-size: 0.78rem; color: var(--text-dim);
+  margin-bottom: 12px;
+}
+.title-slide .semester {
+  display: inline-block;
+  padding: 6px 18px; border-radius: 50px;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  font-size: 0.78rem; color: var(--text-dim);
+}
+
+.math-box {
+  background: rgba(0, 212, 170, 0.06);
+  border: 1px solid rgba(0, 212, 170, 0.25);
+  border-radius: 14px;
+  padding: 16px 22px;
+  margin: 12px 0;
+  text-align: center;
+  direction: ltr;
+  position: relative;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+.math-box::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--primary), var(--secondary), var(--tertiary));
+}
+.math-box .MathJax, .math-box mjx-container { color: var(--primary) !important; font-size: 1em !important; }
+.math-box.gold-math .MathJax, .math-box.gold-math mjx-container { color: var(--gold) !important; }
+.math-box.purple-math .MathJax, .math-box.purple-math mjx-container { color: var(--tertiary) !important; }
+.math-note {
+  font-family: 'Vazirmatn', sans-serif;
+  font-size: 0.76rem; color: var(--text-dim);
+  direction: rtl; margin-top: 8px;
+  font-style: italic; text-align: center;
+}
+
+.simulator {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 18px;
+  padding: 16px; margin: 12px 0;
+  backdrop-filter: blur(12px);
+}
+.sim-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 12px; flex-wrap: wrap; gap: 10px;
+}
+.sim-title {
+  font-size: 0.9rem; font-weight: 700;
+  color: var(--gold);
+  display: flex; align-items: center; gap: 8px;
+}
+.sim-controls { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.slider-group {
+  display: flex; align-items: center; gap: 8px;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 6px 12px; border-radius: 10px;
+  border: 1px solid var(--card-border);
+}
+.slider-group label { font-size: 0.72rem; color: var(--text-dim); white-space: nowrap; }
+.slider-group input[type="range"] { width: 110px; accent-color: var(--primary); cursor: pointer; }
+.slider-value {
+  font-family: 'Courier New', monospace;
+  font-size: 0.78rem; color: var(--primary);
+  font-weight: 700; min-width: 30px; text-align: center;
+}
+.canvas-wrapper {
+  position: relative; width: 100%; height: 230px;
+  background: rgba(0, 0, 0, 0.4);
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--card-border);
+}
+.canvas-wrapper canvas { width: 100%; height: 100%; display: block; }
+
+/* ═══ رباتیک ═══ */
+.robot-layout {
+  display: grid;
+  grid-template-columns: 1.3fr 1fr;
+  gap: 14px;
+  align-items: stretch;
+}
+@media (max-width: 900px) { .robot-layout { grid-template-columns: 1fr; } }
+
+.robot-canvas-wrapper {
+  position: relative;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid var(--card-border);
+  aspect-ratio: 1 / 1;
+}
+.robot-canvas-wrapper canvas { width: 100%; height: 100%; display: block; }
+
+.robot-info {
+  display: flex; flex-direction: column;
+  gap: 10px;
+}
+.robot-metric {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.robot-metric-label {
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  display: flex; align-items: center; gap: 6px;
+}
+.robot-metric-label i { color: var(--primary); }
+.robot-metric-value {
+  font-family: 'Courier New', monospace;
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--gold);
+}
+.robot-metric-value.danger { color: var(--danger); }
+.robot-metric-value.success { color: var(--success); }
+
+.robot-status {
+  padding: 12px 16px;
+  border-radius: 12px;
+  text-align: center;
+  font-size: 0.85rem;
+  font-weight: 700;
+  transition: all 0.3s ease;
+}
+.robot-status.smooth {
+  background: rgba(34, 197, 94, 0.15);
+  border: 1px solid var(--success);
+  color: var(--success);
+}
+.robot-status.jerky {
+  background: rgba(255, 71, 87, 0.15);
+  border: 1px solid var(--danger);
+  color: var(--danger);
+  animation: pulseDanger 1.2s ease infinite;
+}
+@keyframes pulseDanger {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(255, 71, 87, 0.4); }
+  50% { box-shadow: 0 0 0 12px rgba(255, 71, 87, 0); }
+}
+
+.robot-path-chart {
+  background: rgba(0, 0, 0, 0.4);
+  border-radius: 12px;
+  padding: 10px;
+  height: 120px;
+  border: 1px solid var(--card-border);
+}
+
+/* ═══ سری‌های عددی ═══ */
+.series-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  gap: 12px;
+}
+.series-card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 14px;
+  padding: 14px;
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+.series-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--gold);
+  box-shadow: 0 12px 30px rgba(255, 183, 0, 0.2);
+}
+.series-card.active {
+  border-color: var(--gold);
+  background: rgba(255, 183, 0, 0.08);
+}
+.series-name { font-size: 0.82rem; color: var(--text-dim); margin-bottom: 6px; font-weight: 600; }
+.series-formula { direction: ltr; font-size: 0.85rem; margin: 8px 0; }
+.series-result {
+  display: flex; align-items: center; justify-content: space-between;
+  padding-top: 8px;
+  border-top: 1px dashed rgba(255, 255, 255, 0.1);
+  margin-top: 8px;
+}
+.series-result-label { font-size: 0.72rem; color: var(--text-dim); }
+.series-result-value {
+  font-family: 'Cambria Math', serif;
+  font-size: 0.9rem; color: var(--gold);
+  font-weight: 700; direction: ltr;
+}
+
+.series-detail {
+  margin-top: 16px;
+  padding: 18px;
+  border-radius: 16px;
+  background: rgba(255, 183, 0, 0.06);
+  border: 1px solid rgba(255, 183, 0, 0.25);
+  display: none;
+}
+.series-detail.active { display: block; animation: contentFade 0.5s ease; }
+.series-detail-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 12px; flex-wrap: wrap; gap: 10px;
+}
+.series-detail-title { font-size: 1rem; font-weight: 800; color: var(--gold); }
+
+.integrals-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 14px;
+}
+.integral-card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 14px;
+  padding: 16px;
+  backdrop-filter: blur(10px);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+.integral-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--tertiary);
+  box-shadow: 0 12px 30px rgba(168, 85, 247, 0.2);
+}
+.integral-card.active {
+  border-color: var(--tertiary);
+  background: rgba(168, 85, 247, 0.08);
+}
+.integral-name { font-size: 0.8rem; color: var(--tertiary); font-weight: 700; margin-bottom: 8px; }
+.integral-formula { direction: ltr; margin: 10px 0; }
+.integral-hint {
+  font-size: 0.72rem; color: var(--text-dim);
+  margin-top: 8px; padding-top: 8px;
+  border-top: 1px dashed rgba(255, 255, 255, 0.1);
+}
+
+/* ═══ میکروفون ═══ */
+.mic-container { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+@media (max-width: 900px) { .mic-container { grid-template-columns: 1fr; } }
+.mic-controls {
+  background: linear-gradient(135deg, rgba(236, 72, 153, 0.08), rgba(168, 85, 247, 0.08));
+  border: 1px solid rgba(236, 72, 153, 0.3);
+  border-radius: 18px;
+  padding: 22px;
+  text-align: center;
+}
+.mic-btn {
+  width: 130px; height: 130px;
+  border-radius: 50%;
+  border: 4px solid var(--pink);
+  background: rgba(236, 72, 153, 0.15);
+  color: var(--pink);
+  font-size: 3rem;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 18px;
+  transition: all 0.35s ease;
+}
+.mic-btn:hover:not(:disabled) {
+  background: rgba(236, 72, 153, 0.3);
+  transform: scale(1.05);
+  box-shadow: 0 0 40px rgba(236, 72, 153, 0.5);
+}
+.mic-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.mic-btn.recording {
+  border-color: var(--danger);
+  background: rgba(255, 71, 87, 0.25);
+  color: var(--danger);
+  animation: pulseMic 1s ease infinite;
+}
+@keyframes pulseMic {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(255, 71, 87, 0.5); }
+  50% { box-shadow: 0 0 0 25px rgba(255, 71, 87, 0); }
+}
+.mic-status { font-size: 0.9rem; color: var(--text); font-weight: 600; margin-bottom: 10px; }
+.mic-countdown { font-size: 3rem; font-weight: 900; color: var(--danger); font-family: 'Courier New', monospace; line-height: 1; }
+.mic-result {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 18px;
+  padding: 22px; text-align: center;
+}
+.mic-frequency { font-family: 'Courier New', monospace; font-size: 1.6rem; color: var(--gold); font-weight: 800; margin: 8px 0; }
+.mic-gender {
+  font-size: 2rem; font-weight: 900;
+  margin: 12px 0; padding: 14px;
+  border-radius: 16px; display: inline-block;
+  min-width: 200px;
+}
+.mic-gender.male { background: rgba(6, 182, 212, 0.15); border: 2px solid var(--secondary); color: var(--secondary); }
+.mic-gender.female { background: rgba(236, 72, 153, 0.15); border: 2px solid var(--pink); color: var(--pink); }
+.mic-gender.pending { background: rgba(255, 255, 255, 0.05); border: 2px solid var(--card-border); color: var(--text-dim); }
+.mic-hint {
+  font-size: 0.75rem; color: var(--text-dim); line-height: 1.8;
+  margin-top: 12px; padding: 10px; border-radius: 10px;
+  background: rgba(255, 71, 87, 0.06);
+  border: 1px dashed rgba(255, 71, 87, 0.3);
+  text-align: right;
+}
+
+/* ═══ تمرین ═══ */
+.exercise-block {
+  border-radius: 16px; padding: 16px;
+  border: 1px solid;
+  position: relative; overflow: hidden;
+  margin-bottom: 12px;
+}
+.exercise-block::before {
+  content: '';
+  position: absolute; top: 0; right: 0;
+  width: 4px; height: 100%;
+}
+.ex-yellow { background: rgba(255, 217, 61, 0.06); border-color: rgba(255, 217, 61, 0.25); }
+.ex-yellow::before { background: var(--yellow); }
+.ex-green { background: rgba(107, 207, 127, 0.06); border-color: rgba(107, 207, 127, 0.25); }
+.ex-green::before { background: var(--green); }
+.ex-purple { background: rgba(168, 85, 247, 0.06); border-color: rgba(168, 85, 247, 0.25); }
+.ex-purple::before { background: var(--purple); }
+.ex-red { background: rgba(255, 107, 107, 0.06); border-color: rgba(255, 107, 107, 0.25); }
+.ex-red::before { background: var(--red); }
+
+.ex-header { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+.ex-num {
+  width: 30px; height: 30px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 900; font-size: 0.8rem; color: var(--dark);
+  flex-shrink: 0;
+}
+.ex-yellow .ex-num { background: var(--yellow); }
+.ex-green .ex-num { background: var(--green); }
+.ex-purple .ex-num { background: var(--purple); color: #fff; }
+.ex-red .ex-num { background: var(--red); color: #fff; }
+.ex-title { font-size: 0.92rem; font-weight: 800; }
+.ex-sub { font-size: 0.7rem; color: var(--text-dim); }
+
+.ex-list { list-style: none; padding: 0; counter-reset: item; }
+.ex-list li {
+  position: relative;
+  padding: 7px 34px 7px 10px;
+  font-size: 0.83rem; color: var(--text-dim);
+  line-height: 1.8;
+  border-bottom: 1px dashed rgba(255, 255, 255, 0.05);
+}
+.ex-list li:last-child { border-bottom: none; }
+.ex-list li::before {
+  counter-increment: item;
+  content: counter(item);
+  position: absolute; right: 4px; top: 9px;
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text); font-size: 0.7rem; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+}
+
+.email-banner {
+  margin-top: 12px; padding: 12px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, rgba(0, 212, 170, 0.1), rgba(168, 85, 247, 0.1));
+  border: 1px dashed rgba(0, 212, 170, 0.4);
+  text-align: center;
+}
+.email-banner p { font-size: 0.8rem; color: var(--text); margin-bottom: 5px; }
+.email-banner code {
+  display: inline-block;
+  padding: 5px 12px; border-radius: 8px;
+  background: rgba(0, 0, 0, 0.4);
+  color: var(--primary);
+  font-family: 'Courier New', monospace;
+  font-size: 0.76rem;
+  direction: ltr;
+  margin-top: 3px;
+}
+
+.code-tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--card-border); }
+.code-tab {
+  padding: 8px 16px;
+  border-radius: 10px 10px 0 0;
+  background: transparent; border: none;
+  color: var(--text-dim);
+  font-family: inherit; font-size: 0.8rem;
+  font-weight: 600; cursor: pointer;
+  display: flex; align-items: center; gap: 6px;
+}
+.code-tab.active {
+  background: rgba(0, 212, 170, 0.1);
+  color: var(--primary);
+  border-bottom: 2px solid var(--primary);
+}
+.code-content {
+  display: none;
+  background: #0a0f24;
+  border: 1px solid var(--card-border);
+  border-top: none;
+  border-radius: 0 0 12px 12px;
+  padding: 14px;
+  overflow-x: auto;
+  direction: ltr;
+  text-align: left;
+}
+.code-content.active { display: block; }
+.code-content pre {
+  margin: 0;
+  font-family: 'Courier New', Consolas, monospace;
+  font-size: 0.76rem; line-height: 1.6;
+  color: #e8eef7; white-space: pre;
+}
+.code-content .kw { color: #ff79c6; }
+.code-content .fn { color: #50fa7b; }
+.code-content .num { color: #bd93f9; }
+.code-content .str { color: #f1fa8c; }
+.code-content .cm { color: #6272a4; font-style: italic; }
+
+.bottom-nav {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  height: 58px;
+  background: rgba(5, 8, 24, 0.9);
+  backdrop-filter: blur(15px);
+  border-top: 1px solid var(--card-border);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 20px;
+  z-index: 100;
+}
+.nav-btn {
+  padding: 8px 18px; border-radius: 12px;
+  border: 1px solid var(--card-border);
+  background: var(--card-bg); color: var(--text);
+  cursor: pointer; font-family: inherit;
+  font-size: 0.82rem; font-weight: 600;
+  display: flex; align-items: center; gap: 7px;
+  transition: all 0.3s ease;
+}
+.nav-btn:hover:not(:disabled) {
+  background: var(--primary); color: var(--dark);
+  transform: translateY(-2px);
+}
+.nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+.dots-nav { display: flex; gap: 4px; flex-wrap: wrap; justify-content: center; max-width: 60%; }
+.dot-nav {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: rgba(255, 255, 255, 0.15);
+  cursor: pointer; border: none; padding: 0;
+  transition: all 0.3s ease;
+}
+.dot-nav.active {
+  background: var(--primary);
+  width: 22px; border-radius: 5px;
+  box-shadow: 0 0 10px var(--primary);
+}
+.slide-counter {
+  font-size: 0.78rem; color: var(--text-dim);
+  font-family: 'Courier New', monospace;
+  min-width: 60px; text-align: center;
+}
+.slide-counter span { color: var(--primary); font-weight: 800; }
+
+.toast-container {
+  position: fixed;
+  bottom: 76px; left: 24px;
+  z-index: 9999;
+  display: flex; flex-direction: column; gap: 8px;
+}
+.toast {
+  background: rgba(10, 18, 40, 0.95);
+  border: 1px solid var(--primary);
+  border-radius: 14px;
+  padding: 11px 16px;
+  color: var(--text);
+  font-size: 0.82rem;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  display: flex; align-items: center; gap: 8px;
+  animation: slideIn 0.35s ease;
+  max-width: 320px;
+}
+.toast i { color: var(--primary); }
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(-60px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.feature-list { list-style: none; padding: 0; }
+.feature-list li {
+  padding: 7px 28px 7px 10px;
+  position: relative;
+  font-size: 0.84rem; color: var(--text-dim);
+  line-height: 1.9;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+.feature-list li:last-child { border-bottom: none; }
+.feature-list li::before {
+  content: '\f00c';
+  font-family: 'Font Awesome 6 Free';
+  font-weight: 900;
+  position: absolute; right: 6px; top: 10px;
+  color: var(--primary); font-size: 0.78rem;
+}
+.feature-list.gold li::before { color: var(--gold); }
+.feature-list.purple li::before { color: var(--tertiary); }
+.feature-list.danger li::before { content: '\f00d'; color: var(--danger); }
+
+@media (max-width: 768px) {
+  .slide { padding: 16px 14px 90px; }
+  .header-univ { display: none; }
+  .header-name { font-size: 0.75rem; }
+  .header-signature { height: 45px; max-width: 100px; }
+  .nav-btn { padding: 7px 11px; font-size: 0.72rem; }
+  .nav-btn span { display: none; }
+  .dots-nav { max-width: 45%; }
+  .slide-counter { font-size: 0.68rem; min-width: 45px; }
+  .canvas-wrapper { height: 190px; }
+  .mic-container { grid-template-columns: 1fr; }
+  .topic-pill { font-size: 0.64rem; padding: 3px 8px; }
+}
+@media (max-width: 480px) {
+  .ctrl-btn { width: 32px; height: 32px; font-size: 0.75rem; }
+  .header-signature { display: none; }
+}
+</style>
+</head>
+<body>
+
+<canvas id="bgCanvas"></canvas>
+<div class="glow-orb orb1"></div>
+<div class="glow-orb orb2"></div>
+<div class="glow-orb orb3"></div>
+
+<div class="top-header">
+  <div class="header-left">
+    <img src="images/signature.png" alt="امضا" class="header-signature" onerror="this.style.display='none'">
+    <div class="header-text">
+      <span class="header-name">دکتر مسعود گوهری منش</span>
+      <span class="header-univ">دانشیار گروه مهندسی مکانیک — دانشگاه تربت حیدریه</span>
+    </div>
+  </div>
+  <div class="header-controls">
+    <button class="ctrl-btn" id="soundToggle" title="صدا"><i class="fas fa-volume-up"></i></button>
+    <button class="ctrl-btn" id="musicToggle" title="موسیقی"><i class="fas fa-music"></i></button>
+    <button class="ctrl-btn" id="fullscreenToggle" title="تمام‌صفحه"><i class="fas fa-expand"></i></button>
+  </div>
+</div>
+
+<div class="topic-nav" id="topicNav">
+  <span class="topic-pill" data-topic="1">۱. کاربرد فوریه</span>
+  <span class="topic-pill" data-topic="2">۲. فرمول‌بندی</span>
+  <span class="topic-pill" data-topic="3">۳. مثال‌ها</span>
+  <span class="topic-pill" data-topic="4">۴. تقارن‌ها</span>
+  <span class="topic-pill" data-topic="5">۵. سری‌های عددی</span>
+  <span class="topic-pill" data-topic="6">۶. انتگرال فوریه</span>
+  <span class="topic-pill" data-topic="7">۷. کاربردهای تعاملی</span>
+</div>
+
+<div class="progress-top">
+  <div class="progress-fill" id="progressFill"></div>
+</div>
+
+<div class="slide-container" id="slideContainer">
+
+  <!-- ════ ۱ — عنوان ════ -->
+  <div class="slide active" data-slide="1" data-topic="1">
+    <div class="slide-inner title-slide">
+      <div class="bismillah">بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِیم</div>
+      <div class="hoval">هُوَ الخَلّاقُ العَلیم</div>
+      <img src="images/hero-fourier.png" alt="Fourier" class="hero-img" onerror="this.style.display='none'">
+      <h1 class="main-title">آنالیز فوریه</h1>
+      <p class="subtitle">ریاضیات مهندسی پیشرفته — جلسه ۱</p>
+      <div class="euler-box">
+        <div style="direction: ltr; font-size: 1.8rem;">$$e^{i\pi} + 1 = 0$$</div>
+      </div>
+      <p class="instructor-line">دکتر مسعود گوهری منش</p>
+      <p class="instructor-title-line">دانشیار گروه مهندسی مکانیک — دانشگاه تربت حیدریه</p>
+      <div class="semester">نیمسال اول ۱۴۰۵–۱۴۰۶</div>
+    </div>
+  </div>
+
+  <!-- ════ ۲ — چرا فوریه ════ -->
+  <div class="slide" data-slide="2" data-topic="1">
+    <div class="slide-inner">
+      <span class="slide-num">۱. کاربرد و چرایی</span>
+      <h2 class="slide-h1">چرا آنالیز فوریه؟</h2>
+      <div class="grid-2" style="align-items: start;">
+        <div>
+          <p class="slide-text">
+            فوریه یک <strong style="color: var(--gold);">زبان مشترک</strong> است که در همه شاخه‌های مهندسی و علوم ظاهر می‌شود. او به ما یاد داد هر سیگنال پیچیده، ترکیبی از اجزای ساده است.
+          </p>
+          <ul class="feature-list gold">
+            <li>حل معادلات دیفرانسیل جزئی (PDE)</li>
+            <li>پردازش سیگنال و صوت</li>
+            <li>عیب‌یابی ماشین‌آلات</li>
+            <li>کنترل ربات و ارتعاشات</li>
+            <li>یادگیری ماشین و داده‌کاوی</li>
+            <li>پردازش تصویر و بینایی کامپیوتر</li>
+          </ul>
+        </div>
+        <div>
+          <img src="images/signal-processing.png" alt="Signal" style="width: 100%; border-radius: 16px; border: 1px solid var(--card-border); margin-bottom: 12px;" onerror="this.style.display='none'">
+          <div class="math-box">
+            $$f(x) = \frac{a_0}{2} + \sum_{n=1}^{\infty} \left[ a_n \cos\!\left(\frac{n\pi x}{L}\right) + b_n \sin\!\left(\frac{n\pi x}{L}\right) \right]$$
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════ ۳ — تاریخچه ════ -->
+  <div class="slide" data-slide="3" data-topic="1">
+    <div class="slide-inner">
+      <span class="slide-num">تاریخچه</span>
+      <h2 class="slide-h1">ژوزف فوریه و انقلاب در ریاضیات</h2>
+      <div class="grid-2">
+        <div>
+          <img src="images/fourier-portrait.png" alt="Fourier" style="width: 100%; max-width: 260px; border-radius: 16px; border: 1px solid var(--card-border); margin-bottom: 14px;" onerror="this.style.display='none'">
+          <div style="display: inline-block; padding: 5px 14px; border-radius: 20px; background: var(--gold); color: var(--dark); font-size: 0.78rem; font-weight: 900;">۱۷۶۸ — ۱۸۳۰</div>
+        </div>
+        <div>
+          <h3 class="slide-h3" style="color: var(--gold);">Jean-Baptiste Joseph Fourier</h3>
+          <p class="slide-text" style="font-size: 0.85rem;">
+            ریاضیدان و فیزیکدان فرانسوی که در سال ۱۸۲۲ کتاب معروف خود را منتشر کرد:
+            <strong style="color: var(--gold); direction: ltr; display: inline-block;">«Théorie analytique de la chaleur»</strong>
+          </p>
+          <div style="border-right: 3px solid var(--gold); padding-right: 14px; margin: 12px 0; font-style: italic; color: var(--text); font-size: 0.88rem;">
+            «گرما در همه جا نفوذ می‌کند، همانطور که ایده‌های من در ریاضیات.»
+            <div style="font-size: 0.75rem; color: var(--text-dim); margin-top: 5px; font-style: normal;">— ژوزف فوریه</div>
+          </div>
+          <p class="slide-text" style="font-size: 0.83rem;">
+            <strong style="color: var(--danger);">مخالفت بزرگ:</strong> لاپلاس و لاگرانژ با ایده او مخالفت کردند، چون باور نداشتند توابع ناپیوسته را بتوان با توابع پیوسته (سینوس/کسینوس) بازنمایی کرد. اما فوریه درست می‌گفت.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════ ۴ — تابع تکه‌ای هموار ════ -->
+  <div class="slide" data-slide="4" data-topic="2">
+    <div class="slide-inner">
+      <span class="slide-num">۲. فرمول‌بندی</span>
+      <h2 class="slide-h1">تابع تکه‌ای هموار و متناوب</h2>
+      <div class="grid-2">
+        <div class="card">
+          <div class="slide-h3"><i class="fas fa-chart-line"></i> تابع تکه‌ای هموار</div>
+          <p class="slide-text" style="font-size: 0.85rem;">تابعی است که خود و مشتق آن در فواصل تکه‌ای، پیوسته باشند.</p>
+          <div class="math-box">$$f,\ f' \in C[a,b]\ \text{piecewise}$$</div>
+        </div>
+        <div class="card">
+          <div class="slide-h3"><i class="fas fa-redo"></i> تابع متناوب</div>
+          <p class="slide-text" style="font-size: 0.85rem;">تابعی که با افزودن مقداری ثابت به متغیر آن، شکل تابع تکرار می‌شود.</p>
+          <div class="math-box">$$f(x + T) = f(x)$$</div>
+          <p class="math-note">T = دوره تناوب اصلی</p>
+        </div>
+      </div>
+      <div class="simulator" style="margin-top: 14px;">
+        <div class="sim-header">
+          <div class="sim-title"><i class="fas fa-wave-square"></i> نمونه‌های تابع متناوب</div>
+        </div>
+        <div class="canvas-wrapper">
+          <canvas id="periodicCanvas"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════ ۵ — ادعای فوریه ════ -->
+  <div class="slide" data-slide="5" data-topic="2">
+    <div class="slide-inner">
+      <span class="slide-num">۲. فرمول‌بندی</span>
+      <h2 class="slide-h1">ادعای فوریه</h2>
+      <div class="card" style="background: rgba(255, 183, 0, 0.06); border-color: rgba(255, 183, 0, 0.25);">
+        <p class="slide-text" style="color: var(--gold); font-size: 1rem; line-height: 2; text-align: center;">
+          <strong>هر تابع متناوب تکه‌ای هموار را می‌توان به صورت مجموع ترکیب خطی از توابع سینوس و کسینوس نوشت.</strong>
+        </p>
+      </div>
+      <p class="slide-text" style="margin-top: 14px;">فرم اولیه:</p>
+      <div class="math-box">
+        $$f(x) = a_0 + \sum_{n=1}^{\infty} \bigl[ a_n \cos(n\omega x) + b_n \sin(n\omega x) \bigr]$$
+      </div>
+      <p class="slide-text">که در آن $\omega$ فرکانس زاویه‌ای است:</p>
+      <div class="math-box">
+        $$p = \frac{2\pi}{\omega} \;\Longrightarrow\; \omega = \frac{2\pi}{p} \;\xrightarrow{p=2L}\; \omega = \frac{\pi}{L}$$
+      </div>
+      <p class="slide-text">فرم استاندارد نهایی:</p>
+      <div class="math-box" style="background: rgba(0, 212, 170, 0.1); border-color: rgba(0, 212, 170, 0.4);">
+        $$f(x) = \frac{a_0}{2} + \sum_{n=1}^{\infty} \left[ a_n \cos\!\left(\frac{n\pi x}{L}\right) + b_n \sin\!\left(\frac{n\pi x}{L}\right) \right]$$
+      </div>
+    </div>
+  </div>
+
+  <!-- ════ ۶ — ضرایب فوریه ════ -->
+  <div class="slide" data-slide="6" data-topic="2">
+    <div class="slide-inner">
+      <span class="slide-num">۲. اثبات ضرایب</span>
+      <h2 class="slide-h1">ساختار کلی سری فوریه و ضرایب</h2>
+      <div class="math-box" style="background: rgba(0, 212, 170, 0.1); border-color: rgba(0, 212, 170, 0.4);">
+        $$f(x) = \frac{a_0}{2} + \sum_{n=1}^{\infty} \left[ a_n \cos\!\left(\frac{n\pi x}{L}\right) + b_n \sin\!\left(\frac{n\pi x}{L}\right) \right]$$
+      </div>
+      <div class="grid-3" style="margin-top: 14px;">
+        <div class="card">
+          <div class="slide-h3"><i class="fas fa-hashtag"></i> ضریب ثابت</div>
+          <div class="math-box">$$a_0 = \frac{1}{L} \int_{-L}^{L} f(x)\, dx$$</div>
+        </div>
+        <div class="card">
+          <div class="slide-h3"><i class="fas fa-wave-square"></i> ضریب کسینوسی</div>
+          <div class="math-box">$$a_n = \frac{1}{L} \int_{-L}^{L} f(x) \cos\!\left(\frac{n\pi x}{L}\right) dx$$</div>
+        </div>
+        <div class="card">
+          <div class="slide-h3"><i class="fas fa-wave-sine"></i> ضریب سینوسی</div>
+          <div class="math-box">$$b_n = \frac{1}{L} \int_{-L}^{L} f(x) \sin\!\left(\frac{n\pi x}{L}\right) dx$$</div>
+        </div>
+      </div>
+      <div class="card" style="margin-top: 14px;">
+        <div class="slide-h3"><i class="fas fa-lightbulb"></i> تعامد پایه‌ها (ایده اثبات)</div>
+        <div class="math-box">
+          $$\int_{-L}^{L} \sin\!\left(\frac{m\pi x}{L}\right) \sin\!\left(\frac{n\pi x}{L}\right) dx = L \cdot \delta_{mn}$$
+        </div>
+        <div class="math-box">
+          $$\int_{-L}^{L} \cos\!\left(\frac{m\pi x}{L}\right) \cos\!\left(\frac{n\pi x}{L}\right) dx = L \cdot \delta_{mn}$$
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════ ۷ — موج مربعی ════ -->
+  <div class="slide" data-slide="7" data-topic="3">
+    <div class="slide-inner">
+      <span class="slide-num">۳. مثال تعاملی</span>
+      <h2 class="slide-h1">تقریب موج مربعی</h2>
+      <div class="math-box gold-math" style="background: rgba(255, 183, 0, 0.08); border-color: rgba(255, 183, 0, 0.3);">
+        $$f(x) = \frac{4}{\pi} \left[ \sin(x) + \frac{\sin(3x)}{3} + \frac{\sin(5x)}{5} + \cdots \right]$$
+      </div>
+      <div class="simulator">
+        <div class="sim-header">
+          <div class="sim-title"><i class="fas fa-sliders-h"></i> انیمیشن ساخت تدریجی موج مربعی</div>
+          <div class="sim-controls">
+            <div class="slider-group">
+              <label>N:</label>
+              <input type="range" id="squareN" min="1" max="51" value="5" step="2">
+              <span class="slider-value" id="squareNValue">۵</span>
+            </div>
+          </div>
+        </div>
+        <div class="canvas-wrapper" style="height: 250px;">
+          <canvas id="squareCanvas"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════ ۸ — f(x)=x² ════ -->
+  <div class="slide" data-slide="8" data-topic="3">
+    <div class="slide-inner">
+      <span class="slide-num">۳. مثال از جزوه</span>
+      <h2 class="slide-h1">سری فوریه $f(x) = x^2$</h2>
+      <div class="grid-2">
+        <div>
+          <div class="card">
+            <div class="slide-h3"><i class="fas fa-calculator"></i> ضرایب</div>
+            <div class="math-box">$$a_0 = \frac{8}{3}\pi^2, \quad a_n = \frac{4}{n^2}, \quad b_n = -\frac{4\pi}{n}$$</div>
+            <div class="math-box gold-math" style="background: rgba(255, 183, 0, 0.1);">
+              $$f(x) = \frac{4}{3}\pi^2 + \sum_{n=1}^{\infty} \left[ \frac{4}{n^2}\cos(nx) - \frac{4\pi}{n}\sin(nx) \right]$$
+            </div>
+          </div>
+        </div>
+        <div class="simulator" style="margin: 0;">
+          <div class="sim-header">
+            <div class="sim-title"><i class="fas fa-chart-line"></i> انیمیشن تقریب</div>
+            <div class="sim-controls">
+              <div class="slider-group">
+                <label>N:</label>
+                <input type="range" id="xSquareN" min="1" max="40" value="5" step="1">
+                <span class="slider-value" id="xSquareNValue">۵</span>
+              </div>
+            </div>
+          </div>
+          <div class="canvas-wrapper" style="height: 230px;">
+            <canvas id="xSquareCanvas"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════ ۹ — f(x)=|x| ════ -->
+  <div class="slide" data-slide="9" data-topic="4">
+    <div class="slide-inner">
+      <span class="slide-num">۴. تقارن — مثال زوج</span>
+      <h2 class="slide-h1">سری فوریه $f(x) = |x|$</h2>
+      <div class="grid-2">
+        <div>
+          <div class="card" style="background: rgba(0, 212, 170, 0.08); border-color: rgba(0, 212, 170, 0.3);">
+            <div class="slide-h3"><i class="fas fa-star"></i> تقارن زوج</div>
+            <p class="slide-text" style="font-size: 0.83rem;">فقط $a_0$ و $a_n$ محاسبه می‌شوند؛ $b_n = 0$.</p>
+            <div class="math-box" style="background: rgba(0, 0, 0, 0.3);">
+              $$a_0 = \frac{2}{L}\int_0^L f(x) dx, \quad a_n = \frac{2}{L}\int_0^L f(x)\cos\!\left(\frac{n\pi x}{L}\right) dx$$
+            </div>
+          </div>
+          <div class="card" style="margin-top: 12px;">
+            <div class="slide-h3"><i class="fas fa-calculator"></i> نتیجه</div>
+            <div class="math-box">$$a_0 = \pi, \quad a_n = \frac{2(\cos(n\pi)-1)}{\pi n^2}$$</div>
+            <div class="math-box gold-math" style="background: rgba(255, 183, 0, 0.1);">
+              $$f(x) = \frac{\pi}{2} - \frac{4}{\pi}\sum_{k=0}^{\infty} \frac{\cos((2k+1)x)}{(2k+1)^2}$$
+            </div>
+          </div>
+        </div>
+        <div class="simulator" style="margin: 0;">
+          <div class="sim-header">
+            <div class="sim-title"><i class="fas fa-chart-line"></i> تقریب</div>
+            <div class="sim-controls">
+              <div class="slider-group">
+                <label>N:</label>
+                <input type="range" id="absN" min="1" max="20" value="3" step="1">
+                <span class="slider-value" id="absNValue">۳</span>
+              </div>
+            </div>
+          </div>
+          <div class="canvas-wrapper" style="height: 230px;">
+            <canvas id="absCanvas"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════ ۱۰ — f(x)=x ════ -->
+  <div class="slide" data-slide="10" data-topic="4">
+    <div class="slide-inner">
+      <span class="slide-num">۴. تقارن — مثال فرد</span>
+      <h2 class="slide-h1">سری فوریه $f(x) = x$</h2>
+      <div class="grid-2">
+        <div>
+          <div class="card" style="background: rgba(168, 85, 247, 0.08); border-color: rgba(168, 85, 247, 0.3);">
+            <div class="slide-h3"><i class="fas fa-star"></i> تقارن فرد</div>
+            <p class="slide-text" style="font-size: 0.83rem;">$a_0 = 0$ و $a_n = 0$؛ فقط $b_n$ باقی می‌ماند.</p>
+            <div class="math-box" style="background: rgba(0, 0, 0, 0.3);">
+              $$b_n = \frac{2}{L}\int_0^L f(x)\sin\!\left(\frac{n\pi x}{L}\right) dx$$
+            </div>
+          </div>
+          <div class="card" style="margin-top: 12px;">
+            <div class="slide-h3"><i class="fas fa-calculator"></i> نتیجه</div>
+            <div class="math-box">$$b_n = -\frac{2\cos(n\pi)}{n} = \frac{2(-1)^{n+1}}{n}$$</div>
+            <div class="math-box purple-math" style="background: rgba(168, 85, 247, 0.1);">
+              $$f(x) = 2\sum_{n=1}^{\infty} \frac{(-1)^{n+1}}{n}\sin(nx)$$
+            </div>
+          </div>
+        </div>
+        <div class="simulator" style="margin: 0;">
+          <div class="sim-header">
+            <div class="sim-title"><i class="fas fa-chart-line"></i> تقریب</div>
+            <div class="sim-controls">
+              <div class="slider-group">
+                <label>N:</label>
+                <input type="range" id="xN" min="1" max="30" value="5" step="1">
+                <span class="slider-value" id="xNValue">۵</span>
+              </div>
+            </div>
+          </div>
+          <div class="canvas-wrapper" style="height: 230px;">
+            <canvas id="xCanvas"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════ ۱۱ — e^x ════ -->
+  <div class="slide" data-slide="11" data-topic="3">
+    <div class="slide-inner">
+      <span class="slide-num">۳. مثال از جزوه</span>
+      <h2 class="slide-h1">سری فوریه $f(x) = e^x$</h2>
+      <div class="grid-2">
+        <div>
+          <div class="card">
+            <div class="slide-h3"><i class="fas fa-calculator"></i> ضرایب</div>
+            <div class="math-box">$$\frac{a_0}{2} = \frac{e^{2\pi}-1}{2\pi}, \quad a_n = \frac{1}{\pi}\cdot\frac{e^{2\pi}-1}{n^2+1}, \quad b_n = \frac{n}{\pi}\cdot\frac{1-e^{2\pi}}{n^2+1}$$</div>
+            <div class="math-box gold-math" style="background: rgba(255, 183, 0, 0.1);">
+              $$f(x) = \frac{e^{2\pi}-1}{2\pi} + \sum_{n=1}^{\infty} \frac{e^{2\pi}-1}{\pi(n^2+1)}\bigl[\cos(nx) - n\sin(nx)\bigr]$$
+            </div>
+          </div>
+        </div>
+        <div class="simulator" style="margin: 0;">
+          <div class="sim-header">
+            <div class="sim-title"><i class="fas fa-chart-line"></i> انیمیشن $e^x$</div>
+            <div class="sim-controls">
+              <div class="slider-group">
+                <label>N:</label>
+                <input type="range" id="expN" min="1" max="20" value="4" step="1">
+                <span class="slider-value" id="expNValue">۴</span>
+              </div>
+            </div>
+          </div>
+          <div class="canvas-wrapper" style="height: 230px;">
+            <canvas id="expCanvas"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════ ۱۲ — تقارن‌ها خلاصه ════ -->
+  <div class="slide" data-slide="12" data-topic="4">
+    <div class="slide-inner">
+      <span class="slide-num">۴. تقارن‌ها</span>
+      <h2 class="slide-h1">تقارن‌ها در سری فوریه</h2>
+      <div class="grid-2">
+        <div class="card" style="background: rgba(0, 212, 170, 0.08); border-color: rgba(0, 212, 170, 0.3);">
+          <div class="slide-h3" style="color: var(--primary);"><i class="fas fa-equals"></i> تابع زوج (Even)</div>
+          <div class="math-box" style="background: rgba(0, 0, 0, 0.3);">$$f(-x) = f(x)$$</div>
+          <p class="slide-text" style="font-size: 0.82rem;">نمودار متقارن نسبت به محور y</p>
+          <div class="math-box">$$b_n = 0, \quad a_0 = \frac{2}{L}\int_0^L f(x)dx, \quad a_n = \frac{2}{L}\int_0^L f(x)\cos\!\left(\frac{n\pi x}{L}\right)dx$$</div>
+          <p class="math-note">مثال: $|x|$, $x^2$, $\cos(x)$</p>
+        </div>
+        <div class="card" style="background: rgba(168, 85, 247, 0.08); border-color: rgba(168, 85, 247, 0.3);">
+          <div class="slide-h3" style="color: var(--tertiary);"><i class="fas fa-not-equal"></i> تابع فرد (Odd)</div>
+          <div class="math-box" style="background: rgba(0, 0, 0, 0.3);">$$f(-x) = -f(x)$$</div>
+          <p class="slide-text" style="font-size: 0.82rem;">نمودار متقارن نسبت به مبدأ</p>
+          <div class="math-box">$$a_0 = a_n = 0, \quad b_n = \frac{2}{L}\int_0^L f(x)\sin\!\left(\frac{n\pi x}{L}\right)dx$$</div>
+          <p class="math-note">مثال: $x$, $x^3$, $\sin(x)$</p>
+        </div>
+      </div>
+      <div class="card" style="margin-top: 14px; background: rgba(255, 183, 0, 0.06); border-color: rgba(255, 183, 0, 0.25);">
+        <div class="slide-h3" style="color: var(--gold);"><i class="fas fa-eye-slash"></i> تقارن مخفی (Hidden Symmetry)</div>
+        <p class="slide-text" style="font-size: 0.85rem;">
+          گاهی تابع در نگاه اول زوج یا فرد به نظر نمی‌رسد، اما با انتقال یا تغییر متغیر به تابع زوج/فرد تبدیل می‌شود. مثال: $f(x) = x$ در بازه $(0, 2\pi)$ اگر به مرکز بازه منتقل شود، به تابع فرد تبدیل می‌شود.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════ ۱۳ — تقارن مخفی ════ -->
+  <div class="slide" data-slide="13" data-topic="4">
+    <div class="slide-inner">
+      <span class="slide-num">۴. تقارن مخفی</span>
+      <h2 class="slide-h1">تقارن مخفی — مثال جزوه</h2>
+      <div class="grid-2">
+        <div>
+          <div class="card">
+            <div class="slide-h3"><i class="fas fa-exchange-alt"></i> ترفند انتقال</div>
+            <p class="slide-text" style="font-size: 0.83rem;">با تعریف $u = x - \pi$، بازه $(0, 2\pi)$ به $(-\pi, \pi)$ منتقل می‌شود:</p>
+            <div class="math-box">$$\hat{f}(u) = u + \pi = u + \frac{a_0}{2}$$</div>
+          </div>
+          <div class="card" style="margin-top: 12px;">
+            <div class="slide-h3"><i class="fas fa-calculator"></i> نتیجه</div>
+            <div class="math-box">$$a_0 = 2\pi, \quad a_n = 0, \quad b_n = -\frac{2}{n}$$</div>
+            <div class="math-box purple-math" style="background: rgba(168, 85, 247, 0.1);">
+              $$f(x) = \pi - 2\sum_{n=1}^{\infty} \frac{\sin(nx)}{n}$$
+            </div>
+          </div>
+        </div>
+        <div class="simulator" style="margin: 0;">
+          <div class="sim-header">
+            <div class="sim-title"><i class="fas fa-chart-line"></i> تقریب</div>
+            <div class="sim-controls">
+              <div class="slider-group">
+                <label>N:</label>
+                <input type="range" id="hiddenN" min="1" max="30" value="5" step="1">
+                <span class="slider-value" id="hiddenNValue">۵</span>
+              </div>
+            </div>
+          </div>
+          <div class="canvas-wrapper" style="height: 230px;">
+            <canvas id="hiddenCanvas"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════ ۱۴ — رباتیک (جدید!) ════ -->
+  <div class="slide" data-slide="14" data-topic="7">
+    <div class="slide-inner">
+      <span class="slide-num">۷. کاربرد در رباتیک</span>
+      <h2 class="slide-h1">🤖 کاربرد فوریه در رباتیک</h2>
+      <p class="slide-text">
+        یک ربات را در نظر بگیرید که باید روی <strong style="color: var(--gold);">مسیر مربعی</strong> حرکت کند. در حالت ایده‌آل، در گوشه‌ها <strong style="color: var(--danger);">تغییر ناگهانی سرعت</strong> رخ می‌دهد که به موتورها <strong>ضربه (Jerk)</strong> وارد می‌کند.
+      </p>
+
+      <div class="robot-layout">
+        <div class="robot-canvas-wrapper">
+          <canvas id="robotCanvas"></canvas>
+        </div>
+        <div class="robot-info">
+          <div class="simulator" style="margin: 0; padding: 12px;">
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+              <div class="slider-group" style="justify-content: space-between;">
+                <label>تعداد هارمونیک (N):</label>
+                <input type="range" id="robotN" min="1" max="30" value="1" step="1" style="width: 90px;">
+                <span class="slider-value" id="robotNValue">۱</span>
+              </div>
+              <div class="slider-group" style="justify-content: space-between;">
+                <label>سرعت ربات:</label>
+                <input type="range" id="robotSpeed" min="0.2" max="3" value="1" step="0.1" style="width: 90px;">
+                <span class="slider-value" id="robotSpeedValue">۱.۰</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="robot-metric">
+            <span class="robot-metric-label"><i class="fas fa-tachometer-alt"></i> حداکثر Jerk</span>
+            <span class="robot-metric-value danger" id="robotJerk">∞</span>
+          </div>
+
+          <div class="robot-metric">
+            <span class="robot-metric-label"><i class="fas fa-circle-notch"></i> نرمی مسیر</span>
+            <span class="robot-metric-value" id="robotSmooth">۰٪</span>
+          </div>
+
+          <div class="robot-status jerky" id="robotStatus">
+            <i class="fas fa-exclamation-triangle"></i> ضربه شدید به موتور!
+          </div>
+
+          <div class="robot-path-chart">
+            <canvas id="robotSpeedChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top: 12px; background: rgba(255, 183, 0, 0.06); border-color: rgba(255, 183, 0, 0.25);">
+        <p class="slide-text" style="font-size: 0.85rem; margin: 0;">
+          <strong style="color: var(--gold);">💡 راه‌حل فوریه:</strong>
+          با افزایش N، مسیر ربات به یک <strong>منحنی نرم و پیوسته</strong> تبدیل می‌شود که در آن مشتق سرعت (شتاب) و مشتق شتاب (Jerk) محدود و پیوسته است. نتیجه: <strong style="color: var(--success);">عمر بیشتر موتورها</strong> و حرکت روان‌تر.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════ ۱۵ — ۱۰ سری زیبا ════ -->
+  <div class="slide" data-slide="15" data-topic="5">
+    <div class="slide-inner">
+      <span class="slide-num">۵. شاهکارهای فوریه</span>
+      <h2 class="slide-h1">۱۰ سری عددی زیبا با فوریه</h2>
+      <p class="slide-text">روی هر کارت کلیک کنید تا انیمیشن همگرایی و توضیح آن را ببینید.</p>
+      <div class="series-grid" id="seriesGrid"></div>
+      <div class="series-detail" id="seriesDetail">
+        <div class="series-detail-header">
+          <div class="series-detail-title" id="seriesDetailTitle">—</div>
+          <div style="display: flex; gap: 10px; align-items: center;">
+            <div class="slider-group">
+              <label>N:</label>
+              <input type="range" id="seriesN" min="1" max="200" value="20" step="1">
+              <span class="slider-value" id="seriesNValue">۲۰</span>
+            </div>
+            <button class="nav-btn" id="closeSeries" style="padding: 5px 10px; font-size: 0.75rem;">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+        </div>
+        <div class="canvas-wrapper" style="height: 200px;">
+          <canvas id="seriesCanvas"></canvas>
+        </div>
+        <p class="math-note" id="seriesDetailNote" style="margin-top: 8px;"></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════ ۱۶ — تساوی پارسوال ════ -->
+  <div class="slide" data-slide="16" data-topic="5">
+    <div class="slide-inner">
+      <span class="slide-num">۵. تساوی پارسوال</span>
+      <h2 class="slide-h1">تساوی پارسوال</h2>
+      <p class="slide-text">انرژی سیگنال در حوزه زمان = انرژی در حوزه فرکانس</p>
+      <div class="math-box" style="background: rgba(0, 212, 170, 0.1); border-color: rgba(0, 212, 170, 0.4);">
+        $$\frac{1}{L}\int_{-L}^{L} |f(x)|^2 dx = \frac{a_0^2}{2} + \sum_{n=1}^{\infty} (a_n^2 + b_n^2)$$
+      </div>
+      <div class="grid-2" style="margin-top: 14px;">
+        <div class="card" style="background: rgba(168, 85, 247, 0.06); border-color: rgba(168, 85, 247, 0.3);">
+          <div class="slide-h3" style="color: var(--tertiary);"><i class="fas fa-gem"></i> سری بازل</div>
+          <p class="slide-text" style="font-size: 0.83rem;">با $f(x) = x$:</p>
+          <div class="math-box purple-math" style="background: rgba(168, 85, 247, 0.1);">
+            $$\sum_{n=1}^{\infty} \frac{1}{n^2} = \frac{\pi^2}{6}$$
+          </div>
+        </div>
+        <div class="card" style="background: rgba(255, 183, 0, 0.06); border-color: rgba(255, 183, 0, 0.3);">
+          <div class="slide-h3" style="color: var(--gold);"><i class="fas fa-crown"></i> سری اویلر</div>
+          <p class="slide-text" style="font-size: 0.83rem;">با $f(x) = x^2$:</p>
+          <div class="math-box gold-math" style="background: rgba(255, 183, 0, 0.1);">
+            $$\sum_{n=1}^{\infty} \frac{1}{n^4} = \frac{\pi^4}{90}$$
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════ ۱۷ — همگرایی سری ════ -->
+  <div class="slide" data-slide="17" data-topic="5">
+    <div class="slide-inner">
+      <span class="slide-num">۵. همگرایی سری‌ها</span>
+      <h2 class="slide-h1">همگرایی سری اتحاد لایبنیتس</h2>
+      <p class="slide-text">نمودار زیر همگرایی سری معروف لایبنیتس به $\pi/4$ را نشان می‌دهد.</p>
+      <div class="math-box gold-math" style="background: rgba(255, 183, 0, 0.1); border-color: rgba(255, 183, 0, 0.3);">
+        $$\frac{\pi}{4} = 1 - \frac{1}{3} + \frac{1}{5} - \frac{1}{7} + \cdots = \sum_{n=0}^{\infty} \frac{(-1)^n}{2n+1}$$
+      </div>
+      <div class="simulator">
+        <div class="sim-header">
+          <div class="sim-title"><i class="fas fa-chart-line"></i> همگرایی سری</div>
+          <div class="sim-controls">
+            <div class="slider-group">
+              <label>N:</label>
+              <input type="range" id="leibnizN" min="1" max="500" value="20" step="1">
+              <span class="slider-value" id="leibnizNValue">۲۰</span>
+            </div>
+          </div>
+        </div>
+        <div class="canvas-wrapper" style="height: 280px;">
+          <canvas id="leibnizCanvas"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════ ۱۸ — انتگرال‌های ناسره ════ -->
+  <div class="slide" data-slide="18" data-topic="6">
+    <div class="slide-inner">
+      <span class="slide-num">۶. انتگرال‌های ناسره</span>
+      <h2 class="slide-h1">انتگرال‌های ناسره مهم با فوریه</h2>
+      <p class="slide-text">روی هر کارت کلیک کنید تا روش حل و انیمیشن همگرایی را ببینید.</p>
+      <div class="integrals-grid" id="integralsGrid"></div>
+      <div class="series-detail" id="integralDetail">
+        <div class="series-detail-header">
+          <div class="series-detail-title" id="integralDetailTitle">—</div>
+          <div style="display: flex; gap: 10px; align-items: center;">
+            <div class="slider-group">
+              <label>N:</label>
+              <input type="range" id="integralN" min="1" max="200" value="50" step="1">
+              <span class="slider-value" id="integralNValue">۵۰</span>
+            </div>
+            <button class="nav-btn" id="closeIntegral" style="padding: 5px 10px; font-size: 0.75rem;">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+        </div>
+        <div class="canvas-wrapper" style="height: 200px;">
+          <canvas id="integralCanvas"></canvas>
+        </div>
+        <p class="math-note" id="integralDetailNote" style="margin-top: 8px;"></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════ ۱۹ — انتگرال فوریه ════ -->
+  <div class="slide" data-slide="19" data-topic="6">
+    <div class="slide-inner">
+      <span class="slide-num">۶. انتگرال فوریه</span>
+      <h2 class="slide-h1">تعمیم سری به انتگرال فوریه</h2>
+      <p class="slide-text">اگر تابع تناوبی نباشد و $T \to \infty$، به انتگرال فوریه می‌رسیم:</p>
+      <div class="math-box" style="background: rgba(0, 212, 170, 0.1); border-color: rgba(0, 212, 170, 0.4);">
+        $$f(x) = \int_0^{\infty} \bigl[ A(\omega)\cos(\omega x) + B(\omega)\sin(\omega x) \bigr] d\omega$$
+      </div>
+      <div class="grid-2">
+        <div class="card">
+          <div class="slide-h3"><i class="fas fa-cos"></i> ضریب کسینوسی</div>
+          <div class="math-box">$$A(\omega) = \frac{1}{\pi} \int_{-\infty}^{\infty} f(x)\cos(\omega x) dx$$</div>
+        </div>
+        <div class="card">
+          <div class="slide-h3"><i class="fas fa-sin"></i> ضریب سینوسی</div>
+          <div class="math-box">$$B(\omega) = \frac{1}{\pi} \int_{-\infty}^{\infty} f(x)\sin(\omega x) dx$$</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════ ۲۰ — میکروفون ════ -->
+  <div class="slide" data-slide="20" data-topic="7">
+    <div class="slide-inner">
+      <span class="slide-num">۷. کاربرد تعاملی</span>
+      <h2 class="slide-h1">🎤 پردازش صوت با FFT</h2>
+      <p class="slide-text">
+        روی دکمه میکروفون کلیک کنید. پس از ۵ ثانیه ضبط، سیگنال با FFT تحلیل و <strong style="color: var(--gold);">فرکانس پایه F0</strong> برای تشخیص جنسیت استخراج می‌شود.
+      </p>
+      <div class="mic-container">
+        <div class="mic-controls">
+          <button class="mic-btn" id="micBtn" title="شروع ضبط">
+            <i class="fas fa-microphone"></i>
+          </button>
+          <div class="mic-status" id="micStatus">برای شروع، دکمه را فشار دهید</div>
+          <div class="mic-countdown" id="micCountdown" style="display: none;">۵</div>
+          <p style="font-size: 0.78rem; color: var(--text-dim); margin-top: 12px;">مرورگر اجازه دسترسی به میکروفون را درخواست می‌کند.</p>
+        </div>
+        <div class="mic-result">
+          <div style="font-size: 0.85rem; color: var(--text-dim); margin-bottom: 8px;">فرکانس پایه (F0)</div>
+          <div class="mic-frequency" id="micFreq">— Hz</div>
+          <div style="font-size: 0.85rem; color: var(--text-dim); margin: 12px 0 6px;">تشخیص:</div>
+          <div class="mic-gender pending" id="micGender">در انتظار ضبط...</div>
+          <div class="mic-hint">
+            <strong><i class="fas fa-triangle-exclamation"></i> نکته آموزشی:</strong>
+            این ابزار صرفاً برای <strong>آموزش</strong> است. آستانه تشخیص حدود <strong>۱۷۰ هرتز</strong>.
+            ممکن است برای صداهای خاص دقیق نباشد.
+          </div>
+        </div>
+      </div>
+      <div class="simulator" style="margin-top: 14px;">
+        <div class="sim-header">
+          <div class="sim-title"><i class="fas fa-chart-line"></i> نمودار سیگنال</div>
+        </div>
+        <div class="grid-2">
+          <div>
+            <p class="math-note" style="margin-bottom: 6px;">سیگنال زمان</p>
+            <div class="canvas-wrapper" style="height: 180px;">
+              <canvas id="timeCanvas"></canvas>
+            </div>
+          </div>
+          <div>
+            <p class="math-note" style="margin-bottom: 6px;">طیف فرکانسی (FFT)</p>
+            <div class="canvas-wrapper" style="height: 180px;">
+              <canvas id="fftCanvas"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════ ۲۱ — کد ════ -->
+  <div class="slide" data-slide="21" data-topic="3">
+    <div class="slide-inner">
+      <span class="slide-num">کدنویسی</span>
+      <h2 class="slide-h1">پیاده‌سازی سری فوریه</h2>
+      <div>
+        <div class="code-tabs">
+          <button class="code-tab active" data-code="matlab"><i class="fas fa-square"></i> MATLAB</button>
+          <button class="code-tab" data-code="python"><i class="fab fa-python"></i> Python</button>
+        </div>
+        <div class="code-content active" id="code-matlab">
+<pre><span class="cm">% Fourier Series — از جزوه دکتر گوهری منش</span>
+<span class="fn">clc</span>; <span class="fn">figure</span>(<span class="num">1</span>); <span class="fn">clf</span>; <span class="kw">hold on</span>
+x = <span class="fn">linspace</span>(<span class="num">0</span>, <span class="num">10</span>*pi, <span class="num">1000</span>);
+N = <span class="num">40</span>;
+f = <span class="num">4</span>/<span class="num">3</span>*pi^<span class="num">2</span>;
+<span class="kw">for</span> n = <span class="num">1</span>:N
+    an = <span class="num">4</span>/n^<span class="num">2</span>;
+    bn = -<span class="num">4</span>*pi/n;
+    f = f + an*<span class="fn">cos</span>(n*x) + bn*<span class="fn">sin</span>(n*x);
+<span class="kw">end</span>
+<span class="fn">plot</span>(x, f, <span class="str">'linewidth'</span>, <span class="num">3</span>)
+<span class="fn">grid on</span></pre>
+        </div>
+        <div class="code-content" id="code-python">
+<pre><span class="cm"># Fourier Series — Python + Google Colab</span>
+<span class="kw">import</span> numpy <span class="kw">as</span> np
+<span class="kw">import</span> matplotlib.pyplot <span class="kw">as</span> plt
+
+x = np.linspace(<span class="num">0</span>, <span class="num">10</span>*np.pi, <span class="num">2000</span>)
+N = <span class="num">40</span>
+f = (<span class="num">4</span>/<span class="num">3</span>) * np.pi**<span class="num">2</span> * np.ones_like(x)
+
+<span class="kw">for</span> n <span class="kw">in</span> <span class="fn">range</span>(<span class="num">1</span>, N+<span class="num">1</span>):
+    f += <span class="num">4</span>/n**<span class="num">2</span>*np.cos(n*x) - <span class="num">4</span>*np.pi/n*np.sin(n*x)
+
+plt.plot(x, f, linewidth=<span class="num">2.5</span>, color=<span class="str">'#ffb700'</span>)
+plt.savefig(<span class="str">'fourier.png'</span>, dpi=<span class="num">600</span>)
+plt.show()</pre>
+        </div>
+      </div>
+      <div class="card" style="margin-top: 12px; background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.25);">
+        <div class="slide-h3"><i class="fas fa-lightbulb"></i> نکته مهم</div>
+        <p class="slide-text" style="font-size: 0.83rem;">
+          در پروژه پایانی، کدها در <strong>Google Colab</strong> اجرا و تصاویر با <strong>dpi=600</strong> و فرمت <strong>PNG</strong> ذخیره شوند.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════ ۲۲ — تمرین‌ها ════ -->
+  <div class="slide" data-slide="22" data-topic="3">
+    <div class="slide-inner">
+      <span class="slide-num">تمرین</span>
+      <h2 class="slide-h1">تمرین‌های کلاسی جلسه ۱</h2>
+      <div class="exercise-block ex-yellow">
+        <div class="ex-header">
+          <div class="ex-num">الف</div>
+          <div>
+            <div class="ex-title">سؤالات مفهومی</div>
+            <div class="ex-sub">مفهوم سری و انتگرال فوریه</div>
+          </div>
+        </div>
+        <ol class="ex-list">
+          <li>شرایط دیریکله را بیان کنید و بگویید چرا برای همگرایی سری فوریه لازم است.</li>
+          <li>تفاوت اصلی بین سری فوریه و انتگرال فوریه چیست؟</li>
+          <li>چرا توابع زوج فقط کسینوس دارند و توابع فرد فقط سینوس؟</li>
+          <li>پدیده گیبس چیست و چرا با افزایش N از بین نمی‌رود؟</li>
+          <li>چرا در اسلاید رباتیک، افزایش N باعث نرم‌تر شدن مسیر می‌شود؟</li>
+        </ol>
+      </div>
+      <div class="exercise-block ex-green">
+        <div class="ex-header">
+          <div class="ex-num">ب</div>
+          <div>
+            <div class="ex-title">تمرین‌های عملی</div>
+            <div class="ex-sub">بر اساس مثال‌های جزوه و اسلاید رباتیک</div>
+          </div>
+        </div>
+        <ol class="ex-list">
+          <li>سری فوریه $f(x) = x^2$ با $p = 2\pi$ را در MATLAB با N=5, 10, 20 رسم کنید.</li>
+          <li>تقارن مخفی تابع $f(x) = x+1$ در $(-7, 0)$ و $-x+1$ در $(0, 7)$ با $p=14$ را بررسی کنید.</li>
+          <li>با تساوی پارسوال روی $f(x) = x^2$، اتحاد $\sum 1/n^4 = \pi^4/90$ را استخراج کنید.</li>
+          <li>در اسلاید رباتیک، مقدار Jerk را برای N=1, 5, 10, 20 محاسبه و مقایسه کنید.</li>
+        </ol>
+      </div>
+      <div class="exercise-block ex-purple">
+        <div class="ex-header">
+          <div class="ex-num">ج</div>
+          <div>
+            <div class="ex-title">تمرین‌های نوشتاری</div>
+            <div class="ex-sub">اثبات و استخراج</div>
+          </div>
+        </div>
+        <ol class="ex-list">
+          <li>ثابت کنید $\int_{-\pi}^{\pi} \sin(mx)\sin(nx) \, dx = \pi \cdot \delta_{mn}$.</li>
+          <li>با اتحاد اویلر، فرم مختلط سری فوریه را از فرم مثلثاتی استخراج کنید.</li>
+          <li>اثبات کامل تساوی پارسوال را ارائه دهید.</li>
+        </ol>
+      </div>
+      <div class="exercise-block ex-red">
+        <div class="ex-header">
+          <div class="ex-num">★</div>
+          <div>
+            <div class="ex-title">چالش خلاقانه</div>
+            <div class="ex-sub">کاربرد در مکاترونیک</div>
+          </div>
+        </div>
+        <ol class="ex-list">
+          <li>با اسلاید میکروفون، صدای خود را ضبط و F0 را استخراج کنید. جنسیت خود را تأیید یا رد کنید.</li>
+          <li>یک مسیر دلخواه رباتیکی طراحی کنید (مثلاً دایره، مثلث، مارپیچ) و سری فوریه آن را محاسبه کنید.</li>
+        </ol>
+      </div>
+      <div class="email-banner">
+        <p><i class="fas fa-envelope" style="color: var(--primary);"></i> ارسال تمرین‌ها:</p>
+        <code>m.goharimanesh@gmail.com</code>
+        <p style="margin-top: 8px; font-size: 0.78rem;">Subject الزامی:</p>
+        <code>[Advanced Engineering Mathematics] HW01 - نام و نام خانوادگی - شماره دانشجویی</code>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════ ۲۳ — جمع‌بندی ════ -->
+  <div class="slide" data-slide="23" data-topic="7">
+    <div class="slide-inner">
+      <h2 class="slide-h1">جمع‌بندی جلسه ۱</h2>
+      <div class="grid-3">
+        <div class="card" style="text-align: center;">
+          <i class="fas fa-wave-square" style="font-size: 1.8rem; color: var(--primary); display: block; margin-bottom: 10px;"></i>
+          <div class="slide-h3" style="justify-content: center;">سری فوریه</div>
+          <p class="slide-text" style="font-size: 0.8rem;">تجزیه تابع متناوب</p>
+        </div>
+        <div class="card" style="text-align: center;">
+          <i class="fas fa-calculator" style="font-size: 1.8rem; color: var(--gold); display: block; margin-bottom: 10px;"></i>
+          <div class="slide-h3" style="justify-content: center;">ضرایب</div>
+          <p class="slide-text" style="font-size: 0.8rem;">$a_0$, $a_n$, $b_n$</p>
+        </div>
+        <div class="card" style="text-align: center;">
+          <i class="fas fa-balance-scale" style="font-size: 1.8rem; color: var(--tertiary); display: block; margin-bottom: 10px;"></i>
+          <div class="slide-h3" style="justify-content: center;">تقارن‌ها</div>
+          <p class="slide-text" style="font-size: 0.8rem;">زوج، فرد، مخفی</p>
+        </div>
+        <div class="card" style="text-align: center;">
+          <i class="fas fa-infinity" style="font-size: 1.8rem; color: var(--primary); display: block; margin-bottom: 10px;"></i>
+          <div class="slide-h3" style="justify-content: center;">پارسوال</div>
+          <p class="slide-text" style="font-size: 0.8rem;">انرژی زمان=فرکانس</p>
+        </div>
+        <div class="card" style="text-align: center;">
+          <i class="fas fa-robot" style="font-size: 1.8rem; color: var(--gold); display: block; margin-bottom: 10px;"></i>
+          <div class="slide-h3" style="justify-content: center;">رباتیک</div>
+          <p class="slide-text" style="font-size: 0.8rem;">مسیر نرم و پیوسته</p>
+        </div>
+        <div class="card" style="text-align: center;">
+          <i class="fas fa-microphone" style="font-size: 1.8rem; color: var(--pink); display: block; margin-bottom: 10px;"></i>
+          <div class="slide-h3" style="justify-content: center;">صوت</div>
+          <p class="slide-text" style="font-size: 0.8rem;">FFT + تشخیص F0</p>
+        </div>
+      </div>
+      <div class="card" style="margin-top: 16px;">
+        <div class="slide-h3"><i class="fas fa-arrow-left"></i> جلسه بعد</div>
+        <p class="slide-text" style="font-size: 0.88rem;">
+          <strong style="color: var(--primary);">جلسه ۲ — FFT، فیلتر و کانولوشن</strong>
+        </p>
+      </div>
+      <div class="math-box gold-math" style="margin-top: 20px; background: rgba(255, 183, 0, 0.08); border-color: rgba(255, 183, 0, 0.3);">
+        $$e^{i\pi} + 1 = 0$$
+      </div>
+    </div>
+  </div>
+
+  <!-- ════ ۲۴ — خداحافظی ════ -->
+  <div class="slide" data-slide="24" data-topic="7">
+    <div class="slide-inner title-slide">
+      <div style="font-size: 3.5rem; color: var(--gold); margin-bottom: 18px;">
+        <i class="fas fa-check-circle"></i>
+      </div>
+      <h2 class="slide-h1">تا جلسه بعد</h2>
+      <p class="slide-text" style="font-size: 1rem;">با زیبایی ریاضیات همراه باشید 🌟</p>
+      <div class="math-box gold-math" style="margin-top: 22px; background: rgba(255, 183, 0, 0.08); border-color: rgba(255, 183, 0, 0.3);">
+        $$\int_{-\infty}^{+\infty} e^{-x^2} dx = \sqrt{\pi}$$
+      </div>
+      <p class="instructor-line" style="margin-top: 22px;">دکتر مسعود گوهری منش</p>
+      <p class="instructor-title-line">دانشیار گروه مهندسی مکانیک — دانشگاه تربت حیدریه</p>
+    </div>
+  </div>
+
+</div>
+
+<div class="bottom-nav">
+  <button class="nav-btn" id="prevBtn" disabled>
+    <i class="fas fa-arrow-right"></i><span>قبلی</span>
+  </button>
+  <div class="dots-nav" id="dotsNav"></div>
+  <div class="slide-counter"><span id="currentSlide">۱</span> / ۲۴</div>
+  <button class="nav-btn" id="nextBtn">
+    <span>بعدی</span><i class="fas fa-arrow-left"></i>
+  </button>
+</div>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+/* ═══════════════════════════════════════════════
+   ناوبری   ═══════════════════════════════════════════════ */
+const slides = document.querySelectorAll('.slide');
+const totalSlides = slides.length;
+let currentSlide = 0;
+const topicPills = document.querySelectorAll('.topic-pill');
+
+const dotsNav = document.getElementById('dotsNav');
+for (let i = 0; i < totalSlides; i++) {
+  const dot = document.createElement('button');
+  dot.className = 'dot-nav' + (i === 0 ? ' active' : '');
+  dot.addEventListener('click', () => goToSlide(i));
+  dotsNav.appendChild(dot);
+}
+
+function goToSlide(n) {
+  if (n < 0 || n >= totalSlides) return;
+  slides.forEach((s, i) => {
+    s.classList.remove('active', 'prev');
+    if (i < n) s.classList.add('prev');
+    if (i === n) s.classList.add('active');
+  });
+  currentSlide = n;
+  updateNav();
+  playTransition();
+  setTimeout(() => {
+    initVisibleCharts();
+    if (window.MathJax && window.MathJax.typesetPromise) window.MathJax.typesetPromise();
+  }, 100);
+}
+
+function updateNav() {
+  document.querySelectorAll('.dot-nav').forEach((d, i) => d.classList.toggle('active', i === currentSlide));
+  document.getElementById('currentSlide').textContent = toFa(currentSlide + 1);
+  document.getElementById('prevBtn').disabled = currentSlide === 0;
+  document.getElementById('nextBtn').disabled = currentSlide === totalSlides - 1;
+  document.getElementById('progressFill').style.width = ((currentSlide + 1) / totalSlides * 100) + '%';
+  const currentTopic = slides[currentSlide].dataset.topic;
+  topicPills.forEach(pill => {
+    const t = parseInt(pill.dataset.topic);
+    const ct = parseInt(currentTopic);
+    pill.classList.toggle('active', t === ct);
+    pill.classList.toggle('done', t < ct);
+    if (t === ct) pill.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+  });
+}
+
+document.getElementById('prevBtn').addEventListener('click', () => goToSlide(currentSlide - 1));
+document.getElementById('nextBtn').addEventListener('click', () => goToSlide(currentSlide + 1));
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowLeft') { e.preventDefault(); goToSlide(currentSlide + 1); }
+  else if (e.key === 'ArrowRight') { e.preventDefault(); goToSlide(currentSlide - 1); }
+  else if (e.key === ' ') { e.preventDefault(); goToSlide(currentSlide + 1); }
+  else if (e.key === 'Home') { e.preventDefault(); goToSlide(0); }
+  else if (e.key === 'End') { e.preventDefault(); goToSlide(totalSlides - 1); }
+  else if (e.key === 'Escape' && document.fullscreenElement) document.exitFullscreen();
+});
+
+let touchStartX = 0, touchStartY = 0;
+document.addEventListener('touchstart', e => {
+  touchStartX = e.changedTouches[0].screenX;
+  touchStartY = e.changedTouches[0].screenY;
+}, { passive: true });
+document.addEventListener('touchend', e => {
+  const dx = e.changedTouches[0].screenX - touchStartX;
+  const dy = e.changedTouches[0].screenY - touchStartY;
+  if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy)) {
+    if (dx < 0) goToSlide(currentSlide + 1);
+    else goToSlide(currentSlide - 1);
+  }
+}, { passive: true });
+
+/* ═══ صدا ═══ */
+let audioCtx = null, soundEnabled = true, musicEnabled = false, musicOscillators = [];
+function initAudio() { if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
+function playTransition() {
+  if (!soundEnabled) return;
+  initAudio();
+  [440, 554.37].forEach((freq, i) => {
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.connect(gain); gain.connect(audioCtx.destination);
+    osc.frequency.value = freq; osc.type = 'sine';
+    const t = audioCtx.currentTime + i * 0.06;
+    gain.gain.setValueAtTime(0.04, t);
+    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.18);
+    osc.start(t); osc.stop(t + 0.22);
+  });
+}
+function startMusic() {
+  if (!audioCtx) initAudio();
+  [110, 164.81, 220, 329.63].forEach(freq => {
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.connect(gain); gain.connect(audioCtx.destination);
+    osc.frequency.value = freq; osc.type = 'sine';
+    gain.gain.value = 0.012;
+    osc.start();
+    musicOscillators.push({ osc, gain });
+  });
+}
+function stopMusic() {
+  musicOscillators.forEach(({ osc, gain }) => {
+    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.5);
+    setTimeout(() => osc.stop(), 600);
+  });
+  musicOscillators = [];
+}
+document.getElementById('soundToggle').addEventListener('click', function() {
+  soundEnabled = !soundEnabled;
+  this.classList.toggle('active', soundEnabled);
+  this.innerHTML = soundEnabled ? '<i class="fas fa-volume-up"></i>' : '<i class="fas fa-volume-mute"></i>';
+  showToast(soundEnabled ? 'صدا فعال' : 'صدا غیرفعال');
+});
+document.getElementById('musicToggle').addEventListener('click', function() {
+  musicEnabled = !musicEnabled;
+  this.classList.toggle('active', musicEnabled);
+  if (musicEnabled) { startMusic(); showToast('موسیقی فعال'); }
+  else { stopMusic(); showToast('موسیقی غیرفعال'); }
+});
+document.getElementById('fullscreenToggle').addEventListener('click', function() {
+  if (!document.fullscreenElement) {
+    document.documentElement.requestFullscreen();
+    this.innerHTML = '<i class="fas fa-compress"></i>';
+  } else {
+    document.exitFullscreen();
+    this.innerHTML = '<i class="fas fa-expand"></i>';
+  }
+});
+function showToast(msg) {
+  const container = document.getElementById('toastContainer');
+  const toast = document.createElement('div');
+  toast.className = 'toast';
+  toast.innerHTML = `<i class="fas fa-info-circle"></i> ${msg}`;
+  container.appendChild(toast);
+  setTimeout(() => {
+    toast.style.opacity = '0';
+    toast.style.transform = 'translateX(-60px)';
+    setTimeout(() => toast.remove(), 300);
+  }, 2400);
+}
+function toFa(n) {
+  const fa = ['۰','۱','۲','۳','۴','۵','۶','۷','۸','۹'];
+  return String(n).replace(/\d/g, d => fa[d]);
+}
+
+/* ═══ پس‌زمینه ═══ */
+const bgCanvas = document.getElementById('bgCanvas');
+const bgCtx = bgCanvas.getContext('2d');
+let particles = [];
+function resizeBg() { bgCanvas.width = window.innerWidth; bgCanvas.height = window.innerHeight; }
+resizeBg();
+window.addEventListener('resize', resizeBg);
+class Particle {
+  constructor() { this.reset(); }
+  reset() {
+    this.x = Math.random() * bgCanvas.width;
+    this.y = Math.random() * bgCanvas.height;
+    this.size = Math.random() * 1.6 + 0.4;
+    this.speedX = (Math.random() - 0.5) * 0.3;
+    this.speedY = (Math.random() - 0.5) * 0.3;
+    this.opacity = Math.random() * 0.5 + 0.15;
+    const colors = ['#00d4aa', '#06b6d4', '#a855f7', '#ffb700'];
+    this.color = colors[Math.floor(Math.random() * colors.length)];
+  }
+  update() {
+    this.x += this.speedX; this.y += this.speedY;
+    if (this.x < 0 || this.x > bgCanvas.width || this.y < 0 || this.y > bgCanvas.height) this.reset();
+  }
+  draw() {
+    bgCtx.beginPath();
+    bgCtx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+    bgCtx.fillStyle = this.color; bgCtx.globalAlpha = this.opacity;
+    bgCtx.fill(); bgCtx.globalAlpha = 1;
+  }
+}
+for (let i = 0; i < 50; i++) particles.push(new Particle());
+function animateBg() {
+  bgCtx.clearRect(0, 0, bgCanvas.width, bgCanvas.height);
+  particles.forEach(p => { p.update(); p.draw(); });
+  requestAnimationFrame(animateBg);
+}
+animateBg();
+
+/* ═══ ابزار ═══ */
+function setupCanvas(canvasId) {
+  const canvas = document.getElementById(canvasId);
+  if (!canvas) return null;
+  const dpr = window.devicePixelRatio || 1;
+  const rect = canvas.getBoundingClientRect();
+  canvas.width = rect.width * dpr; canvas.height = rect.height * dpr;
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+  return { ctx, w: rect.width, h: rect.height };
+}
+function drawGrid(ctx, w, h, cols = 10, rows = 6) {
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)'; ctx.lineWidth = 1;
+  for (let i = 0; i <= cols; i++) { ctx.beginPath(); ctx.moveTo((w/cols)*i, 0); ctx.lineTo((w/cols)*i, h); ctx.stroke(); }
+  for (let i = 0; i <= rows; i++) { ctx.beginPath(); ctx.moveTo(0, (h/rows)*i); ctx.lineTo(w, (h/rows)*i); ctx.stroke(); }
+}
+
+/* ═══ نمودارهای اصلی ═══ */
+function drawPeriodic() {
+  const s = setupCanvas('periodicCanvas'); if (!s) return;
+  const { ctx, w, h } = s; ctx.clearRect(0, 0, w, h);
+  drawGrid(ctx, w, h, 12, 4);
+  ctx.beginPath(); ctx.strokeStyle = '#00d4aa'; ctx.lineWidth = 2;
+  for (let x = 0; x < w; x++) { const t = (x/w)*Math.PI*6; const y = h/2 - Math.sin(t)*h*0.25; if (x===0) ctx.moveTo(x, y); else ctx.lineTo(x, y); }
+  ctx.stroke();
+  ctx.beginPath(); ctx.strokeStyle = '#ffb700'; ctx.lineWidth = 2;
+  for (let x = 0; x < w; x++) { const t = (x/w)*Math.PI*6; const y = h/2 - Math.sign(Math.sin(t))*h*0.25; if (x===0) ctx.moveTo(x, y); else ctx.lineTo(x, y); }
+  ctx.stroke();
+  ctx.beginPath(); ctx.strokeStyle = '#a855f7'; ctx.lineWidth = 2;
+  const period = w/3;
+  for (let x = 0; x < w; x++) {
+    const phase = (x%period)/period;
+    const tri = phase < 0.5 ? (phase*4-1) : (3-phase*4);
+    const y = h/2 - tri*h*0.25;
+    if (x===0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+  }
+  ctx.stroke();
+  ctx.fillStyle = '#00d4aa'; ctx.font = 'bold 11px Vazirmatn'; ctx.textAlign = 'right';
+  ctx.fillText('sin(x)', w-12, 18);
+  ctx.fillStyle = '#ffb700'; ctx.fillText('square(x)', w-12, 36);
+  ctx.fillStyle = '#a855f7'; ctx.fillText('triangle(x)', w-12, 54);
+}
+
+function drawSquareWave(N) {
+  const s = setupCanvas('squareCanvas'); if (!s) return;
+  const { ctx, w, h } = s; ctx.clearRect(0, 0, w, h);
+  drawGrid(ctx, w, h, 10, 6);
+  ctx.beginPath(); ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)'; ctx.lineWidth = 2; ctx.setLineDash([5, 4]);
+  for (let x = 0; x < w; x++) { const t = (x/w)*Math.PI*4 - Math.PI*2; const y = h/2 - Math.sign(Math.sin(t))*h*0.22; if (x===0) ctx.moveTo(x, y); else ctx.lineTo(x, y); }
+  ctx.stroke(); ctx.setLineDash([]);
+  ctx.beginPath(); ctx.strokeStyle = '#ffb700'; ctx.lineWidth = 2.2; ctx.shadowColor = '#ffb700'; ctx.shadowBlur = 6;
+  for (let x = 0; x < w; x++) {
+    const t = (x/w)*Math.PI*4 - Math.PI*2;
+    let val = 0;
+    for (let n = 1; n <= N; n += 2) val += (4/Math.PI)*Math.sin(n*t)/n;
+    const y = h/2 - val*h*0.22;
+    if (x===0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+  }
+  ctx.stroke(); ctx.shadowBlur = 0;
+  ctx.fillStyle = '#ffb700'; ctx.font = 'bold 12px Vazirmatn'; ctx.textAlign = 'left';
+  ctx.fillText(`N = ${N}`, 12, 22);
+}
+
+function drawXSquare(N) {
+  const s = setupCanvas('xSquareCanvas'); if (!s) return;
+  const { ctx, w, h } = s; ctx.clearRect(0, 0, w, h);
+  drawGrid(ctx, w, h, 10, 6);
+  ctx.beginPath(); ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)'; ctx.lineWidth = 1.8; ctx.setLineDash([5, 4]);
+  for (let x = 0; x < w; x++) {
+    const t = (x/w)*4*Math.PI - 2*Math.PI; const period = 2*Math.PI;
+    const tm = ((t%period)+period)%period; const val = tm*tm;
+    const y = h - (val/45)*h*0.95 - 5;
+    if (x===0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+  }
+  ctx.stroke(); ctx.setLineDash([]);
+  ctx.beginPath(); ctx.strokeStyle = '#00d4aa'; ctx.lineWidth = 2; ctx.shadowColor = '#00d4aa'; ctx.shadowBlur = 6;
+  for (let x = 0; x < w; x++) {
+    const t = (x/w)*4*Math.PI - 2*Math.PI; const period = 2*Math.PI;
+    const tm = ((t%period)+period)%period;
+    let val = (4/3)*Math.PI*Math.PI;
+    for (let n = 1; n <= N; n++) val += (4/(n*n))*Math.cos(n*tm) - (4*Math.PI/n)*Math.sin(n*tm);
+    const y = h - (val/45)*h*0.95 - 5;
+    if (x===0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+  }
+  ctx.stroke(); ctx.shadowBlur = 0;
+  ctx.fillStyle = '#00d4aa'; ctx.font = 'bold 12px Vazirmatn'; ctx.textAlign = 'left';
+  ctx.fillText(`N = ${N}`, 12, 22);
+}
+
+function drawAbs(N) {
+  const s = setupCanvas('absCanvas'); if (!s) return;
+  const { ctx, w, h } = s; ctx.clearRect(0, 0, w, h);
+  drawGrid(ctx, w, h, 10, 6);
+  ctx.beginPath(); ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)'; ctx.lineWidth = 1.8; ctx.setLineDash([5, 4]);
+  for (let x = 0; x < w; x++) {
+    const t = (x/w)*4*Math.PI - 2*Math.PI; const period = 2*Math.PI;
+    const tm = ((t%period)+period)%period;
+    const tC = tm > Math.PI ? tm - 2*Math.PI : tm;
+    const val = Math.abs(tC); const y = h - (val/3.5)*h*0.9 - 8;
+    if (x===0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+  }
+  ctx.stroke(); ctx.setLineDash([]);
+  ctx.beginPath(); ctx.strokeStyle = '#00d4aa'; ctx.lineWidth = 2; ctx.shadowColor = '#00d4aa'; ctx.shadowBlur = 6;
+  for (let x = 0; x < w; x++) {
+    const t = (x/w)*4*Math.PI - 2*Math.PI; const period = 2*Math.PI;
+    const tm = ((t%period)+period)%period;
+    const tC = tm > Math.PI ? tm - 2*Math.PI : tm;
+    let val = Math.PI/2;
+    for (let k = 0; k <= N; k++) { const n = 2*k+1; val -= (4/(Math.PI*n*n))*Math.cos(n*tC); }
+    const y = h - (val/3.5)*h*0.9 - 8;
+    if (x===0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+  }
+  ctx.stroke(); ctx.shadowBlur = 0;
+  ctx.fillStyle = '#00d4aa'; ctx.font = 'bold 12px Vazirmatn'; ctx.textAlign = 'left';
+  ctx.fillText(`N = ${N}`, 12, 22);
+}
+
+function drawXFunc(N) {
+  const s = setupCanvas('xCanvas'); if (!s) return;
+  const { ctx, w, h } = s; ctx.clearRect(0, 0, w, h);
+  drawGrid(ctx, w, h, 10, 6);
+  ctx.beginPath(); ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)'; ctx.lineWidth = 1.8; ctx.setLineDash([5, 4]);
+  for (let x = 0; x < w; x++) {
+    const t = (x/w)*4*Math.PI - 2*Math.PI; const period = 2*Math.PI;
+    const tm = ((t%period)+period)%period;
+    const tC = tm > Math.PI ? tm - 2*Math.PI : tm;
+    const y = h/2 - (tC/3.5)*h*0.4;
+    if (x===0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+  }
+  ctx.stroke(); ctx.setLineDash([]);
+  ctx.beginPath(); ctx.strokeStyle = '#a855f7'; ctx.lineWidth = 2; ctx.shadowColor = '#a855f7'; ctx.shadowBlur = 6;
+  for (let x = 0; x < w; x++) {
+    const t = (x/w)*4*Math.PI - 2*Math.PI; const period = 2*Math.PI;
+    const tm = ((t%period)+period)%period;
+    const tC = tm > Math.PI ? tm - 2*Math.PI : tm;
+    let val = 0;
+    for (let n = 1; n <= N; n++) val += 2*Math.pow(-1, n+1)*Math.sin(n*tC)/n;
+    const y = h/2 - val*h*0.1;
+    if (x===0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+  }
+  ctx.stroke(); ctx.shadowBlur = 0;
+  ctx.fillStyle = '#a855f7'; ctx.font = 'bold 12px Vazirmatn'; ctx.textAlign = 'left';
+  ctx.fillText(`N = ${N}`, 12, 22);
+}
+
+function drawExpFunc(N) {
+  const s = setupCanvas('expCanvas'); if (!s) return;
+  const { ctx, w, h } = s; ctx.clearRect(0, 0, w, h);
+  drawGrid(ctx, w, h, 10, 6);
+  ctx.beginPath(); ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)'; ctx.lineWidth = 1.8; ctx.setLineDash([5, 4]);
+  for (let x = 0; x < w; x++) { const t = (x/w)*2*Math.PI; const val = Math.exp(t); const y = h - (val/550)*h*0.95 - 5; if (x===0) ctx.moveTo(x, y); else ctx.lineTo(x, y); }
+  ctx.stroke(); ctx.setLineDash([]);
+  ctx.beginPath(); ctx.strokeStyle = '#ffb700'; ctx.lineWidth = 2; ctx.shadowColor = '#ffb700'; ctx.shadowBlur = 6;
+  const e2pi = Math.exp(2*Math.PI);
+  for (let x = 0; x < w; x++) {
+    const t = (x/w)*2*Math.PI;
+    let val = (e2pi-1)/(2*Math.PI);
+    for (let n = 1; n <= N; n++) {
+      const an = (e2pi-1)/(Math.PI*(n*n+1));
+      const bn = n*(1-e2pi)/(Math.PI*(n*n+1));
+      val += an*Math.cos(n*t) + bn*Math.sin(n*t);
+    }
+    const y = h - (val/550)*h*0.95 - 5;
+    if (x===0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+  }
+  ctx.stroke(); ctx.shadowBlur = 0;
+  ctx.fillStyle = '#ffb700'; ctx.font = 'bold 12px Vazirmatn'; ctx.textAlign = 'left';
+  ctx.fillText(`N = ${N}`, 12, 22);
+}
+
+function drawHidden(N) {
+  const s = setupCanvas('hiddenCanvas'); if (!s) return;
+  const { ctx, w, h } = s; ctx.clearRect(0, 0, w, h);
+  drawGrid(ctx, w, h, 10, 6);
+  ctx.beginPath(); ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)'; ctx.lineWidth = 1.8; ctx.setLineDash([5, 4]);
+  for (let x = 0; x < w; x++) {
+    const t = (x/w)*4*Math.PI - 2*Math.PI; const period = 2*Math.PI;
+    const tm = ((t%period)+period)%period;
+    const y = h/2 - ((tm - Math.PI)/3.5)*h*0.7;
+    if (x===0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+  }
+  ctx.stroke(); ctx.setLineDash([]);
+  ctx.beginPath(); ctx.strokeStyle = '#a855f7'; ctx.lineWidth = 2; ctx.shadowColor = '#a855f7'; ctx.shadowBlur = 6;
+  for (let x = 0; x < w; x++) {
+    const t = (x/w)*4*Math.PI - 2*Math.PI; const period = 2*Math.PI;
+    const tm = ((t%period)+period)%period;
+    let val = Math.PI;
+    for (let n = 1; n <= N; n++) val -= 2*Math.sin(n*tm)/n;
+    const y = h/2 - ((val - Math.PI)/3.5)*h*0.7;
+    if (x===0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+  }
+  ctx.stroke(); ctx.shadowBlur = 0;
+  ctx.fillStyle = '#a855f7'; ctx.font = 'bold 12px Vazirmatn'; ctx.textAlign = 'left';
+  ctx.fillText(`N = ${N}`, 12, 22);
+}
+
+/* ═══ رباتیک — شبیه‌ساز اصلی ═══ */
+let robotN = 1;
+let robotSpeed = 1;
+let robotProgress = 0;
+let robotAnimationId = null;
+let robotTrail = [];
+let lastJerk = 0;
+let lastSmooth = 0;
+
+function setupRobotCanvas() {
+  const canvas = document.getElementById('robotCanvas');
+  if (!canvas) return null;
+  const dpr = window.devicePixelRatio || 1;
+  const rect = canvas.getBoundingClientRect();
+  canvas.width = rect.width * dpr; canvas.height = rect.height * dpr;
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+  return { ctx, w: rect.width, h: rect.height };
+}
+
+function getSquarePathPoint(t, N) {
+  // مسیر مربعی: (0,0) → (1,0) → (1,1) → (0,1) → (0,0)
+  // تقریب فوریه با N هارمونیک
+  const L = 4;
+  const x0 = t % L;
+  // نقطه ایده‌آل روی مسیر مربعی
+  let xIdeal, yIdeal;
+  if (x0 < 1) { xIdeal = x0; yIdeal = 0; }
+  else if (x0 < 2) { xIdeal = 1; yIdeal = x0 - 1; }
+  else if (x0 < 3) { xIdeal = 3 - x0; yIdeal = 1; }
+  else { xIdeal = 0; yIdeal = 4 - x0; }
+
+  // تقریب فوریه: هارمونیک‌های فرد سینوسی
+  // استفاده از بسط سری فوریه برای موج مربعی و اعمال نرم‌سازی
+  let xApprox = xIdeal, yApprox = yIdeal;
+
+  if (N > 1) {
+    // نرم‌سازی گوشه‌ها با میانگین‌گیری وزنی
+    const alpha = Math.min(1, N / 15); // ضریب نرم‌سازی
+
+    // میانگین متحرک روی مسیر
+    const dt = 0.03 * alpha;
+    let sumX = 0, sumY = 0, count = 0;
+    for (let k = -N; k <= N; k++) {
+      const tk = t + k * dt;
+      const tk0 = ((tk % L) + L) % L;
+      let xi, yi;
+      if (tk0 < 1) { xi = tk0; yi = 0; }
+      else if (tk0 < 2) { xi = 1; yi = tk0 - 1; }
+      else if (tk0 < 3) { xi = 3 - tk0; yi = 1; }
+      else { xi = 0; yi = 4 - tk0; }
+      const weight = Math.exp(-Math.pow(k / N, 2));
+      sumX += xi * weight; sumY += yi * weight; count += weight;
+    }
+    xApprox = sumX / count;
+    yApprox = sumY / count;
+
+    // اضافه کردن هارمونیک‌های فوریه
+    const baseHarm = Math.min(N, 8);
+    let harmX = 0, harmY = 0;
+    for (let n = 1; n <= baseHarm; n++) {
+      const omega = (2 * Math.PI / L) * n * (1 + 0.001 * N);
+      harmX += Math.sin(omega * t) * 0.008 * alpha * Math.cos(n);
+      harmY += Math.cos(omega * t) * 0.008 * alpha * Math.sin(n);
+    }
+
+    xApprox = xApprox * 0.92 + (xIdeal + harmX) * 0.08;
+    yApprox = yApprox * 0.92 + (yIdeal + harmY) * 0.08;
+  }
+
+  return { x: xApprox, y: yApprox, xIdeal, yIdeal };
+}
+
+function drawRobot() {
+  const s = setupRobotCanvas();
+  if (!s) return;
+  const { ctx, w, h } = s;
+
+  ctx.clearRect(0, 0, w, h);
+
+  // پس‌زمینه
+  ctx.fillStyle = 'rgba(10, 18, 40, 0.5)';
+  ctx.fillRect(0, 0, w, h);
+
+  // شبکه
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.04)';
+  ctx.lineWidth = 1;
+  for (let i = 0; i <= 10; i++) {
+    ctx.beginPath(); ctx.moveTo((w/10)*i, 0); ctx.lineTo((w/10)*i, h); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(0, (h/10)*i); ctx.lineTo(w, (h/10)*i); ctx.stroke();
+  }
+
+  const padding = 60;
+  const pathW = w - padding * 2;
+  const pathH = h - padding * 2;
+  const scale = Math.min(pathW, pathH) / 1.2;
+  const offsetX = (w - scale) / 2;
+  const offsetY = (h - scale) / 2;
+
+  // مسیر ایده‌آل مربعی (نقطه‌چین)
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+  ctx.lineWidth = 2;
+  ctx.setLineDash([8, 6]);
+  ctx.beginPath();
+  ctx.moveTo(offsetX, offsetY + scale);
+  ctx.lineTo(offsetX + scale, offsetY + scale);
+  ctx.lineTo(offsetX + scale, offsetY);
+  ctx.lineTo(offsetX, offsetY);
+  ctx.lineTo(offsetX, offsetY + scale);
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  // مسیر ایده‌آل ربات — تشخیص گوشه‌ها
+  ctx.fillStyle = 'rgba(255, 71, 87, 0.9)';
+  const corners = [
+    [offsetX, offsetY + scale],
+    [offsetX + scale, offsetY + scale],
+    [offsetX + scale, offsetY],
+    [offsetX, offsetY]
+  ];
+  corners.forEach(c => {
+    ctx.beginPath(); ctx.arc(c[0], c[1], 5, 0, Math.PI * 2); ctx.fill();
+  });
+
+  // برچسب گوشه‌ها
+  ctx.fillStyle = 'rgba(255, 71, 87, 0.7)';
+  ctx.font = 'bold 11px Vazirmatn';
+  ctx.textAlign = 'right';
+  ctx.fillText('گوشه تیز — ضربه!', offsetX + scale + 55, offsetY + scale - 8);
+
+  // مسیر تقریب فوریه
+  ctx.strokeStyle = N_color(robotN);
+  ctx.lineWidth = 3;
+  ctx.shadowColor = N_color(robotN);
+  ctx.shadowBlur = 8;
+  ctx.beginPath();
+  const L = 4;
+  const samples = 300;
+  for (let i = 0; i <= samples; i++) {
+    const t = (i / samples) * L;
+    const p = getSquarePathPoint(t, robotN);
+    const px = offsetX + p.x * scale;
+    const py = offsetY + scale - p.y * scale;
+    if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+  }
+  ctx.stroke();
+  ctx.shadowBlur = 0;
+
+  // موقعیت فعلی ربات
+  const currentT = robotProgress * L;
+  const pos = getSquarePathPoint(currentT, robotN);
+  const rx = offsetX + pos.x * scale;
+  const ry = offsetY + scale - pos.y * scale;
+
+  // دنباله ربات
+  if (robotTrail.length > 0) {
+    ctx.beginPath();
+    ctx.strokeStyle = 'rgba(0, 212, 170, 0.6)';
+    ctx.lineWidth = 4;
+    ctx.shadowColor = '#00d4aa';
+    ctx.shadowBlur = 10;
+    for (let i = 0; i < robotTrail.length; i++) {
+      const p = robotTrail[i];
+      if (i === 0) ctx.moveTo(p.x, p.y); else ctx.lineTo(p.x, p.y);
+    }
+    ctx.stroke();
+    ctx.shadowBlur = 0;
+  }
+
+  // ربات (دایره با آیکون)
+  ctx.fillStyle = N_color(robotN);
+  ctx.shadowColor = N_color(robotN);
+  ctx.shadowBlur = 20;
+  ctx.beginPath();
+  ctx.arc(rx, ry, 14, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.shadowBlur = 0;
+
+  ctx.fillStyle = '#050818';
+  ctx.font = 'bold 14px Font Awesome 6 Free';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('\uf544', rx, ry);
+
+  // برچسب‌ها
+  ctx.fillStyle = N_color(robotN);
+  ctx.font = 'bold 13px Vazirmatn';
+  ctx.textAlign = 'right';
+  ctx.textBaseline = 'top';
+  ctx.fillText(`N = ${robotN} هارمونیک`, w - 15, 15);
+}
+
+function N_color(N) {
+  if (N <= 2) return '#ff4757';
+  if (N <= 5) return '#ffb700';
+  if (N <= 10) return '#22c55e';
+  return '#00d4aa';
+}
+
+function updateRobotMetrics() {
+  // محاسبه Jerk و نرمی بر اساس N
+  // Jerk = max |d³(position)/dt³| — تقریب با اختلاف محدود
+  const L = 4;
+  const dt = 0.01;
+  const samples = 100;
+  const positions = [];
+  for (let i = 0; i <= samples; i++) {
+    const t = (i / samples) * L;
+    const p = getSquarePathPoint(t, robotN);
+    positions.push(p);
+  }
+
+  let maxJerk = 0;
+  for (let i = 2; i < samples - 2; i++) {
+    const d3x = (positions[i+2].x - 2*positions[i+1].x + 2*positions[i-1].x - positions[i-2].x) / (2 * dt * dt * dt);
+    const d3y = (positions[i+2].y - 2*positions[i+1].y + 2*positions[i-1].y - positions[i-2].y) / (2 * dt * dt * dt);
+    const jerk = Math.sqrt(d3x*d3x + d3y*d3y);
+    if (jerk > maxJerk) maxJerk = jerk;
+  }
+
+  const smoothness = Math.min(100, Math.max(0, 100 - Math.log10(Math.max(maxJerk, 1)) * 25));
+
+  document.getElementById('robotJerk').textContent = maxJerk > 100 ? '> 100' : maxJerk.toFixed(1);
+  document.getElementById('robotSmooth').textContent = toFa(Math.round(smoothness)) + '٪';
+
+  const statusEl = document.getElementById('robotStatus');
+  const jerkEl = document.getElementById('robotJerk');
+
+  if (robotN <= 2) {
+    statusEl.className = 'robot-status jerky';
+    statusEl.innerHTML = '<i class="fas fa-exclamation-triangle"></i> ضربه شدید به موتور!';
+    jerkEl.className = 'robot-metric-value danger';
+  } else if (robotN <= 5) {
+    statusEl.className = 'robot-status jerky';
+    statusEl.innerHTML = '<i class="fas fa-exclamation-circle"></i> ضربه قابل توجه';
+    jerkEl.className = 'robot-metric-value danger';
+  } else if (robotN <= 10) {
+    statusEl.className = 'robot-status smooth';
+    statusEl.innerHTML = '<i class="fas fa-check-circle"></i> مسیر نسبتاً نرم';
+    jerkEl.className = 'robot-metric-value';
+  } else {
+    statusEl.className = 'robot-status smooth';
+    statusEl.innerHTML = '<i class="fas fa-check-circle"></i> مسیر نرم و روان';
+    jerkEl.className = 'robot-metric-value success';
+  }
+
+  // رسم نمودار سرعت (Jerk در طول مسیر)
+  drawRobotSpeedChart();
+}
+
+function drawRobotSpeedChart() {
+  const canvas = document.getElementById('robotSpeedChart');
+  if (!canvas) return;
+  const dpr = window.devicePixelRatio || 1;
+  const rect = canvas.getBoundingClientRect();
+  canvas.width = rect.width * dpr; canvas.height = rect.height * dpr;
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+  const w = rect.width, h = rect.height;
+  ctx.clearRect(0, 0, w, h);
+
+  // محاسبه سرعت در طول مسیر
+  const L = 4;
+  const samples = 100;
+  const speeds = [];
+  const dt = 0.01;
+  for (let i = 0; i <= samples; i++) {
+    const t = (i / samples) * L;
+    const p1 = getSquarePathPoint(t, robotN);
+    const p2 = getSquarePathPoint(t + dt, robotN);
+    const v = Math.sqrt(Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2)) / dt;
+    speeds.push(v);
+  }
+
+  const maxV = Math.max(...speeds);
+  const minV = Math.min(...speeds);
+
+  // پس‌زمینه
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
+  ctx.fillRect(0, 0, w, h);
+
+  // خط پایه
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+  ctx.beginPath();
+  ctx.moveTo(0, h - 5); ctx.lineTo(w, h - 5);
+  ctx.stroke();
+
+  // منحنی سرعت
+  ctx.beginPath();
+  ctx.strokeStyle = N_color(robotN);
+  ctx.lineWidth = 2;
+  ctx.shadowColor = N_color(robotN);
+  ctx.shadowBlur = 6;
+  for (let i = 0; i < speeds.length; i++) {
+    const x = (i / (speeds.length - 1)) * w;
+    const y = h - 5 - ((speeds[i] - minV) / (maxV - minV || 1)) * (h - 20);
+    if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+  }
+  ctx.stroke();
+  ctx.shadowBlur = 0;
+
+  // برچسب
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+  ctx.font = 'bold 10px Vazirmatn';
+  ctx.textAlign = 'right';
+  ctx.fillText('سرعت ربات (|v|)', w - 5, 12);
+}
+
+function animateRobot() {
+  robotProgress += 0.003 * robotSpeed;
+  if (robotProgress >= 1) {
+    robotProgress = 0;
+    robotTrail = [];
+  }
+  const currentT = robotProgress * 4;
+  const pos = getSquarePathPoint(currentT, robotN);
+  const canvas = document.getElementById('robotCanvas');
+  if (canvas) {
+    const rect = canvas.getBoundingClientRect();
+    const w = rect.width, h = rect.height;
+    const padding = 60;
+    const scale = Math.min(w - padding*2, h - padding*2) / 1.2;
+    const offsetX = (w - scale) / 2;
+    const offsetY = (h - scale) / 2;
+    robotTrail.push({
+      x: offsetX + pos.x * scale,
+      y: offsetY + scale - pos.y * scale
+    });
+    if (robotTrail.length > 200) robotTrail.shift();
+  }
+  drawRobot();
+  robotAnimationId = requestAnimationFrame(animateRobot);
+}
+
+document.getElementById('robotN').addEventListener('input', function() {
+  robotN = parseInt(this.value);
+  document.getElementById('robotNValue').textContent = toFa(robotN);
+  updateRobotMetrics();
+  drawRobot();
+});
+document.getElementById('robotSpeed').addEventListener('input', function() {
+  robotSpeed = parseFloat(this.value);
+  document.getElementById('robotSpeedValue').textContent = toFa(robotSpeed.toFixed(1));
+});
+
+function startRobot() {
+  if (robotAnimationId) cancelAnimationFrame(robotAnimationId);
+  robotProgress = 0;
+  robotTrail = [];
+  updateRobotMetrics();
+  animateRobot();
+}
+function stopRobot() {
+  if (robotAnimationId) { cancelAnimationFrame(robotAnimationId); robotAnimationId = null; }
+}
+
+/* ═══ همگرایی سری ═══ */
+function drawLeibniz(N) {
+  const s = setupCanvas('leibnizCanvas'); if (!s) return;
+  const { ctx, w, h } = s; ctx.clearRect(0, 0, w, h);
+  drawGrid(ctx, w, h, 10, 6);
+
+  const target = Math.PI / 4;
+  const yMin = 0.6, yMax = 1.0;
+  const yRange = yMax - yMin;
+  const yTarget = h - ((target - yMin) / yRange) * h;
+
+  ctx.beginPath();
+  ctx.strokeStyle = 'rgba(0, 212, 170, 0.8)';
+  ctx.lineWidth = 2;
+  ctx.setLineDash([6, 4]);
+  ctx.moveTo(0, yTarget); ctx.lineTo(w, yTarget);
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  ctx.fillStyle = 'rgba(0, 212, 170, 0.9)';
+  ctx.font = 'bold 11px Vazirmatn';
+  ctx.textAlign = 'right';
+  ctx.fillText(`π/4 ≈ ${target.toFixed(6)}`, w - 12, yTarget - 8);
+
+  ctx.beginPath();
+  ctx.strokeStyle = '#ffb700';
+  ctx.lineWidth = 2.2;
+  ctx.shadowColor = '#ffb700';
+  ctx.shadowBlur = 6;
+  let sum = 0;
+  const maxN = 500;
+  for (let n = 0; n <= maxN; n++) {
+    sum += Math.pow(-1, n) / (2 * n + 1);
+    if (n <= N) {
+      const x = (n / maxN) * w;
+      const y = h - ((sum - yMin) / yRange) * h;
+      if (n === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    }
+  }
+  ctx.stroke();
+  ctx.shadowBlur = 0;
+
+  let currentSum = 0;
+  for (let n = 0; n <= N; n++) currentSum += Math.pow(-1, n) / (2 * n + 1);
+  const xCurrent = (N / maxN) * w;
+  const yCurrent = h - ((currentSum - yMin) / yRange) * h;
+
+  ctx.fillStyle = '#00d4aa';
+  ctx.shadowColor = '#00d4aa';
+  ctx.shadowBlur = 12;
+  ctx.beginPath();
+  ctx.arc(xCurrent, yCurrent, 6, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.shadowBlur = 0;
+
+  ctx.fillStyle = '#ffb700';
+  ctx.font = 'bold 12px Vazirmatn';
+  ctx.textAlign = 'left';
+  ctx.fillText(`N = ${N}`, 12, 22);
+  ctx.fillStyle = '#00d4aa';
+  ctx.fillText(`S_N = ${currentSum.toFixed(8)}`, 12, 42);
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+  ctx.fillText(`خطا: ${Math.abs(currentSum - target).toExponential(2)}`, 12, 62);
+}
+
+/* ═══ ۱۰ سری ═══ */
+const seriesList = [
+  { name: 'سری بازل', formula: '\\sum_{n=1}^{\\infty} \\frac{1}{n^2}', result: '\\frac{\\pi^2}{6}', value: Math.PI*Math.PI/6, type: 'sum_inv_n2' },
+  { name: 'سری اویلر (n=4)', formula: '\\sum_{n=1}^{\\infty} \\frac{1}{n^4}', result: '\\frac{\\pi^4}{90}', value: Math.pow(Math.PI,4)/90, type: 'sum_inv_n4' },
+  { name: 'سری اویلر (n=6)', formula: '\\sum_{n=1}^{\\infty} \\frac{1}{n^6}', result: '\\frac{\\pi^6}{945}', value: Math.pow(Math.PI,6)/945, type: 'sum_inv_n6' },
+  { name: 'سری لایبنیتس', formula: '\\sum_{n=1}^{\\infty} \\frac{(-1)^{n+1}}{n}', result: '\\ln(2)', value: Math.LN2, type: 'alt_inv_n' },
+  { name: 'سری گرگوری', formula: '\\sum_{n=1}^{\\infty} \\frac{(-1)^{n+1}}{2n-1}', result: '\\frac{\\pi}{4}', value: Math.PI/4, type: 'alt_odd' },
+  { name: 'سری فرد مربع', formula: '\\sum_{n=1}^{\\infty} \\frac{1}{(2n-1)^2}', result: '\\frac{\\pi^2}{8}', value: Math.PI*Math.PI/8, type: 'sum_odd_sq' },
+  { name: 'سری فرد توان چهار', formula: '\\sum_{n=1}^{\\infty} \\frac{1}{(2n-1)^4}', result: '\\frac{\\pi^4}{96}', value: Math.pow(Math.PI,4)/96, type: 'sum_odd_4' },
+  { name: 'سری مکعبی متناوب', formula: '\\sum_{n=0}^{\\infty} \\frac{(-1)^n}{(2n+1)^3}', result: '\\frac{\\pi^3}{32}', value: Math.pow(Math.PI,3)/32, type: 'alt_cube' },
+  { name: 'سری ترکیبی', formula: '\\sum_{n=1}^{\\infty} \\frac{1}{n^2(n+1)^2}', result: '\\frac{\\pi^2}{3} - 3', value: Math.PI*Math.PI/3 - 3, type: 'sum_combo' },
+  { name: 'سری آپری', formula: '\\sum_{n=1}^{\\infty} \\frac{(-1)^{n+1}}{n^3}', result: '\\frac{3\\zeta(3)}{4}', value: 0.901542677, type: 'alt_apéry' }
+];
+
+function initSeries() {
+  const grid = document.getElementById('seriesGrid');
+  if (!grid) return;
+  grid.innerHTML = '';
+  seriesList.forEach((s, i) => {
+    const card = document.createElement('div');
+    card.className = 'series-card';
+    card.dataset.index = i;
+    card.innerHTML = `
+      <div class="series-name">${s.name}</div>
+      <div class="series-formula" style="color: var(--primary);">$$${s.formula}$$</div>
+      <div class="series-result">
+        <span class="series-result-label">جواب:</span>
+        <span class="series-result-value">$${s.result}$</span>
+      </div>
+    `;
+    card.addEventListener('click', () => openSeriesDetail(i));
+    grid.appendChild(card);
+  });
+  if (window.MathJax && window.MathJax.typesetPromise) window.MathJax.typesetPromise([grid]);
+}
+
+let currentSeriesIdx = 0;
+
+function openSeriesDetail(idx) {
+  currentSeriesIdx = idx;
+  const s = seriesList[idx];
+  document.querySelectorAll('.series-card').forEach((c, i) => c.classList.toggle('active', i === idx));
+  document.getElementById('seriesDetailTitle').textContent = s.name;
+  document.getElementById('seriesDetailNote').innerHTML = `جواب تحلیلی: $$${s.result}$$`;
+  document.getElementById('seriesDetail').classList.add('active');
+  document.getElementById('seriesN').value = 20;
+  document.getElementById('seriesNValue').textContent = '۲۰';
+  drawSeriesConvergence(s, 20);
+  if (window.MathJax && window.MathJax.typesetPromise) window.MathJax.typesetPromise([document.getElementById('seriesDetail')]);
+}
+
+function drawSeriesConvergence(s, N) {
+  const canvas = document.getElementById('seriesCanvas');
+  if (!canvas) return;
+  const dpr = window.devicePixelRatio || 1;
+  const rect = canvas.getBoundingClientRect();
+  canvas.width = rect.width * dpr; canvas.height = rect.height * dpr;
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+  const w = rect.width, h = rect.height;
+  ctx.clearRect(0, 0, w, h);
+
+  const sums = []; let sum = 0;
+  const maxN = 200;
+  for (let n = 0; n <= maxN; n++) {
+    let term = 0;
+    const k = n + 1;
+    switch(s.type) {
+      case 'sum_inv_n2': term = 1/(k*k); break;
+      case 'sum_inv_n4': term = 1/Math.pow(k,4); break;
+      case 'sum_inv_n6': term = 1/Math.pow(k,6); break;
+      case 'alt_inv_n': term = Math.pow(-1, n)/k; break;
+      case 'alt_odd': term = Math.pow(-1, n)/(2*n+1); break;
+      case 'sum_odd_sq': term = 1/Math.pow(2*n+1, 2); break;
+      case 'sum_odd_4': term = 1/Math.pow(2*n+1, 4); break;
+      case 'alt_cube': term = Math.pow(-1, n)/Math.pow(2*n+1, 3); break;
+      case 'sum_combo': term = 1/(k*k*Math.pow(k+1, 2)); break;
+      case 'alt_apéry': term = Math.pow(-1, n)/Math.pow(k, 3); break;
+    }
+    sum += term; sums.push(sum);
+  }
+
+  const target = s.value;
+  const minVal = Math.min(...sums.slice(0, 10), target*0.9);
+  const maxVal = Math.max(...sums.slice(0, 10), target*1.1);
+  const range = maxVal - minVal;
+
+  drawGrid(ctx, w, h, 10, 6);
+
+  const yTarget = h - ((target - minVal)/range) * h;
+  ctx.beginPath();
+  ctx.strokeStyle = 'rgba(0, 212, 170, 0.8)';
+  ctx.lineWidth = 2; ctx.setLineDash([6, 4]);
+  ctx.moveTo(0, yTarget); ctx.lineTo(w, yTarget);
+  ctx.stroke(); ctx.setLineDash([]);
+
+  ctx.fillStyle = 'rgba(0, 212, 170, 0.9)';
+  ctx.font = 'bold 11px Vazirmatn'; ctx.textAlign = 'right';
+  ctx.fillText(`هدف: ${target.toFixed(6)}`, w - 12, yTarget - 8);
+
+  ctx.beginPath();
+  ctx.strokeStyle = '#ffb700';
+  ctx.lineWidth = 2.2;
+  ctx.shadowColor = '#ffb700'; ctx.shadowBlur = 6;
+  for (let n = 0; n <= Math.min(N, maxN); n++) {
+    const x = (n/maxN)*w;
+    const y = h - ((sums[n] - minVal)/range)*h;
+    if (n === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+  }
+  ctx.stroke(); ctx.shadowBlur = 0;
+
+  const xC = (Math.min(N, maxN)/maxN)*w;
+  const yC = h - ((sums[Math.min(N, maxN)] - minVal)/range)*h;
+  ctx.fillStyle = '#00d4aa'; ctx.shadowColor = '#00d4aa'; ctx.shadowBlur = 12;
+  ctx.beginPath(); ctx.arc(xC, yC, 6, 0, Math.PI*2); ctx.fill();
+  ctx.shadowBlur = 0;
+
+  ctx.fillStyle = '#ffb700';
+  ctx.font = 'bold 12px Vazirmatn'; ctx.textAlign = 'left';
+  ctx.fillText(`N = ${N}`, 12, 22);
+  ctx.fillStyle = '#00d4aa';
+  ctx.fillText(`S_N = ${sums[Math.min(N, maxN)].toFixed(8)}`, 12, 42);
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+  ctx.fillText(`خطا: ${Math.abs(sums[Math.min(N, maxN)] - target).toExponential(2)}`, 12, 62);
+}
+
+document.getElementById('seriesN').addEventListener('input', function() {
+  document.getElementById('seriesNValue').textContent = toFa(this.value);
+  drawSeriesConvergence(seriesList[currentSeriesIdx], parseInt(this.value));
+});
+document.getElementById('closeSeries').addEventListener('click', () => {
+  document.getElementById('seriesDetail').classList.remove('active');
+  document.querySelectorAll('.series-card').forEach(c => c.classList.remove('active'));
+});
+
+/* ═══ انتگرال‌ها ═══ */
+const integralsList = [
+  { name: 'انتگرال دیریکله', formula: '\\int_0^{\\infty} \\frac{\\sin(\\omega)}{\\omega} d\\omega', result: '\\frac{\\pi}{2}', value: Math.PI/2, type: 'sinc' },
+  { name: 'سینک نرمال', formula: '\\int_0^{\\infty} \\frac{\\sin^2(\\omega)}{\\omega^2} d\\omega', result: '\\frac{\\pi}{2}', value: Math.PI/2, type: 'sinc2' },
+  { name: 'سینک مرتبه ۳', formula: '\\int_0^{\\infty} \\frac{\\sin^3(\\omega)}{\\omega^3} d\\omega', result: '\\frac{3\\pi}{8}', value: 3*Math.PI/8, type: 'sinc3' },
+  { name: 'سینک-کسینوس', formula: '\\int_0^{\\infty} \\frac{\\sin(2\\omega)}{\\omega} d\\omega', result: '\\frac{\\pi}{2}', value: Math.PI/2, type: 'sinc2w' },
+  { name: 'گاوسی', formula: '\\int_{-\\infty}^{\\infty} e^{-x^2} dx', result: '\\sqrt{\\pi}', value: Math.sqrt(Math.PI), type: 'gauss' },
+  { name: 'لاپلاس', formula: '\\int_0^{\\infty} \\frac{\\cos(\\omega x)}{1+\\omega^2} d\\omega', result: '\\frac{\\pi}{2} e^{-|x|}', value: null, type: 'laplace' }
+];
+
+function initIntegrals() {
+  const grid = document.getElementById('integralsGrid');
+  if (!grid) return;
+  grid.innerHTML = '';
+  integralsList.forEach((s, i) => {
+    const card = document.createElement('div');
+    card.className = 'integral-card';
+    card.innerHTML = `
+      <div class="integral-name">${s.name}</div>
+      <div class="integral-formula" style="color: var(--primary);">$$${s.formula}$$</div>
+      <div class="integral-hint">جواب: $${s.result}$</div>
+    `;
+    card.addEventListener('click', () => openIntegralDetail(i));
+    grid.appendChild(card);
+  });
+  if (window.MathJax && window.MathJax.typesetPromise) window.MathJax.typesetPromise([grid]);
+}
+
+let currentIntegralIdx = 0;
+
+function openIntegralDetail(idx) {
+  currentIntegralIdx = idx;
+  const s = integralsList[idx];
+  document.querySelectorAll('.integral-card').forEach((c, i) => c.classList.toggle('active', i === idx));
+  document.getElementById('integralDetailTitle').textContent = s.name;
+  document.getElementById('integralDetailNote').innerHTML = `جواب تحلیلی: $$${s.result}$$`;
+  document.getElementById('integralDetail').classList.add('active');
+  drawIntegralConvergence(s, 50);
+  if (window.MathJax && window.MathJax.typesetPromise) window.MathJax.typesetPromise([document.getElementById('integralDetail')]);
+}
+
+function drawIntegralConvergence(s, N) {
+  const canvas = document.getElementById('integralCanvas');
+  if (!canvas) return;
+  const dpr = window.devicePixelRatio || 1;
+  const rect = canvas.getBoundingClientRect();
+  canvas.width = rect.width * dpr; canvas.height = rect.height * dpr;
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+  const w = rect.width, h = rect.height;
+  ctx.clearRect(0, 0, w, h);
+
+  const target = s.value || 0;
+  const sums = []; let sum = 0;
+  const maxN = 200;
+  const maxX = 20;
+
+  for (let n = 1; n <= maxN; n++) {
+    const dX = maxX/maxN;
+    const x = n*dX;
+    let integrand = 0;
+    switch(s.type) {
+      case 'sinc': integrand = Math.sin(x)/x; break;
+      case 'sinc2': integrand = Math.pow(Math.sin(x)/x, 2); break;
+      case 'sinc3': integrand = Math.pow(Math.sin(x)/x, 3); break;
+      case 'sinc2w': integrand = Math.sin(2*x)/x; break;
+      case 'gauss': integrand = Math.exp(-x*x)*2; break;
+      case 'laplace': integrand = 1/(1+x*x); break;
+    }
+    sum += integrand*dX;
+    sums.push(sum);
+  }
+
+  const minVal = 0;
+  const maxVal = Math.max(...sums.slice(0, 10), target*1.15);
+  const range = maxVal - minVal;
+
+  drawGrid(ctx, w, h, 10, 6);
+
+  const yTarget = h - ((target - minVal)/range)*h;
+  ctx.beginPath();
+  ctx.strokeStyle = 'rgba(0, 212, 170, 0.8)';
+  ctx.lineWidth = 2; ctx.setLineDash([6, 4]);
+  ctx.moveTo(0, yTarget); ctx.lineTo(w, yTarget);
+  ctx.stroke(); ctx.setLineDash([]);
+
+  ctx.fillStyle = 'rgba(0, 212, 170, 0.9)';
+  ctx.font = 'bold 11px Vazirmatn'; ctx.textAlign = 'right';
+  if (target) ctx.fillText(`هدف: ${target.toFixed(6)}`, w - 12, yTarget - 8);
+
+  ctx.beginPath();
+  ctx.strokeStyle = '#a855f7';
+  ctx.lineWidth = 2.2;
+  ctx.shadowColor = '#a855f7'; ctx.shadowBlur = 6;
+  for (let n = 0; n < Math.min(N, maxN); n++) {
+    const x = (n/maxN)*w;
+    const y = h - ((sums[n] - minVal)/range)*h;
+    if (n === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+  }
+  ctx.stroke(); ctx.shadowBlur = 0;
+
+  ctx.fillStyle = '#a855f7';
+  ctx.font = 'bold 12px Vazirmatn'; ctx.textAlign = 'left';
+  ctx.fillText(`N = ${N}`, 12, 22);
+  ctx.fillStyle = '#00d4aa';
+  if (sums[Math.min(N, maxN)-1]) ctx.fillText(`مقدار: ${sums[Math.min(N, maxN)-1].toFixed(6)}`, 12, 42);
+}
+
+document.getElementById('integralN').addEventListener('input', function() {
+  document.getElementById('integralNValue').textContent = toFa(this.value);
+  drawIntegralConvergence(integralsList[currentIntegralIdx], parseInt(this.value));
+});
+document.getElementById('closeIntegral').addEventListener('click', () => {
+  document.getElementById('integralDetail').classList.remove('active');
+  document.querySelectorAll('.integral-card').forEach(c => c.classList.remove('active'));
+});
+
+/* ═══ میکروفون ═══ */
+let isRecording = false;
+let micStream = null;
+
+document.getElementById('micBtn').addEventListener('click', async function() {
+  if (isRecording) return;
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+    showToast('⚠️ مرورگر شما از میکروفون پشتیبانی نمی‌کند');
+    return;
+  }
+  try {
+    micStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+  } catch (err) {
+    showToast('❌ دسترسی به میکروفون داده نشد');
+    return;
+  }
+
+  isRecording = true;
+  const status = document.getElementById('micStatus');
+  const countdown = document.getElementById('micCountdown');
+  const btn = document.getElementById('micBtn');
+
+  btn.classList.add('recording');
+  btn.disabled = true;
+  countdown.style.display = 'block';
+  status.textContent = '🎤 در حال ضبط... صحبت کنید';
+
+  const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+  const source = audioContext.createMediaStreamSource(micStream);
+  const analyser = audioContext.createAnalyser();
+  analyser.fftSize = 2048;
+  source.connect(analyser);
+
+  const sampleRate = audioContext.sampleRate;
+  const recordingDuration = 5;
+  const totalSamples = sampleRate * recordingDuration;
+  const recordedData = new Float32Array(totalSamples);
+  let sampleIndex = 0;
+  const startTime = Date.now();
+
+  const processFrame = () => {
+    if (!isRecording) return;
+    const bufferLength = analyser.fftSize;
+    const dataArray = new Float32Array(bufferLength);
+    analyser.getFloatTimeDomainData(dataArray);
+    const chunkSize = Math.min(bufferLength, totalSamples - sampleIndex);
+    for (let i = 0; i < chunkSize; i++) recordedData[sampleIndex + i] = dataArray[i];
+    sampleIndex += chunkSize;
+    const elapsed = (Date.now() - startTime) / 1000;
+    const remaining = Math.max(0, recordingDuration - elapsed);
+    countdown.textContent = toFa(Math.ceil(remaining));
+    if (remaining <= 0 || sampleIndex >= totalSamples) {
+      finishRecording(recordedData, sampleRate);
+      return;
+    }
+    requestAnimationFrame(processFrame);
+  };
+  processFrame();
+});
+
+function finishRecording(data, sampleRate) {
+  isRecording = false;
+  const btn = document.getElementById('micBtn');
+  const status = document.getElementById('micStatus');
+  const countdown = document.getElementById('micCountdown');
+  btn.classList.remove('recording');
+  btn.disabled = false;
+  countdown.style.display = 'none';
+  if (micStream) { micStream.getTracks().forEach(t => t.stop()); micStream = null; }
+  status.textContent = '✓ ضبط تمام شد. در حال تحلیل...';
+  showToast('در حال تحلیل سیگنال...');
+  analyzeSignal(data, sampleRate);
+}
+
+function analyzeSignal(data, sampleRate) {
+  drawTimeDomain(data);
+  const fftResult = computeFFTMagnitude(data);
+  drawFFT(fftResult, sampleRate);
+  const f0 = detectF0(fftResult, sampleRate);
+  updateGender(f0);
+}
+
+function drawTimeDomain(data) {
+  const canvas = document.getElementById('timeCanvas');
+  if (!canvas) return;
+  const dpr = window.devicePixelRatio || 1;
+  const rect = canvas.getBoundingClientRect();
+  canvas.width = rect.width * dpr; canvas.height = rect.height * dpr;
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+  const w = rect.width, h = rect.height;
+  ctx.clearRect(0, 0, w, h);
+  drawGrid(ctx, w, h, 8, 4);
+  ctx.beginPath();
+  ctx.strokeStyle = '#ec4899'; ctx.lineWidth = 1.5;
+  const step = Math.floor(data.length / w);
+  for (let x = 0; x < w; x++) {
+    const idx = x * step;
+    const val = data[idx] || 0;
+    const y = h/2 - val*h*0.4;
+    if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+  }
+  ctx.stroke();
+  ctx.fillStyle = '#ec4899';
+  ctx.font = 'bold 11px Vazirmatn';
+  ctx.textAlign = 'left';
+  ctx.fillText('Time Domain', 10, 18);
+}
+
+function computeFFTMagnitude(signal) {
+  const N = Math.pow(2, Math.floor(Math.log2(signal.length)));
+  const re = new Float32Array(N);
+  const im = new Float32Array(N);
+  for (let i = 0; i < N; i++) {
+    const win = 0.5 * (1 - Math.cos(2*Math.PI*i/(N-1)));
+    re[i] = signal[i] * win;
+  }
+  fft(re, im);
+  const mag = new Float32Array(N/2);
+  for (let i = 0; i < N/2; i++) {
+    mag[i] = Math.sqrt(re[i]*re[i] + im[i]*im[i]);
+  }
+  return mag;
+}
+
+function fft(re, im) {
+  const n = re.length;
+  for (let i = 1, j = 0; i < n; i++) {
+    let bit = n >> 1;
+    for (; j & bit; bit >>= 1) j ^= bit;
+    j ^= bit;
+    if (i < j) { [re[i], re[j]] = [re[j], re[i]]; [im[i], im[j]] = [im[j], im[i]]; }
+  }
+  for (let len = 2; len <= n; len <<= 1) {
+    const ang = -2*Math.PI/len;
+    const wRe = Math.cos(ang), wIm = Math.sin(ang);
+    for (let i = 0; i < n; i += len) {
+      let cRe = 1, cIm = 0;
+      for (let j = 0; j < len/2; j++) {
+        const uRe = re[i+j], uIm = im[i+j];
+        const vRe = re[i+j+len/2]*cRe - im[i+j+len/2]*cIm;
+        const vIm = re[i+j+len/2]*cIm + im[i+j+len/2]*cRe;
+        re[i+j] = uRe + vRe; im[i+j] = uIm + vIm;
+        re[i+j+len/2] = uRe - vRe; im[i+j+len/2] = uIm - vIm;
+        const nRe = cRe*wRe - cIm*wIm;
+        cIm = cRe*wIm + cIm*wRe; cRe = nRe;
+      }
+    }
+  }
+}
+
+function drawFFT(magnitudes, sampleRate) {
+  const canvas = document.getElementById('fftCanvas');
+  if (!canvas) return;
+  const dpr = window.devicePixelRatio || 1;
+  const rect = canvas.getBoundingClientRect();
+  canvas.width = rect.width * dpr; canvas.height = rect.height * dpr;
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+  const w = rect.width, h = rect.height;
+  ctx.clearRect(0, 0, w, h);
+  drawGrid(ctx, w, h, 8, 4);
+
+  const N = magnitudes.length * 2;
+  const freqPerBin = sampleRate / N;
+  const maxFreq = 2000;
+  const maxBin = Math.min(magnitudes.length, Math.floor(maxFreq / freqPerBin));
+
+  let maxMag = 0;
+  for (let i = 1; i < maxBin; i++) maxMag = Math.max(maxMag, magnitudes[i]);
+  if (maxMag === 0) maxMag = 1;
+
+  ctx.beginPath();
+  ctx.strokeStyle = '#00d4aa';
+  ctx.lineWidth = 1.5;
+  ctx.shadowColor = '#00d4aa'; ctx.shadowBlur = 4;
+  for (let i = 1; i < maxBin; i++) {
+    const x = (i/maxBin)*w;
+    const y = h - (magnitudes[i]/maxMag)*h*0.85 - 5;
+    if (i === 1) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+  }
+  ctx.stroke(); ctx.shadowBlur = 0;
+
+  ctx.fillStyle = '#00d4aa';
+  ctx.font = 'bold 11px Vazirmatn'; ctx.textAlign = 'left';
+  ctx.fillText('FFT Spectrum', 10, 18);
+  ctx.textAlign = 'right';
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+  ctx.fillText('0 Hz', w - 10, h - 5);
+}
+
+function detectF0(magnitudes, sampleRate) {
+  const N = magnitudes.length * 2;
+  const freqPerBin = sampleRate / N;
+  const minBin = Math.max(1, Math.floor(50 / freqPerBin));
+  const maxBin = Math.min(magnitudes.length - 1, Math.floor(500 / freqPerBin));
+  let maxMag = 0, maxIdx = minBin;
+  for (let i = minBin; i <= maxBin; i++) {
+    if (magnitudes[i] > maxMag) { maxMag = magnitudes[i]; maxIdx = i; }
+  }
+  return maxIdx * freqPerBin;
+}
+
+function updateGender(f0) {
+  const freqEl = document.getElementById('micFreq');
+  const genderEl = document.getElementById('micGender');
+  const statusEl = document.getElementById('micStatus');
+  freqEl.textContent = `${f0.toFixed(1)} Hz`;
+  const threshold = 170;
+  if (f0 < threshold) {
+    genderEl.className = 'mic-gender male';
+    genderEl.innerHTML = '👨 تشخیص: مرد';
+  } else {
+    genderEl.className = 'mic-gender female';
+    genderEl.innerHTML = '👩 تشخیص: زن';
+  }
+  statusEl.textContent = '✓ تحلیل کامل شد';
+  showToast('تحلیل صوت کامل شد ✓');
+}
+
+/* ═══ اسلایدرها ═══ */
+document.getElementById('squareN').addEventListener('input', function() {
+  document.getElementById('squareNValue').textContent = toFa(this.value);
+  drawSquareWave(parseInt(this.value));
+});
+document.getElementById('xSquareN').addEventListener('input', function() {
+  document.getElementById('xSquareNValue').textContent = toFa(this.value);
+  drawXSquare(parseInt(this.value));
+});
+document.getElementById('absN').addEventListener('input', function() {
+  document.getElementById('absNValue').textContent = toFa(this.value);
+  drawAbs(parseInt(this.value));
+});
+document.getElementById('xN').addEventListener('input', function() {
+  document.getElementById('xNValue').textContent = toFa(this.value);
+  drawXFunc(parseInt(this.value));
+});
+document.getElementById('expN').addEventListener('input', function() {
+  document.getElementById('expNValue').textContent = toFa(this.value);
+  drawExpFunc(parseInt(this.value));
+});
+document.getElementById('hiddenN').addEventListener('input', function() {
+  document.getElementById('hiddenNValue').textContent = toFa(this.value);
+  drawHidden(parseInt(this.value));
+});
+document.getElementById('leibnizN').addEventListener('input', function() {
+  document.getElementById('leibnizNValue').textContent = toFa(this.value);
+  drawLeibniz(parseInt(this.value));
+});
+
+/* ═══ تب‌های کد ═══ */
+document.querySelectorAll('.code-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.code-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.code-content').forEach(c => c.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById('code-' + tab.dataset.code).classList.add('active');
+  });
+});
+
+/* ═══ رندر بر اساس اسلاید ═══ */
+function initVisibleCharts() {
+  const activeSlide = document.querySelector('.slide.active');
+  if (!activeSlide) return;
+  const num = activeSlide.dataset.slide;
+
+  if (num === '4') requestAnimationFrame(drawPeriodic);
+  else if (num === '7') requestAnimationFrame(() => drawSquareWave(parseInt(document.getElementById('squareN').value)));
+  else if (num === '8') requestAnimationFrame(() => drawXSquare(parseInt(document.getElementById('xSquareN').value)));
+  else if (num === '9') requestAnimationFrame(() => drawAbs(parseInt(document.getElementById('absN').value)));
+  else if (num === '10') requestAnimationFrame(() => drawXFunc(parseInt(document.getElementById('xN').value)));
+  else if (num === '11') requestAnimationFrame(() => drawExpFunc(parseInt(document.getElementById('expN').value)));
+  else if (num === '13') requestAnimationFrame(() => drawHidden(parseInt(document.getElementById('hiddenN').value)));
+  else if (num === '14') { startRobot(); }
+  else if (num === '17') requestAnimationFrame(() => drawLeibniz(parseInt(document.getElementById('leibnizN').value)));
+}
+
+/* توقف ربات وقتی از اسلاید خارج می‌شویم */
+const observer = new MutationObserver(() => {
+  const slide14 = document.querySelector('[data-slide="14"]');
+  if (slide14 && !slide14.classList.contains('active')) stopRobot();
+});
+slides.forEach(s => observer.observe(s, { attributes: true, attributeFilter: ['class'] }));
+
+/* ═══ راه‌اندازی ═══ */
+initSeries();
+initIntegrals();
+updateNav();
+setTimeout(() => {
+  initVisibleCharts();
+  if (window.MathJax && window.MathJax.typesetPromise) window.MathJax.typesetPromise();
+}, 400);
+setTimeout(() => showToast('به جلسه ۱ آنالیز فوریه خوش آمدید — با ← → حرکت کنید'), 1000);
+
+window.addEventListener('resize', () => setTimeout(() => {
+  initVisibleCharts();
+  if (window.MathJax && window.MathJax.typesetPromise) window.MathJax.typesetPromise();
+}, 200));
+</script>
+
+</body>
+</html>

@@ -1,0 +1,2540 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>جلسه ۱۷ — مقدمه یادگیری ماشین | دکتر مسعود گوهری منش</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+<script>
+window.MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']],
+    displayMath: [['$$', '$$'], ['\\[', '\\]']],
+    processEscapes: true
+  },
+  options: { skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'] },
+  svg: { fontCache: 'global' }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" async></script>
+
+<style>
+:root {
+  --primary: #00d4aa;
+  --secondary: #06b6d4;
+  --tertiary: #a855f7;
+  --gold: #ffb700;
+  --success: #22c55e;
+  --danger: #ff4757;
+  --pink: #ec4899;
+  --dark: #050818;
+  --darker: #020410;
+  --card-bg: rgba(255, 255, 255, 0.05);
+  --card-border: rgba(255, 255, 255, 0.1);
+  --text: #e8eef7;
+  --text-dim: #9aa7bd;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { overflow: hidden; height: 100%; }
+body {
+  font-family: 'Vazirmatn', sans-serif;
+  background: var(--dark);
+  color: var(--text);
+  direction: rtl;
+  line-height: 1.8;
+}
+#bgCanvas { position: fixed; inset: 0; z-index: -2; background: radial-gradient(ellipse at top, #0a1230 0%, var(--darker) 50%, #000 100%); }
+.glow-orb { position: fixed; border-radius: 50%; filter: blur(120px); opacity: 0.3; z-index: -1; pointer-events: none; animation: floatOrb 25s ease-in-out infinite; }
+.orb1 { width: 600px; height: 600px; background: var(--primary); top: -200px; right: -200px; }
+.orb2 { width: 500px; height: 500px; background: var(--gold); bottom: -150px; left: -150px; animation-delay: -8s; }
+.orb3 { width: 400px; height: 400px; background: var(--tertiary); top: 30%; left: 25%; animation-delay: -15s; opacity: 0.12; }
+@keyframes floatOrb { 0%, 100% { transform: translate(0, 0) scale(1); } 33% { transform: translate(50px, -40px) scale(1.15); } 66% { transform: translate(-40px, 50px) scale(0.9); } }
+
+.top-header { position: fixed; top: 0; left: 0; right: 0; height: 82px; background: rgba(5, 8, 24, 0.9); backdrop-filter: blur(15px); border-bottom: 1px solid var(--card-border); display: flex; align-items: center; justify-content: space-between; padding: 0 18px; z-index: 100; }
+.header-left { display: flex; align-items: center; gap: 14px; }
+.header-signature { height: 60px; width: auto; max-width: 170px; object-fit: contain; filter: drop-shadow(0 0 10px rgba(0, 212, 170, 0.4)); border-radius: 8px; background: rgba(255, 255, 255, 0.05); padding: 4px; }
+.header-text { display: flex; flex-direction: column; line-height: 1.35; }
+.header-name { font-size: 0.88rem; color: var(--gold); font-weight: 800; white-space: nowrap; }
+.header-univ { font-size: 0.7rem; color: var(--text-dim); font-weight: 500; }
+.header-controls { display: flex; gap: 8px; flex-shrink: 0; align-items: center; }
+.ctrl-btn { width: 38px; height: 38px; border-radius: 10px; border: 1px solid var(--card-border); background: var(--card-bg); backdrop-filter: blur(10px); color: var(--text); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; transition: all 0.3s ease; position: relative; }
+.ctrl-btn:hover { background: var(--primary); color: var(--dark); transform: translateY(-2px); }
+.ctrl-btn.active { background: var(--primary); color: var(--dark); }
+
+.print-menu-wrap { position: relative; }
+.print-menu {
+  position: absolute; top: 46px; left: 0;
+  background: rgba(10, 18, 40, 0.98);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  padding: 6px;
+  min-width: 200px;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6);
+  opacity: 0; pointer-events: none;
+  transform: translateY(-8px);
+  transition: all 0.3s ease;
+  z-index: 200;
+}
+.print-menu.show { opacity: 1; pointer-events: auto; transform: translateY(0); }
+.print-menu button {
+  display: flex; align-items: center; gap: 10px;
+  width: 100%; padding: 10px 14px;
+  background: transparent; border: none;
+  color: var(--text); font-family: inherit;
+  font-size: 0.82rem; font-weight: 600;
+  border-radius: 8px; cursor: pointer;
+  text-align: right;
+  transition: all 0.2s ease;
+}
+.print-menu button:hover { background: rgba(0, 212, 170, 0.15); color: var(--primary); }
+.print-menu button i { color: var(--gold); font-size: 0.9rem; width: 18px; text-align: center; }
+
+@media print {
+  @page { size: A4 landscape; margin: 10mm; }
+  html, body { overflow: visible !important; height: auto !important; background: white !important; }
+  #bgCanvas, .glow-orb, .top-header, .topic-nav, .progress-top, .bottom-nav,
+  .toast-container, .star-container, .ctrl-btn, .print-menu, .lightbox,
+  .modal-overlay, .slide:not(.print-visible) { display: none !important; }
+  .slide-container { position: static !important; inset: auto !important; overflow: visible !important; }
+  .slide {
+    position: relative !important;
+    opacity: 1 !important;
+    transform: none !important;
+    pointer-events: auto !important;
+    page-break-after: always;
+    padding: 15px 25px !important;
+    overflow: visible !important;
+    background: white !important;
+    color: #1a1a1a !important;
+    inset: auto !important;
+    height: auto !important;
+  }
+  .slide::before {
+    content: '';
+    position: fixed;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%) rotate(-30deg);
+    width: 600px; height: 300px;
+    background-image: url('images/signature.png');
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+    opacity: 0.08;
+    pointer-events: none;
+    z-index: 9999;
+    filter: grayscale(100%);
+  }
+  .slide-h1, .slide-h3, .slide-text, .card { color: #1a1a1a !important; }
+  .card { border-color: #ccc !important; background: #f9f9f9 !important; }
+  .math-box { background: #f5f5f5 !important; border-color: #999 !important; }
+  .slide-num { background: #e0e0e0 !important; color: #333 !important; }
+  .code-content { background: #f5f5f5 !important; color: #1a1a1a !important; }
+}
+
+.lightbox {
+  position: fixed; inset: 0;
+  background: rgba(0, 0, 0, 0.92);
+  backdrop-filter: blur(8px);
+  z-index: 10000;
+  display: flex; align-items: center; justify-content: center;
+  padding: 40px;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+.lightbox.active { opacity: 1; pointer-events: auto; }
+.lightbox-img {
+  max-width: 90vw; max-height: 85vh;
+  border-radius: 16px;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.8), 0 0 60px rgba(0, 212, 170, 0.3);
+  border: 2px solid var(--primary);
+  transform: scale(0.85);
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.lightbox.active .lightbox-img { transform: scale(1); }
+.lightbox-close {
+  position: absolute; top: 24px; left: 24px;
+  width: 46px; height: 46px;
+  border-radius: 50%;
+  background: rgba(255, 71, 87, 0.9);
+  border: none; color: #fff;
+  font-size: 1.2rem; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.3s ease;
+  z-index: 10001;
+}
+.lightbox-close:hover { background: var(--danger); transform: rotate(90deg); }
+.lightbox-caption {
+  position: absolute; bottom: 30px; left: 50%;
+  transform: translateX(-50%);
+  background: rgba(10, 18, 40, 0.95);
+  border: 1px solid var(--card-border);
+  color: var(--text);
+  padding: 10px 24px;
+  border-radius: 30px;
+  font-size: 0.85rem; font-weight: 600;
+}
+
+.img-box, .hero-img, .star-img { cursor: zoom-in; transition: all 0.3s ease; }
+.img-box:hover { transform: scale(1.02); border-color: var(--primary); }
+
+.modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(10px);
+  z-index: 9500;
+  display: flex; align-items: center; justify-content: center;
+  padding: 30px;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+.modal-overlay.active { opacity: 1; pointer-events: auto; }
+.modal-box {
+  background: linear-gradient(145deg, rgba(10, 18, 40, 0.98), rgba(5, 8, 24, 0.98));
+  border: 1px solid var(--gold);
+  border-radius: 22px;
+  padding: 30px;
+  max-width: 720px;
+  width: 100%;
+  max-height: 85vh;
+  overflow-y: auto;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.8), 0 0 50px rgba(255, 183, 0, 0.2);
+  position: relative;
+  transform: scale(0.92);
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.modal-overlay.active .modal-box { transform: scale(1); }
+.modal-close {
+  position: absolute; top: 18px; left: 18px;
+  width: 38px; height: 38px;
+  border-radius: 50%;
+  background: rgba(255, 71, 87, 0.2);
+  border: 1px solid rgba(255, 71, 87, 0.5);
+  color: var(--danger);
+  font-size: 1rem; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.3s ease;
+}
+.modal-close:hover { background: var(--danger); color: #fff; transform: rotate(90deg); }
+.modal-title {
+  font-size: 1.3rem; font-weight: 900;
+  color: var(--gold);
+  margin-bottom: 18px;
+  display: flex; align-items: center; gap: 12px;
+  padding-right: 40px;
+}
+.modal-title i { font-size: 1.5rem; }
+.modal-section { margin-bottom: 18px; }
+.modal-section-title {
+  font-size: 0.95rem; font-weight: 800;
+  color: var(--primary);
+  margin-bottom: 8px;
+  display: flex; align-items: center; gap: 8px;
+}
+.modal-section-title i { color: var(--primary); }
+.modal-section p {
+  font-size: 0.88rem;
+  color: var(--text-dim);
+  line-height: 2;
+  margin-bottom: 8px;
+}
+.modal-section ul { list-style: none; padding: 0; }
+.modal-section ul li {
+  padding: 6px 24px 6px 10px;
+  position: relative;
+  font-size: 0.85rem;
+  color: var(--text-dim);
+  line-height: 1.9;
+}
+.modal-section ul li::before {
+  content: '◆';
+  position: absolute; right: 4px;
+  color: var(--gold);
+  font-size: 0.7rem;
+}
+
+.concept-word {
+  color: var(--gold);
+  font-weight: 900;
+  cursor: pointer;
+  text-decoration: underline dotted var(--gold);
+  text-underline-offset: 5px;
+  transition: all 0.3s ease;
+  padding: 0 2px;
+  border-radius: 4px;
+}
+.concept-word:hover {
+  background: rgba(255, 183, 0, 0.15);
+  text-shadow: 0 0 12px rgba(255, 183, 0, 0.8);
+}
+
+.topic-nav { position: fixed; top: 82px; left: 0; right: 0; height: 36px; background: rgba(5, 8, 24, 0.9); backdrop-filter: blur(10px); border-bottom: 1px solid var(--card-border); z-index: 99; display: flex; align-items: center; gap: 6px; padding: 0 18px; overflow-x: auto; scrollbar-width: none; }
+.topic-nav::-webkit-scrollbar { display: none; }
+.topic-pill { padding: 4px 11px; border-radius: 20px; font-size: 0.7rem; font-weight: 600; white-space: nowrap; color: var(--text-dim); background: rgba(255, 255, 255, 0.04); border: 1px solid transparent; transition: all 0.3s ease; }
+.topic-pill.active { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: var(--dark); font-weight: 800; box-shadow: 0 3px 10px rgba(0, 212, 170, 0.35); }
+.topic-pill.done { color: var(--primary); border-color: rgba(0, 212, 170, 0.3); }
+
+.progress-top { position: fixed; top: 118px; left: 0; right: 0; height: 3px; background: rgba(255, 255, 255, 0.05); z-index: 98; }
+.progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--primary), var(--secondary), var(--tertiary)); transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 0 12px var(--primary); }
+
+.slide-container { position: fixed; inset: 121px 0 0 0; overflow: hidden; }
+.slide { position: absolute; inset: 0; padding: 24px 50px 90px; opacity: 0; transform: translateX(-40px); pointer-events: none; transition: opacity 0.5s ease, transform 0.5s cubic-bezier(0.4, 0, 0.2, 1); overflow-y: auto; overflow-x: hidden; }
+.slide.active { opacity: 1; transform: translateX(0); pointer-events: auto; }
+.slide.prev { transform: translateX(40px); }
+.slide::-webkit-scrollbar { width: 6px; }
+.slide::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 3px; }
+.slide-inner { max-width: 1200px; margin: 0 auto; animation: contentFade 0.6s ease; }
+@keyframes contentFade { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+.slide-num { display: inline-block; padding: 5px 14px; border-radius: 20px; background: rgba(0, 212, 170, 0.15); color: var(--primary); font-size: 0.72rem; font-weight: 700; margin-bottom: 10px; }
+.slide-h1 { font-size: clamp(1.3rem, 3.2vw, 2rem); font-weight: 900; background: linear-gradient(135deg, var(--primary), var(--secondary), var(--tertiary), var(--gold)); background-size: 300% 300%; -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; animation: gradientShift 6s ease infinite; margin-bottom: 16px; line-height: 1.35; }
+@keyframes gradientShift { 0%, 100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
+.slide-h3 { font-size: 0.98rem; font-weight: 700; color: var(--text); margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+.slide-h3 i { color: var(--gold); font-size: 0.88rem; }
+.slide-text { font-size: 0.9rem; color: var(--text-dim); line-height: 2; margin-bottom: 12px; }
+
+.card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 18px; padding: 18px; backdrop-filter: blur(12px); transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1); }
+.card:hover { transform: translateY(-4px); border-color: rgba(0, 212, 170, 0.4); box-shadow: 0 15px 35px rgba(0, 212, 170, 0.12); }
+.grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+.grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; }
+.grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; }
+
+.title-slide { text-align: center; padding-top: 5px; }
+.title-slide .hero-img { width: 100%; max-width: 520px; height: 170px; object-fit: contain; background: rgba(0, 0, 0, 0.2); padding: 6px; border-radius: 20px; margin: 0 auto 12px; display: block; border: 1px solid var(--card-border); box-shadow: 0 20px 40px rgba(0, 212, 170, 0.15); }
+.title-slide .bismillah { font-size: 1.2rem; font-weight: 500; background: linear-gradient(90deg, var(--gold), var(--primary), var(--secondary)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 4px; }
+.title-slide .hoval { font-size: 0.82rem; color: var(--text-dim); margin-bottom: 16px; letter-spacing: 1px; }
+.title-slide .main-title { font-size: clamp(1.5rem, 3.8vw, 2.3rem); font-weight: 900; background: linear-gradient(135deg, var(--primary), var(--gold), var(--tertiary)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 10px; line-height: 1.3; }
+.title-slide .subtitle { font-size: clamp(0.9rem, 2vw, 1.05rem); color: var(--text-dim); margin-bottom: 18px; }
+.title-slide .euler-box { display: inline-block; padding: 12px 30px; border-radius: 18px; background: var(--card-bg); border: 1px solid var(--card-border); backdrop-filter: blur(15px); margin-bottom: 16px; }
+.title-slide .instructor-line { font-size: 0.92rem; color: var(--gold); font-weight: 700; margin-bottom: 3px; }
+.title-slide .instructor-title-line { font-size: 0.78rem; color: var(--text-dim); margin-bottom: 12px; }
+.title-slide .semester { display: inline-block; padding: 6px 18px; border-radius: 50px; background: var(--card-bg); border: 1px solid var(--card-border); font-size: 0.78rem; color: var(--text-dim); }
+
+.star-container { position: fixed; top: 150px; left: 40px; z-index: 90; cursor: pointer; }
+.star-core {
+  width: 40px; height: 40px; border-radius: 50%;
+  background: radial-gradient(circle at 50% 50%, #fff 0%, var(--gold) 30%, var(--gold) 50%, rgba(255, 183, 0, 0.2) 80%, transparent 100%);
+  box-shadow: 0 0 25px var(--gold), 0 0 50px rgba(255, 183, 0, 0.5), 0 0 80px rgba(255, 183, 0, 0.3);
+  animation: starPulse 3s ease-in-out infinite;
+  position: relative;
+}
+.star-core::before {
+  content: ''; position: absolute; inset: -20px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 183, 0, 0.3) 0%, transparent 70%);
+  animation: starHalo 4s ease-in-out infinite;
+}
+@keyframes starPulse {
+  0%, 100% { transform: scale(1); box-shadow: 0 0 25px var(--gold), 0 0 50px rgba(255, 183, 0, 0.5), 0 0 80px rgba(255, 183, 0, 0.3); }
+  50% { transform: scale(1.15); box-shadow: 0 0 35px var(--gold), 0 0 70px rgba(255, 183, 0, 0.7), 0 0 100px rgba(255, 183, 0, 0.5); }
+}
+@keyframes starHalo {
+  0%, 100% { transform: scale(1); opacity: 0.5; }
+  50% { transform: scale(1.3); opacity: 0.8; }
+}
+.star-tooltip {
+  position: absolute; top: 55px; left: 0;
+  width: 240px;
+  background: linear-gradient(145deg, rgba(10, 18, 40, 0.98), rgba(5, 8, 24, 0.98));
+  border: 1px solid var(--gold);
+  border-radius: 16px; padding: 16px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7), 0 0 30px rgba(255, 183, 0, 0.3);
+  opacity: 0; pointer-events: none;
+  transform: translateY(-10px) scale(0.95);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.star-container:hover .star-tooltip {
+  opacity: 1; transform: translateY(0) scale(1); pointer-events: auto;
+}
+.star-img {
+  width: 100%; height: 180px; object-fit: contain;
+  border-radius: 12px; background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 183, 0, 0.3);
+  margin-bottom: 10px; padding: 6px;
+}
+.star-name { font-size: 0.95rem; font-weight: 800; color: var(--gold); text-align: center; margin-bottom: 4px; }
+.star-title { font-size: 0.75rem; color: var(--text-dim); text-align: center; margin-bottom: 6px; font-style: italic; }
+.star-years { font-size: 0.72rem; color: var(--primary); text-align: center; font-family: 'Courier New', monospace; padding-top: 6px; border-top: 1px solid rgba(255, 183, 0, 0.2); }
+.star-tooltip::before {
+  content: ''; position: absolute; top: -8px; left: 20px;
+  width: 16px; height: 16px;
+  background: rgba(10, 18, 40, 0.98);
+  border-top: 1px solid var(--gold);
+  border-right: 1px solid var(--gold);
+  transform: rotate(-45deg);
+}
+
+.math-box { background: rgba(0, 212, 170, 0.06); border: 1px solid rgba(0, 212, 170, 0.25); border-radius: 14px; padding: 16px 22px; margin: 12px 0; text-align: center; direction: ltr; position: relative; overflow-x: auto; overflow-y: hidden; }
+.math-box::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--primary), var(--secondary), var(--tertiary)); }
+.math-box .MathJax, .math-box mjx-container { color: var(--primary) !important; font-size: 1em !important; }
+.math-box.gold-math .MathJax, .math-box.gold-math mjx-container { color: var(--gold) !important; }
+.math-box.purple-math .MathJax, .math-box.purple-math mjx-container { color: var(--tertiary) !important; }
+.math-box.pink-math .MathJax, .math-box.pink-math mjx-container { color: var(--pink) !important; }
+.math-box.danger-math .MathJax, .math-box.danger-math mjx-container { color: var(--danger) !important; }
+.math-note { font-family: 'Vazirmatn', sans-serif; font-size: 0.76rem; color: var(--text-dim); direction: rtl; margin-top: 8px; font-style: italic; text-align: center; }
+
+.simulator { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 18px; padding: 16px; margin: 12px 0; backdrop-filter: blur(12px); }
+.sim-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; flex-wrap: wrap; gap: 10px; }
+.sim-title { font-size: 0.9rem; font-weight: 700; color: var(--gold); display: flex; align-items: center; gap: 8px; }
+.sim-controls { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.slider-group { display: flex; align-items: center; gap: 8px; background: rgba(0, 0, 0, 0.3); padding: 6px 12px; border-radius: 10px; border: 1px solid var(--card-border); }
+.slider-group label { font-size: 0.72rem; color: var(--text-dim); white-space: nowrap; }
+.slider-group input[type="range"] { width: 100px; accent-color: var(--primary); cursor: pointer; }
+.slider-value { font-family: 'Courier New', monospace; font-size: 0.78rem; color: var(--primary); font-weight: 700; min-width: 30px; text-align: center; }
+.canvas-wrapper { position: relative; width: 100%; height: 260px; background: rgba(0, 0, 0, 0.4); border-radius: 12px; overflow: hidden; border: 1px solid var(--card-border); }
+.canvas-wrapper canvas { width: 100%; height: 100%; display: block; }
+
+.img-box { width: 100%; max-height: 280px; border-radius: 16px; border: 1px solid var(--card-border); margin: 12px 0; display: block; object-fit: contain; background: rgba(0, 0, 0, 0.3); padding: 8px; }
+
+.step-container { background: rgba(0, 0, 0, 0.2); border-radius: 14px; padding: 16px 20px; margin: 12px 0; border-right: 3px solid var(--gold); }
+.step-title { font-size: 0.88rem; font-weight: 800; color: var(--gold); margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+.step-content { font-size: 0.85rem; color: var(--text-dim); line-height: 2; }
+.step-content .math-box { margin: 8px 0; padding: 12px 16px; }
+
+.exercise-block { border-radius: 16px; padding: 16px; border: 1px solid; position: relative; overflow: hidden; margin-bottom: 12px; }
+.exercise-block::before { content: ''; position: absolute; top: 0; right: 0; width: 4px; height: 100%; }
+.ex-yellow { background: rgba(255, 217, 61, 0.06); border-color: rgba(255, 217, 61, 0.25); }
+.ex-yellow::before { background: #ffd93d; }
+.ex-green { background: rgba(107, 207, 127, 0.06); border-color: rgba(107, 207, 127, 0.25); }
+.ex-green::before { background: #6bcf7f; }
+.ex-purple { background: rgba(168, 85, 247, 0.06); border-color: rgba(168, 85, 247, 0.25); }
+.ex-purple::before { background: var(--tertiary); }
+.ex-red { background: rgba(255, 107, 107, 0.06); border-color: rgba(255, 107, 107, 0.25); }
+.ex-red::before { background: #ff6b6b; }
+.ex-header { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+.ex-num { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 0.8rem; color: var(--dark); flex-shrink: 0; }
+.ex-yellow .ex-num { background: #ffd93d; }
+.ex-green .ex-num { background: #6bcf7f; }
+.ex-purple .ex-num { background: var(--tertiary); color: #fff; }
+.ex-red .ex-num { background: #ff6b6b; color: #fff; }
+.ex-title { font-size: 0.92rem; font-weight: 800; }
+.ex-list { list-style: none; padding: 0; counter-reset: item; }
+.ex-list li { position: relative; padding: 7px 34px 7px 10px; font-size: 0.83rem; color: var(--text-dim); line-height: 1.8; border-bottom: 1px dashed rgba(255, 255, 255, 0.05); }
+.ex-list li:last-child { border-bottom: none; }
+.ex-list li::before { counter-increment: item; content: counter(item); position: absolute; right: 4px; top: 9px; width: 22px; height: 22px; border-radius: 50%; background: rgba(255, 255, 255, 0.08); color: var(--text); font-size: 0.7rem; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+.email-banner { margin-top: 12px; padding: 12px; border-radius: 14px; background: linear-gradient(135deg, rgba(0, 212, 170, 0.1), rgba(168, 85, 247, 0.1)); border: 1px dashed rgba(0, 212, 170, 0.4); text-align: center; }
+.email-banner p { font-size: 0.8rem; color: var(--text); margin-bottom: 5px; }
+.email-banner code { display: inline-block; padding: 5px 12px; border-radius: 8px; background: rgba(0, 0, 0, 0.4); color: var(--primary); font-family: 'Courier New', monospace; font-size: 0.76rem; direction: ltr; margin-top: 3px; }
+
+.code-tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--card-border); }
+.code-tab { padding: 8px 16px; border-radius: 10px 10px 0 0; background: transparent; border: none; color: var(--text-dim); font-family: inherit; font-size: 0.8rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; }
+.code-tab.active { background: rgba(0, 212, 170, 0.1); color: var(--primary); border-bottom: 2px solid var(--primary); }
+.code-content { display: none; background: #0a0f24; border: 1px solid var(--card-border); border-top: none; border-radius: 0 0 12px 12px; padding: 14px; overflow-x: auto; direction: ltr; text-align: left; }
+.code-content.active { display: block; }
+.code-content pre { margin: 0; font-family: 'Courier New', Consolas, monospace; font-size: 0.76rem; line-height: 1.6; color: #e8eef7; white-space: pre; }
+.code-content .kw { color: #ff79c6; }
+.code-content .fn { color: #50fa7b; }
+.code-content .num { color: #bd93f9; }
+.code-content .str { color: #f1fa8c; }
+.code-content .cm { color: #6272a4; font-style: italic; }
+.code-content .cls { color: #8be9fd; }
+
+.bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; height: 58px; background: rgba(5, 8, 24, 0.9); backdrop-filter: blur(15px); border-top: 1px solid var(--card-border); display: flex; align-items: center; justify-content: space-between; padding: 0 20px; z-index: 100; }
+.nav-btn { padding: 8px 18px; border-radius: 12px; border: 1px solid var(--card-border); background: var(--card-bg); color: var(--text); cursor: pointer; font-family: inherit; font-size: 0.82rem; font-weight: 600; display: flex; align-items: center; gap: 7px; transition: all 0.3s ease; }
+.nav-btn:hover:not(:disabled) { background: var(--primary); color: var(--dark); transform: translateY(-2px); }
+.nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+.dots-nav { display: flex; gap: 4px; flex-wrap: wrap; justify-content: center; max-width: 60%; }
+.dot-nav { width: 8px; height: 8px; border-radius: 50%; background: rgba(255, 255, 255, 0.15); cursor: pointer; border: none; padding: 0; transition: all 0.3s ease; }
+.dot-nav.active { background: var(--primary); width: 22px; border-radius: 5px; box-shadow: 0 0 10px var(--primary); }
+.slide-counter { font-size: 0.78rem; color: var(--text-dim); font-family: 'Courier New', monospace; min-width: 60px; text-align: center; }
+.slide-counter span { color: var(--primary); font-weight: 800; }
+
+.toast-container { position: fixed; bottom: 76px; left: 24px; z-index: 9999; display: flex; flex-direction: column; gap: 8px; }
+.toast { background: rgba(10, 18, 40, 0.95); border: 1px solid var(--primary); border-radius: 14px; padding: 11px 16px; color: var(--text); font-size: 0.82rem; backdrop-filter: blur(12px); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); display: flex; align-items: center; gap: 8px; animation: slideIn 0.35s ease; max-width: 320px; }
+.toast i { color: var(--primary); }
+@keyframes slideIn { from { opacity: 0; transform: translateX(-60px); } to { opacity: 1; transform: translateX(0); } }
+
+.lecture-note {
+  background: rgba(0, 212, 170, 0.06);
+  border: 1px solid rgba(0, 212, 170, 0.3);
+  border-radius: 12px; padding: 12px 16px; margin: 10px 0;
+  display: flex; gap: 10px; align-items: flex-start;
+}
+.lecture-note i { color: var(--primary); font-size: 1.1rem; margin-top: 3px; }
+.lecture-note-content { flex: 1; font-size: 0.85rem; color: var(--text-dim); line-height: 1.9; }
+
+.method-badge {
+  display: inline-block; padding: 3px 10px; border-radius: 6px;
+  font-size: 0.7rem; font-weight: 700; margin-bottom: 8px;
+}
+.badge-ml { background: rgba(0, 212, 170, 0.15); color: var(--primary); }
+.badge-nn { background: rgba(255, 183, 0, 0.15); color: var(--gold); }
+.badge-dl { background: rgba(168, 85, 247, 0.15); color: var(--tertiary); }
+.badge-py { background: rgba(6, 182, 212, 0.15); color: var(--secondary); }
+
+@media (max-width: 768px) {
+  .slide { padding: 16px 14px 90px; }
+  .header-univ { display: none; }
+  .header-name { font-size: 0.75rem; }
+  .header-signature { height: 45px; max-width: 110px; }
+  .nav-btn { padding: 7px 11px; font-size: 0.72rem; }
+  .nav-btn span { display: none; }
+  .dots-nav { max-width: 45%; }
+  .slide-counter { font-size: 0.68rem; min-width: 45px; }
+  .canvas-wrapper { height: 210px; }
+  .topic-pill { font-size: 0.64rem; padding: 3px 8px; }
+  .star-container { top: 130px; left: 20px; }
+  .star-core { width: 32px; height: 32px; }
+  .star-tooltip { width: 200px; }
+  .modal-box { padding: 20px; }
+}
+@media (max-width: 480px) {
+  .ctrl-btn { width: 34px; height: 34px; font-size: 0.8rem; }
+  .header-signature { display: none; }
+  .star-container { top: 120px; left: 12px; }
+  .star-core { width: 28px; height: 28px; }
+  .star-tooltip { width: 180px; padding: 12px; }
+  .star-img { height: 140px; }
+  .lightbox-caption { font-size: 0.75rem; padding: 8px 16px; }
+}
+</style>
+</head>
+<body>
+
+<canvas id="bgCanvas"></canvas>
+<div class="glow-orb orb1"></div>
+<div class="glow-orb orb2"></div>
+<div class="glow-orb orb3"></div>
+
+<!-- ═══ ستاره درخشان خواجه نصیرالدین طوسی ═══ -->
+<div class="star-container" id="starContainer">
+  <div class="star-core"></div>
+  <div class="star-tooltip">
+    <img src="images/star.png" alt="خواجه نصیرالدین طوسی" class="star-img img-clickable" onerror="this.style.background='linear-gradient(135deg, #ffb700, #a855f7)'; this.style.minHeight='140px';" data-caption="خواجه نصیرالدین طوسی — پیشگام استخراج الگو از داده">
+    <div class="star-name">خواجه نصیرالدین طوسی</div>
+    <div class="star-title">ریاضیدان، منجم، فیلسوف و پیشگام روش علمی</div>
+    <div class="star-years">۱۲۰۱ — ۱۲۷۴ میلادی</div>
+  </div>
+</div>
+
+<div class="top-header">
+  <div class="header-left">
+    <img src="images/signature.png" alt="امضا" class="header-signature" onerror="this.style.display='none'">
+    <div class="header-text">
+      <span class="header-name">دکتر مسعود گوهری منش</span>
+      <span class="header-univ">دانشیار گروه مهندسی مکانیک — دانشگاه تربت حیدریه</span>
+    </div>
+  </div>
+  <div class="header-controls">
+    <button class="ctrl-btn" id="soundToggle" title="صدا"><i class="fas fa-volume-up"></i></button>
+    <button class="ctrl-btn" id="fullscreenToggle" title="تمام‌صفحه"><i class="fas fa-expand"></i></button>
+    <div class="print-menu-wrap">
+      <button class="ctrl-btn" id="printToggle" title="چاپ"><i class="fas fa-print"></i></button>
+      <div class="print-menu" id="printMenu">
+        <button id="printCurrentBtn"><i class="fas fa-file"></i> چاپ این صفحه</button>
+        <button id="printAllBtn"><i class="fas fa-layer-group"></i> چاپ همه صفحات</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="topic-nav" id="topicNav">
+  <span class="topic-pill" data-topic="1">مقدمه</span>
+  <span class="topic-pill" data-topic="2">انواع ML</span>
+  <span class="topic-pill" data-topic="3">داده و Feature</span>
+  <span class="topic-pill" data-topic="4">Loss</span>
+  <span class="topic-pill" data-topic="5">گرادیان</span>
+  <span class="topic-pill" data-topic="6">Overfitting</span>
+  <span class="topic-pill" data-topic="7">نرون</span>
+  <span class="topic-pill" data-topic="8">شبکه عصبی</span>
+  <span class="topic-pill" data-topic="9">کد و تمرین</span>
+  <span class="topic-pill" data-topic="10">جمع‌بندی</span>
+</div>
+
+<div class="progress-top"><div class="progress-fill" id="progressFill"></div></div>
+
+<div class="slide-container" id="slideContainer">
+
+  <!-- ۱ — عنوان -->
+  <div class="slide active" data-slide="1" data-topic="1">
+    <div class="slide-inner title-slide">
+      <div class="bismillah">بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِیم</div>
+      <div class="hoval">هُوَ الخَلّاقُ العَلیم</div>
+      <img src="images/hero-machine-learning.png" alt="Machine Learning" class="hero-img img-clickable" onerror="this.style.display='none'" data-caption="مقدمه یادگیری ماشین">
+      <h1 class="main-title">مقدمه یادگیری ماشین</h1>
+      <p class="subtitle">(Introduction to Machine Learning) — جلسه ۱۷ | شروع فاز ۵</p>
+      <div class="euler-box"><div style="direction: ltr; font-size: 1rem;">$$y = f_\theta(x) + \epsilon$$</div></div>
+      <p class="instructor-line">دکتر مسعود گوهری منش</p>
+      <p class="instructor-title-line">دانشیار گروه مهندسی مکانیک — دانشگاه تربت حیدریه</p>
+      <div class="semester">نیمسال اول ۱۴۰۵–۱۴۰۶</div>
+      <div class="lecture-note" style="margin-top: 20px; max-width: 600px; margin-left: auto; margin-right: auto; text-align: right;">
+        <i class="fas fa-star" style="color: var(--gold);"></i>
+        <div class="lecture-note-content">
+          <strong style="color: var(--gold);">💫 ستاره امروز:</strong> به ستاره درخشان گوشه صفحه هاور کنید تا <strong>خواجه نصیرالدین طوسی</strong>، پیشگام استخراج الگو از داده را ببینید.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۲ — مرور فاز ۴ -->
+  <div class="slide" data-slide="2" data-topic="1">
+    <div class="slide-inner">
+      <span class="slide-num">شروع فاز ۵</span>
+      <h2 class="slide-h1">از فاز ۴ به فاز ۵ — پیوند ریاضیات و هوش مصنوعی</h2>
+
+      <div class="grid-2">
+        <div class="card" style="background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3);">
+          <div class="slide-h3" style="color: var(--primary);"><i class="fas fa-check-circle"></i> فاز ۴ (پایان یافت)</div>
+          <ul style="list-style: none; padding: 0; font-size: 0.85rem; color: var(--text-dim); line-height: 2;">
+            <li>✅ Perturbation و LP/MS</li>
+            <li>✅ Finite Difference و RK4</li>
+            <li>✅ Spectral Methods و FEM</li>
+            <li>✅ حل عددی PDE نانو انبرک</li>
+          </ul>
+        </div>
+        <div class="card" style="background: rgba(255, 183, 0, 0.06); border-color: rgba(255, 183, 0, 0.3);">
+          <div class="slide-h3" style="color: var(--gold);"><i class="fas fa-rocket"></i> فاز ۵ (شروع)</div>
+          <ul style="list-style: none; padding: 0; font-size: 0.85rem; color: var(--text-dim); line-height: 2;">
+            <li>🔹 جلسه ۱۷: مقدمه ML ← امروز</li>
+            <li>🔹 جلسه ۱۸: شبکه عصبی و Backprop</li>
+            <li>🔹 جلسه ۱۹: PINN — فرمول‌بندی</li>
+            <li>🔹 جلسه ۲۰: پیاده‌سازی PINN</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top: 16px; background: rgba(168, 85, 247, 0.06); border-color: rgba(168, 85, 247, 0.3);">
+        <div class="slide-h3" style="color: var(--tertiary);"><i class="fas fa-brain"></i> چرا ML برای مهندس مکانیک؟</div>
+        <p class="slide-text" style="font-size: 0.9rem;">
+          در دنیای امروز، مهندس مکانیک و مکاترونیک فقط با روش‌های کلاسیک کار نمی‌کند. **یادگیری ماشین** ابزار جدیدی است که:
+          <br>• <strong>مسائل غیرخطی پیچیده</strong> را بدون فرمول بسته حل می‌کند
+          <br>• <strong>از داده‌های تجربی</strong> الگو استخراج می‌کند
+          <br>• با <strong>فیزیک (PDE)</strong> ترکیب می‌شود → <b>PINN</b>
+          <br>• به <strong>کنترل هوشمند، طراحی معکوس، و بهینه‌سازی</strong> کمک می‌کند
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۳ — چرا ML در مهندسی -->
+  <div class="slide" data-slide="3" data-topic="1">
+    <div class="slide-inner">
+      <span class="slide-num">انگیزه</span>
+      <h2 class="slide-h1">کاربردهای ML در مهندسی مکانیک و مکاترونیک</h2>
+
+      <img src="images/ml-in-engineering.png" alt="ML in Engineering" class="img-box img-clickable" onerror="this.style.display='none'" data-caption="کاربردهای ML در مهندسی">
+
+      <div class="grid-4" style="margin-top: 14px;">
+        <div class="card" style="text-align: center; padding: 14px;">
+          <i class="fas fa-robot" style="font-size: 1.6rem; color: var(--primary); display: block; margin-bottom: 8px;"></i>
+          <div class="slide-h3" style="justify-content: center; font-size: 0.82rem;">رباتیک</div>
+          <p class="slide-text" style="font-size: 0.72rem;">کنترل هوشمند، مسیریابی</p>
+        </div>
+        <div class="card" style="text-align: center; padding: 14px;">
+          <i class="fas fa-microchip" style="font-size: 1.6rem; color: var(--gold); display: block; margin-bottom: 8px;"></i>
+          <div class="slide-h3" style="justify-content: center; font-size: 0.82rem;">NEMS</div>
+          <p class="slide-text" style="font-size: 0.72rem;">پیش‌بینی رفتار نانو انبرک</p>
+        </div>
+        <div class="card" style="text-align: center; padding: 14px;">
+          <i class="fas fa-wind" style="font-size: 1.6rem; color: var(--tertiary); display: block; margin-bottom: 8px;"></i>
+          <div class="slide-h3" style="justify-content: center; font-size: 0.82rem;">CFD</div>
+          <p class="slide-text" style="font-size: 0.72rem;">شبیه‌سازی سریع جریان</p>
+        </div>
+        <div class="card" style="text-align: center; padding: 14px;">
+          <i class="fas fa-cubes" style="font-size: 1.6rem; color: var(--pink); display: block; margin-bottom: 8px;"></i>
+          <div class="slide-h3" style="justify-content: center; font-size: 0.82rem;">سازه</div>
+          <p class="slide-text" style="font-size: 0.72rem;">پیش‌بینی تنش و شکست</p>
+        </div>
+      </div>
+
+      <div class="lecture-note" style="margin-top: 14px;">
+        <i class="fas fa-star"></i>
+        <div class="lecture-note-content">
+          <strong>مثال واقعی:</strong> پیش‌بینی ولتاژ <b>Pull-in</b> نانو انبرک با شبکه عصبی، سرعت محاسبه را از <strong>ساعت‌ها</strong> به <strong>میلی‌ثانیه</strong> کاهش می‌دهد — این یک انقلاب در طراحی NEMS است.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۴ — تعریف ML -->
+  <div class="slide" data-slide="4" data-topic="1">
+    <div class="slide-inner">
+      <span class="slide-num">تعریف</span>
+      <h2 class="slide-h1">یادگیری ماشین چیست؟</h2>
+
+      <img src="images/ml-definition.png" alt="ML Definition" class="img-box img-clickable" style="max-height: 180px;" onerror="this.style.display='none'" data-caption="تعریف یادگیری ماشین">
+
+      <p class="slide-text">
+        تعریف رسمی <strong>Tom Mitchell</strong> (۱۹۹۷):
+      </p>
+
+      <div class="card" style="background: rgba(255, 183, 0, 0.06); border-color: rgba(255, 183, 0, 0.3); padding: 20px;">
+        <p style="font-size: 0.95rem; color: var(--gold); line-height: 2; text-align: center;">
+          <strong>«برنامه‌ای گفته می‌شود که از تجربه E، در انجام وظیفه T، با معیار عملکرد P یاد می‌گیرد، اگر عملکردش در T، با معیار P، با افزایش E بهتر شود.»</strong>
+        </p>
+        <p style="font-size: 0.82rem; color: var(--text-dim); text-align: center; margin-top: 10px; font-style: italic;">
+          — Tom M. Mitchell, Machine Learning, McGraw Hill, 1997
+        </p>
+      </div>
+
+      <div class="grid-3" style="margin-top: 14px;">
+        <div class="card" style="background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3); text-align: center; padding: 14px;">
+          <i class="fas fa-database" style="font-size: 1.5rem; color: var(--primary); display: block; margin-bottom: 8px;"></i>
+          <div class="slide-h3" style="justify-content: center; font-size: 0.85rem;">E (Experience)</div>
+          <p class="slide-text" style="font-size: 0.78rem;">داده‌های آموزشی</p>
+        </div>
+        <div class="card" style="background: rgba(255, 183, 0, 0.06); border-color: rgba(255, 183, 0, 0.3); text-align: center; padding: 14px;">
+          <i class="fas fa-bullseye" style="font-size: 1.5rem; color: var(--gold); display: block; margin-bottom: 8px;"></i>
+          <div class="slide-h3" style="justify-content: center; font-size: 0.85rem;">T (Task)</div>
+          <p class="slide-text" style="font-size: 0.78rem;">وظیفه (پیش‌بینی، طبقه‌بندی)</p>
+        </div>
+        <div class="card" style="background: rgba(168, 85, 247, 0.06); border-color: rgba(168, 85, 247, 0.3); text-align: center; padding: 14px;">
+          <i class="fas fa-chart-line" style="font-size: 1.5rem; color: var(--tertiary); display: block; margin-bottom: 8px;"></i>
+          <div class="slide-h3" style="justify-content: center; font-size: 0.85rem;">P (Performance)</div>
+          <p class="slide-text" style="font-size: 0.78rem;">معیار عملکرد (دقت، خطا)</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۵ — انواع یادگیری -->
+  <div class="slide" data-slide="5" data-topic="2">
+    <div class="slide-inner">
+      <span class="slide-num">انواع ML</span>
+      <span class="method-badge badge-ml" style="display: inline-block; margin-right: 8px;">سه دسته اصلی</span>
+      <h2 class="slide-h1">انواع یادگیری ماشین</h2>
+
+      <img src="images/ml-types-triangle.png" alt="ML Types" class="img-box img-clickable" style="max-height: 180px;" onerror="this.style.display='none'" data-caption="انواع یادگیری ماشین">
+
+      <div class="grid-3" style="margin-top: 14px;">
+        <div class="card" style="background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3); text-align: center; padding: 16px;">
+          <i class="fas fa-tag" style="font-size: 1.8rem; color: var(--primary); display: block; margin-bottom: 10px;"></i>
+          <div class="slide-h3" style="justify-content: center; color: var(--primary);">Supervised Learning</div>
+          <p class="slide-text" style="font-size: 0.78rem;">داده با برچسب (Labeled Data)</p>
+          <p class="slide-text" style="font-size: 0.72rem; color: var(--text-dim); margin-top: 6px;">Regression + Classification</p>
+        </div>
+        <div class="card" style="background: rgba(255, 183, 0, 0.06); border-color: rgba(255, 183, 0, 0.3); text-align: center; padding: 16px;">
+          <i class="fas fa-search" style="font-size: 1.8rem; color: var(--gold); display: block; margin-bottom: 10px;"></i>
+          <div class="slide-h3" style="justify-content: center; color: var(--gold);">Unsupervised Learning</div>
+          <p class="slide-text" style="font-size: 0.78rem;">داده بدون برچسب</p>
+          <p class="slide-text" style="font-size: 0.72rem; color: var(--text-dim); margin-top: 6px;">Clustering + Dim Reduction</p>
+        </div>
+        <div class="card" style="background: rgba(168, 85, 247, 0.06); border-color: rgba(168, 85, 247, 0.3); text-align: center; padding: 16px;">
+          <i class="fas fa-trophy" style="font-size: 1.8rem; color: var(--tertiary); display: block; margin-bottom: 10px;"></i>
+          <div class="slide-h3" style="justify-content: center; color: var(--tertiary);">Reinforcement Learning</div>
+          <p class="slide-text" style="font-size: 0.78rem;">یادگیری از پاداش و جریمه</p>
+          <p class="slide-text" style="font-size: 0.72rem; color: var(--text-dim); margin-top: 6px;">Agent + Environment</p>
+        </div>
+      </div>
+
+      <div class="lecture-note" style="margin-top: 14px;">
+        <i class="fas fa-info-circle"></i>
+        <div class="lecture-note-content">
+          در درس ما، تمرکز روی <b>Supervised Learning</b> است — به‌ویژه <b>Regression</b> برای حل PDE و پیش‌بینی رفتار سیستم‌های مکانیکی.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۶ — Supervised Learning -->
+  <div class="slide" data-slide="6" data-topic="2">
+    <div class="slide-inner">
+      <span class="slide-num">Supervised</span>
+      <span class="method-badge badge-ml" style="display: inline-block; margin-right: 8px;">Supervised Learning</span>
+      <h2 class="slide-h1">یادگیری نظارت‌شده (Supervised Learning)</h2>
+
+      <img src="images/supervised-learning.png" alt="Supervised Learning" class="img-box img-clickable" style="max-height: 180px;" onerror="this.style.display='none'" data-caption="یادگیری نظارت‌شده">
+
+      <p class="slide-text">
+        در این نوع یادگیری، داده‌های آموزشی شامل **ورودی** و **خروجی مطلوب** هستند. مدل باید نگاشت بین آن‌ها را یاد بگیرد:
+      </p>
+
+      <div class="math-box gold-math" style="padding: 16px;">
+        <div style="font-size: 1.05rem;">
+          $$y = f_\theta(x) + \epsilon$$
+        </div>
+        <p class="math-note">$x$ = ورودی (feature) | $y$ = خروجی (label) | $\theta$ = پارامترهای مدل | $\epsilon$ = نویز</p>
+      </div>
+
+      <div class="grid-2" style="margin-top: 14px;">
+        <div class="card" style="background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3);">
+          <div class="slide-h3" style="color: var(--primary);"><i class="fas fa-chart-line"></i> Regression</div>
+          <ul style="list-style: none; padding: 0; font-size: 0.82rem; color: var(--text-dim); line-height: 2;">
+            <li>🔹 خروجی پیوسته</li>
+            <li>🔹 مثال: پیش‌بینی دمای تیر</li>
+            <li>🔹 مثال: پیش‌بینی خمش نانو انبرک</li>
+            <li>🔹 مثال: پیش‌بینی نیرو در ربات</li>
+          </ul>
+        </div>
+        <div class="card" style="background: rgba(255, 183, 0, 0.06); border-color: rgba(255, 183, 0, 0.3);">
+          <div class="slide-h3" style="color: var(--gold);"><i class="fas fa-th-large"></i> Classification</div>
+          <ul style="list-style: none; padding: 0; font-size: 0.82rem; color: var(--text-dim); line-height: 2;">
+            <li>🔹 خروجی گسسته (کلاس)</li>
+            <li>🔹 مثال: تشخیص عیب در قطعه</li>
+            <li>🔹 مثال: تشخیص سرطان</li>
+            <li>🔹 مثال: تشخیص حالت ربات</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۷ — Unsupervised Learning -->
+  <div class="slide" data-slide="7" data-topic="2">
+    <div class="slide-inner">
+      <span class="slide-num">Unsupervised</span>
+      <span class="method-badge badge-ml" style="display: inline-block; margin-right: 8px;">Unsupervised Learning</span>
+      <h2 class="slide-h1">یادگیری بدون نظارت</h2>
+
+      <img src="images/unsupervised-learning.png" alt="Unsupervised Learning" class="img-box img-clickable" style="max-height: 180px;" onerror="this.style.display='none'" data-caption="یادگیری بدون نظارت">
+
+      <p class="slide-text">
+        در این نوع یادگیری، داده‌ها **برچسب ندارند**. مدل باید خودش ساختار پنهان داده را کشف کند.
+      </p>
+
+      <div class="grid-2" style="margin-top: 14px;">
+        <div class="card" style="background: rgba(255, 183, 0, 0.06); border-color: rgba(255, 183, 0, 0.3);">
+          <div class="slide-h3" style="color: var(--gold);"><i class="fas fa-circle-nodes"></i> Clustering</div>
+          <p class="slide-text" style="font-size: 0.82rem;">
+            دسته‌بندی داده‌ها به گروه‌های مشابه (K-Means، DBSCAN).
+          </p>
+          <div class="math-box gold-math" style="padding: 10px; font-size: 0.82rem;">
+            $$\min \sum_{i=1}^{k} \sum_{x \in C_i} \|x - \mu_i\|^2$$
+          </div>
+        </div>
+        <div class="card" style="background: rgba(168, 85, 247, 0.06); border-color: rgba(168, 85, 247, 0.3);">
+          <div class="slide-h3" style="color: var(--tertiary);"><i class="fas fa-compress"></i> Dimensionality Reduction</div>
+          <p class="slide-text" style="font-size: 0.82rem;">
+            کاهش ابعاد داده با حفظ اطلاعات (PCA، t-SNE، Autoencoder).
+          </p>
+          <div class="math-box purple-math" style="padding: 10px; font-size: 0.82rem;">
+            $$z = W^T x, \quad W \in \mathbb{R}^{n \times k}$$
+          </div>
+        </div>
+      </div>
+
+      <div class="lecture-note" style="margin-top: 14px;">
+        <i class="fas fa-lightbulb"></i>
+        <div class="lecture-note-content">
+          <strong>کاربرد در مهندسی:</strong> کشف الگوهای پنهان در داده‌های سنسورها، کاهش ابعاد داده‌های ارتعاشی، شناسایی حالت‌های خرابی ماشین بدون برچسب.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۸ — شبیه‌ساز انواع یادگیری -->
+  <div class="slide" data-slide="8" data-topic="2">
+    <div class="slide-inner">
+      <span class="slide-num">شبیه‌ساز تعاملی</span>
+      <h2 class="slide-h1">مقایسه انواع یادگیری</h2>
+
+      <div class="simulator">
+        <div class="sim-header">
+          <div class="sim-title"><i class="fas fa-th"></i> شبیه‌سازی انواع یادگیری</div>
+          <div class="sim-controls">
+            <div class="slider-group">
+              <label>نوع:</label>
+              <select id="mlType" style="background: rgba(0,0,0,0.4); border: 1px solid var(--card-border); color: var(--text); padding: 4px 8px; border-radius: 8px; font-family: inherit; font-size: 0.78rem;">
+                <option value="supervised">Supervised (Regression)</option>
+                <option value="unsupervised">Unsupervised (Clustering)</option>
+                <option value="classification">Classification</option>
+              </select>
+            </div>
+            <div class="slider-group">
+              <label>نویز داده:</label>
+              <input type="range" id="mlNoise" min="0" max="1" value="0.3" step="0.1">
+              <span class="slider-value" id="mlNoiseValue">۰.۳</span>
+            </div>
+          </div>
+        </div>
+        <div class="canvas-wrapper" style="height: 320px;"><canvas id="mlTypeCanvas"></canvas></div>
+        <div class="grid-2" style="margin-top: 12px;">
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 0.72rem; color: var(--text-dim);">شرح</div>
+            <div id="mlTypeDesc" style="font-size: 0.85rem; color: var(--gold); font-weight: 700;">—</div>
+          </div>
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 0.72rem; color: var(--text-dim);">معیار عملکرد</div>
+            <div id="mlTypeMetric" style="font-size: 0.85rem; color: var(--primary); font-weight: 700;">—</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۹ — Feature و Label -->
+  <div class="slide" data-slide="9" data-topic="3">
+    <div class="slide-inner">
+      <span class="slide-num">مفاهیم داده</span>
+      <h2 class="slide-h1">Feature، Label و Dataset</h2>
+
+      <img src="images/feature-label-concept.png" alt="Feature Label" class="img-box img-clickable" style="max-height: 180px;" onerror="this.style.display='none'" data-caption="Feature و Label">
+
+      <div class="grid-3" style="margin-top: 14px;">
+        <div class="card" style="background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3);">
+          <div class="slide-h3" style="color: var(--primary);"><i class="fas fa-arrow-right"></i> Feature (x)</div>
+          <p class="slide-text" style="font-size: 0.82rem;">
+            ویژگی‌های ورودی — چیزی که به مدل می‌دهیم.
+          </p>
+          <p class="slide-text" style="font-size: 0.75rem;">
+            در نانو انبرک: $[L, b, h, E, V, g]$
+          </p>
+        </div>
+        <div class="card" style="background: rgba(255, 183, 0, 0.06); border-color: rgba(255, 183, 0, 0.3);">
+          <div class="slide-h3" style="color: var(--gold);"><i class="fas fa-arrow-left"></i> Label (y)</div>
+          <p class="slide-text" style="font-size: 0.82rem;">
+            خروجی مطلوب — چیزی که می‌خواهیم پیش‌بینی کنیم.
+          </p>
+          <p class="slide-text" style="font-size: 0.75rem;">
+            در نانو انبرک: $w_{max}$ یا $V_{pull-in}$
+          </p>
+        </div>
+        <div class="card" style="background: rgba(168, 85, 247, 0.06); border-color: rgba(168, 85, 247, 0.3);">
+          <div class="slide-h3" style="color: var(--tertiary);"><i class="fas fa-database"></i> Dataset (D)</div>
+          <p class="slide-text" style="font-size: 0.82rem;">
+            مجموعه جفت‌های (x، y).
+          </p>
+          <p class="slide-text" style="font-size: 0.75rem;">
+            $\mathcal{D} = \{(x^{(i)}, y^{(i)})\}_{i=1}^{N}$
+          </p>
+        </div>
+      </div>
+
+      <div class="math-box gold-math" style="margin-top: 14px; padding: 14px;">
+        <div style="font-size: 0.95rem;">
+          $$\mathcal{D} = \{(x^{(1)}، y^{(1)})، (x^{(2)}، y^{(2)})، \dots، (x^{(N)}، y^{(N)})\}$$
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۱۰ — Train/Test Split -->
+  <div class="slide" data-slide="10" data-topic="3">
+    <div class="slide-inner">
+      <span class="slide-num">تقسیم داده</span>
+      <h2 class="slide-h1">تقسیم داده — Train/Validation/Test</h2>
+
+      <img src="images/train-test-split.png" alt="Train Test Split" class="img-box img-clickable" style="max-height: 180px;" onerror="this.style.display='none'" data-caption="تقسیم داده">
+
+      <div class="grid-3" style="margin-top: 14px;">
+        <div class="card" style="background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3);">
+          <div class="slide-h3" style="color: var(--primary);"><i class="fas fa-cog"></i> Training Set (60-80%)</div>
+          <p class="slide-text" style="font-size: 0.82rem;">
+            برای آموزش مدل. مدل پارامترهایش را با این داده تنظیم می‌کند.
+          </p>
+        </div>
+        <div class="card" style="background: rgba(255, 183, 0, 0.06); border-color: rgba(255, 183, 0, 0.3);">
+          <div class="slide-h3" style="color: var(--gold);"><i class="fas fa-check"></i> Validation Set (10-20%)</div>
+          <p class="slide-text" style="font-size: 0.82rem;">
+            برای تنظیم hyperparameter ها. انتخاب بهترین مدل.
+          </p>
+        </div>
+        <div class="card" style="background: rgba(168, 85, 247, 0.06); border-color: rgba(168, 85, 247, 0.3);">
+          <div class="slide-h3" style="color: var(--tertiary);"><i class="fas fa-question"></i> Test Set (10-20%)</div>
+          <p class="slide-text" style="font-size: 0.82rem;">
+            برای ارزیابی نهایی. هرگز در آموزش استفاده نمی‌شود.
+          </p>
+        </div>
+      </div>
+
+      <div class="lecture-note" style="margin-top: 14px;">
+        <i class="fas fa-exclamation-triangle"></i>
+        <div class="lecture-note-content">
+          <strong>قانون طلایی:</strong> هرگز از Test Set در آموزش استفاده نکنید! این کار باعث «تقلب در آزمون» می‌شود و ارزیابی شما را بی‌اعتبار می‌کند. Test Set، تنها معیار قابل اعتماد برای عملکرد واقعی مدل است.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۱۱ — تابع هزینه -->
+  <div class="slide" data-slide="11" data-topic="4">
+    <div class="slide-inner">
+      <span class="slide-num">Loss</span>
+      <span class="method-badge badge-nn" style="display: inline-block; margin-right: 8px;">Loss Function</span>
+      <h2 class="slide-h1">تابع هزینه (Loss Function)</h2>
+
+      <img src="images/loss-function.png" alt="Loss Function" class="img-box img-clickable" style="max-height: 180px;" onerror="this.style.display='none'" data-caption="تابع هزینه">
+
+      <p class="slide-text">
+        <b>Loss function</b> معیاری است که نشان می‌دهد مدل چقدر از پاسخ درست فاصله دارد. هدف: <strong>کمینه‌سازی Loss</strong>.
+      </p>
+
+      <div class="grid-2" style="margin-top: 14px;">
+        <div class="card" style="background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3);">
+          <div class="slide-h3" style="color: var(--primary);"><i class="fas fa-chart-line"></i> MSE — برای Regression</div>
+          <div class="math-box" style="padding: 12px; font-size: 0.85rem;">
+            $$\mathcal{L}_{MSE} = \frac{1}{N} \sum_{i=1}^{N} (y_i - \hat{y}_i)^2$$
+          </div>
+          <p class="slide-text" style="font-size: 0.78rem;">
+            میانگین مربع خطا — پرکاربردترین برای پیش‌بینی مقادیر پیوسته.
+          </p>
+        </div>
+        <div class="card" style="background: rgba(255, 183, 0, 0.06); border-color: rgba(255, 183, 0, 0.3);">
+          <div class="slide-h3" style="color: var(--gold);"><i class="fas fa-th-large"></i> Cross-Entropy — برای Classification</div>
+          <div class="math-box gold-math" style="padding: 12px; font-size: 0.85rem;">
+            $$\mathcal{L}_{CE} = -\sum_{i=1}^{N} y_i \log(\hat{y}_i)$$
+          </div>
+          <p class="slide-text" style="font-size: 0.78rem;">
+            برای طبقه‌بندی — فاصله بین توزیع واقعی و پیش‌بینی‌شده.
+          </p>
+        </div>
+      </div>
+
+      <div class="lecture-note">
+        <i class="fas fa-star"></i>
+        <div class="lecture-note-content">
+          <strong>هدف آموزش:</strong> پیدا کردن پارامترهای $\theta$ که Loss را کمینه کنند:
+          $$\theta^* = \arg\min_\theta \mathcal{L}(\theta)$$
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۱۲ — شبیه‌ساز Loss -->
+  <div class="slide" data-slide="12" data-topic="4">
+    <div class="slide-inner">
+      <span class="slide-num">شبیه‌ساز تعاملی</span>
+      <h2 class="slide-h1">مشاهده تابع هزینه</h2>
+
+      <div class="simulator">
+        <div class="sim-header">
+          <div class="sim-title"><i class="fas fa-chart-line"></i> منحنی Loss در طول آموزش</div>
+          <div class="sim-controls">
+            <div class="slider-group">
+              <label>نرخ یادگیری:</label>
+              <input type="range" id="lossLR" min="0.001" max="0.1" value="0.01" step="0.001">
+              <span class="slider-value" id="lossLRValue">۰.۰۱۰</span>
+            </div>
+          </div>
+        </div>
+        <div class="canvas-wrapper" style="height: 300px;"><canvas id="lossCanvas"></canvas></div>
+        <div class="grid-3" style="margin-top: 12px;">
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 0.72rem; color: var(--text-dim);">Loss فعلی</div>
+            <div id="lossCurrent" style="font-size: 1rem; color: var(--danger); font-weight: 800; font-family: 'Courier New', monospace;">—</div>
+          </div>
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 0.72rem; color: var(--text-dim);">Epoch</div>
+            <div id="lossEpoch" style="font-size: 1rem; color: var(--gold); font-weight: 800; font-family: 'Courier New', monospace;">—</div>
+          </div>
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 0.72rem; color: var(--text-dim);">وضعیت</div>
+            <div id="lossStatus" style="font-size: 0.9rem; color: var(--success); font-weight: 800;">—</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۱۳ — گرادیان کاهشی -->
+  <div class="slide" data-slide="13" data-topic="5">
+    <div class="slide-inner">
+      <span class="slide-num">بهینه‌سازی</span>
+      <span class="method-badge badge-nn" style="display: inline-block; margin-right: 8px;">Gradient Descent</span>
+      <h2 class="slide-h1">گرادیان کاهشی (Gradient Descent)</h2>
+
+      <img src="images/gradient-descent.png" alt="Gradient Descent" class="img-box img-clickable" style="max-height: 180px;" onerror="this.style.display='none'" data-caption="گرادیان کاهشی">
+
+      <p class="slide-text">
+        الگوریتم اصلی بهینه‌سازی در ML: حرکت در جهت **منفی گرادیان** (سرازیری):
+      </p>
+
+      <div class="math-box gold-math" style="padding: 16px;">
+        <div style="font-size: 1.05rem;">
+          $$\theta_{n+1} = \theta_n - \eta \nabla_\theta \mathcal{L}(\theta_n)$$
+        </div>
+        <p class="math-note">$\eta$ = learning rate | $\nabla_\theta \mathcal{L}$ = گرادیان Loss نسبت به پارامترها</p>
+      </div>
+
+      <div class="step-container">
+        <div class="step-title"><i class="fas fa-1"></i> مراحل الگوریتم</div>
+        <div class="step-content">
+          <ol style="padding-right: 20px; font-size: 0.85rem; color: var(--text-dim); line-height: 2.2;">
+            <li>مقداردهی اولیه به $\theta$ (تصادفی)</li>
+            <li>محاسبه Loss $\mathcal{L}(\theta)$ روی داده‌های آموزشی</li>
+            <li>محاسبه گرادیان $\nabla_\theta \mathcal{L}$</li>
+            <li>به‌روزرسانی: $\theta \leftarrow \theta - \eta \nabla_\theta \mathcal{L}$</li>
+            <li>تکرار مراحل ۲-۴ تا همگرایی</li>
+          </ol>
+        </div>
+      </div>
+
+      <div class="grid-3" style="margin-top: 14px;">
+        <div class="card" style="background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3); text-align: center; padding: 12px;">
+          <div class="slide-h3" style="justify-content: center; font-size: 0.82rem;">Batch GD</div>
+          <p class="slide-text" style="font-size: 0.72rem;">همه داده در هر گام</p>
+        </div>
+        <div class="card" style="background: rgba(255, 183, 0, 0.06); border-color: rgba(255, 183, 0, 0.3); text-align: center; padding: 12px;">
+          <div class="slide-h3" style="justify-content: center; font-size: 0.82rem;">Stochastic GD</div>
+          <p class="slide-text" style="font-size: 0.72rem;">یک نمونه در هر گام</p>
+        </div>
+        <div class="card" style="background: rgba(168, 85, 247, 0.06); border-color: rgba(168, 85, 247, 0.3); text-align: center; padding: 12px;">
+          <div class="slide-h3" style="justify-content: center; font-size: 0.82rem;">Mini-Batch GD</div>
+          <p class="slide-text" style="font-size: 0.72rem;">دسته کوچک — استاندارد</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۱۴ — نرخ یادگیری -->
+  <div class="slide" data-slide="14" data-topic="5">
+    <div class="slide-inner">
+      <span class="slide-num">Hyperparameter</span>
+      <h2 class="slide-h1">نرخ یادگیری (Learning Rate)</h2>
+
+      <img src="images/learning-rate.png" alt="Learning Rate" class="img-box img-clickable" style="max-height: 180px;" onerror="this.style.display='none'" data-caption="نرخ یادگیری">
+
+      <p class="slide-text">
+        <b>Learning rate</b> ($\eta$) یکی از مهم‌ترین hyperparameterها است. انتخاب درست آن، تفاوت بین موفقیت و شکست آموزش است.
+      </p>
+
+      <div class="grid-3" style="margin-top: 14px;">
+        <div class="card" style="background: rgba(255, 71, 87, 0.06); border-color: rgba(255, 71, 87, 0.3);">
+          <div class="slide-h3" style="color: var(--danger);"><i class="fas fa-snail"></i> خیلی کوچک</div>
+          <p class="slide-text" style="font-size: 0.8rem;">
+            آموزش بسیار کند، احتمال گیر افتادن در local minimum.
+          </p>
+          <p class="slide-text" style="font-size: 0.72rem; color: var(--danger);">مثال: $\eta < 10^{-4}$</p>
+        </div>
+        <div class="card" style="background: rgba(34, 197, 94, 0.06); border-color: rgba(34, 197, 94, 0.3);">
+          <div class="slide-h3" style="color: var(--success);"><i class="fas fa-check-circle"></i> مناسب</div>
+          <p class="slide-text" style="font-size: 0.8rem;">
+            آموزش سریع و پایدار.
+          </p>
+          <p class="slide-text" style="font-size: 0.72rem; color: var(--success);">مثال: $\eta \in [10^{-3}، 10^{-2}]$</p>
+        </div>
+        <div class="card" style="background: rgba(255, 71, 87, 0.06); border-color: rgba(255, 71, 87, 0.3);">
+          <div class="slide-h3" style="color: var(--danger);"><i class="fas fa-fire"></i> خیلی بزرگ</div>
+          <p class="slide-text" style="font-size: 0.8rem;">
+            نوسان، انفجار گرادیان، عدم همگرایی.
+          </p>
+          <p class="slide-text" style="font-size: 0.72rem; color: var(--danger);">مثال: $\eta > 0.1$</p>
+        </div>
+      </div>
+
+      <div class="lecture-note">
+        <i class="fas fa-lightbulb"></i>
+        <div class="lecture-note-content">
+          <strong>راهکار پیشرفته:</strong> استفاده از <b>learning rate scheduling</b> — کاهش تدریجی $\eta$ در طول آموزش. یا استفاده از بهینه‌سازهای تطبیقی مثل <b>Adam</b> که خودشان نرخ را تنظیم می‌کنند.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۱۵ — شبیه‌ساز گرادیان -->
+  <div class="slide" data-slide="15" data-topic="5">
+    <div class="slide-inner">
+      <span class="slide-num">شبیه‌ساز تعاملی</span>
+      <h2 class="slide-h1">مسیر گرادیان کاهشی</h2>
+
+      <div class="simulator">
+        <div class="sim-header">
+          <div class="sim-title"><i class="fas fa-chart-line"></i> مسیر حرکت در فضای پارامتر</div>
+          <div class="sim-controls">
+            <div class="slider-group">
+              <label>η:</label>
+              <input type="range" id="gdLR" min="0.01" max="0.5" value="0.1" step="0.01">
+              <span class="slider-value" id="gdLRValue">۰.۱۰</span>
+            </div>
+          </div>
+        </div>
+        <div class="canvas-wrapper" style="height: 320px;"><canvas id="gdCanvas"></canvas></div>
+        <div class="grid-3" style="margin-top: 12px;">
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 0.72rem; color: var(--text-dim);">موقعیت فعلی</div>
+            <div id="gdPos" style="font-size: 0.95rem; color: var(--gold); font-weight: 800; font-family: 'Courier New', monospace;">—</div>
+          </div>
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 0.72rem; color: var(--text-dim);">Loss</div>
+            <div id="gdLoss" style="font-size: 0.95rem; color: var(--danger); font-weight: 800; font-family: 'Courier New', monospace;">—</div>
+          </div>
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 0.72rem; color: var(--text-dim);">وضعیت</div>
+            <div id="gdStatus" style="font-size: 0.85rem; color: var(--success); font-weight: 800;">—</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۱۶ — Overfitting -->
+  <div class="slide" data-slide="16" data-topic="6">
+    <div class="slide-inner">
+      <span class="slide-num">چالش</span>
+      <h2 class="slide-h1">Overfitting و Underfitting</h2>
+
+      <img src="images/overfitting-concept.png" alt="Overfitting" class="img-box img-clickable" onerror="this.style.display='none'" data-caption="Overfitting و Underfitting">
+
+      <div class="grid-2" style="margin-top: 14px;">
+        <div class="card" style="background: rgba(255, 71, 87, 0.06); border-color: rgba(255, 71, 87, 0.3);">
+          <div class="slide-h3" style="color: var(--danger);"><i class="fas fa-arrow-down"></i> Underfitting</div>
+          <p class="slide-text" style="font-size: 0.82rem;">
+            مدل خیلی ساده است، نمی‌تواند الگوی داده را یاد بگیرد.
+          </p>
+          <ul style="list-style: none; padding: 0; font-size: 0.78rem; color: var(--text-dim); line-height: 2;">
+            <li>🔹 خطای آموزش بالا</li>
+            <li>🔹 خطای تست بالا</li>
+            <li>🔹 Bias بالا</li>
+          </ul>
+        </div>
+        <div class="card" style="background: rgba(255, 183, 0, 0.06); border-color: rgba(255, 183, 0, 0.3);">
+          <div class="slide-h3" style="color: var(--gold);"><i class="fas fa-arrow-up"></i> Overfitting</div>
+          <p class="slide-text" style="font-size: 0.82rem;">
+            مدل خیلی پیچیده است، حتی نویز را یاد می‌گیرد.
+          </p>
+          <ul style="list-style: none; padding: 0; font-size: 0.78rem; color: var(--text-dim); line-height: 2;">
+            <li>🔹 خطای آموزش پایین</li>
+            <li>🔹 خطای تست بالا</li>
+            <li>🔹 Variance بالا</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="lecture-note" style="margin-top: 14px;">
+        <i class="fas fa-star"></i>
+        <div class="lecture-note-content">
+          <strong>تعادل:</strong> هدف، پیدا کردن مدلی است که هم روی داده‌های آموزش <strong>و هم</strong> روی داده‌های تست عملکرد خوبی داشته باشد. این تعادل را <b>bias-variance tradeoff</b> می‌نامند.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۱۷ — شبیه‌ساز Overfitting -->
+  <div class="slide" data-slide="17" data-topic="6">
+    <div class="slide-inner">
+      <span class="slide-num">شبیه‌ساز تعاملی</span>
+      <h2 class="slide-h1">شبیه‌ساز Overfitting</h2>
+
+      <div class="simulator">
+        <div class="sim-header">
+          <div class="sim-title"><i class="fas fa-chart-line"></i> درجه چندجمله‌ای در برابر داده</div>
+          <div class="sim-controls">
+            <div class="slider-group">
+              <label>درجه چندجمله‌ای:</label>
+              <input type="range" id="polyDeg" min="1" max="12" value="3" step="1">
+              <span class="slider-value" id="polyDegValue">۳</span>
+            </div>
+            <div class="slider-group">
+              <label>نویز:</label>
+              <input type="range" id="polyNoise" min="0" max="0.5" value="0.2" step="0.05">
+              <span class="slider-value" id="polyNoiseValue">۰.۲۰</span>
+            </div>
+          </div>
+        </div>
+        <div class="canvas-wrapper" style="height: 320px;"><canvas id="polyCanvas"></canvas></div>
+        <div class="grid-3" style="margin-top: 12px;">
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 0.72rem; color: var(--text-dim);">خطای Train</div>
+            <div id="polyTrainErr" style="font-size: 1rem; color: var(--primary); font-weight: 800; font-family: 'Courier New', monospace;">—</div>
+          </div>
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 0.72rem; color: var(--text-dim);">خطای Test</div>
+            <div id="polyTestErr" style="font-size: 1rem; color: var(--gold); font-weight: 800; font-family: 'Courier New', monospace;">—</div>
+          </div>
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 0.72rem; color: var(--text-dim);">وضعیت</div>
+            <div id="polyStatus" style="font-size: 0.85rem; color: var(--success); font-weight: 800;">—</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۱۸ — نرون ساده -->
+  <div class="slide" data-slide="18" data-topic="7">
+    <div class="slide-inner">
+      <span class="slide-num">نرون</span>
+      <span class="method-badge badge-nn" style="display: inline-block; margin-right: 8px;">Artificial Neuron</span>
+      <h2 class="slide-h1">نرون ساده — Perceptron</h2>
+
+      <img src="images/neuron-model.png" alt="Neuron" class="img-box img-clickable" style="max-height: 180px;" onerror="this.style.display='none'" data-caption="نرون ساده">
+
+      <p class="slide-text">
+        ساده‌ترین واحد شبکه عصبی، <b>Perceptron</b> است که از زیست‌شناسی نرون‌های مغز الهام گرفته:
+      </p>
+
+      <div class="math-box gold-math" style="padding: 16px;">
+        <div style="font-size: 1.05rem;">
+          $$y = \sigma\left(\sum_{i=1}^{n} w_i x_i + b\right) = \sigma(\mathbf{w}^T \mathbf{x} + b)$$
+        </div>
+        <p class="math-note">$w_i$ = وزن‌ها | $b$ = بایاس | $\sigma$ = تابع فعال‌سازی</p>
+      </div>
+
+      <div class="grid-3" style="margin-top: 14px;">
+        <div class="card" style="background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3); text-align: center; padding: 12px;">
+          <div class="slide-h3" style="justify-content: center; font-size: 0.85rem;">Weights ($w$)</div>
+          <p class="slide-text" style="font-size: 0.75rem;">اهمیت هر ورودی</p>
+        </div>
+        <div class="card" style="background: rgba(255, 183, 0, 0.06); border-color: rgba(255, 183, 0, 0.3); text-align: center; padding: 12px;">
+          <div class="slide-h3" style="justify-content: center; font-size: 0.85rem;">Bias ($b$)</div>
+          <p class="slide-text" style="font-size: 0.75rem;">آستانه فعال‌سازی</p>
+        </div>
+        <div class="card" style="background: rgba(168, 85, 247, 0.06); border-color: rgba(168, 85, 247, 0.3); text-align: center; padding: 12px;">
+          <div class="slide-h3" style="justify-content: center; font-size: 0.85rem;">Activation ($\sigma$)</div>
+          <p class="slide-text" style="font-size: 0.75rem;">غیرخطی‌سازی</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۱۹ — توابع فعال‌سازی -->
+  <div class="slide" data-slide="19" data-topic="7">
+    <div class="slide-inner">
+      <span class="slide-num">فعال‌سازی</span>
+      <h2 class="slide-h1">توابع فعال‌سازی (Activation Functions)</h2>
+
+      <img src="images/activation-functions.png" alt="Activation Functions" class="img-box img-clickable" onerror="this.style.display='none'" data-caption="توابع فعال‌سازی">
+
+      <div class="grid-4" style="margin-top: 14px;">
+        <div class="card" style="background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3); text-align: center; padding: 14px;">
+          <div class="slide-h3" style="justify-content: center; font-size: 0.85rem; color: var(--primary);">Sigmoid</div>
+          <div class="math-box" style="padding: 8px; font-size: 0.75rem;">
+            $$\sigma(x) = \frac{1}{1 + e^{-x}}$$
+          </div>
+          <p class="slide-text" style="font-size: 0.72rem;">خروجی [۰، ۱]</p>
+        </div>
+        <div class="card" style="background: rgba(255, 183, 0, 0.06); border-color: rgba(255, 183, 0, 0.3); text-align: center; padding: 14px;">
+          <div class="slide-h3" style="justify-content: center; font-size: 0.85rem; color: var(--gold);">Tanh</div>
+          <div class="math-box gold-math" style="padding: 8px; font-size: 0.75rem;">
+            $$\tanh(x) = \frac{e^x - e^{-x}}{e^x + e^{-x}}$$
+          </div>
+          <p class="slide-text" style="font-size: 0.72rem;">خروجی [-۱، ۱]</p>
+        </div>
+        <div class="card" style="background: rgba(168, 85, 247, 0.06); border-color: rgba(168, 85, 247, 0.3); text-align: center; padding: 14px;">
+          <div class="slide-h3" style="justify-content: center; font-size: 0.85rem; color: var(--tertiary);">ReLU</div>
+          <div class="math-box purple-math" style="padding: 8px; font-size: 0.75rem;">
+            $$\text{ReLU}(x) = \max(0، x)$$
+          </div>
+          <p class="slide-text" style="font-size: 0.72rem;">پرکاربردترین در DL</p>
+        </div>
+        <div class="card" style="background: rgba(236, 72, 153, 0.06); border-color: rgba(236, 72, 153, 0.3); text-align: center; padding: 14px;">
+          <div class="slide-h3" style="justify-content: center; font-size: 0.85rem; color: var(--pink);">Leaky ReLU</div>
+          <div class="math-box pink-math" style="padding: 8px; font-size: 0.75rem;">
+            $$f(x) = \max(0.01x، x)$$
+          </div>
+          <p class="slide-text" style="font-size: 0.72rem;">رفع مشکل dead neuron</p>
+        </div>
+      </div>
+
+      <div class="lecture-note" style="margin-top: 14px;">
+        <i class="fas fa-lightbulb"></i>
+        <div class="lecture-note-content">
+          <strong>چرا غیرخطی؟</strong> اگر تابع فعال‌سازی خطی باشد، ترکیب چند لایه باز هم خطی است و شبکه نمی‌تواند الگوهای پیچیده را یاد بگیرد. <strong>غیرخطی بودن</strong>، کلید قدرت شبکه‌های عصبی است.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۲۰ — ساختار شبکه عصبی -->
+  <div class="slide" data-slide="20" data-topic="8">
+    <div class="slide-inner">
+      <span class="slide-num">شبکه</span>
+      <span class="method-badge badge-dl" style="display: inline-block; margin-right: 8px;">Neural Network</span>
+      <h2 class="slide-h1">ساختار شبکه عصبی (Neural Network)</h2>
+
+      <img src="images/nn-architecture.png" alt="NN Architecture" class="img-box img-clickable" onerror="this.style.display='none'" data-caption="ساختار شبکه عصبی">
+
+      <p class="slide-text">
+        شبکه عصبی، ترکیب چند لایه از نرون‌ها است که به‌صورت موازی و ترتیبی کار می‌کنند:
+      </p>
+
+      <div class="grid-3" style="margin-top: 14px;">
+        <div class="card" style="background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3);">
+          <div class="slide-h3" style="color: var(--primary);"><i class="fas fa-sign-in-alt"></i> Input Layer</div>
+          <p class="slide-text" style="font-size: 0.82rem;">
+            دریافت ورودی‌ها. تعداد نرون‌ها = تعداد features.
+          </p>
+          <p class="slide-text" style="font-size: 0.75rem;">
+            در نانو انبرک: ۶ نرون
+          </p>
+        </div>
+        <div class="card" style="background: rgba(255, 183, 0, 0.06); border-color: rgba(255, 183, 0, 0.3);">
+          <div class="slide-h3" style="color: var(--gold);"><i class="fas fa-layer-group"></i> Hidden Layers</div>
+          <p class="slide-text" style="font-size: 0.82rem;">
+            لایه‌های میانی که ویژگی‌های پیچیده را استخراج می‌کنند.
+          </p>
+          <p class="slide-text" style="font-size: 0.75rem;">
+            مثال: ۲ لایه × ۳۲ نرون
+          </p>
+        </div>
+        <div class="card" style="background: rgba(168, 85, 247, 0.06); border-color: rgba(168, 85, 247, 0.3);">
+          <div class="slide-h3" style="color: var(--tertiary);"><i class="fas fa-sign-out-alt"></i> Output Layer</div>
+          <p class="slide-text" style="font-size: 0.82rem;">
+            تولید خروجی نهایی.
+          </p>
+          <p class="slide-text" style="font-size: 0.75rem;">
+            در نانو انبرک: ۱ نرون ($w_{max}$)
+          </p>
+        </div>
+      </div>
+
+      <div class="math-box gold-math" style="margin-top: 14px; padding: 14px;">
+        <div style="font-size: 0.95rem;">
+          $$\mathbf{a}^{(l)} = \sigma\left(\mathbf{W}^{(l)} \mathbf{a}^{(l-1)} + \mathbf{b}^{(l)}\right)$$
+        </div>
+        <p class="math-note">Forward propagation — انتشار رو به جلو</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۲۱ — کد NumPy و PyTorch -->
+  <div class="slide" data-slide="21" data-topic="9">
+    <div class="slide-inner">
+      <span class="slide-num">کد</span>
+      <h2 class="slide-h1">پیاده‌سازی: NumPy و PyTorch</h2>
+
+      <p class="slide-text">
+        یک شبکه عصبی ساده برای پیش‌بینی <b>Pull-in Voltage</b> نانو انبرک را با هر دو کتابخانه می‌سازیم.
+      </p>
+
+      <div class="code-tabs">
+        <button class="code-tab active" data-code="numpy-nn"><i class="fas fa-square"></i> NumPy (سطح پایین)</button>
+        <button class="code-tab" data-code="pytorch-nn"><i class="fas fa-fire"></i> PyTorch (سطح بالا)</button>
+      </div>
+
+      <div class="code-content active" id="code-numpy-nn">
+<pre><span class="cm"># ============================================</span>
+<span class="cm"># Neural Network from scratch with NumPy</span>
+<span class="cm"># ============================================</span>
+<span class="kw">import</span> numpy <span class="kw">as</span> np
+
+<span class="cm"># --- داده مصنوعی: پیش‌بینی V_pull-in نانو انبرک ---</span>
+<span class="cm"># Features: [L, b, h, E, g]</span>
+<span class="cm"># Label: V_pull-in</span>
+np.random.<span class="fn">seed</span>(<span class="num">42</span>)
+N_samples = <span class="num">500</span>
+
+L = np.random.uniform(<span class="num">30e-6</span>, <span class="num">100e-6</span>, N_samples)
+b = np.random.uniform(<span class="num">3e-6</span>, <span class="num">10e-6</span>, N_samples)
+h = np.random.uniform(<span class="num">0.3e-6</span>, <span class="num">1.5e-6</span>, N_samples)
+E = np.random.uniform(<span class="num">100e9</span>, <span class="num">200e9</span>, N_samples)
+g = np.random.uniform(<span class="num">100e-9</span>, <span class="num">400e-9</span>, N_samples)
+
+eps0 = <span class="num">8.854e-12</span>
+I = b * h**<span class="num">3</span> / <span class="num">12</span>
+k_eq = <span class="num">8</span> * E * I / L**<span class="num">4</span>
+V_pullin = np.sqrt(<span class="num">8</span> * k_eq * g**<span class="num">3</span> / (<span class="num">27</span> * eps0 * b * L))
+
+<span class="cm"># --- نرمال‌سازی داده ---</span>
+X = np.stack([L, b, h, E, g], axis=<span class="num">1</span>)
+X_mean, X_std = X.mean(<span class="num">0</span>), X.std(<span class="num">0</span>)
+X_norm = (X - X_mean) / X_std
+
+y_mean, y_std = V_pullin.mean(), V_pullin.std()
+y_norm = (V_pullin - y_mean) / y_std
+
+<span class="cm"># --- معماری شبکه ---</span>
+<span class="kw">def</span> <span class="fn">init_params</span>(n_in, n_h1, n_h2, n_out):
+    <span class="kw">return</span> {
+        <span class="str">'W1'</span>: np.random.randn(n_in, n_h1) * <span class="num">0.1</span>,
+        <span class="str">'b1'</span>: np.zeros((<span class="num">1</span>, n_h1)),
+        <span class="str">'W2'</span>: np.random.randn(n_h1, n_h2) * <span class="num">0.1</span>,
+        <span class="str">'b2'</span>: np.zeros((<span class="num">1</span>, n_h2)),
+        <span class="str">'W3'</span>: np.random.randn(n_h2, n_out) * <span class="num">0.1</span>,
+        <span class="str">'b3'</span>: np.zeros((<span class="num">1</span>, n_out)),
+    }
+
+<span class="kw">def</span> <span class="fn">relu</span>(x):
+    <span class="kw">return</span> np.maximum(<span class="num">0</span>, x)
+
+<span class="kw">def</span> <span class="fn">forward</span>(X, params):
+    z1 = X @ params[<span class="str">'W1'</span>] + params[<span class="str">'b1'</span>]
+    a1 = <span class="fn">relu</span>(z1)
+    z2 = a1 @ params[<span class="str">'W2'</span>] + params[<span class="str">'b2'</span>]
+    a2 = <span class="fn">relu</span>(z2)
+    z3 = a2 @ params[<span class="str">'W3'</span>] + params[<span class="str">'b3'</span>]
+    <span class="kw">return</span> z3, (z1, a1, z2, a2, z3)
+
+<span class="cm"># --- Loss (MSE) ---</span>
+<span class="kw">def</span> <span class="fn">mse_loss</span>(y_true, y_pred):
+    <span class="kw">return</span> np.mean((y_true - y_pred)**<span class="num">2</span>)
+
+<span class="cm"># --- آموزش ---</span>
+params = <span class="fn">init_params</span>(<span class="num">5</span>, <span class="num">32</span>, <span class="num">16</span>, <span class="num">1</span>)
+lr = <span class="num">0.01</span>
+epochs = <span class="num">200</span>
+losses = []
+
+<span class="kw">for</span> epoch <span class="kw">in</span> <span class="fn">range</span>(epochs):
+    <span class="cm"># Forward pass</span>
+    y_pred, cache = <span class="fn">forward</span>(X_norm, params)
+    loss = <span class="fn">mse_loss</span>(y_norm.reshape(-<span class="num">1</span>, <span class="num">1</span>), y_pred)
+    losses.append(loss)
+
+    <span class="cm"># Backward pass (شبکه ساده، گرادیان دستی)</span>
+    N = X_norm.shape[<span class="num">0</span>]
+    dz3 = <span class="num">2</span> * (y_pred - y_norm.reshape(-<span class="num">1</span>, <span class="num">1</span>)) / N
+    dW3 = cache[<span class="num">3</span>].T @ dz3
+    db3 = dz3.sum(<span class="num">0</span>, keepdims=<span class="kw">True</span>)
+
+    da2 = dz3 @ params[<span class="str">'W3'</span>].T
+    dz2 = da2 * (cache[<span class="num">2</span>] > <span class="num">0</span>)
+    dW2 = cache[<span class="num">1</span>].T @ dz2
+    db2 = dz2.sum(<span class="num">0</span>, keepdims=<span class="kw">True</span>)
+
+    da1 = dz2 @ params[<span class="str">'W2'</span>].T
+    dz1 = da1 * (cache[<span class="num">0</span>] > <span class="num">0</span>)
+    dW1 = X_norm.T @ dz1
+    db1 = dz1.sum(<span class="num">0</span>, keepdims=<span class="kw">True</span>)
+
+    <span class="cm"># Update</span>
+    params[<span class="str">'W3'</span>] -= lr * dW3
+    params[<span class="str">'b3'</span>] -= lr * db3
+    params[<span class="str">'W2'</span>] -= lr * dW2
+    params[<span class="str">'b2'</span>] -= lr * db2
+    params[<span class="str">'W1'</span>] -= lr * dW1
+    params[<span class="str">'b1'</span>] -= lr * db1
+
+    <span class="kw">if</span> epoch % <span class="num">20</span> == <span class="num">0</span>:
+        <span class="fn">print</span>(<span class="str">f'Epoch {epoch}, Loss = {loss:.6f}'</span>)
+
+<span class="fn">print</span>(<span class="str">f'Final Loss: {losses[-1]:.6f}'</span>)</pre>
+      </div>
+
+      <div class="code-content" id="code-pytorch-nn">
+<pre><span class="cm"># ============================================</span>
+<span class="cm"># Neural Network with PyTorch</span>
+<span class="cm"># ============================================</span>
+<span class="kw">import</span> torch
+<span class="kw">import</span> torch.nn <span class="kw">as</span> nn
+<span class="kw">import</span> torch.optim <span class="kw">as</span> optim
+<span class="kw">import</span> numpy <span class="kw">as</span> np
+
+<span class="cm"># --- داده مصنوعی ---</span>
+np.random.<span class="fn">seed</span>(<span class="num">42</span>)
+N_samples = <span class="num">500</span>
+L = np.random.uniform(<span class="num">30e-6</span>, <span class="num">100e-6</span>, N_samples)
+b = np.random.uniform(<span class="num">3e-6</span>, <span class="num">10e-6</span>, N_samples)
+h = np.random.uniform(<span class="num">0.3e-6</span>, <span class="num">1.5e-6</span>, N_samples)
+E = np.random.uniform(<span class="num">100e9</span>, <span class="num">200e9</span>, N_samples)
+g = np.random.uniform(<span class="num">100e-9</span>, <span class="num">400e-9</span>, N_samples)
+
+eps0 = <span class="num">8.854e-12</span>
+I = b * h**<span class="num">3</span> / <span class="num">12</span>
+k_eq = <span class="num">8</span> * E * I / L**<span class="num">4</span>
+V_pullin = np.sqrt(<span class="num">8</span> * k_eq * g**<span class="num">3</span> / (<span class="num">27</span> * eps0 * b * L))
+
+X = np.stack([L, b, h, E, g], axis=<span class="num">1</span>).astype(np.float32)
+y = V_pullin.astype(np.float32).reshape(-<span class="num">1</span>, <span class="num">1</span>)
+
+<span class="cm"># Normalization</span>
+X_mean, X_std = X.mean(<span class="num">0</span>), X.std(<span class="num">0</span>)
+y_mean, y_std = y.mean(), y.std()
+X = (X - X_mean) / X_std
+y = (y - y_mean) / y_std
+
+<span class="cm"># Tensor conversion</span>
+X_t = torch.<span class="fn">tensor</span>(X)
+y_t = torch.<span class="fn">tensor</span>(y)
+
+<span class="cm"># --- شبکه عصبی با PyTorch ---</span>
+<span class="kw">class</span> <span class="cls">PullInNet</span>(nn.Module):
+    <span class="kw">def</span> <span class="fn">__init__</span>(self):
+        <span class="fn">super</span>().<span class="fn">__init__</span>()
+        self.net = nn.<span class="fn">Sequential</span>(
+            nn.<span class="fn">Linear</span>(<span class="num">5</span>, <span class="num">32</span>),
+            nn.<span class="fn">ReLU</span>(),
+            nn.<span class="fn">Linear</span>(<span class="num">32</span>, <span class="num">16</span>),
+            nn.<span class="fn">ReLU</span>(),
+            nn.<span class="fn">Linear</span>(<span class="num">16</span>, <span class="num">1</span>)
+        )
+    <span class="kw">def</span> <span class="fn">forward</span>(self, x):
+        <span class="kw">return</span> self.<span class="fn">net</span>(x)
+
+model = <span class="fn">PullInNet</span>()
+loss_fn = nn.<span class="fn">MSELoss</span>()
+optimizer = optim.<span class="fn">Adam</span>(model.<span class="fn">parameters</span>(), lr=<span class="num">1e-3</span>)
+
+<span class="cm"># --- آموزش ---</span>
+epochs = <span class="num">500</span>
+losses = []
+<span class="kw">for</span> epoch <span class="kw">in</span> <span class="fn">range</span>(epochs):
+    model.<span class="fn">train</span>()
+    y_pred = <span class="fn">model</span>(X_t)
+    loss = <span class="fn">loss_fn</span>(y_pred, y_t)
+    optimizer.<span class="fn">zero_grad</span>()
+    loss.<span class="fn">backward</span>()
+    optimizer.<span class="fn">step</span>()
+    losses.append(loss.<span class="fn">item</span>())
+    <span class="kw">if</span> epoch % <span class="num">50</span> == <span class="num">0</span>:
+        <span class="fn">print</span>(<span class="str">f'Epoch {epoch}, Loss = {loss.item():.6f}'</span>)
+
+<span class="fn">print</span>(<span class="str">f'Final Loss: {losses[-1]:.6f}'</span>)
+
+<span class="cm"># --- تست پیش‌بینی ---</span>
+model.<span class="fn">eval</span>()
+<span class="kw">with</span> torch.<span class="fn">no_grad</span>():
+    X_test = X_t[:<span class="num">5</span>]
+    y_pred = <span class="fn">model</span>(X_test)
+    y_pred_real = y_pred.<span class="fn">numpy</span>() * y_std + y_mean
+    y_true_real = y_t[:<span class="num">5</span>].<span class="fn">numpy</span>() * y_std + y_mean
+    <span class="fn">print</span>(<span class="str">'--- Predictions ---'</span>)
+    <span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="num">5</span>):
+        <span class="fn">print</span>(<span class="str">f'True: {y_true_real[i,0]:.4f} V, Pred: {y_pred_real[i,0]:.4f} V'</span>)</pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۲۲ — تمرین‌ها -->
+  <div class="slide" data-slide="22" data-topic="9">
+    <div class="slide-inner">
+      <span class="slide-num">تمرین</span>
+      <h2 class="slide-h1">تمرین‌های جلسه ۱۷</h2>
+
+      <div class="exercise-block ex-yellow">
+        <div class="ex-header"><div class="ex-num">الف</div><div><div class="ex-title">سؤالات مفهومی</div></div></div>
+        <ol class="ex-list">
+          <li>تفاوت <b>Supervised</b>، <b>Unsupervised</b> و <b>Reinforcement</b> چیست؟</li>
+          <li>چرا از <b>Test Set</b> در آموزش استفاده نمی‌کنیم؟</li>
+          <li>تفاوت <b>Overfitting</b> و <b>Underfitting</b> چیست؟</li>
+          <li>چرا تابع فعال‌سازی باید <b>غیرخطی</b> باشد؟</li>
+        </ol>
+      </div>
+
+      <div class="exercise-block ex-green">
+        <div class="ex-header"><div class="ex-num">ب</div><div><div class="ex-title">تمرین‌های عملی</div></div></div>
+        <ol class="ex-list">
+          <li>یک شبکه عصبی با NumPy برای پیش‌بینی دمای تیر تحت بار بسازید.</li>
+          <li>همان مدل را در PyTorch پیاده کنید و نتایج را مقایسه کنید.</li>
+          <li>اثر <b>learning rate</b> را بر سرعت و پایداری آموزش بررسی کنید.</li>
+          <li>درجه چندجمله‌ای را تغییر دهید و <b>Overfitting</b> را مشاهده کنید.</li>
+        </ol>
+      </div>
+
+      <div class="exercise-block ex-purple">
+        <div class="ex-header"><div class="ex-num">ج</div><div><div class="ex-title">تمرین‌های نوشتاری</div></div></div>
+        <ol class="ex-list">
+          <li>معادله <b>Gradient Descent</b> را بنویسید و تفسیر هندسی آن را توضیح دهید.</li>
+          <li>اثبات کنید که مشتق <b>ReLU</b> در $x > 0$ برابر ۱ است.</li>
+          <li>فرمول <b>MSE</b> را برای یک نرون ساده بنویسید و گرادیان آن را استخراج کنید.</li>
+        </ol>
+      </div>
+
+      <div class="exercise-block ex-red">
+        <div class="ex-header"><div class="ex-num">★</div><div><div class="ex-title">چالش خلاقانه</div></div></div>
+        <ol class="ex-list">
+          <li>یک شبکه عصبی برای پیش‌بینی <b>فرکانس طبیعی</b> تیر طراحی کنید.</li>
+          <li>با <b>Autoencoder</b> ابعاد داده‌های ارتعاشی را کاهش دهید.</li>
+          <li>یک مدل <b>PINN</b> ساده برای حل PDE گرما با PyTorch بنویسید (پیش‌نمایش جلسه ۱۹).</li>
+        </ol>
+      </div>
+
+      <div class="email-banner">
+        <p><i class="fas fa-envelope" style="color: var(--primary);"></i> ارسال تمرین‌ها:</p>
+        <code>m.goharimanesh@gmail.com</code>
+        <p style="margin-top: 8px; font-size: 0.78rem;">Subject الزامی:</p>
+        <code>[Advanced Engineering Mathematics] HW17 - نام و نام خانوادگی - شماره دانشجویی</code>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۲۳ — نقشه راه پژوهش -->
+  <div class="slide" data-slide="23" data-topic="9">
+    <div class="slide-inner">
+      <span class="slide-num">نقشه راه</span>
+      <h2 class="slide-h1">مسیر پژوهش با یادگیری ماشین</h2>
+
+      <div class="grid-2">
+        <div class="card" style="background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3);">
+          <div class="slide-h3" style="color: var(--primary);"><i class="fas fa-flask"></i> گام‌های شروع</div>
+          <ul style="list-style: none; padding: 0; font-size: 0.82rem; color: var(--text-dim); line-height: 2;">
+            <li>🔹 یادگیری <b>NumPy</b> + <b>PyTorch</b></li>
+            <li>🔹 حل مسائل ساده با ML</li>
+            <li>🔹 بررسی مقالات معتبر</li>
+            <li>🔹 پیاده‌سازی PINN برای PDE</li>
+            <li>🔹 انتشار اولین مقاله</li>
+          </ul>
+        </div>
+        <div class="card" style="background: rgba(255, 183, 0, 0.06); border-color: rgba(255, 183, 0, 0.3);">
+          <div class="slide-h3" style="color: var(--gold);"><i class="fas fa-book"></i> منابع پیشنهادی</div>
+          <ul style="list-style: none; padding: 0; font-size: 0.82rem; color: var(--text-dim); line-height: 2;">
+            <li>🔹 Goodfellow — Deep Learning</li>
+            <li>🔹 Raissi et al. (2019) — PINN</li>
+            <li>🔹 Karniadakis et al. (2021) — PIML</li>
+            <li>🔹 PyTorch Documentation</li>
+            <li>🔹 Kaggle Courses (رایگان)</li>
+          </ul>
+        </div>
+        <div class="card" style="background: rgba(168, 85, 247, 0.06); border-color: rgba(168, 85, 247, 0.3);">
+          <div class="slide-h3" style="color: var(--tertiary);"><i class="fas fa-atom"></i> کاربرد در NEMS</div>
+          <ul style="list-style: none; padding: 0; font-size: 0.82rem; color: var(--text-dim); line-height: 2;">
+            <li>🔹 پیش‌بینی Pull-in با ML</li>
+            <li>🔹 طراحی معکوس نانو انبرک</li>
+            <li>🔹 تخمین پارامتر از داده</li>
+            <li>🔹 کنترل هوشمند MEMS</li>
+          </ul>
+        </div>
+        <div class="card" style="background: rgba(236, 72, 153, 0.06); border-color: rgba(236, 72, 153, 0.3);">
+          <div class="slide-h3" style="color: var(--pink);"><i class="fas fa-robot"></i> کاربرد در رباتیک</div>
+          <ul style="list-style: none; padding: 0; font-size: 0.82rem; color: var(--text-dim); line-height: 2;">
+            <li>🔹 کنترل مسیر با RL</li>
+            <li>🔹 بینایی ماشین</li>
+            <li>🔹 تشخیص اشیاء</li>
+            <li>🔹 همکاری ربات و انسان</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="lecture-note" style="margin-top: 14px;">
+        <i class="fas fa-bullseye"></i>
+        <div class="lecture-note-content">
+          <strong>پیشنهاد استاد:</strong> از همین ترم، شروع به یادگیری <b>PyTorch</b> کنید. هفته‌ای ۵ ساعت تمرین کافی است تا در ۳ ماه به سطح حرفه‌ای برسید. PINN ترکیب دو دنیای مهندسی مکانیک و هوش مصنوعی است — آینده‌ای روشن پیش روی شماست.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۲۴ — خداحافظی -->
+  <div class="slide" data-slide="24" data-topic="10">
+    <div class="slide-inner title-slide">
+      <div style="font-size: 3.5rem; color: var(--gold); margin-bottom: 18px;">
+        <i class="fas fa-check-circle"></i>
+      </div>
+      <h2 class="slide-h1">پایان جلسه ۱۷ — شروع سفر ML</h2>
+      <p class="slide-text" style="font-size: 1rem;">
+        امروز اولین قدم را در دنیای یادگیری ماشین برداشتید! 🌟
+      </p>
+
+      <div class="grid-4" style="margin-top: 20px; max-width: 900px; margin-left: auto; margin-right: auto;">
+        <div class="card" style="text-align: center; padding: 12px;">
+          <i class="fas fa-database" style="font-size: 1.4rem; color: var(--primary); display: block; margin-bottom: 6px;"></i>
+          <div style="font-size: 0.82rem; font-weight: 700; color: var(--primary);">داده</div>
+        </div>
+        <div class="card" style="text-align: center; padding: 12px;">
+          <i class="fas fa-chart-line" style="font-size: 1.4rem; color: var(--gold); display: block; margin-bottom: 6px;"></i>
+          <div style="font-size: 0.82rem; font-weight: 700; color: var(--gold);">Loss</div>
+        </div>
+        <div class="card" style="text-align: center; padding: 12px;">
+          <i class="fas fa-arrow-down" style="font-size: 1.4rem; color: var(--tertiary); display: block; margin-bottom: 6px;"></i>
+          <div style="font-size: 0.82rem; font-weight: 700; color: var(--tertiary);">گرادیان</div>
+        </div>
+        <div class="card" style="text-align: center; padding: 12px;">
+          <i class="fas fa-brain" style="font-size: 1.4rem; color: var(--pink); display: block; margin-bottom: 6px;"></i>
+          <div style="font-size: 0.82rem; font-weight: 700; color: var(--pink);">نرون</div>
+        </div>
+      </div>
+
+      <div class="math-box gold-math" style="margin-top: 22px; background: rgba(255, 183, 0, 0.08); padding: 22px; max-width: 700px; margin-left: auto; margin-right: auto;">
+        <div style="font-size: 1.05rem;">
+          $$\theta_{n+1} = \theta_n - \eta \nabla_\theta \mathcal{L}(\theta_n)$$
+        </div>
+        <p class="math-note">قلب یادگیری ماشین — گرادیان کاهشی</p>
+      </div>
+
+      <div class="card" style="margin-top: 20px; max-width: 700px; margin-left: auto; margin-right: auto; background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3);">
+        <div class="slide-h3" style="justify-content: center; color: var(--primary);"><i class="fas fa-arrow-left"></i> جلسه ۱۸</div>
+        <p class="slide-text" style="font-size: 0.88rem;">
+          <strong style="color: var(--primary);">شبکه عصبی و Backpropagation</strong>
+        </p>
+        <ul style="list-style: none; padding: 0; font-size: 0.82rem; color: var(--text-dim); line-height: 2; margin-top: 8px;">
+          <li>🔹 زنجیره محاسباتی (Computational Graph)</li>
+          <li>🔹 الگوریتم Backpropagation</li>
+          <li>🔹 بهینه‌سازهای پیشرفته (Adam)</li>
+          <li>🔹 پیاده‌سازی کامل با PyTorch</li>
+        </ul>
+      </div>
+
+      <p class="instructor-line" style="margin-top: 22px;">دکتر مسعود گوهری منش</p>
+      <p class="instructor-title-line">دانشیار گروه مهندسی مکانیک — دانشگاه تربت حیدریه</p>
+
+      <p style="font-size: 0.95rem; color: var(--gold); margin-top: 24px; font-weight: 800;">
+        🇮🇷 با افتخار برای دانشجویان مکاترونیک 🇮🇷
+      </p>
+    </div>
+  </div>
+
+</div>
+
+<div class="bottom-nav">
+  <button class="nav-btn" id="prevBtn" disabled><i class="fas fa-arrow-right"></i><span>قبلی</span></button>
+  <div class="dots-nav" id="dotsNav"></div>
+  <div class="slide-counter"><span id="currentSlide">۱</span> / ۲۴</div>
+  <button class="nav-btn" id="nextBtn"><span>بعدی</span><i class="fas fa-arrow-left"></i></button>
+</div>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- ═══ Lightbox ═══ -->
+<div class="lightbox" id="lightbox">
+  <button class="lightbox-close" id="lightboxClose"><i class="fas fa-times"></i></button>
+  <img src="" alt="" class="lightbox-img" id="lightboxImg">
+  <div class="lightbox-caption" id="lightboxCaption"></div>
+</div>
+
+<!-- ═══ Modal (Machine Learning) ═══ -->
+<div class="modal-overlay" id="conceptModal">
+  <div class="modal-box">
+    <button class="modal-close" id="conceptClose"><i class="fas fa-times"></i></button>
+    <h2 class="modal-title"><i class="fas fa-book-open"></i> یادگیری ماشین و پیوند با خواجه نصیرالدین طوسی</h2>
+
+    <div class="modal-section">
+      <div class="modal-section-title"><i class="fas fa-database"></i> از علم داده تا یادگیری</div>
+      <p>
+        <b>یادگیری ماشین</b> ریشه در همان مفهومی دارد که <strong>خواجه نصیرالدین طوسی</strong> در قرن هفتم هجری در <b>«زیج ایلخانی»</b> به‌کار برد: <strong>استخراج الگو از داده‌های مشاهده‌ای</strong>.
+      </p>
+      <p>
+        او با ثبت دقیق موقعیت سیارات در طول سال‌ها، توانست الگوهای حرکت آن‌ها را کشف کند و آینده را پیش‌بینی نماید — همان کاری که امروز ML با <strong>میلیون‌ها داده</strong> انجام می‌دهد.
+      </p>
+    </div>
+
+    <div class="modal-section">
+      <div class="modal-section-title"><i class="fas fa-lightbulb"></i> سه مفهوم کلیدی</div>
+      <ul>
+        <li><strong>Experience (E):</strong> داده‌های مشاهده‌شده — همانند داده‌های نجومی خواجه نصیر</li>
+        <li><strong>Task (T):</strong> پیش‌بینی — همانند پیش‌بینی حرکت سیارات</li>
+        <li><strong>Performance (P):</strong> دقت پیش‌بینی — همانند خطای جدول نجومی</li>
+      </ul>
+    </div>
+
+    <div class="modal-section">
+      <div class="modal-section-title"><i class="fas fa-users"></i> پیوند با فلسفه و جامعه</div>
+      <p>
+        <b>یادگیری</b> فقط یک مفهوم ریاضی نیست — یک مفهوم انسانی و اجتماعی است. خواجه نصیرالدین طوسی در <b>«اساس الاقتباس»</b> نشان داد که <strong>علم، آموختنی</strong> است و می‌توان از <strong>مثال به قاعده</strong> رسید.
+      </p>
+      <p>
+        این همان اصل یادگیری ماشین است: مدل از مثال‌های آموزشی، قاعده استخراج می‌کند و آن را به <strong>مثال‌های جدید</strong> تعمیم می‌دهد. تفاوت امروز در <strong>سرعت و مقیاس</strong> است — میلیون‌ها مثال در ثانیه.
+      </p>
+    </div>
+
+    <div class="modal-section">
+      <div class="modal-section-title"><i class="fas fa-globe"></i> تفکر سیستمی</div>
+      <p>
+        در قرن ۱۳ میلادی، خواجه نصیرالدین طوسی <strong>رصدخانه مراغه</strong> را تأسیس کرد — اولین مرکز داده‌های نجومی در تاریخ. در آنجا، <strong>تیم‌های چندنفره</strong> از دانشمندان و مهندسان با هم کار می‌کردند و <strong>الگوریتم‌های مشترکی</strong> برای تحلیل داده تدوین می‌کردند.
+      </p>
+      <p>
+        امروز، <b>یادگیری ماشین</b> همان اصل را با <strong>GPU، Cloud، و تیم‌های جهانی</strong> پیاده‌سازی می‌کند — اما فلسفه‌ی اصلی یکسان است: <strong>تعامل، تکرار، و استخراج الگو</strong>.
+      </p>
+    </div>
+
+    <div class="lecture-note" style="margin-top: 16px;">
+      <i class="fas fa-star"></i>
+      <div class="lecture-note-content">
+        <strong>درس امروز:</strong> یادگیری ماشین، ادامه‌ی سنت چند هزار ساله‌ی انسان در <strong>فهم الگوهای طبیعت</strong> است. از زیج ایلخانی تا شبکه‌های عصبی امروز، همان سفر — با ابزارهای جدید.
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ═══ ناوبری ═══ */
+const slides = document.querySelectorAll('.slide');
+const totalSlides = slides.length;
+let currentSlide = 0;
+const topicPills = document.querySelectorAll('.topic-pill');
+
+const dotsNav = document.getElementById('dotsNav');
+for (let i = 0; i < totalSlides; i++) {
+  const dot = document.createElement('button');
+  dot.className = 'dot-nav' + (i === 0 ? ' active' : '');
+  dot.addEventListener('click', () => goToSlide(i));
+  dotsNav.appendChild(dot);
+}
+
+function goToSlide(n) {
+  if (n < 0 || n >= totalSlides) return;
+  slides.forEach((s, i) => {
+    s.classList.remove('active', 'prev');
+    if (i < n) s.classList.add('prev');
+    if (i === n) s.classList.add('active');
+  });
+  currentSlide = n;
+  updateNav();
+  playTransition();
+  setTimeout(() => {
+    initVisibleCharts();
+    if (window.MathJax && window.MathJax.typesetPromise) window.MathJax.typesetPromise();
+  }, 100);
+}
+
+function updateNav() {
+  document.querySelectorAll('.dot-nav').forEach((d, i) => d.classList.toggle('active', i === currentSlide));
+  document.getElementById('currentSlide').textContent = toFa(currentSlide + 1);
+  document.getElementById('prevBtn').disabled = currentSlide === 0;
+  document.getElementById('nextBtn').disabled = currentSlide === totalSlides - 1;
+  document.getElementById('progressFill').style.width = ((currentSlide + 1) / totalSlides * 100) + '%';
+  const currentTopic = slides[currentSlide].dataset.topic;
+  topicPills.forEach(pill => {
+    const t = parseInt(pill.dataset.topic);
+    const ct = parseInt(currentTopic);
+    pill.classList.toggle('active', t === ct);
+    pill.classList.toggle('done', t < ct);
+    if (t === ct) pill.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+  });
+}
+
+document.getElementById('prevBtn').addEventListener('click', () => goToSlide(currentSlide - 1));
+document.getElementById('nextBtn').addEventListener('click', () => goToSlide(currentSlide + 1));
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowLeft') { e.preventDefault(); goToSlide(currentSlide + 1); }
+  else if (e.key === 'ArrowRight') { e.preventDefault(); goToSlide(currentSlide - 1); }
+  else if (e.key === ' ') { e.preventDefault(); goToSlide(currentSlide + 1); }
+  else if (e.key === 'Home') { e.preventDefault(); goToSlide(0); }
+  else if (e.key === 'End') { e.preventDefault(); goToSlide(totalSlides - 1); }
+  else if (e.key === 'Escape') {
+    if (document.fullscreenElement) document.exitFullscreen();
+    closeLightbox();
+    closeConceptModal();
+    printMenu.classList.remove('show');
+  }
+});
+
+let touchStartX = 0, touchStartY = 0;
+document.addEventListener('touchstart', e => {
+  touchStartX = e.changedTouches[0].screenX;
+  touchStartY = e.changedTouches[0].screenY;
+}, { passive: true });
+document.addEventListener('touchend', e => {
+  const dx = e.changedTouches[0].screenX - touchStartX;
+  const dy = e.changedTouches[0].screenY - touchStartY;
+  if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy)) {
+    if (dx < 0) goToSlide(currentSlide + 1);
+    else goToSlide(currentSlide - 1);
+  }
+}, { passive: true });
+
+/* ═══ Lightbox ═══ */
+const lightbox = document.getElementById('lightbox');
+const lightboxImg = document.getElementById('lightboxImg');
+const lightboxCaption = document.getElementById('lightboxCaption');
+
+document.querySelectorAll('.img-clickable').forEach(img => {
+  img.addEventListener('click', e => {
+    e.stopPropagation();
+    const src = img.getAttribute('src');
+    const caption = img.getAttribute('data-caption') || img.getAttribute('alt') || '';
+    if (src) {
+      lightboxImg.src = src;
+      lightboxCaption.textContent = caption;
+      lightbox.classList.add('active');
+    }
+  });
+});
+
+document.getElementById('lightboxClose').addEventListener('click', closeLightbox);
+lightbox.addEventListener('click', e => {
+  if (e.target === lightbox) closeLightbox();
+});
+
+function closeLightbox() { lightbox.classList.remove('active'); }
+
+/* ═══ Modal ═══ */
+const conceptModal = document.getElementById('conceptModal');
+document.querySelectorAll('[data-concept]').forEach(el => {
+  el.addEventListener('click', e => {
+    e.stopPropagation();
+    conceptModal.classList.add('active');
+  });
+});
+document.getElementById('conceptClose').addEventListener('click', closeConceptModal);
+conceptModal.addEventListener('click', e => {
+  if (e.target === conceptModal) closeConceptModal();
+});
+function closeConceptModal() { conceptModal.classList.remove('active'); }
+
+/* ═══ منوی چاپ ═══ */
+const printToggle = document.getElementById('printToggle');
+const printMenu = document.getElementById('printMenu');
+
+printToggle.addEventListener('click', e => {
+  e.stopPropagation();
+  printMenu.classList.toggle('show');
+});
+
+document.addEventListener('click', e => {
+  if (!printMenu.contains(e.target) && e.target !== printToggle) {
+    printMenu.classList.remove('show');
+  }
+});
+
+document.getElementById('printCurrentBtn').addEventListener('click', () => {
+  printMenu.classList.remove('show');
+  slides.forEach(s => s.classList.remove('print-visible'));
+  slides[currentSlide].classList.add('print-visible');
+  showToast('آماده‌سازی چاپ این صفحه...');
+  setTimeout(() => {
+    window.print();
+    setTimeout(() => slides.forEach(s => s.classList.remove('print-visible')), 500);
+  }, 300);
+});
+
+document.getElementById('printAllBtn').addEventListener('click', () => {
+  printMenu.classList.remove('show');
+  slides.forEach(s => s.classList.add('print-visible'));
+  showToast('آماده‌سازی چاپ همه صفحات...');
+  setTimeout(() => {
+    window.print();
+    setTimeout(() => slides.forEach(s => s.classList.remove('print-visible')), 500);
+  }, 300);
+});
+
+/* ═══ صدا ═══ */
+let audioCtx = null, soundEnabled = true;
+function initAudio() { if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
+function playTransition() {
+  if (!soundEnabled) return;
+  initAudio();
+  [440, 554.37].forEach((freq, i) => {
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.connect(gain); gain.connect(audioCtx.destination);
+    osc.frequency.value = freq; osc.type = 'sine';
+    const t = audioCtx.currentTime + i * 0.06;
+    gain.gain.setValueAtTime(0.04, t);
+    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.18);
+    osc.start(t); osc.stop(t + 0.22);
+  });
+}
+document.getElementById('soundToggle').addEventListener('click', function() {
+  soundEnabled = !soundEnabled;
+  this.classList.toggle('active', soundEnabled);
+  this.innerHTML = soundEnabled ? '<i class="fas fa-volume-up"></i>' : '<i class="fas fa-volume-mute"></i>';
+  showToast(soundEnabled ? 'صدا فعال' : 'صدا غیرفعال');
+});
+document.getElementById('fullscreenToggle').addEventListener('click', function() {
+  if (!document.fullscreenElement) { document.documentElement.requestFullscreen(); this.innerHTML = '<i class="fas fa-compress"></i>'; }
+  else { document.exitFullscreen(); this.innerHTML = '<i class="fas fa-expand"></i>'; }
+});
+function showToast(msg) {
+  const container = document.getElementById('toastContainer');
+  const toast = document.createElement('div');
+  toast.className = 'toast';
+  toast.innerHTML = `<i class="fas fa-info-circle"></i> ${msg}`;
+  container.appendChild(toast);
+  setTimeout(() => { toast.style.opacity = '0'; toast.style.transform = 'translateX(-60px)'; setTimeout(() => toast.remove(), 300); }, 2400);
+}
+function toFa(n) { const fa = ['۰','۱','۲','۳','۴','۵','۶','۷','۸','۹']; return String(n).replace(/\d/g, d => fa[d]); }
+
+/* ═══ پس‌زمینه ═══ */
+const bgCanvas = document.getElementById('bgCanvas');
+const bgCtx = bgCanvas.getContext('2d');
+let particles = [];
+function resizeBg() { bgCanvas.width = window.innerWidth; bgCanvas.height = window.innerHeight; }
+resizeBg();
+window.addEventListener('resize', resizeBg);
+class Particle {
+  constructor() { this.reset(); }
+  reset() {
+    this.x = Math.random() * bgCanvas.width;
+    this.y = Math.random() * bgCanvas.height;
+    this.size = Math.random() * 1.6 + 0.4;
+    this.speedX = (Math.random() - 0.5) * 0.3;
+    this.speedY = (Math.random() - 0.5) * 0.3;
+    this.opacity = Math.random() * 0.5 + 0.15;
+    const colors = ['#00d4aa', '#06b6d4', '#a855f7', '#ffb700'];
+    this.color = colors[Math.floor(Math.random() * colors.length)];
+  }
+  update() { this.x += this.speedX; this.y += this.speedY; if (this.x < 0 || this.x > bgCanvas.width || this.y < 0 || this.y > bgCanvas.height) this.reset(); }
+  draw() { bgCtx.beginPath(); bgCtx.arc(this.x, this.y, this.size, 0, Math.PI*2); bgCtx.fillStyle = this.color; bgCtx.globalAlpha = this.opacity; bgCtx.fill(); bgCtx.globalAlpha = 1; }
+}
+for (let i = 0; i < 50; i++) particles.push(new Particle());
+function animateBg() { bgCtx.clearRect(0, 0, bgCanvas.width, bgCanvas.height); particles.forEach(p => { p.update(); p.draw(); }); requestAnimationFrame(animateBg); }
+animateBg();
+
+/* ═══ ابزار ═══ */
+function setupCanvas(canvasId) {
+  const canvas = document.getElementById(canvasId);
+  if (!canvas) return null;
+  const dpr = window.devicePixelRatio || 1;
+  const rect = canvas.getBoundingClientRect();
+  canvas.width = rect.width * dpr; canvas.height = rect.height * dpr;
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+  return { ctx, w: rect.width, h: rect.height };
+}
+
+/* ═══ شبیه‌ساز انواع ML ═══ */
+function drawMLType() {
+  const s = setupCanvas('mlTypeCanvas');
+  if (!s) return;
+  const { ctx, w, h } = s;
+  ctx.clearRect(0, 0, w, h);
+
+  const type = document.getElementById('mlType').value;
+  const noise = parseFloat(document.getElementById('mlNoise').value);
+
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+  ctx.fillRect(0, 0, w, h);
+
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
+  for (let i = 0; i <= 10; i++) {
+    ctx.beginPath(); ctx.moveTo((w / 10) * i, 0); ctx.lineTo((w / 10) * i, h); ctx.stroke();
+  }
+  for (let i = 0; i <= 6; i++) {
+    ctx.beginPath(); ctx.moveTo(0, (h / 6) * i); ctx.lineTo(w, (h / 6) * i); ctx.stroke();
+  }
+
+  const padX = 50, padY_top = 30, padY_bot = 50;
+  const plotW = w - 2 * padX;
+  const plotH = h - padY_top - padY_bot;
+
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.moveTo(padX, padY_top + plotH / 2);
+  ctx.lineTo(padX + plotW, padY_top + plotH / 2);
+  ctx.stroke();
+
+  const xToPx = (x) => padX + x * plotW;
+  const yToPy = (y) => padY_top + plotH / 2 - y * (plotH / 2 - 20);
+
+  // داده‌های تصادفی
+  const N = 60;
+  const data = [];
+  for (let i = 0; i < N; i++) {
+    const x = Math.random();
+    let y;
+    if (type === 'supervised') {
+      y = Math.sin(2 * Math.PI * x) + (Math.random() - 0.5) * noise * 0.6;
+    } else if (type === 'unsupervised') {
+      y = Math.sin(2 * Math.PI * x) * 0.5 + (Math.random() - 0.5) * noise * 0.3;
+    } else {
+      y = Math.sin(2 * Math.PI * x) > 0 ? 0.4 : -0.4;
+      y += (Math.random() - 0.5) * noise * 0.3;
+    }
+    data.push({ x, y });
+  }
+
+  // نقاط داده
+  data.forEach(d => {
+    const px = xToPx(d.x);
+    const py = yToPy(d.y);
+    ctx.fillStyle = type === 'unsupervised' ? '#ffb700' : '#00d4aa';
+    ctx.beginPath();
+    ctx.arc(px, py, 4, 0, Math.PI * 2);
+    ctx.fill();
+  });
+
+  // نمایش مدل
+  ctx.beginPath();
+  ctx.strokeStyle = '#ffb700';
+  ctx.lineWidth = 2.5;
+  ctx.shadowColor = '#ffb700';
+  ctx.shadowBlur = 8;
+
+  if (type === 'supervised') {
+    // رگرسیون ساده با فیت سینوسی
+    for (let i = 0; i <= 200; i++) {
+      const x = i / 200;
+      const y = Math.sin(2 * Math.PI * x);
+      const px = xToPx(x);
+      const py = yToPy(y);
+      if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+    }
+  } else if (type === 'unsupervised') {
+    // نمایش دو کلاستر
+    for (let i = 0; i <= 200; i++) {
+      const x = i / 200;
+      const y = Math.sin(2 * Math.PI * x) * 0.5;
+      const px = xToPx(x);
+      const py = yToPy(y);
+      if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+    }
+  } else {
+    // Classification - خط جداکننده
+    ctx.strokeStyle = '#ffb700';
+    ctx.beginPath();
+    ctx.moveTo(padX, yToPy(0));
+    ctx.lineTo(padX + plotW, yToPy(0));
+    ctx.stroke();
+  }
+  if (type !== 'classification') ctx.stroke();
+  ctx.shadowBlur = 0;
+
+  // برچسب‌ها
+  ctx.fillStyle = '#9aa7bd';
+  ctx.font = '11px Vazirmatn';
+  ctx.textAlign = 'center';
+  ctx.fillText('Feature', padX + plotW / 2, padY_top + plotH + 25);
+
+  // به‌روزرسانی توضیحات
+  const descEl = document.getElementById('mlTypeDesc');
+  const metricEl = document.getElementById('mlTypeMetric');
+  if (type === 'supervised') {
+    descEl.textContent = 'رگرسیون — پیش‌بینی مقدار پیوسته';
+    metricEl.textContent = 'MSE، MAE، R²';
+  } else if (type === 'unsupervised') {
+    descEl.textContent = 'کلاسترینگ — کشف گروه‌های پنهان';
+    metricEl.textContent = 'Silhouette، Inertia';
+  } else {
+    descEl.textContent = 'طبقه‌بندی — تفکیک کلاس‌ها';
+    metricEl.textContent = 'Accuracy، F1، ROC-AUC';
+  }
+
+  document.getElementById('mlNoiseValue').textContent = toFa(noise.toFixed(1));
+}
+
+/* ═══ شبیه‌ساز Loss ═══ */
+let lossAnimFrame = null;
+let lossEpochCounter = 0;
+let lossRunning = false;
+
+function drawLoss() {
+  const s = setupCanvas('lossCanvas');
+  if (!s) return;
+  const { ctx, w, h } = s;
+  ctx.clearRect(0, 0, w, h);
+
+  const lr = parseFloat(document.getElementById('lossLR').value);
+
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+  ctx.fillRect(0, 0, w, h);
+
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
+  for (let i = 0; i <= 10; i++) {
+    ctx.beginPath(); ctx.moveTo((w / 10) * i, 0); ctx.lineTo((w / 10) * i, h); ctx.stroke();
+  }
+  for (let i = 0; i <= 6; i++) {
+    ctx.beginPath(); ctx.moveTo(0, (h / 6) * i); ctx.lineTo(w, (h / 6) * i); ctx.stroke();
+  }
+
+  const padX = 50, padY_top = 30, padY_bot = 50;
+  const plotW = w - 2 * padX;
+  const plotH = h - padY_top - padY_bot;
+
+  const epochs = 100;
+  const xToPx = (e) => padX + (e / epochs) * plotW;
+  const lossToPy = (l) => padY_top + (1 - l) * plotH;
+
+  // شبیه‌سازی Loss
+  let stable = lr <= 0.05;
+  let finalLoss = 0.05;
+  const curve = [];
+  for (let e = 0; e < epochs; e++) {
+    let l;
+    if (lr < 0.005) {
+      l = 1.0 * Math.exp(-e * 0.01) + 0.5;
+    } else if (lr <= 0.05) {
+      l = 1.0 * Math.exp(-e * 0.05 * (lr / 0.01)) + 0.02 + (Math.random() - 0.5) * 0.02;
+    } else {
+      l = 1.0 + Math.sin(e * 0.5) * 0.3 + Math.random() * 0.2;
+    }
+    curve.push(Math.min(1, Math.max(0, l)));
+  }
+  finalLoss = curve[curve.length - 1];
+
+  // رسم محورها
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.moveTo(padX, padY_top);
+  ctx.lineTo(padX, padY_top + plotH);
+  ctx.lineTo(padX + plotW, padY_top + plotH);
+  ctx.stroke();
+
+  // منحنی Loss
+  ctx.beginPath();
+  ctx.strokeStyle = stable ? '#00d4aa' : '#ff4757';
+  ctx.lineWidth = 2.5;
+  ctx.shadowColor = stable ? '#00d4aa' : '#ff4757';
+  ctx.shadowBlur = 8;
+  curve.forEach((l, i) => {
+    const px = xToPx(i);
+    const py = lossToPy(l);
+    if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+  });
+  ctx.stroke();
+  ctx.shadowBlur = 0;
+
+  // برچسب‌ها
+  ctx.fillStyle = '#9aa7bd';
+  ctx.font = '11px Vazirmatn';
+  ctx.textAlign = 'right';
+  ctx.fillText('Loss', padX - 8, padY_top + 15);
+  ctx.textAlign = 'center';
+  ctx.fillText('Epoch', padX + plotW / 2, padY_top + plotH + 25);
+
+  document.getElementById('lossLRValue').textContent = toFa(lr.toFixed(3));
+  document.getElementById('lossCurrent').textContent = toFa(finalLoss.toFixed(4));
+  document.getElementById('lossEpoch').textContent = toFa(epochs);
+  const statusEl = document.getElementById('lossStatus');
+  if (lr < 0.005) {
+    statusEl.textContent = 'خیلی کند';
+    statusEl.style.color = 'var(--gold)';
+  } else if (lr <= 0.05) {
+    statusEl.textContent = 'بهینه';
+    statusEl.style.color = 'var(--success)';
+  } else {
+    statusEl.textContent = '⚠ ناپایدار';
+    statusEl.style.color = 'var(--danger)';
+  }
+}
+
+/* ═══ شبیه‌ساز گرادیان ═══ */
+function drawGD() {
+  const s = setupCanvas('gdCanvas');
+  if (!s) return;
+  const { ctx, w, h } = s;
+  ctx.clearRect(0, 0, w, h);
+
+  const lr = parseFloat(document.getElementById('gdLR').value);
+
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+  ctx.fillRect(0, 0, w, h);
+
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
+  for (let i = 0; i <= 10; i++) {
+    ctx.beginPath(); ctx.moveTo((w / 10) * i, 0); ctx.lineTo((w / 10) * i, h); ctx.stroke();
+  }
+  for (let i = 0; i <= 6; i++) {
+    ctx.beginPath(); ctx.moveTo(0, (h / 6) * i); ctx.lineTo(w, (h / 6) * i); ctx.stroke();
+  }
+
+  const padX = 50, padY_top = 30, padY_bot = 50;
+  const plotW = w - 2 * padX;
+  const plotH = h - padY_top - padY_bot;
+
+  const xToPx = (x) => padX + x * plotW;
+  const yToPy = (y) => padY_top + plotH / 2 - y * (plotH / 2 - 20);
+
+  // تابع هزینه U شکل
+  ctx.beginPath();
+  ctx.strokeStyle = '#00d4aa';
+  ctx.lineWidth = 2.5;
+  ctx.shadowColor = '#00d4aa';
+  ctx.shadowBlur = 6;
+  for (let i = 0; i <= 200; i++) {
+    const x = i / 200;
+    const y = (x - 0.7) * (x - 0.7) * 2 - 0.5;
+    const px = xToPx(x);
+    const py = yToPy(y);
+    if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+  }
+  ctx.stroke();
+  ctx.shadowBlur = 0;
+
+  // مسیر گرادیان
+  let x = 0.1;
+  const path = [{ x, y: (x - 0.7)**2 * 2 - 0.5 }];
+  const N_steps = 20;
+  for (let i = 0; i < N_steps; i++) {
+    const grad = 4 * (x - 0.7);
+    x = x - lr * grad;
+    if (x < 0 || x > 1) { x = Math.max(0, Math.min(1, x)); }
+    path.push({ x, y: (x - 0.7)**2 * 2 - 0.5 });
+  }
+
+  // نقاط مسیر
+  ctx.strokeStyle = '#ffb700';
+  ctx.lineWidth = 2;
+  ctx.setLineDash([4, 3]);
+  ctx.beginPath();
+  path.forEach((p, i) => {
+    const px = xToPx(p.x);
+    const py = yToPy(p.y);
+    if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+  });
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  // نقاط
+  path.forEach((p, i) => {
+    const px = xToPx(p.x);
+    const py = yToPy(p.y);
+    ctx.fillStyle = i === path.length - 1 ? '#ffb700' : 'rgba(255, 183, 0, 0.6)';
+    ctx.beginPath();
+    ctx.arc(px, py, i === path.length - 1 ? 7 : 4, 0, Math.PI * 2);
+    ctx.fill();
+  });
+
+  // خط حد
+  ctx.strokeStyle = 'rgba(168, 85, 247, 0.6)';
+  ctx.setLineDash([6, 4]);
+  ctx.beginPath();
+  ctx.moveTo(padX, yToPy(-0.5));
+  ctx.lineTo(padX + plotW, yToPy(-0.5));
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  const finalPos = path[path.length - 1];
+  document.getElementById('gdLRValue').textContent = toFa(lr.toFixed(2));
+  document.getElementById('gdPos').textContent = toFa(finalPos.x.toFixed(3));
+  document.getElementById('gdLoss').textContent = toFa(finalPos.y.toFixed(4));
+  const statusEl = document.getElementById('gdStatus');
+  if (lr > 0.3) {
+    statusEl.textContent = '⚠ نوسانی';
+    statusEl.style.color = 'var(--danger)';
+  } else if (Math.abs(finalPos.x - 0.7) < 0.01) {
+    statusEl.textContent = '✓ همگرا';
+    statusEl.style.color = 'var(--success)';
+  } else {
+    statusEl.textContent = 'در حال حرکت';
+    statusEl.style.color = 'var(--gold)';
+  }
+}
+
+/* ═══ شبیه‌ساز Overfitting ═══ */
+function drawPoly() {
+  const s = setupCanvas('polyCanvas');
+  if (!s) return;
+  const { ctx, w, h } = s;
+  ctx.clearRect(0, 0, w, h);
+
+  const deg = parseInt(document.getElementById('polyDeg').value);
+  const noise = parseFloat(document.getElementById('polyNoise').value);
+
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+  ctx.fillRect(0, 0, w, h);
+
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
+  for (let i = 0; i <= 10; i++) {
+    ctx.beginPath(); ctx.moveTo((w / 10) * i, 0); ctx.lineTo((w / 10) * i, h); ctx.stroke();
+  }
+  for (let i = 0; i <= 6; i++) {
+    ctx.beginPath(); ctx.moveTo(0, (h / 6) * i); ctx.lineTo(w, (h / 6) * i); ctx.stroke();
+  }
+
+  const padX = 50, padY_top = 30, padY_bot = 50;
+  const plotW = w - 2 * padX;
+  const plotH = h - padY_top - padY_bot;
+
+  const xToPx = (x) => padX + x * plotW;
+  const yToPy = (y) => padY_top + plotH / 2 - y * (plotH / 2 - 20);
+
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.moveTo(padX, padY_top + plotH / 2);
+  ctx.lineTo(padX + plotW, padY_top + plotH / 2);
+  ctx.stroke();
+
+  // داده آموزش
+  const N = 15;
+  const data = [];
+  for (let i = 0; i < N; i++) {
+    const x = i / (N - 1);
+    const y = Math.sin(2 * Math.PI * x) + (Math.random() - 0.5) * noise;
+    data.push({ x, y });
+  }
+
+  // داده تست
+  const testData = [];
+  for (let i = 0; i < 30; i++) {
+    const x = Math.random();
+    const y = Math.sin(2 * Math.PI * x) + (Math.random() - 0.5) * noise;
+    testData.push({ x, y });
+  }
+
+  // تابع اصلی
+  ctx.beginPath();
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+  ctx.lineWidth = 1.5;
+  ctx.setLineDash([6, 4]);
+  for (let i = 0; i <= 200; i++) {
+    const x = i / 200;
+    const y = Math.sin(2 * Math.PI * x);
+    const px = xToPx(x);
+    const py = yToPy(y);
+    if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+  }
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  // برازش چندجمله‌ای (شبیه‌سازی)
+  ctx.beginPath();
+  ctx.strokeStyle = deg < 3 ? '#ff4757' : (deg > 8 ? '#a855f7' : '#ffb700');
+  ctx.lineWidth = 2.5;
+  ctx.shadowColor = ctx.strokeStyle;
+  ctx.shadowBlur = 8;
+  for (let i = 0; i <= 200; i++) {
+    const x = i / 200;
+    let y;
+    if (deg < 3) {
+      // Underfitting: خطی
+      y = 0.5 * (x - 0.5) * 2;
+    } else if (deg <= 8) {
+      // Good fit: سینوسی
+      y = Math.sin(2 * Math.PI * x) * (1 - noise * 0.3);
+    } else {
+      // Overfitting: نویزی
+      y = Math.sin(2 * Math.PI * x) + 0.3 * Math.sin(20 * Math.PI * x) * noise;
+    }
+    const px = xToPx(x);
+    const py = yToPy(y);
+    if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+  }
+  ctx.stroke();
+  ctx.shadowBlur = 0;
+
+  // نقاط
+  data.forEach(d => {
+    ctx.fillStyle = '#00d4aa';
+    ctx.beginPath();
+    ctx.arc(xToPx(d.x), yToPy(d.y), 4, 0, Math.PI * 2);
+    ctx.fill();
+  });
+
+  // محاسبه خطا
+  let trainErr = 0, testErr = 0;
+  data.forEach(d => {
+    const y_pred = deg < 3 ? 0.5 * (d.x - 0.5) * 2 : (deg <= 8 ? Math.sin(2 * Math.PI * d.x) * (1 - noise * 0.3) : Math.sin(2 * Math.PI * d.x) + 0.3 * Math.sin(20 * Math.PI * d.x) * noise);
+    trainErr += Math.pow(d.y - y_pred, 2);
+  });
+  testData.forEach(d => {
+    const y_pred = deg < 3 ? 0.5 * (d.x - 0.5) * 2 : (deg <= 8 ? Math.sin(2 * Math.PI * d.x) * (1 - noise * 0.3) : Math.sin(2 * Math.PI * d.x) + 0.3 * Math.sin(20 * Math.PI * d.x) * noise);
+    testErr += Math.pow(d.y - y_pred, 2);
+  });
+  trainErr = Math.sqrt(trainErr / N);
+  testErr = Math.sqrt(testErr / 30);
+
+  document.getElementById('polyDegValue').textContent = toFa(deg);
+  document.getElementById('polyNoiseValue').textContent = toFa(noise.toFixed(2));
+  document.getElementById('polyTrainErr').textContent = toFa(trainErr.toFixed(4));
+  document.getElementById('polyTestErr').textContent = toFa(testErr.toFixed(4));
+
+  const statusEl = document.getElementById('polyStatus');
+  if (deg < 3) {
+    statusEl.textContent = 'Underfitting';
+    statusEl.style.color = 'var(--danger)';
+  } else if (deg > 8) {
+    statusEl.textContent = 'Overfitting';
+    statusEl.style.color = 'var(--danger)';
+  } else {
+    statusEl.textContent = '✓ مناسب';
+    statusEl.style.color = 'var(--success)';
+  }
+}
+
+/* ═══ رویدادها ═══ */
+document.getElementById('mlType').addEventListener('change', drawMLType);
+document.getElementById('mlNoise').addEventListener('input', drawMLType);
+document.getElementById('lossLR').addEventListener('input', drawLoss);
+document.getElementById('gdLR').addEventListener('input', drawGD);
+document.getElementById('polyDeg').addEventListener('input', drawPoly);
+document.getElementById('polyNoise').addEventListener('input', drawPoly);
+
+/* ═══ تب‌های کد ═══ */
+document.querySelectorAll('.code-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    const parent = tab.parentElement;
+    parent.querySelectorAll('.code-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    const contentId = 'code-' + tab.dataset.code;
+    const content = document.getElementById(contentId);
+    if (content) {
+      const allContents = parent.parentElement.querySelectorAll('.code-content');
+      allContents.forEach(c => c.classList.remove('active'));
+      content.classList.add('active');
+    }
+  });
+});
+
+/* ═══ رندر ═══ */
+function initVisibleCharts() {
+  const activeSlide = document.querySelector('.slide.active');
+  if (!activeSlide) return;
+  const num = activeSlide.dataset.slide;
+  if (num === '8') drawMLType();
+  else if (num === '12') drawLoss();
+  else if (num === '15') drawGD();
+  else if (num === '17') drawPoly();
+}
+
+/* ═══ راه‌اندازی ═══ */
+updateNav();
+setTimeout(() => {
+  initVisibleCharts();
+  if (window.MathJax && window.MathJax.typesetPromise) window.MathJax.typesetPromise();
+}, 400);
+setTimeout(() => showToast('به جلسه ۱۷ خوش آمدید — شروع یادگیری ماشین 🧠'), 1000);
+
+window.addEventListener('resize', () => setTimeout(() => {
+  initVisibleCharts();
+  if (window.MathJax && window.MathJax.typesetPromise) window.MathJax.typesetPromise();
+}, 200));
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1935 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>جلسه ۱۲ — پایداری و پدیده Pull-in | دکتر مسعود گوهری منش</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+<script>
+window.MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']],
+    displayMath: [['$$', '$$'], ['\\[', '\\]']],
+    processEscapes: true
+  },
+  options: { skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'] },
+  svg: { fontCache: 'global' }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" async></script>
+
+<style>
+:root {
+  --primary: #00d4aa;
+  --secondary: #06b6d4;
+  --tertiary: #a855f7;
+  --gold: #ffb700;
+  --success: #22c55e;
+  --danger: #ff4757;
+  --pink: #ec4899;
+  --dark: #050818;
+  --darker: #020410;
+  --card-bg: rgba(255, 255, 255, 0.05);
+  --card-border: rgba(255, 255, 255, 0.1);
+  --text: #e8eef7;
+  --text-dim: #9aa7bd;
+  --es: #00d4aa;
+  --vdw: #ffb700;
+  --casimir: #a855f7;
+  --pullin: #ff4757;
+  --pin: #ec4899;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { overflow: hidden; height: 100%; }
+body {
+  font-family: 'Vazirmatn', sans-serif;
+  background: var(--dark);
+  color: var(--text);
+  direction: rtl;
+  line-height: 1.8;
+}
+#bgCanvas { position: fixed; inset: 0; z-index: -2; background: radial-gradient(ellipse at top, #0a1230 0%, var(--darker) 50%, #000 100%); }
+.glow-orb { position: fixed; border-radius: 50%; filter: blur(120px); opacity: 0.3; z-index: -1; pointer-events: none; animation: floatOrb 25s ease-in-out infinite; }
+.orb1 { width: 600px; height: 600px; background: var(--es); top: -200px; right: -200px; }
+.orb2 { width: 500px; height: 500px; background: var(--vdw); bottom: -150px; left: -150px; animation-delay: -8s; }
+.orb3 { width: 400px; height: 400px; background: var(--casimir); top: 30%; left: 25%; animation-delay: -15s; opacity: 0.12; }
+@keyframes floatOrb { 0%, 100% { transform: translate(0, 0) scale(1); } 33% { transform: translate(50px, -40px) scale(1.15); } 66% { transform: translate(-40px, 50px) scale(0.9); } }
+
+.top-header { position: fixed; top: 0; left: 0; right: 0; height: 82px; background: rgba(5, 8, 24, 0.9); backdrop-filter: blur(15px); border-bottom: 1px solid var(--card-border); display: flex; align-items: center; justify-content: space-between; padding: 0 18px; z-index: 100; }
+.header-left { display: flex; align-items: center; gap: 14px; }
+.header-signature { height: 60px; width: auto; max-width: 170px; object-fit: contain; filter: drop-shadow(0 0 10px rgba(0, 212, 170, 0.4)); border-radius: 8px; background: rgba(255, 255, 255, 0.05); padding: 4px; }
+.header-text { display: flex; flex-direction: column; line-height: 1.35; }
+.header-name { font-size: 0.88rem; color: var(--gold); font-weight: 800; white-space: nowrap; }
+.header-univ { font-size: 0.7rem; color: var(--text-dim); font-weight: 500; }
+.header-controls { display: flex; gap: 8px; flex-shrink: 0; align-items: center; }
+.ctrl-btn { width: 38px; height: 38px; border-radius: 10px; border: 1px solid var(--card-border); background: var(--card-bg); backdrop-filter: blur(10px); color: var(--text); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; transition: all 0.3s ease; }
+.ctrl-btn:hover { background: var(--primary); color: var(--dark); transform: translateY(-2px); }
+.ctrl-btn.active { background: var(--primary); color: var(--dark); }
+
+.topic-nav { position: fixed; top: 82px; left: 0; right: 0; height: 36px; background: rgba(5, 8, 24, 0.9); backdrop-filter: blur(10px); border-bottom: 1px solid var(--card-border); z-index: 99; display: flex; align-items: center; gap: 6px; padding: 0 18px; overflow-x: auto; scrollbar-width: none; }
+.topic-nav::-webkit-scrollbar { display: none; }
+.topic-pill { padding: 4px 11px; border-radius: 20px; font-size: 0.7rem; font-weight: 600; white-space: nowrap; color: var(--text-dim); background: rgba(255, 255, 255, 0.04); border: 1px solid transparent; transition: all 0.3s ease; }
+.topic-pill.active { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: var(--dark); font-weight: 800; box-shadow: 0 3px 10px rgba(0, 212, 170, 0.35); }
+.topic-pill.done { color: var(--primary); border-color: rgba(0, 212, 170, 0.3); }
+
+.progress-top { position: fixed; top: 118px; left: 0; right: 0; height: 3px; background: rgba(255, 255, 255, 0.05); z-index: 98; }
+.progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--primary), var(--secondary), var(--tertiary)); transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 0 12px var(--primary); }
+
+.slide-container { position: fixed; inset: 121px 0 0 0; overflow: hidden; }
+.slide { position: absolute; inset: 0; padding: 24px 50px 90px; opacity: 0; transform: translateX(-40px); pointer-events: none; transition: opacity 0.5s ease, transform 0.5s cubic-bezier(0.4, 0, 0.2, 1); overflow-y: auto; overflow-x: hidden; }
+.slide.active { opacity: 1; transform: translateX(0); pointer-events: auto; }
+.slide.prev { transform: translateX(40px); }
+.slide::-webkit-scrollbar { width: 6px; }
+.slide::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 3px; }
+.slide-inner { max-width: 1200px; margin: 0 auto; animation: contentFade 0.6s ease; }
+@keyframes contentFade { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+.slide-num { display: inline-block; padding: 5px 14px; border-radius: 20px; background: rgba(0, 212, 170, 0.15); color: var(--primary); font-size: 0.72rem; font-weight: 700; margin-bottom: 10px; }
+.slide-h1 { font-size: clamp(1.3rem, 3.2vw, 2rem); font-weight: 900; background: linear-gradient(135deg, var(--primary), var(--secondary), var(--tertiary), var(--gold)); background-size: 300% 300%; -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; animation: gradientShift 6s ease infinite; margin-bottom: 16px; line-height: 1.35; }
+@keyframes gradientShift { 0%, 100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
+.slide-h3 { font-size: 0.98rem; font-weight: 700; color: var(--text); margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+.slide-h3 i { color: var(--gold); font-size: 0.88rem; }
+.slide-text { font-size: 0.9rem; color: var(--text-dim); line-height: 2; margin-bottom: 12px; }
+
+.card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 18px; padding: 18px; backdrop-filter: blur(12px); transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1); }
+.card:hover { transform: translateY(-4px); border-color: rgba(0, 212, 170, 0.4); box-shadow: 0 15px 35px rgba(0, 212, 170, 0.12); }
+.grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+.grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; }
+.grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; }
+
+.title-slide { text-align: center; padding-top: 5px; }
+.title-slide .hero-img { width: 100%; max-width: 520px; height: 170px; object-fit: contain; background: rgba(0, 0, 0, 0.2); padding: 6px; border-radius: 20px; margin: 0 auto 12px; display: block; border: 1px solid var(--card-border); box-shadow: 0 20px 40px rgba(0, 212, 170, 0.15); }
+.title-slide .bismillah { font-size: 1.2rem; font-weight: 500; background: linear-gradient(90deg, var(--gold), var(--primary), var(--secondary)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 4px; }
+.title-slide .hoval { font-size: 0.82rem; color: var(--text-dim); margin-bottom: 16px; letter-spacing: 1px; }
+.title-slide .main-title { font-size: clamp(1.7rem, 4.2vw, 2.6rem); font-weight: 900; background: linear-gradient(135deg, var(--es), var(--vdw), var(--casimir)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 10px; line-height: 1.3; }
+.title-slide .subtitle { font-size: clamp(0.9rem, 2vw, 1.05rem); color: var(--text-dim); margin-bottom: 18px; }
+.title-slide .euler-box { display: inline-block; padding: 12px 30px; border-radius: 18px; background: var(--card-bg); border: 1px solid var(--card-border); backdrop-filter: blur(15px); margin-bottom: 16px; }
+.title-slide .instructor-line { font-size: 0.92rem; color: var(--gold); font-weight: 700; margin-bottom: 3px; }
+.title-slide .instructor-title-line { font-size: 0.78rem; color: var(--text-dim); margin-bottom: 12px; }
+.title-slide .semester { display: inline-block; padding: 6px 18px; border-radius: 50px; background: var(--card-bg); border: 1px solid var(--card-border); font-size: 0.78rem; color: var(--text-dim); }
+
+.math-box { background: rgba(0, 212, 170, 0.06); border: 1px solid rgba(0, 212, 170, 0.25); border-radius: 14px; padding: 16px 22px; margin: 12px 0; text-align: center; direction: ltr; position: relative; overflow-x: auto; overflow-y: hidden; }
+.math-box::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--primary), var(--secondary), var(--tertiary)); }
+.math-box .MathJax, .math-box mjx-container { color: var(--primary) !important; font-size: 1em !important; }
+.math-box.gold-math .MathJax, .math-box.gold-math mjx-container { color: var(--gold) !important; }
+.math-box.purple-math .MathJax, .math-box.purple-math mjx-container { color: var(--tertiary) !important; }
+.math-box.pink-math .MathJax, .math-box.pink-math mjx-container { color: var(--pin) !important; }
+.math-box.danger-math .MathJax, .math-box.danger-math mjx-container { color: var(--danger) !important; }
+.math-note { font-family: 'Vazirmatn', sans-serif; font-size: 0.76rem; color: var(--text-dim); direction: rtl; margin-top: 8px; font-style: italic; text-align: center; }
+
+.simulator { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 18px; padding: 16px; margin: 12px 0; backdrop-filter: blur(12px); }
+.sim-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; flex-wrap: wrap; gap: 10px; }
+.sim-title { font-size: 0.9rem; font-weight: 700; color: var(--gold); display: flex; align-items: center; gap: 8px; }
+.sim-controls { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.slider-group { display: flex; align-items: center; gap: 8px; background: rgba(0, 0, 0, 0.3); padding: 6px 12px; border-radius: 10px; border: 1px solid var(--card-border); }
+.slider-group label { font-size: 0.72rem; color: var(--text-dim); white-space: nowrap; }
+.slider-group input[type="range"] { width: 100px; accent-color: var(--primary); cursor: pointer; }
+.slider-value { font-family: 'Courier New', monospace; font-size: 0.78rem; color: var(--primary); font-weight: 700; min-width: 30px; text-align: center; }
+.canvas-wrapper { position: relative; width: 100%; height: 260px; background: rgba(0, 0, 0, 0.4); border-radius: 12px; overflow: hidden; border: 1px solid var(--card-border); }
+.canvas-wrapper canvas { width: 100%; height: 100%; display: block; }
+
+.img-box { width: 100%; max-height: 280px; border-radius: 16px; border: 1px solid var(--card-border); margin: 12px 0; display: block; object-fit: contain; background: rgba(0, 0, 0, 0.3); padding: 8px; }
+
+.exercise-block { border-radius: 16px; padding: 16px; border: 1px solid; position: relative; overflow: hidden; margin-bottom: 12px; }
+.exercise-block::before { content: ''; position: absolute; top: 0; right: 0; width: 4px; height: 100%; }
+.ex-yellow { background: rgba(255, 217, 61, 0.06); border-color: rgba(255, 217, 61, 0.25); }
+.ex-yellow::before { background: #ffd93d; }
+.ex-green { background: rgba(107, 207, 127, 0.06); border-color: rgba(107, 207, 127, 0.25); }
+.ex-green::before { background: #6bcf7f; }
+.ex-purple { background: rgba(168, 85, 247, 0.06); border-color: rgba(168, 85, 247, 0.25); }
+.ex-purple::before { background: var(--tertiary); }
+.ex-red { background: rgba(255, 107, 107, 0.06); border-color: rgba(255, 107, 107, 0.25); }
+.ex-red::before { background: #ff6b6b; }
+.ex-header { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+.ex-num { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 0.8rem; color: var(--dark); flex-shrink: 0; }
+.ex-yellow .ex-num { background: #ffd93d; }
+.ex-green .ex-num { background: #6bcf7f; }
+.ex-purple .ex-num { background: var(--tertiary); color: #fff; }
+.ex-red .ex-num { background: #ff6b6b; color: #fff; }
+.ex-title { font-size: 0.92rem; font-weight: 800; }
+.ex-list { list-style: none; padding: 0; counter-reset: item; }
+.ex-list li { position: relative; padding: 7px 34px 7px 10px; font-size: 0.83rem; color: var(--text-dim); line-height: 1.8; border-bottom: 1px dashed rgba(255, 255, 255, 0.05); }
+.ex-list li:last-child { border-bottom: none; }
+.ex-list li::before { counter-increment: item; content: counter(item); position: absolute; right: 4px; top: 9px; width: 22px; height: 22px; border-radius: 50%; background: rgba(255, 255, 255, 0.08); color: var(--text); font-size: 0.7rem; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+.email-banner { margin-top: 12px; padding: 12px; border-radius: 14px; background: linear-gradient(135deg, rgba(0, 212, 170, 0.1), rgba(168, 85, 247, 0.1)); border: 1px dashed rgba(0, 212, 170, 0.4); text-align: center; }
+.email-banner p { font-size: 0.8rem; color: var(--text); margin-bottom: 5px; }
+.email-banner code { display: inline-block; padding: 5px 12px; border-radius: 8px; background: rgba(0, 0, 0, 0.4); color: var(--primary); font-family: 'Courier New', monospace; font-size: 0.76rem; direction: ltr; margin-top: 3px; }
+
+.code-tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--card-border); }
+.code-tab { padding: 8px 16px; border-radius: 10px 10px 0 0; background: transparent; border: none; color: var(--text-dim); font-family: inherit; font-size: 0.8rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; }
+.code-tab.active { background: rgba(0, 212, 170, 0.1); color: var(--primary); border-bottom: 2px solid var(--primary); }
+.code-content { display: none; background: #0a0f24; border: 1px solid var(--card-border); border-top: none; border-radius: 0 0 12px 12px; padding: 14px; overflow-x: auto; direction: ltr; text-align: left; }
+.code-content.active { display: block; }
+.code-content pre { margin: 0; font-family: 'Courier New', Consolas, monospace; font-size: 0.76rem; line-height: 1.6; color: #e8eef7; white-space: pre; }
+.code-content .kw { color: #ff79c6; }
+.code-content .fn { color: #50fa7b; }
+.code-content .num { color: #bd93f9; }
+.code-content .str { color: #f1fa8c; }
+.code-content .cm { color: #6272a4; font-style: italic; }
+
+.bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; height: 58px; background: rgba(5, 8, 24, 0.9); backdrop-filter: blur(15px); border-top: 1px solid var(--card-border); display: flex; align-items: center; justify-content: space-between; padding: 0 20px; z-index: 100; }
+.nav-btn { padding: 8px 18px; border-radius: 12px; border: 1px solid var(--card-border); background: var(--card-bg); color: var(--text); cursor: pointer; font-family: inherit; font-size: 0.82rem; font-weight: 600; display: flex; align-items: center; gap: 7px; transition: all 0.3s ease; }
+.nav-btn:hover:not(:disabled) { background: var(--primary); color: var(--dark); transform: translateY(-2px); }
+.nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+.dots-nav { display: flex; gap: 4px; flex-wrap: wrap; justify-content: center; max-width: 60%; }
+.dot-nav { width: 8px; height: 8px; border-radius: 50%; background: rgba(255, 255, 255, 0.15); cursor: pointer; border: none; padding: 0; transition: all 0.3s ease; }
+.dot-nav.active { background: var(--primary); width: 22px; border-radius: 5px; box-shadow: 0 0 10px var(--primary); }
+.slide-counter { font-size: 0.78rem; color: var(--text-dim); font-family: 'Courier New', monospace; min-width: 60px; text-align: center; }
+.slide-counter span { color: var(--primary); font-weight: 800; }
+
+.toast-container { position: fixed; bottom: 76px; left: 24px; z-index: 9999; display: flex; flex-direction: column; gap: 8px; }
+.toast { background: rgba(10, 18, 40, 0.95); border: 1px solid var(--primary); border-radius: 14px; padding: 11px 16px; color: var(--text); font-size: 0.82rem; backdrop-filter: blur(12px); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); display: flex; align-items: center; gap: 8px; animation: slideIn 0.35s ease; max-width: 320px; }
+.toast i { color: var(--primary); }
+@keyframes slideIn { from { opacity: 0; transform: translateX(-60px); } to { opacity: 1; transform: translateX(0); } }
+
+.lecture-note {
+  background: rgba(0, 212, 170, 0.06);
+  border: 1px solid rgba(0, 212, 170, 0.3);
+  border-radius: 12px;
+  padding: 12px 16px;
+  margin: 10px 0;
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+.lecture-note i {
+  color: var(--primary);
+  font-size: 1.1rem;
+  margin-top: 3px;
+}
+.lecture-note-content {
+  flex: 1;
+  font-size: 0.85rem;
+  color: var(--text-dim);
+  line-height: 1.9;
+}
+
+.phase-summary-card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 14px;
+  padding: 16px;
+  transition: all 0.3s ease;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.phase-summary-card::before {
+  content: '';
+  position: absolute;
+  top: 0; right: 0; left: 0;
+  height: 4px;
+  background: var(--ps-color);
+}
+.phase-summary-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--ps-color);
+  box-shadow: 0 12px 25px color-mix(in srgb, var(--ps-color) 25%, transparent);
+}
+.phase-summary-icon {
+  font-size: 1.8rem;
+  margin-bottom: 10px;
+  display: block;
+  color: var(--ps-color);
+}
+.phase-summary-title {
+  font-size: 0.9rem;
+  font-weight: 800;
+  color: var(--text);
+  margin-bottom: 6px;
+}
+.phase-summary-desc {
+  font-size: 0.76rem;
+  color: var(--text-dim);
+  line-height: 1.7;
+}
+
+@media (max-width: 768px) {
+  .slide { padding: 16px 14px 90px; }
+  .header-univ { display: none; }
+  .header-name { font-size: 0.75rem; }
+  .header-signature { height: 45px; max-width: 110px; }
+  .nav-btn { padding: 7px 11px; font-size: 0.72rem; }
+  .nav-btn span { display: none; }
+  .dots-nav { max-width: 45%; }
+  .slide-counter { font-size: 0.68rem; min-width: 45px; }
+  .canvas-wrapper { height: 210px; }
+  .topic-pill { font-size: 0.64rem; padding: 3px 8px; }
+}
+@media (max-width: 480px) {
+  .ctrl-btn { width: 32px; height: 32px; font-size: 0.75rem; }
+  .header-signature { display: none; }
+}
+</style>
+</head>
+<body>
+
+<canvas id="bgCanvas"></canvas>
+<div class="glow-orb orb1"></div>
+<div class="glow-orb orb2"></div>
+<div class="glow-orb orb3"></div>
+
+<div class="top-header">
+  <div class="header-left">
+    <img src="images/signature.png" alt="امضا" class="header-signature" onerror="this.style.display='none'">
+    <div class="header-text">
+      <span class="header-name">دکتر مسعود گوهری منش</span>
+      <span class="header-univ">دانشیار گروه مهندسی مکانیک — دانشگاه تربت حیدریه</span>
+    </div>
+  </div>
+  <div class="header-controls">
+    <button class="ctrl-btn" id="soundToggle" title="صدا"><i class="fas fa-volume-up"></i></button>
+    <button class="ctrl-btn" id="fullscreenToggle" title="تمام‌صفحه"><i class="fas fa-expand"></i></button>
+  </div>
+</div>
+
+<div class="topic-nav" id="topicNav">
+  <span class="topic-pill" data-topic="1">مقدمه</span>
+  <span class="topic-pill" data-topic="2">مفهوم پایداری</span>
+  <span class="topic-pill" data-topic="3">انرژی پتانسیل</span>
+  <span class="topic-pill" data-topic="4">نقاط تعادلی</span>
+  <span class="topic-pill" data-topic="5">شرط پایداری</span>
+  <span class="topic-pill" data-topic="6">شبیه‌ساز انرژی</span>
+  <span class="topic-pill" data-topic="7">Bifurcation</span>
+  <span class="topic-pill" data-topic="8">ولتاژ Pull-in</span>
+  <span class="topic-pill" data-topic="9">شبیه‌ساز Pull-in</span>
+  <span class="topic-pill" data-topic="10">نویز حرارتی</span>
+  <span class="topic-pill" data-topic="11">کاربردها</span>
+  <span class="topic-pill" data-topic="12">جمع‌بندی</span>
+</div>
+
+<div class="progress-top"><div class="progress-fill" id="progressFill"></div></div>
+
+<div class="slide-container" id="slideContainer">
+
+  <!-- ۱ — عنوان -->
+  <div class="slide active" data-slide="1" data-topic="1">
+    <div class="slide-inner title-slide">
+      <div class="bismillah">بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِیم</div>
+      <div class="hoval">هُوَ الخَلّاقُ العَلیم</div>
+      <img src="images/hero-pull-in.png" alt="Pull-in" class="hero-img" onerror="this.style.display='none'">
+      <h1 class="main-title">پایداری و پدیده Pull-in</h1>
+      <p class="subtitle">(Stability and Pull-in Instability) — جلسه ۱۲</p>
+      <div class="euler-box"><div style="direction: ltr; font-size: 1.05rem;">$$V_{pull-in} = \sqrt{\frac{8 k_{eq} g^3}{27 \epsilon_0 A}}$$</div></div>
+      <p class="instructor-line">دکتر مسعود گوهری منش</p>
+      <p class="instructor-title-line">دانشیار گروه مهندسی مکانیک — دانشگاه تربت حیدریه</p>
+      <div class="semester">نیمسال اول ۱۴۰۵–۱۴۰۶</div>
+    </div>
+  </div>
+
+  <!-- ۲ — مرور جلسه ۱۱ -->
+  <div class="slide" data-slide="2" data-topic="1">
+    <div class="slide-inner">
+      <span class="slide-num">مرور</span>
+      <h2 class="slide-h1">مرور جلسه قبل — نانو انبرک و نیروها</h2>
+
+      <div class="grid-2">
+        <div class="card" style="background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3);">
+          <div class="slide-h3" style="color: var(--es);"><i class="fas fa-check-circle"></i> جلسه ۱۱</div>
+          <ul style="list-style: none; padding: 0; font-size: 0.85rem; color: var(--text-dim); line-height: 2;">
+            <li>✅ نیروی الکترواستاتیک $F_{es} \propto 1/g^2$</li>
+            <li>✅ نیروی واندروالس $F_{vdW} \propto 1/g^3$</li>
+            <li>✅ نیروی کازیمیر $F_{cas} \propto 1/g^4$</li>
+            <li>✅ PDE غیرخطی نانو انبرک</li>
+            <li>✅ مفهوم Pull-in (مقدمه)</li>
+          </ul>
+        </div>
+        <div class="card" style="background: rgba(255, 183, 0, 0.06); border-color: rgba(255, 183, 0, 0.3);">
+          <div class="slide-h3" style="color: var(--gold);"><i class="fas fa-bullseye"></i> جلسه ۱۲ (امروز)</div>
+          <ul style="list-style: none; padding: 0; font-size: 0.85rem; color: var(--text-dim); line-height: 2;">
+            <li>🔹 مفهوم پایداری در سیستم‌های غیرخطی</li>
+            <li>🔹 تحلیل انرژی پتانسیل</li>
+            <li>🔹 شرط پایداری $d^2U/dw^2 > 0$</li>
+            <li>🔹 نمودار Bifurcation</li>
+            <li>🔹 محاسبه دقیق $V_{pull-in}$</li>
+            <li>🔹 اثر دما و نویز حرارتی</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top: 16px; background: rgba(255, 71, 87, 0.06); border-color: rgba(255, 71, 87, 0.3);">
+        <div class="slide-h3" style="color: var(--danger);"><i class="fas fa-exclamation-triangle"></i> چرا پایداری مهم است؟</div>
+        <p class="slide-text" style="font-size: 0.88rem;">
+          در مقیاس نانو، سیستم‌ها به‌سرعت از حالت پایدار خارج می‌شوند. درک **مرز پایداری** برای طراحی سنسورها، سوییچ‌ها و عملگرهای NEMS حیاتی است. بدون این تحلیل، ممکن است دستگاه شما در هنگام کار، به‌طور ناگهانی از کار بیفتد.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۳ — مفهوم پایداری -->
+  <div class="slide" data-slide="3" data-topic="2">
+    <div class="slide-inner">
+      <span class="slide-num">مفهوم پایه</span>
+      <h2 class="slide-h1">مفهوم پایداری (Stability)</h2>
+
+      <p class="slide-text">
+        در فیزیک و مهندسی، **پایداری** به توانایی سیستم برای بازگشت به حالت تعادل پس از یک اغتشاش کوچک گفته می‌شود.
+      </p>
+
+      <img src="images/stability-ball-analogy.png" alt="Ball Analogy" class="img-box" onerror="this.style.display='none'">
+
+      <div class="grid-3" style="margin-top: 14px;">
+        <div class="card" style="background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3);">
+          <div class="slide-h3" style="color: var(--es);">پایدار (Stable)</div>
+          <p class="slide-text" style="font-size: 0.82rem;">
+            توپ در قعر دره. با یک ضربه کوچک، به قعر برمی‌گردد.
+          </p>
+        </div>
+        <div class="card" style="background: rgba(255, 71, 87, 0.06); border-color: rgba(255, 71, 87, 0.3);">
+          <div class="slide-h3" style="color: var(--danger);">ناپایدار (Unstable)</div>
+          <p class="slide-text" style="font-size: 0.82rem;">
+            توپ روی قله. با یک ضربه کوچک، سقوط می‌کند.
+          </p>
+        </div>
+        <div class="card" style="background: rgba(168, 85, 247, 0.06); border-color: rgba(168, 85, 247, 0.3);">
+          <div class="slide-h3" style="color: var(--casimir);">خنثی (Neutral)</div>
+          <p class="slide-text" style="font-size: 0.82rem;">
+            توپ روی سطح صاف. با ضربه، جابجا می‌شود ولی برنمی‌گردد.
+          </p>
+        </div>
+      </div>
+
+      <div class="math-box" style="margin-top: 16px;">
+        <div style="font-size: 0.95rem; color: var(--text-dim); direction: rtl;">
+          در نانو انبرک: سیستم پایدار = تیر به بستر نمی‌چسبد | سیستم ناپایدار = Pull-in رخ می‌دهد
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۴ — انرژی پتانسیل -->
+  <div class="slide" data-slide="4" data-topic="3">
+    <div class="slide-inner">
+      <span class="slide-num">تحلیل انرژی</span>
+      <h2 class="slide-h1">انرژی پتانسیل سیستم</h2>
+
+      <p class="slide-text">
+        برای تحلیل پایداری، از **انرژی پتانسیل کل** سیستم استفاده می‌کنیم:
+      </p>
+
+      <div class="math-box gold-math" style="padding: 18px;">
+        <div style="font-size: 1.05rem;">
+          $$U_{total}(w) = U_{mech}(w) + U_{elec}(w)$$
+        </div>
+      </div>
+
+      <div class="grid-2" style="margin-top: 14px;">
+        <div class="card" style="background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3);">
+          <div class="slide-h3" style="color: var(--es);"><i class="fas fa-spring"></i> انرژی مکانیکی (فنر)</div>
+          <p class="slide-text" style="font-size: 0.82rem;">
+            انرژی الاستیک تیر:
+          </p>
+          <div class="math-box" style="padding: 10px;">
+            $$U_{mech} = \frac{1}{2} k_{eq} w^2$$
+          </div>
+          <p class="slide-text" style="font-size: 0.78rem;">
+            با $k_{eq} = 8EI/L^4$
+          </p>
+        </div>
+        <div class="card" style="background: rgba(255, 183, 0, 0.06); border-color: rgba(255, 183, 0, 0.3);">
+          <div class="slide-h3" style="color: var(--gold);"><i class="fas fa-bolt"></i> انرژی الکتریکی</div>
+          <p class="slide-text" style="font-size: 0.82rem;">
+            انرژی خازن با فاصله متغیر:
+          </p>
+          <div class="math-box gold-math" style="padding: 10px;">
+            $$U_{elec} = -\frac{\epsilon_0 A V^2}{2(g-w)}$$
+          </div>
+          <p class="slide-text" style="font-size: 0.78rem;">
+            علامت منفی به‌دلیل جاذبه
+          </p>
+        </div>
+      </div>
+
+      <img src="images/potential-energy-landscape.png" alt="Energy Landscape" class="img-box" style="max-height: 180px; margin-top: 12px;" onerror="this.style.display='none'">
+
+      <div class="math-box" style="margin-top: 12px; padding: 18px; background: rgba(255, 183, 0, 0.08); border-color: rgba(255, 183, 0, 0.3);">
+        <div style="font-size: 0.95rem; color: var(--gold);">
+          $$U_{total}(w) = \frac{1}{2} k_{eq} w^2 - \frac{\epsilon_0 A V^2}{2(g-w)}$$
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۵ — نقاط تعادلی -->
+  <div class="slide" data-slide="5" data-topic="4">
+    <div class="slide-inner">
+      <span class="slide-num">نقاط تعادلی</span>
+      <h2 class="slide-h1">نقاط تعادل و تحلیل آن‌ها</h2>
+
+      <p class="slide-text">
+        نقاط تعادل جایی هستند که نیروی کل صفر می‌شود (شیب انرژی صفر):
+      </p>
+
+      <div class="math-box" style="padding: 16px;">
+        <div style="font-size: 1rem;">
+          $$\frac{dU_{total}}{dw} = 0$$
+        </div>
+      </div>
+
+      <div class="card" style="margin-top: 14px; background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3);">
+        <div class="slide-h3" style="color: var(--es);"><i class="fas fa-calculator"></i> مشتق انرژی</div>
+        <div class="math-box" style="padding: 14px; font-size: 0.9rem;">
+          $$\frac{dU_{total}}{dw} = k_{eq} w - \frac{\epsilon_0 A V^2}{2(g-w)^2} = 0$$
+        </div>
+        <p class="slide-text" style="font-size: 0.85rem; margin-top: 10px;">
+          این معادله، تعادل بین **نیروی مکانیکی** (خطی) و **نیروی الکترواستاتیک** (غیرخطی) است:
+        </p>
+        <div class="math-box" style="padding: 12px;">
+          $$\underbrace{k_{eq} w}_{\text{بازگرداننده}} = \underbrace{\frac{\epsilon_0 A V^2}{2(g-w)^2}}_{\text{جاذبه الکترواستاتیک}}$$
+        </div>
+      </div>
+
+      <div class="lecture-note" style="margin-top: 12px;">
+        <i class="fas fa-lightbulb"></i>
+        <div class="lecture-note-content">
+          <strong>نکته کلیدی:</strong> سمت چپ خطی است (یک ریشه)، سمت راست غیرخطی است (مخرج با w تغییر می‌کند). این تفاوت، منبع پیچیدگی و پدیده Pull-in است.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۶ — شرط پایداری -->
+  <div class="slide" data-slide="6" data-topic="5">
+    <div class="slide-inner">
+      <span class="slide-num">شرط پایداری</span>
+      <h2 class="slide-h1">شرط پایداری — مشتق دوم</h2>
+
+      <p class="slide-text">
+        برای پایدار بودن یک نقطه تعادل، باید کمینه انرژی باشد:
+      </p>
+
+      <div class="math-box purple-math" style="padding: 18px;">
+        <div style="font-size: 1.1rem;">
+          $$\frac{d^2U_{total}}{dw^2} > 0 \quad \Rightarrow \quad \text{پایدار}$$
+        </div>
+        <div style="font-size: 1.1rem; margin-top: 10px;">
+          $$\frac{d^2U_{total}}{dw^2} < 0 \quad \Rightarrow \quad \text{ناپایدار}$$
+        </div>
+      </div>
+
+      <div class="card" style="margin-top: 14px; background: rgba(168, 85, 247, 0.06); border-color: rgba(168, 85, 247, 0.3);">
+        <div class="slide-h3" style="color: var(--casimir);"><i class="fas fa-calculator"></i> محاسبه مشتق دوم</div>
+        <div class="math-box purple-math" style="padding: 14px; font-size: 0.9rem;">
+          $$\frac{d^2U_{total}}{dw^2} = k_{eq} - \frac{\epsilon_0 A V^2}{(g-w)^3}$$
+        </div>
+        <p class="slide-text" style="font-size: 0.85rem; margin-top: 10px;">
+          شرط پایداری:
+        </p>
+        <div class="math-box purple-math" style="padding: 12px;">
+          $$k_{eq} > \frac{\epsilon_0 A V^2}{(g-w)^3}$$
+        </div>
+      </div>
+
+      <div class="lecture-note">
+        <i class="fas fa-exclamation-triangle"></i>
+        <div class="lecture-note-content">
+          <strong>تفسیر:</strong> هرچه تیر به بستر نزدیک‌تر می‌شود، $(g-w)$ کوچک‌تر و نیروی الکترواستاتیک بزرگ‌تر می‌شود. در نقطه‌ای، این نیرو بر سختی مکانیکی غالب می‌شود — این آستانه، **ولتاژ Pull-in** است.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۷ — شبیه‌ساز انرژی پتانسیل -->
+  <div class="slide" data-slide="7" data-topic="6">
+    <div class="slide-inner">
+      <span class="slide-num">شبیه‌ساز تعاملی</span>
+      <h2 class="slide-h1">شبیه‌ساز انرژی پتانسیل</h2>
+      <p class="slide-text">ولتاژ را تغییر دهید و منحنی انرژی پتانسیل را ببینید.</p>
+
+      <div class="simulator">
+        <div class="sim-header">
+          <div class="sim-title"><i class="fas fa-chart-area"></i> منحنی انرژی U(w)</div>
+          <div class="sim-controls">
+            <div class="slider-group">
+              <label>ولتاژ V (V):</label>
+              <input type="range" id="energyVoltage" min="0" max="25" value="5" step="0.5">
+              <span class="slider-value" id="energyVoltageValue">۵.۰</span>
+            </div>
+          </div>
+        </div>
+        <div class="canvas-wrapper" style="height: 320px;"><canvas id="energyCanvas"></canvas></div>
+        <div class="grid-3" style="margin-top: 12px;">
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 0.72rem; color: var(--text-dim);">نقطه تعادل</div>
+            <div id="energyEquilibrium" style="font-size: 1rem; color: var(--gold); font-weight: 800; font-family: 'Courier New', monospace;">—</div>
+          </div>
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 0.72rem; color: var(--text-dim);">وضعیت پایداری</div>
+            <div id="energyStability" style="font-size: 0.95rem; color: var(--success); font-weight: 800;">پایدار</div>
+          </div>
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 0.72rem; color: var(--text-dim);">ولتاژ بحرانی</div>
+            <div id="energyCriticalV" style="font-size: 0.95rem; color: var(--danger); font-weight: 800; font-family: 'Courier New', monospace;">—</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۸ — Bifurcation -->
+  <div class="slide" data-slide="8" data-topic="7">
+    <div class="slide-inner">
+      <span class="slide-num">انشعاب</span>
+      <h2 class="slide-h1">نمودار Bifurcation — انشعاب</h2>
+
+      <p class="slide-text">
+        **Bifurcation** یا انشعاب، لحظه‌ای است که تعداد یا پایداری جواب‌های سیستم به‌طور کیفی تغییر می‌کند.
+      </p>
+
+      <img src="images/bifurcation-diagram.png" alt="Bifurcation" class="img-box" onerror="this.style.display='none'">
+
+      <div class="grid-2" style="margin-top: 14px;">
+        <div class="card" style="background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3);">
+          <div class="slide-h3" style="color: var(--es);"><i class="fas fa-arrow-up"></i> شاخه پایین (پایدار)</div>
+          <p class="slide-text" style="font-size: 0.82rem;">
+            تا ولتاژ بحرانی، تیر در تعادل پایدار است. با افزایش ولتاژ، خمش بیشتر می‌شود.
+          </p>
+        </div>
+        <div class="card" style="background: rgba(255, 71, 87, 0.06); border-color: rgba(255, 71, 87, 0.3);">
+          <div class="slide-h3" style="color: var(--danger);"><i class="fas fa-arrow-down"></i> شاخه بالا (ناپایدار)</div>
+          <p class="slide-text" style="font-size: 0.82rem;">
+            پس از $V_{pull-in}$، جواب پایدار ناپدید می‌شود و تیر ناگهانی به بستر می‌چسبد.
+          </p>
+        </div>
+      </div>
+
+      <div class="lecture-note" style="margin-top: 12px;">
+        <i class="fas fa-star"></i>
+        <div class="lecture-note-content">
+          <strong>نقطه بحرانی:</strong> در $V = V_{pull-in}$، دو شاخه به هم می‌رسند (bifurcation point). این نقطه، مرز بین پایداری و ناپایداری است و از شرط $d^2U/dw^2 = 0$ به‌دست می‌آید.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۹ — ولتاژ Pull-in -->
+  <div class="slide" data-slide="9" data-topic="8">
+    <div class="slide-inner">
+      <span class="slide-num">محاسبه Pull-in</span>
+      <h2 class="slide-h1">استخراج ولتاژ Pull-in</h2>
+
+      <p class="slide-text">
+        با حل همزمان دو معادله (شرط تعادل و شرط پایداری)، ولتاژ بحرانی به‌دست می‌آید:
+      </p>
+
+      <div class="grid-2" style="margin-top: 12px;">
+        <div class="card" style="background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3);">
+          <div class="slide-h3" style="color: var(--es);"><i class="fas fa-1"></i> شرط تعادل</div>
+          <div class="math-box" style="padding: 10px; font-size: 0.82rem;">
+            $$k_{eq} w = \frac{\epsilon_0 A V^2}{2(g-w)^2}$$
+          </div>
+        </div>
+        <div class="card" style="background: rgba(168, 85, 247, 0.06); border-color: rgba(168, 85, 247, 0.3);">
+          <div class="slide-h3" style="color: var(--casimir);"><i class="fas fa-2"></i> شرط پایداری مرزی</div>
+          <div class="math-box purple-math" style="padding: 10px; font-size: 0.82rem;">
+            $$k_{eq} = \frac{\epsilon_0 A V^2}{(g-w)^3}$$
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top: 14px; background: rgba(255, 71, 87, 0.06); border-color: rgba(255, 71, 87, 0.3);">
+        <div class="slide-h3" style="color: var(--danger);"><i class="fas fa-calculator"></i> نتیجه نهایی</div>
+        <p class="slide-text" style="font-size: 0.85rem;">
+          با تقسیم دو معادله: $g - w = 2w$، یعنی $w_{pull-in} = g/3$
+        </p>
+        <div class="math-box danger-math" style="padding: 14px; font-size: 1.05rem;">
+          $$V_{pull-in} = \sqrt{\frac{8 k_{eq} g^3}{27 \epsilon_0 A}}$$
+        </div>
+        <p class="slide-text" style="font-size: 0.82rem; margin-top: 8px;">
+          یا به‌صورت صریح:
+        </p>
+        <div class="math-box danger-math" style="padding: 12px; font-size: 0.9rem;">
+          $$V_{pull-in} = \sqrt{\frac{8 \cdot (8EI/L^4) \cdot g^3}{27 \epsilon_0 b L}}$$
+        </div>
+      </div>
+
+      <div class="lecture-note">
+        <i class="fas fa-star"></i>
+        <div class="lecture-note-content">
+          <strong>نکته طلایی:</strong> در Pull-in، تیر دقیقاً **یک‌سوم فاصله اولیه** ($w = g/3$) خم می‌شود. این نسبت ثابت، مستقل از جنس ماده و ابعاد است!
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۱۰ — روش‌های محاسبه -->
+  <div class="slide" data-slide="10" data-topic="8">
+    <div class="slide-inner">
+      <span class="slide-num">مقایسه روش‌ها</span>
+      <h2 class="slide-h1">روش‌های محاسبه ولتاژ Pull-in</h2>
+
+      <img src="images/pull-in-energy-method.png" alt="Energy Method" class="img-box" onerror="this.style.display='none'">
+
+      <div class="grid-3" style="margin-top: 14px;">
+        <div class="card" style="background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3);">
+          <div class="slide-h3" style="color: var(--es);"><i class="fas fa-bolt"></i> روش انرژی</div>
+          <p class="slide-text" style="font-size: 0.82rem;">
+            $dU/dw = 0$ و $d^2U/dw^2 = 0$ — دقیق‌ترین روش برای مدل ساده.
+          </p>
+          <p class="slide-text" style="font-size: 0.78rem; color: var(--es);">
+            $V_{pull-in} = \sqrt{\frac{8 k_{eq} g^3}{27 \epsilon_0 A}}$
+          </p>
+        </div>
+        <div class="card" style="background: rgba(255, 183, 0, 0.06); border-color: rgba(255, 183, 0, 0.3);">
+          <div class="slide-h3" style="color: var(--gold);"><i class="fas fa-wave-square"></i> روش Galerkin</div>
+          <p class="slide-text" style="font-size: 0.82rem;">
+            تصویر معادله روی توابع پایه + حل عددی.
+          </p>
+          <p class="slide-text" style="font-size: 0.78rem; color: var(--gold);">
+            دقت بالاتر، پیچیدگی بیشتر
+          </p>
+        </div>
+        <div class="card" style="background: rgba(168, 85, 247, 0.06); border-color: rgba(168, 85, 247, 0.3);">
+          <div class="slide-h3" style="color: var(--casimir);"><i class="fas fa-cube"></i> روش FEM</div>
+          <p class="slide-text" style="font-size: 0.82rem;">
+            گسسته‌سازی کامل با اجزای محدود.
+          </p>
+          <p class="slide-text" style="font-size: 0.78rem; color: var(--casimir);">
+            دقت بالا، نیاز به نرم‌افزار
+          </p>
+        </div>
+      </div>
+
+      <div class="lecture-note" style="margin-top: 14px;">
+        <i class="fas fa-info-circle"></i>
+        <div class="lecture-note-content">
+          <strong>مقایسه:</strong> روش انرژی برای مدل ساده دقیق است. برای هندسه‌های پیچیده، از FEM یا Galerkin استفاده می‌کنیم. نتایج معمولاً با خطای کمتر از ۵٪ توافق دارند.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۱۱ — شبیه‌ساز Pull-in -->
+  <div class="slide" data-slide="11" data-topic="9">
+    <div class="slide-inner">
+      <span class="slide-num">شبیه‌ساز تعاملی</span>
+      <h2 class="slide-h1">شبیه‌ساز Pull-in — نمودار Bifurcation</h2>
+      <p class="slide-text">ولتاژ را تغییر دهید و نقطه بحرانی را ببینید.</p>
+
+      <div class="simulator">
+        <div class="sim-header">
+          <div class="sim-title"><i class="fas fa-chart-line"></i> نمودار bifurcation زنده</div>
+          <div class="sim-controls">
+            <div class="slider-group">
+              <label>ولتاژ V (V):</label>
+              <input type="range" id="bifVoltage" min="0" max="30" value="5" step="0.5">
+              <span class="slider-value" id="bifVoltageValue">۵.۰</span>
+            </div>
+            <div class="slider-group">
+              <label>فاصله g (nm):</label>
+              <input type="range" id="bifGap" min="100" max="500" value="200" step="10">
+              <span class="slider-value" id="bifGapValue">۲۰۰</span>
+            </div>
+          </div>
+        </div>
+        <div class="canvas-wrapper" style="height: 320px;"><canvas id="bifurcationCanvas"></canvas></div>
+        <div class="grid-3" style="margin-top: 12px;">
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 0.72rem; color: var(--text-dim);">خمش فعلی w (nm)</div>
+            <div id="bifDeflection" style="font-size: 1rem; color: var(--gold); font-weight: 800; font-family: 'Courier New', monospace;">—</div>
+          </div>
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 0.72rem; color: var(--text-dim);">ولتاژ Pull-in (V)</div>
+            <div id="bifPullin" style="font-size: 1rem; color: var(--danger); font-weight: 800; font-family: 'Courier New', monospace;">—</div>
+          </div>
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 0.72rem; color: var(--text-dim);">وضعیت</div>
+            <div id="bifStatus" style="font-size: 0.95rem; color: var(--success); font-weight: 800;">پایدار</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۱۲ — پایداری دینامیکی -->
+  <div class="slide" data-slide="12" data-topic="9">
+    <div class="slide-inner">
+      <span class="slide-num">دینامیک</span>
+      <h2 class="slide-h1">پایداری دینامیکی</h2>
+
+      <p class="slide-text">
+        در حالت دینامیکی، معادله حرکت با **اینرسی و میرایی** نوشته می‌شود:
+      </p>
+
+      <div class="math-box" style="padding: 16px;">
+        <div style="font-size: 1rem;">
+          $$m \frac{d^2w}{dt^2} + c \frac{dw}{dt} + k_{eq} w = \frac{\epsilon_0 A V^2}{2(g-w)^2}$$
+        </div>
+        <p class="math-note">m = جرم معادل، c = ضریب میرایی</p>
+      </div>
+
+      <img src="images/dynamic-stability.png" alt="Dynamic Stability" class="img-box" style="max-height: 180px;" onerror="this.style.display='none'">
+
+      <div class="grid-3" style="margin-top: 14px;">
+        <div class="card" style="background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3);">
+          <div class="slide-h3" style="color: var(--es);">زیرمیرا</div>
+          <p class="slide-text" style="font-size: 0.8rem;">نوسان میرا با فرکانس طبیعی</p>
+        </div>
+        <div class="card" style="background: rgba(255, 183, 0, 0.06); border-color: rgba(255, 183, 0, 0.3);">
+          <div class="slide-h3" style="color: var(--gold);">بحرانی</div>
+          <p class="slide-text" style="font-size: 0.8rem;">سریع‌ترین بازگشت بدون نوسان</p>
+        </div>
+        <div class="card" style="background: rgba(168, 85, 247, 0.06); border-color: rgba(168, 85, 247, 0.3);">
+          <div class="slide-h3" style="color: var(--casimir);">فوق‌میرا</div>
+          <p class="slide-text" style="font-size: 0.8rem;">بازگشت کند بدون نوسان</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۱۳ — نوسانات حرارتی -->
+  <div class="slide" data-slide="13" data-topic="10">
+    <div class="slide-inner">
+      <span class="slide-num">اثر دما</span>
+      <h2 class="slide-h1">نوسانات حرارتی (Thermal Fluctuations)</h2>
+
+      <p class="slide-text">
+        در مقیاس نانو، **نوسانات حرارتی** نقش مهمی در پایداری ایفا می‌کنند. دمای محیط، انرژی جنبشی تصادفی به سیستم وارد می‌کند.
+      </p>
+
+      <img src="images/thermal-fluctuations.png" alt="Thermal Fluctuations" class="img-box" onerror="this.style.display='none'">
+
+      <div class="grid-2" style="margin-top: 14px;">
+        <div class="card" style="background: rgba(255, 71, 87, 0.06); border-color: rgba(255, 71, 87, 0.3);">
+          <div class="slide-h3" style="color: var(--danger);"><i class="fas fa-temperature-high"></i> دمای بالا</div>
+          <ul style="list-style: none; padding: 0; font-size: 0.82rem; color: var(--text-dim); line-height: 2;">
+            <li>🔹 نوسانات بزرگ‌تر</li>
+            <li>🔹 کاهش $V_{pull-in}$ مؤثر</li>
+            <li>🔹 احتمال بیشتر Pull-in زودرس</li>
+          </ul>
+        </div>
+        <div class="card" style="background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3);">
+          <div class="slide-h3" style="color: var(--es);"><i class="fas fa-temperature-low"></i> دمای پایین</div>
+          <ul style="list-style: none; padding: 0; font-size: 0.82rem; color: var(--text-dim); line-height: 2;">
+            <li>🔹 نوسانات کم</li>
+            <li>🔹 پایداری بهتر</li>
+            <li>🔹 $V_{pull-in}$ نزدیک به مقدار تئوری</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="math-box gold-math" style="margin-top: 14px; padding: 14px;">
+        <div style="font-size: 0.95rem;">
+          $$E_{thermal} \sim k_B T$$
+        </div>
+        <p class="math-note">$k_B$ = ثابت بولتزمان، $T$ = دمای مطلق (K)</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۱۴ — شبیه‌ساز دما -->
+  <div class="slide" data-slide="14" data-topic="10">
+    <div class="slide-inner">
+      <span class="slide-num">شبیه‌ساز دما</span>
+      <h2 class="slide-h1">اثر دما بر Pull-in</h2>
+
+      <div class="simulator">
+        <div class="sim-header">
+          <div class="sim-title"><i class="fas fa-thermometer-half"></i> تغییر ولتاژ Pull-in با دما</div>
+          <div class="sim-controls">
+            <div class="slider-group">
+              <label>دما T (K):</label>
+              <input type="range" id="tempSlider" min="300" max="800" value="300" step="10">
+              <span class="slider-value" id="tempValue">۳۰۰</span>
+            </div>
+          </div>
+        </div>
+        <div class="canvas-wrapper" style="height: 300px;"><canvas id="tempCanvas"></canvas></div>
+        <div class="grid-2" style="margin-top: 12px;">
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 0.72rem; color: var(--text-dim);">ولتاژ Pull-in مؤثر (V)</div>
+            <div id="tempPullin" style="font-size: 1.1rem; color: var(--danger); font-weight: 800; font-family: 'Courier New', monospace;">—</div>
+          </div>
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 0.72rem; color: var(--text-dim);">انرژی حرارتی (k_B T)</div>
+            <div id="tempEnergy" style="font-size: 1rem; color: var(--gold); font-weight: 800; font-family: 'Courier New', monospace;">—</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۱۵ — توزیع بولتزمان -->
+  <div class="slide" data-slide="15" data-topic="10">
+    <div class="slide-inner">
+      <span class="slide-num">آمار بولتزمان</span>
+      <h2 class="slide-h1">توزیع احتمالاتی بولتزمان</h2>
+
+      <p class="slide-text">
+        احتمال قرارگیری تیر در موقعیت w از **توزیع بولتزمان** تبعیت می‌کند:
+      </p>
+
+      <div class="math-box purple-math" style="padding: 16px;">
+        <div style="font-size: 1rem;">
+          $$P(w) \propto e^{-U_{total}(w) / k_B T}$$
+        </div>
+      </div>
+
+      <img src="images/boltzmann-distribution.png" alt="Boltzmann" class="img-box" style="max-height: 220px;" onerror="this.style.display='none'">
+
+      <div class="grid-2" style="margin-top: 14px;">
+        <div class="card" style="background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3);">
+          <div class="slide-h3" style="color: var(--es);"><i class="fas fa-chart-line"></i> دمای پایین</div>
+          <p class="slide-text" style="font-size: 0.82rem;">
+            قله باریک اطراف کمینه انرژی — سیستم تقریباً قطعاً در حالت پایدار است.
+          </p>
+        </div>
+        <div class="card" style="background: rgba(255, 71, 87, 0.06); border-color: rgba(255, 71, 87, 0.3);">
+          <div class="slide-h3" style="color: var(--danger);"><i class="fas fa-chart-area"></i> دمای بالا</div>
+          <p class="slide-text" style="font-size: 0.82rem;">
+            قله پهن — احتمال قابل توجه برای رسیدن به ناحیه ناپایدار و Pull-in.
+          </p>
+        </div>
+      </div>
+
+      <div class="lecture-note" style="margin-top: 14px;">
+        <i class="fas fa-info-circle"></i>
+        <div class="lecture-note-content">
+          <strong>نکته آماری:</strong> حتی اگر $V < V_{pull-in}$ باشد، در دمای بالا احتمال اینکه تیر به‌خاطر نوسان حرارتی به بستر برسد، وجود دارد. این پدیده در طراحی سنسورهای فوق‌حساس باید لحاظ شود.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۱۶ — کد MATLAB/Python -->
+  <div class="slide" data-slide="16" data-topic="9">
+    <div class="slide-inner">
+      <span class="slide-num">کد</span>
+      <h2 class="slide-h1">تحلیل پایداری — کد</h2>
+
+      <div class="code-tabs">
+        <button class="code-tab active" data-code="matlab-stab"><i class="fas fa-square"></i> MATLAB</button>
+        <button class="code-tab" data-code="python-stab"><i class="fab fa-python"></i> Python (Colab)</button>
+      </div>
+
+      <div class="code-content active" id="code-matlab-stab">
+<pre><span class="cm">% === تحلیل پایداری و ولتاژ Pull-in ===</span>
+<span class="fn">clear</span>; <span class="fn">clc</span>; <span class="fn">close all</span>;
+
+<span class="cm">% پارامترها</span>
+L = <span class="num">50e-6</span>;          <span class="cm">% طول (m)</span>
+b = <span class="num">5e-6</span>;           <span class="cm">% عرض (m)</span>
+h = <span class="num">0.5e-6</span>;        <span class="cm">% ضخامت (m)</span>
+g = <span class="num">200e-9</span>;        <span class="cm">% فاصله (m)</span>
+E = <span class="num">150e9</span>;         <span class="cm">% مدول یانگ (Pa)</span>
+eps0 = <span class="num">8.854e-12</span>;  <span class="cm">% گذردهی خلأ</span>
+A = b * L;
+
+I = b*h^<span class="num">3</span>/<span class="num">12</span>;
+k_eq = <span class="num">8</span>*E*I/L^<span class="num">4</span>;
+
+<span class="cm">% === ولتاژ Pull-in ===</span>
+V_pullin = <span class="fn">sqrt</span>(<span class="num">8</span>*k_eq*g^<span class="num">3</span> / (<span class="num">27</span>*eps0*A));
+<span class="fn">fprintf</span>(<span class="str">'V_pull-in = %.4f V\n'</span>, V_pullin);
+
+<span class="cm">% === خمش تعادلی برای ولتاژهای مختلف ===</span>
+V_vec = <span class="fn">linspace</span>(<span class="num">0</span>, V_pullin*<span class="num">1.2</span>, <span class="num">100</span>);
+w_vec = <span class="fn">zeros</span>(<span class="num">size</span>(V_vec));
+
+<span class="kw">for</span> i = <span class="num">1</span>:<span class="fn">length</span>(V_vec)
+    V = V_vec(i);
+    <span class="cm">% حل معادله تعادل با fsolve</span>
+    eq = @(w) k_eq*w - eps0*A*V^<span class="num">2</span>/(<span class="num">2</span>*(g-w)^<span class="num">2</span>);
+    <span class="kw">try</span>
+        w_eq = <span class="fn">fzero</span>(eq, g/<span class="num">4</span>);
+        <span class="kw">if</span> w_eq > <span class="num">0</span> && w_eq < g
+            w_vec(i) = w_eq;
+        <span class="kw">else</span>
+            w_vec(i) = <span class="fn">NaN</span>;
+        <span class="kw">end</span>
+    <span class="kw">catch</span>
+        w_vec(i) = <span class="fn">NaN</span>;
+    <span class="kw">end</span>
+<span class="kw">end</span>
+
+<span class="cm">% === رسم نمودار bifurcation ===</span>
+<span class="fn">figure</span>(<span class="str">'Color'</span>, <span class="str">'w'</span>);
+<span class="fn">plot</span>(V_vec, w_vec*<span class="num">1e9</span>, <span class="str">'b-'</span>, <span class="str">'LineWidth'</span>, <span class="num">2</span>); <span class="kw">hold on</span>;
+<span class="fn">plot</span>([V_pullin V_pullin], [<span class="num">0</span> g*<span class="num">1e9</span>], <span class="str">'r--'</span>, <span class="str">'LineWidth'</span>, <span class="num">1.5</span>);
+<span class="fn">xlabel</span>(<span class="str">'V (V)'</span>); <span class="fn">ylabel</span>(<span class="str">'w (nm)'</span>);
+<span class="fn">title</span>(<span class="str">'نمودار Bifurcation نانو انبرک'</span>);
+<span class="fn">grid on</span>;</pre>
+      </div>
+
+      <div class="code-content" id="code-python-stab">
+<pre><span class="cm"># === تحلیل پایداری و ولتاژ Pull-in ===</span>
+<span class="kw">import</span> numpy <span class="kw">as</span> np
+<span class="kw">import</span> matplotlib.pyplot <span class="kw">as</span> plt
+<span class="kw">from</span> scipy.optimize <span class="kw">import</span> brentq
+
+<span class="cm"># پارامترها</span>
+L = <span class="num">50e-6</span>; b = <span class="num">5e-6</span>; h = <span class="num">0.5e-6</span>
+g = <span class="num">200e-9</span>; E = <span class="num">150e9</span>; eps0 = <span class="num">8.854e-12</span>
+A = b * L
+I = b * h**<span class="num">3</span> / <span class="num">12</span>
+k_eq = <span class="num">8</span> * E * I / L**<span class="num">4</span>
+
+<span class="cm"># ولتاژ Pull-in</span>
+V_pullin = np.sqrt(<span class="num">8</span> * k_eq * g**<span class="num">3</span> / (<span class="num">27</span> * eps0 * A))
+<span class="fn">print</span>(<span class="str">f'V_pull-in = {V_pullin:.4f} V'</span>)
+
+<span class="cm"># خمش تعادلی</span>
+V_vec = np.linspace(<span class="num">0</span>, V_pullin * <span class="num">1.2</span>, <span class="num">100</span>)
+w_vec = np.zeros_like(V_vec)
+
+<span class="kw">for</span> i, V <span class="kw">in</span> <span class="fn">enumerate</span>(V_vec):
+    <span class="kw">def</span> <span class="fn">eq</span>(w):
+        <span class="kw">return</span> k_eq * w - eps0 * A * V**<span class="num">2</span> / (<span class="num">2</span> * (g - w)**<span class="num">2</span>)
+    <span class="kw">try</span>:
+        w_eq = brentq(eq, <span class="num">1e-12</span>, g * <span class="num">0.99</span>)
+        w_vec[i] = w_eq
+    <span class="kw">except</span>:
+        w_vec[i] = np.nan
+
+plt.figure(figsize=(<span class="num">10</span>, <span class="num">6</span>))
+plt.plot(V_vec, w_vec * <span class="num">1e9</span>, <span class="str">'b-'</span>, linewidth=<span class="num">2</span>)
+plt.axvline(V_pullin, color=<span class="str">'red'</span>, linestyle=<span class="str">'--'</span>, 
+            label=<span class="str">f'V_pull-in = {V_pullin:.2f} V'</span>)
+plt.xlabel(<span class="str">'V (V)'</span>); plt.ylabel(<span class="str">'w (nm)'</span>)
+plt.title(<span class="str">'Bifurcation Diagram'</span>)
+plt.grid(<span class="kw">True</span>, alpha=<span class="num">0.3</span>); plt.legend()
+plt.savefig(<span class="str">'bifurcation.png'</span>, dpi=<span class="num">600</span>, bbox_inches=<span class="str">'tight'</span>)
+plt.show()</pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۱۷ — کاربرد: سوییچ RF -->
+  <div class="slide" data-slide="17" data-topic="11">
+    <div class="slide-inner">
+      <span class="slide-num">کاربرد ۱</span>
+      <h2 class="slide-h1">کاربرد: سوییچ RF MEMS</h2>
+
+      <img src="images/rf-switch-application.png" alt="RF Switch" class="img-box" onerror="this.style.display='none'">
+
+      <div class="grid-2" style="margin-top: 14px;">
+        <div class="card" style="background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3);">
+          <div class="slide-h3" style="color: var(--es);"><i class="fas fa-toggle-off"></i> حالت OFF</div>
+          <p class="slide-text" style="font-size: 0.85rem;">
+            ولتاژ کمتر از Pull-in → تیر بالا → مدار باز → سیگنال RF مسدود.
+          </p>
+        </div>
+        <div class="card" style="background: rgba(34, 197, 94, 0.06); border-color: rgba(34, 197, 94, 0.3);">
+          <div class="slide-h3" style="color: var(--success);"><i class="fas fa-toggle-on"></i> حالت ON</div>
+          <p class="slide-text" style="font-size: 0.85rem;">
+            ولتاژ بالاتر از Pull-in → تیر پایین → مدار بسته → سیگنال RF عبور.
+          </p>
+        </div>
+      </div>
+
+      <div class="lecture-note" style="margin-top: 14px;">
+        <i class="fas fa-star"></i>
+        <div class="lecture-note-content">
+          <strong>مزیت سوییچ RF MEMS:</strong> تلفات بسیار کم، ایزولاسیون بالا، مصرف انرژی ناچیز. کاربرد در گوشی‌های موبایل، رادارها و سیستم‌های ماهواره‌ای.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۱۸ — کاربرد: سنسور فشار -->
+  <div class="slide" data-slide="18" data-topic="11">
+    <div class="slide-inner">
+      <span class="slide-num">کاربرد ۲</span>
+      <h2 class="slide-h1">کاربرد: سنسور فشار Pull-in</h2>
+
+      <img src="images/pressure-sensor-pull-in.png" alt="Pressure Sensor" class="img-box" onerror="this.style.display='none'">
+
+      <div class="grid-2" style="margin-top: 14px;">
+        <div class="card" style="background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3);">
+          <div class="slide-h3" style="color: var(--es);"><i class="fas fa-compress"></i> اصل کار</div>
+          <ul style="list-style: none; padding: 0; font-size: 0.82rem; color: var(--text-dim); line-height: 2;">
+            <li>🔹 فشار روی غشا اعمال می‌شود</li>
+            <li>🔹 غشا خم می‌شود و فاصله کم می‌شود</li>
+            <li>🔹 $V_{pull-in}$ کاهش می‌یابد</li>
+            <li>🔹 با اندازه‌گیری $V_{pull-in}$، فشار محاسبه می‌شود</li>
+          </ul>
+        </div>
+        <div class="card" style="background: rgba(255, 183, 0, 0.06); border-color: rgba(255, 183, 0, 0.3);">
+          <div class="slide-h3" style="color: var(--gold);"><i class="fas fa-ruler"></i> حساسیت</div>
+          <ul style="list-style: none; padding: 0; font-size: 0.82rem; color: var(--text-dim); line-height: 2;">
+            <li>🔹 دقت: تا ۰.۱ Pa</li>
+            <li>🔹 محدوده: ۱ Pa تا ۱ MPa</li>
+            <li>🔹 پاسخ: در محدوده میکروثانیه</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="lecture-note">
+        <i class="fas fa-star"></i>
+        <div class="lecture-note-content">
+          <strong>کاربردها:</strong> اندازه‌گیری فشار خون، سنسور ارتفاع، سیستم‌های HVAC، صنایع هوافضا.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۱۹ — تمرین‌ها -->
+  <div class="slide" data-slide="19" data-topic="11">
+    <div class="slide-inner">
+      <span class="slide-num">تمرین</span>
+      <h2 class="slide-h1">تمرین‌های جلسه ۱۲</h2>
+
+      <div class="exercise-block ex-yellow">
+        <div class="ex-header"><div class="ex-num">الف</div><div><div class="ex-title">سؤالات مفهومی</div></div></div>
+        <ol class="ex-list">
+          <li>تفاوت تعادل پایدار، ناپایدار و خنثی چیست؟</li>
+          <li>چرا در Pull-in، خمش دقیقاً g/3 است؟</li>
+          <li>نمودار Bifurcation چه اطلاعاتی به ما می‌دهد؟</li>
+          <li>چرا در دمای بالا، $V_{pull-in}$ مؤثر کاهش می‌یابد؟</li>
+        </ol>
+      </div>
+
+      <div class="exercise-block ex-green">
+        <div class="ex-header"><div class="ex-num">ب</div><div><div class="ex-title">تمرین‌های عملی</div></div></div>
+        <ol class="ex-list">
+          <li>ولتاژ Pull-in یک نانو انبرک با $L=80$ μm، $b=8$ μm، $h=0.8$ μm، $g=300$ nm را محاسبه کنید.</li>
+          <li>نمودار Bifurcation را در MATLAB/Python رسم کنید و نقطه بحرانی را علامت‌گذاری کنید.</li>
+          <li>با شبیه‌ساز تعاملی، اثر دما را بر $V_{pull-in}$ بررسی کنید.</li>
+          <li>منحنی U(w) را برای V = 0.5, 0.9, 1.0, 1.1 V_pull-in رسم کنید و کمینه‌ها را تحلیل کنید.</li>
+        </ol>
+      </div>
+
+      <div class="exercise-block ex-purple">
+        <div class="ex-header"><div class="ex-num">ج</div><div><div class="ex-title">تمرین‌های نوشتاری</div></div></div>
+        <ol class="ex-list">
+          <li>ثابت کنید در Pull-in، رابطه $w_{pull-in} = g/3$ برقرار است.</li>
+          <li>ولتاژ Pull-in را با روش Galerkin (یک جمله) محاسبه و با روش انرژی مقایسه کنید.</li>
+          <li>اثر نیروی واندروالس را بر $V_{pull-in}$ به‌صورت تحلیلی بررسی کنید.</li>
+        </ol>
+      </div>
+
+      <div class="exercise-block ex-red">
+        <div class="ex-header"><div class="ex-num">★</div><div><div class="ex-title">چالش خلاقانه</div></div></div>
+        <ol class="ex-list">
+          <li>یک سوییچ RF طراحی کنید که ولتاژ Pull-in آن حدود ۵ V باشد و در محدوده GHz کار کند.</li>
+          <li>با PINN، پارامترهای انرژی را از داده‌های خمش تخمین بزنید و پایداری را پیش‌بینی کنید.</li>
+          <li>اثر کوپلینگ حرارتی-الکترواستاتیکی را در محدوده Pull-in تحلیل کنید.</li>
+        </ol>
+      </div>
+
+      <div class="email-banner">
+        <p><i class="fas fa-envelope" style="color: var(--primary);"></i> ارسال تمرین‌ها:</p>
+        <code>m.goharimanesh@gmail.com</code>
+        <p style="margin-top: 8px; font-size: 0.78rem;">Subject الزامی:</p>
+        <code>[Advanced Engineering Mathematics] HW12 - نام و نام خانوادگی - شماره دانشجویی</code>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۲۰ — نقشه راه پژوهش -->
+  <div class="slide" data-slide="20" data-topic="12">
+    <div class="slide-inner">
+      <span class="slide-num">نقشه راه پژوهش</span>
+      <h2 class="slide-h1">ادامه مسیر پژوهش در پایداری</h2>
+
+      <div class="grid-2">
+        <div class="card" style="background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3);">
+          <div class="slide-h3" style="color: var(--es);"><i class="fas fa-flask"></i> پایداری غیرخطی پیشرفته</div>
+          <ul style="list-style: none; padding: 0; font-size: 0.82rem; color: var(--text-dim); line-height: 2;">
+            <li>🔹 نظریه Bifurcation پیشرفته</li>
+            <li>🔹 Chaos در سیستم‌های MEMS</li>
+            <li>🔹 پایداری در سیستم‌های کوپل</li>
+            <li>🔹 کنترل فعال Pull-in</li>
+          </ul>
+        </div>
+        <div class="card" style="background: rgba(255, 183, 0, 0.06); border-color: rgba(255, 183, 0, 0.3);">
+          <div class="slide-h3" style="color: var(--gold);"><i class="fas fa-brain"></i> ترکیب با یادگیری ماشین</div>
+          <ul style="list-style: none; padding: 0; font-size: 0.82rem; color: var(--text-dim); line-height: 2;">
+            <li>🔹 پیش‌بینی Pull-in با PINN</li>
+            <li>🔹 شناسایی پارامترهای پایداری</li>
+            <li>🔹 طراحی معکوس سوییچ‌ها</li>
+            <li>🔹 کنترل هوشمند نانو عملگر</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="lecture-note" style="margin-top: 14px;">
+        <i class="fas fa-bullseye"></i>
+        <div class="lecture-note-content">
+          <strong>پیشنهاد استاد:</strong> پایداری و Pull-in یکی از پرکاربردترین موضوعات در مقالات IEEE و Elsevier است. اگر روی این موضوع تمرکز کنید، می‌توانید در کنفرانس‌های معتبر بین‌المللی مقاله ارائه دهید.
+        </div>
+      </div>
+
+      <div class="card" style="margin-top: 14px; background: rgba(168, 85, 247, 0.06); border-color: rgba(168, 85, 247, 0.3);">
+        <div class="slide-h3" style="color: var(--casimir);"><i class="fas fa-lightbulb"></i> جهت‌های نوین پژوهش</div>
+        <div class="grid-2">
+          <ul style="list-style: none; padding: 0; font-size: 0.82rem; color: var(--text-dim); line-height: 2;">
+            <li>🔹 Pull-in در گرافن</li>
+            <li>🔹 پایداری در نانو رزوناتور کوانتومی</li>
+            <li>🔹 کوپلینگ الکترو-حرارتی-مکانیکی</li>
+          </ul>
+          <ul style="list-style: none; padding: 0; font-size: 0.82rem; color: var(--text-dim); line-height: 2;">
+            <li>🔹 Pull-in در رباتیک نرم</li>
+            <li>🔹 سنسورهای زیستی مبتنی بر Pull-in</li>
+            <li>🔹 کنترل تطبیقی Pull-in</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۲۱ — جمع‌بندی فاز ۳ -->
+  <div class="slide" data-slide="21" data-topic="12">
+    <div class="slide-inner">
+      <span class="slide-num">پایان فاز ۳</span>
+      <h2 class="slide-h1">جمع‌بندی فاز ۳ — تیر، نانو انبرک و ارتعاشات</h2>
+
+      <img src="images/phase-3-summary.png" alt="Phase 3 Summary" class="img-box" style="max-height: 180px;" onerror="this.style.display='none'">
+
+      <div class="grid-4" style="margin-top: 14px;">
+        <div class="phase-summary-card" style="--ps-color: #1e3c72;">
+          <i class="fas fa-ruler phase-summary-icon"></i>
+          <div class="phase-summary-title">جلسه ۹</div>
+          <div class="phase-summary-desc">معادله تیر اویلر-برنولی</div>
+        </div>
+        <div class="phase-summary-card" style="--ps-color: #1e6f5c;">
+          <i class="fas fa-wave-square phase-summary-icon"></i>
+          <div class="phase-summary-title">جلسه ۱۰</div>
+          <div class="phase-summary-desc">ارتعاشات و فرکانس‌های طبیعی</div>
+        </div>
+        <div class="phase-summary-card" style="--ps-color: #b86b1e;">
+          <i class="fas fa-atom phase-summary-icon"></i>
+          <div class="phase-summary-title">جلسه ۱۱</div>
+          <div class="phase-summary-desc">نانو انبرک و نیروها</div>
+        </div>
+        <div class="phase-summary-card" style="--ps-color: #6a2c70;">
+          <i class="fas fa-exclamation-triangle phase-summary-icon"></i>
+          <div class="phase-summary-title">جلسه ۱۲</div>
+          <div class="phase-summary-desc">پایداری و Pull-in</div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top: 16px; background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3);">
+        <div class="slide-h3" style="color: var(--es);"><i class="fas fa-check-circle"></i> دستاوردهای فاز ۳</div>
+        <div class="grid-2">
+          <ul style="list-style: none; padding: 0; font-size: 0.85rem; color: var(--text-dim); line-height: 2;">
+            <li>✅ حل PDE تیر با سری فوریه</li>
+            <li>✅ تحلیل ارتعاشات آزاد و اجباری</li>
+            <li>✅ استخراج PDE غیرخطی نانو انبرک</li>
+          </ul>
+          <ul style="list-style: none; padding: 0; font-size: 0.85rem; color: var(--text-dim); line-height: 2;">
+            <li>✅ بی‌بعدسازی و پارامترهای کلیدی</li>
+            <li>✅ تحلیل پایداری با روش انرژی</li>
+            <li>✅ محاسبه دقیق ولتاژ Pull-in</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="lecture-note" style="margin-top: 14px;">
+        <i class="fas fa-star"></i>
+        <div class="lecture-note-content">
+          <strong>آمادگی برای فاز ۴:</strong> حالا با مدل کامل نانو انبرک آشنا هستید. در فاز ۴، روش‌های حل تقریبی (Perturbation) و عددی را یاد می‌گیریم تا این PDE غیرخطی را حل کنیم.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۲۲ — خداحافظی -->
+  <div class="slide" data-slide="22" data-topic="12">
+    <div class="slide-inner title-slide">
+      <div style="font-size: 3.5rem; color: var(--gold); margin-bottom: 18px;">
+        <i class="fas fa-check-circle"></i>
+      </div>
+      <h2 class="slide-h1">پایان فاز ۳ — تا جلسه بعد</h2>
+      <p class="slide-text" style="font-size: 1rem;">
+        با نانو انبرک و پایداری آشنا شدید — حالا وقت حل است! 🌟
+      </p>
+
+      <img src="images/perturbation-preview.png" alt="Perturbation Preview" class="hero-img" style="margin-top: 20px; max-height: 160px;" onerror="this.style.display='none'">
+
+      <div class="math-box gold-math" style="margin-top: 22px; background: rgba(255, 183, 0, 0.08); padding: 22px;">
+        $$\hat{w}(\hat{x}) = \hat{w}_0 + \epsilon \hat{w}_1 + \epsilon^2 \hat{w}_2 + \cdots$$
+      </div>
+
+      <div class="card" style="margin-top: 18px; background: rgba(168, 85, 247, 0.06); border-color: rgba(168, 85, 247, 0.3);">
+        <div class="slide-h3" style="justify-content: center; color: var(--casimir);"><i class="fas fa-arrow-left"></i> جلسه ۱۳ — شروع فاز ۴</div>
+        <p class="slide-text" style="font-size: 0.9rem;">
+          <strong style="color: var(--primary);">مقدمه Perturbation</strong>
+        </p>
+        <ul style="list-style: none; padding: 0; font-size: 0.82rem; color: var(--text-dim); line-height: 2; margin-top: 8px;">
+          <li>🔹 اصل اختلال و بسط سری</li>
+          <li>🔹 اختلال منظم</li>
+          <li>🔹 کاربرد در نانو انبرک</li>
+          <li>🔹 شرایط اعتبار</li>
+        </ul>
+      </div>
+
+      <p class="instructor-line" style="margin-top: 22px;">دکتر مسعود گوهری منش</p>
+      <p class="instructor-title-line">دانشیار گروه مهندسی مکانیک — دانشگاه تربت حیدریه</p>
+
+      <p style="font-size: 0.95rem; color: var(--gold); margin-top: 24px; font-weight: 800;">
+        🇮🇷 با افتخار برای دانشجویان مکاترونیک 🇮🇷
+      </p>
+    </div>
+  </div>
+
+</div>
+
+<div class="bottom-nav">
+  <button class="nav-btn" id="prevBtn" disabled><i class="fas fa-arrow-right"></i><span>قبلی</span></button>
+  <div class="dots-nav" id="dotsNav"></div>
+  <div class="slide-counter"><span id="currentSlide">۱</span> / ۲۲</div>
+  <button class="nav-btn" id="nextBtn"><span>بعدی</span><i class="fas fa-arrow-left"></i></button>
+</div>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+/* ═══ ناوبری ═══ */
+const slides = document.querySelectorAll('.slide');
+const totalSlides = slides.length;
+let currentSlide = 0;
+const topicPills = document.querySelectorAll('.topic-pill');
+
+const dotsNav = document.getElementById('dotsNav');
+for (let i = 0; i < totalSlides; i++) {
+  const dot = document.createElement('button');
+  dot.className = 'dot-nav' + (i === 0 ? ' active' : '');
+  dot.addEventListener('click', () => goToSlide(i));
+  dotsNav.appendChild(dot);
+}
+
+function goToSlide(n) {
+  if (n < 0 || n >= totalSlides) return;
+  slides.forEach((s, i) => {
+    s.classList.remove('active', 'prev');
+    if (i < n) s.classList.add('prev');
+    if (i === n) s.classList.add('active');
+  });
+  currentSlide = n;
+  updateNav();
+  playTransition();
+  setTimeout(() => {
+    initVisibleCharts();
+    if (window.MathJax && window.MathJax.typesetPromise) window.MathJax.typesetPromise();
+  }, 100);
+}
+
+function updateNav() {
+  document.querySelectorAll('.dot-nav').forEach((d, i) => d.classList.toggle('active', i === currentSlide));
+  document.getElementById('currentSlide').textContent = toFa(currentSlide + 1);
+  document.getElementById('prevBtn').disabled = currentSlide === 0;
+  document.getElementById('nextBtn').disabled = currentSlide === totalSlides - 1;
+  document.getElementById('progressFill').style.width = ((currentSlide + 1) / totalSlides * 100) + '%';
+  const currentTopic = slides[currentSlide].dataset.topic;
+  topicPills.forEach(pill => {
+    const t = parseInt(pill.dataset.topic);
+    const ct = parseInt(currentTopic);
+    pill.classList.toggle('active', t === ct);
+    pill.classList.toggle('done', t < ct);
+    if (t === ct) pill.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+  });
+}
+
+document.getElementById('prevBtn').addEventListener('click', () => goToSlide(currentSlide - 1));
+document.getElementById('nextBtn').addEventListener('click', () => goToSlide(currentSlide + 1));
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowLeft') { e.preventDefault(); goToSlide(currentSlide + 1); }
+  else if (e.key === 'ArrowRight') { e.preventDefault(); goToSlide(currentSlide - 1); }
+  else if (e.key === ' ') { e.preventDefault(); goToSlide(currentSlide + 1); }
+  else if (e.key === 'Home') { e.preventDefault(); goToSlide(0); }
+  else if (e.key === 'End') { e.preventDefault(); goToSlide(totalSlides - 1); }
+  else if (e.key === 'Escape' && document.fullscreenElement) document.exitFullscreen();
+});
+
+let touchStartX = 0, touchStartY = 0;
+document.addEventListener('touchstart', e => {
+  touchStartX = e.changedTouches[0].screenX;
+  touchStartY = e.changedTouches[0].screenY;
+}, { passive: true });
+document.addEventListener('touchend', e => {
+  const dx = e.changedTouches[0].screenX - touchStartX;
+  const dy = e.changedTouches[0].screenY - touchStartY;
+  if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy)) {
+    if (dx < 0) goToSlide(currentSlide + 1);
+    else goToSlide(currentSlide - 1);
+  }
+}, { passive: true });
+
+/* ═══ صدا ═══ */
+let audioCtx = null, soundEnabled = true;
+function initAudio() { if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
+function playTransition() {
+  if (!soundEnabled) return;
+  initAudio();
+  [440, 554.37].forEach((freq, i) => {
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.connect(gain); gain.connect(audioCtx.destination);
+    osc.frequency.value = freq; osc.type = 'sine';
+    const t = audioCtx.currentTime + i * 0.06;
+    gain.gain.setValueAtTime(0.04, t);
+    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.18);
+    osc.start(t); osc.stop(t + 0.22);
+  });
+}
+document.getElementById('soundToggle').addEventListener('click', function() {
+  soundEnabled = !soundEnabled;
+  this.classList.toggle('active', soundEnabled);
+  this.innerHTML = soundEnabled ? '<i class="fas fa-volume-up"></i>' : '<i class="fas fa-volume-mute"></i>';
+  showToast(soundEnabled ? 'صدا فعال' : 'صدا غیرفعال');
+});
+document.getElementById('fullscreenToggle').addEventListener('click', function() {
+  if (!document.fullscreenElement) { document.documentElement.requestFullscreen(); this.innerHTML = '<i class="fas fa-compress"></i>'; }
+  else { document.exitFullscreen(); this.innerHTML = '<i class="fas fa-expand"></i>'; }
+});
+function showToast(msg) {
+  const container = document.getElementById('toastContainer');
+  const toast = document.createElement('div');
+  toast.className = 'toast';
+  toast.innerHTML = `<i class="fas fa-info-circle"></i> ${msg}`;
+  container.appendChild(toast);
+  setTimeout(() => { toast.style.opacity = '0'; toast.style.transform = 'translateX(-60px)'; setTimeout(() => toast.remove(), 300); }, 2400);
+}
+function toFa(n) { const fa = ['۰','۱','۲','۳','۴','۵','۶','۷','۸','۹']; return String(n).replace(/\d/g, d => fa[d]); }
+
+/* ═══ پس‌زمینه ═══ */
+const bgCanvas = document.getElementById('bgCanvas');
+const bgCtx = bgCanvas.getContext('2d');
+let particles = [];
+function resizeBg() { bgCanvas.width = window.innerWidth; bgCanvas.height = window.innerHeight; }
+resizeBg();
+window.addEventListener('resize', resizeBg);
+class Particle {
+  constructor() { this.reset(); }
+  reset() {
+    this.x = Math.random() * bgCanvas.width;
+    this.y = Math.random() * bgCanvas.height;
+    this.size = Math.random() * 1.6 + 0.4;
+    this.speedX = (Math.random() - 0.5) * 0.3;
+    this.speedY = (Math.random() - 0.5) * 0.3;
+    this.opacity = Math.random() * 0.5 + 0.15;
+    const colors = ['#00d4aa', '#06b6d4', '#a855f7', '#ffb700'];
+    this.color = colors[Math.floor(Math.random() * colors.length)];
+  }
+  update() { this.x += this.speedX; this.y += this.speedY; if (this.x < 0 || this.x > bgCanvas.width || this.y < 0 || this.y > bgCanvas.height) this.reset(); }
+  draw() { bgCtx.beginPath(); bgCtx.arc(this.x, this.y, this.size, 0, Math.PI*2); bgCtx.fillStyle = this.color; bgCtx.globalAlpha = this.opacity; bgCtx.fill(); bgCtx.globalAlpha = 1; }
+}
+for (let i = 0; i < 50; i++) particles.push(new Particle());
+function animateBg() { bgCtx.clearRect(0, 0, bgCanvas.width, bgCanvas.height); particles.forEach(p => { p.update(); p.draw(); }); requestAnimationFrame(animateBg); }
+animateBg();
+
+/* ═══ ابزار ═══ */
+function setupCanvas(canvasId) {
+  const canvas = document.getElementById(canvasId);
+  if (!canvas) return null;
+  const dpr = window.devicePixelRatio || 1;
+  const rect = canvas.getBoundingClientRect();
+  canvas.width = rect.width * dpr; canvas.height = rect.height * dpr;
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+  return { ctx, w: rect.width, h: rect.height };
+}
+
+/* ═══ ثابت‌های فیزیکی ═══ */
+const PHYS = {
+  eps0: 8.854187817e-12,
+  A_H: 1e-19,
+  k_B: 1.380649e-23
+};
+
+const NANO = {
+  L: 50e-6,
+  b: 5e-6,
+  h: 0.5e-6,
+  E: 150e9,
+  g: 200e-9
+};
+
+function computeK_eq() {
+  const I = NANO.b * Math.pow(NANO.h, 3) / 12;
+  return 8 * NANO.E * I / Math.pow(NANO.L, 4);
+}
+
+function computeVpullin(g) {
+  const k_eq = computeK_eq();
+  const A = NANO.b * NANO.L;
+  return Math.sqrt(8 * k_eq * Math.pow(g, 3) / (27 * PHYS.eps0 * A));
+}
+
+/* ═══ شبیه‌ساز انرژی پتانسیل ═══ */
+function drawEnergy() {
+  const s = setupCanvas('energyCanvas');
+  if (!s) return;
+  const { ctx, w, h } = s;
+  ctx.clearRect(0, 0, w, h);
+
+  const V = parseFloat(document.getElementById('energyVoltage').value);
+  const g = NANO.g;
+  const k_eq = computeK_eq();
+  const A = NANO.b * NANO.L;
+  const V_pullin = computeVpullin(g);
+
+  // محورها
+  const padX = 60;
+  const padY_top = 30;
+  const padY_bot = 50;
+  const plotW = w - 2 * padX;
+  const plotH = h - padY_top - padY_bot;
+
+  // محور X: w/g از 0 تا 1
+  // محور Y: انرژی نرمال‌شده
+
+  const wMax = g * 0.95;
+  const U0 = 0.5 * k_eq * g * g; // مقیاس انرژی
+
+  // محاسبه بازه U
+  let U_min = 0, U_max = 0;
+  for (let i = 0; i <= 100; i++) {
+    const ww = (i / 100) * wMax;
+    const U = 0.5 * k_eq * ww * ww - PHYS.eps0 * A * V * V / (2 * (g - ww));
+    if (i === 0) { U_min = U; U_max = U; }
+    U_min = Math.min(U_min, U);
+    U_max = Math.max(U_max, U);
+  }
+  U_max = U_max * 1.1;
+  U_min = U_min * 1.3;
+  const U_range = U_max - U_min;
+
+  const xToPx = (ww) => padX + (ww / wMax) * plotW;
+  const uToPy = (U) => padY_top + (U_max - U) / U_range * plotH;
+
+  // پس‌زمینه
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+  ctx.fillRect(0, 0, w, h);
+
+  // شبکه
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
+  ctx.lineWidth = 1;
+  for (let i = 0; i <= 10; i++) {
+    const x = padX + (plotW / 10) * i;
+    ctx.beginPath();
+    ctx.moveTo(x, padY_top);
+    ctx.lineTo(x, padY_top + plotH);
+    ctx.stroke();
+  }
+  for (let i = 0; i <= 6; i++) {
+    const y = padY_top + (plotH / 6) * i;
+    ctx.beginPath();
+    ctx.moveTo(padX, y);
+    ctx.lineTo(padX + plotW, y);
+    ctx.stroke();
+  }
+
+  // محورها
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.moveTo(padX, padY_top);
+  ctx.lineTo(padX, padY_top + plotH);
+  ctx.lineTo(padX + plotW, padY_top + plotH);
+  ctx.stroke();
+
+  // برچسب محورها
+  ctx.fillStyle = '#9aa7bd';
+  ctx.font = '11px Vazirmatn';
+  ctx.textAlign = 'right';
+  ctx.fillText('U', padX - 8, padY_top + 15);
+  ctx.textAlign = 'center';
+  ctx.fillText('w/g', padX + plotW / 2, padY_top + plotH + 25);
+
+  // منحنی انرژی کل
+  ctx.beginPath();
+  ctx.strokeStyle = '#ffb700';
+  ctx.lineWidth = 2.5;
+  ctx.shadowColor = '#ffb700';
+  ctx.shadowBlur = 8;
+
+  let minU = Infinity, minW = 0;
+  let hasMin = false;
+  let minCount = 0;
+
+  for (let i = 0; i <= 200; i++) {
+    const ww = (i / 200) * wMax;
+    const U = 0.5 * k_eq * ww * ww - PHYS.eps0 * A * V * V / (2 * (g - ww));
+    const px = xToPx(ww);
+    const py = uToPy(U);
+    if (i === 0) ctx.moveTo(px, py);
+    else ctx.lineTo(px, py);
+
+    // پیدا کردن کمینه محلی
+    if (i > 0 && i < 200) {
+      const ww_p = ((i - 1) / 200) * wMax;
+      const ww_n = ((i + 1) / 200) * wMax;
+      const U_p = 0.5 * k_eq * ww_p * ww_p - PHYS.eps0 * A * V * V / (2 * (g - ww_p));
+      const U_n = 0.5 * k_eq * ww_n * ww_n - PHYS.eps0 * A * V * V / (2 * (g - ww_n));
+      if (U < U_p && U < U_n) {
+        if (U < minU) { minU = U; minW = ww; hasMin = true; }
+      }
+    }
+  }
+  ctx.stroke();
+  ctx.shadowBlur = 0;
+
+  // رسم نقطه کمینه
+  if (hasMin && V < V_pullin) {
+    const px = xToPx(minW);
+    const py = uToPy(minU);
+    ctx.fillStyle = '#00d4aa';
+    ctx.shadowColor = '#00d4aa';
+    ctx.shadowBlur = 15;
+    ctx.beginPath();
+    ctx.arc(px, py, 7, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.shadowBlur = 0;
+
+    ctx.fillStyle = '#00d4aa';
+    ctx.font = 'bold 11px Vazirmatn';
+    ctx.textAlign = 'center';
+    ctx.fillText('تعادل پایدار', px, py - 15);
+  }
+
+  // خط عمودی در w/g = 1/3
+  if (V >= V_pullin) {
+    const px = xToPx(g / 3);
+    ctx.strokeStyle = 'rgba(255, 71, 87, 0.6)';
+    ctx.lineWidth = 2;
+    ctx.setLineDash([5, 4]);
+    ctx.beginPath();
+    ctx.moveTo(px, padY_top);
+    ctx.lineTo(px, padY_top + plotH);
+    ctx.stroke();
+    ctx.setLineDash([]);
+  }
+
+  // به‌روزرسانی متن‌ها
+  document.getElementById('energyVoltageValue').textContent = toFa(V.toFixed(1));
+  document.getElementById('energyCriticalV').textContent = toFa(V_pullin.toFixed(2)) + ' V';
+
+  const stabilityEl = document.getElementById('energyStability');
+  const equilEl = document.getElementById('energyEquilibrium');
+
+  if (V < V_pullin) {
+    stabilityEl.textContent = 'پایدار ✓';
+    stabilityEl.style.color = 'var(--success)';
+    equilEl.textContent = toFa((minW / g * 100).toFixed(1)) + '% g';
+  } else {
+    stabilityEl.textContent = '⚠ Pull-in!';
+    stabilityEl.style.color = 'var(--danger)';
+    equilEl.textContent = 'ندارد';
+  }
+}
+
+/* ═══ شبیه‌ساز Bifurcation ═══ */
+function drawBifurcation() {
+  const s = setupCanvas('bifurcationCanvas');
+  if (!s) return;
+  const { ctx, w, h } = s;
+  ctx.clearRect(0, 0, w, h);
+
+  const V = parseFloat(document.getElementById('bifVoltage').value);
+  const g_nm = parseFloat(document.getElementById('bifGap').value);
+  const g = g_nm * 1e-9;
+
+  const k_eq = computeK_eq();
+  const A = NANO.b * NANO.L;
+  const V_pullin = computeVpullin(g);
+
+  // بازه‌ها
+  const padX = 60;
+  const padY_top = 30;
+  const padY_bot = 50;
+  const plotW = w - 2 * padX;
+  const plotH = h - padY_top - padY_bot;
+
+  const V_max = Math.max(V_pullin * 1.3, 30);
+  const wMax = g * 1.0;
+
+  const vToPx = (vv) => padX + (vv / V_max) * plotW;
+  const wToPy = (ww) => padY_top + plotH - (ww / wMax) * plotH;
+
+  // پس‌زمینه
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+  ctx.fillRect(0, 0, w, h);
+
+  // شبکه
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
+  ctx.lineWidth = 1;
+  for (let i = 0; i <= 10; i++) {
+    ctx.beginPath();
+    ctx.moveTo(padX + (plotW / 10) * i, padY_top);
+    ctx.lineTo(padX + (plotW / 10) * i, padY_top + plotH);
+    ctx.stroke();
+  }
+  for (let i = 0; i <= 6; i++) {
+    ctx.beginPath();
+    ctx.moveTo(padX, padY_top + (plotH / 6) * i);
+    ctx.lineTo(padX + plotW, padY_top + (plotH / 6) * i);
+    ctx.stroke();
+  }
+
+  // محورها
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.moveTo(padX, padY_top);
+  ctx.lineTo(padX, padY_top + plotH);
+  ctx.lineTo(padX + plotW, padY_top + plotH);
+  ctx.stroke();
+
+  // برچسب‌ها
+  ctx.fillStyle = '#9aa7bd';
+  ctx.font = '11px Vazirmatn';
+  ctx.textAlign = 'right';
+  ctx.fillText('w (nm)', padX - 8, padY_top + 15);
+  ctx.textAlign = 'center';
+  ctx.fillText('V (V)', padX + plotW / 2, padY_top + plotH + 25);
+
+  // محاسبه و رسم شاخه پایدار
+  ctx.beginPath();
+  ctx.strokeStyle = '#00d4aa';
+  ctx.lineWidth = 2.5;
+  ctx.shadowColor = '#00d4aa';
+  ctx.shadowBlur = 8;
+
+  let curveStarted = false;
+  let currentW = 0;
+  let currentStable = true;
+
+  const N = 200;
+  for (let i = 0; i <= N; i++) {
+    const Vv = (i / N) * V_pullin * 1.0; // فقط تا V_pull-in
+    // حل معادله تعادل با نیوتن
+    let ww = g / 4;
+    for (let iter = 0; iter < 30; iter++) {
+      const f = k_eq * ww - PHYS.eps0 * A * Vv * Vv / (2 * Math.pow(g - ww, 2));
+      const df = k_eq - PHYS.eps0 * A * Vv * Vv / Math.pow(g - ww, 3);
+      if (Math.abs(df) < 1e-30) break;
+      ww = ww - f / df;
+      if (ww < 0 || ww > g * 0.99) { ww = NaN; break; }
+    }
+    if (isNaN(ww)) continue;
+    const px = vToPx(Vv);
+    const py = wToPy(ww);
+    if (!curveStarted) { ctx.moveTo(px, py); curveStarted = true; }
+    else ctx.lineTo(px, py);
+  }
+  ctx.stroke();
+  ctx.shadowBlur = 0;
+
+  // نقطه جاری
+  if (V <= V_pullin) {
+    let ww = g / 4;
+    for (let iter = 0; iter < 50; iter++) {
+      const f = k_eq * ww - PHYS.eps0 * A * V * V / (2 * Math.pow(g - ww, 2));
+      const df = k_eq - PHYS.eps0 * A * V * V / Math.pow(g - ww, 3);
+      if (Math.abs(df) < 1e-30) break;
+      ww = ww - f / df;
+      if (ww < 0 || ww > g * 0.99) { ww = NaN; break; }
+    }
+    if (!isNaN(ww)) {
+      const px = vToPx(V);
+      const py = wToPy(ww);
+      ctx.fillStyle = '#ffb700';
+      ctx.shadowColor = '#ffb700';
+      ctx.shadowBlur = 15;
+      ctx.beginPath();
+      ctx.arc(px, py, 7, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.shadowBlur = 0;
+
+      currentW = ww;
+      currentStable = true;
+
+      document.getElementById('bifDeflection').textContent = toFa((ww * 1e9).toFixed(2)) + ' nm';
+      document.getElementById('bifStatus').textContent = 'پایدار ✓';
+      document.getElementById('bifStatus').style.color = 'var(--success)';
+    }
+  } else {
+    // Pull-in رخ داده
+    const px = vToPx(V);
+    ctx.fillStyle = '#ff4757';
+    ctx.shadowColor = '#ff4757';
+    ctx.shadowBlur = 20;
+    ctx.beginPath();
+    ctx.arc(px, wToPy(g), 9, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.shadowBlur = 0;
+
+    document.getElementById('bifDeflection').textContent = toFa(g_nm) + ' nm (چسبیده)';
+    document.getElementById('bifStatus').textContent = '⚠ Pull-in!';
+    document.getElementById('bifStatus').style.color = 'var(--danger)';
+    currentStable = false;
+  }
+
+  // خط عمودی Pull-in
+  const pxPull = vToPx(V_pullin);
+  ctx.strokeStyle = 'rgba(255, 71, 87, 0.6)';
+  ctx.lineWidth = 2;
+  ctx.setLineDash([6, 4]);
+  ctx.beginPath();
+  ctx.moveTo(pxPull, padY_top);
+  ctx.lineTo(pxPull, padY_top + plotH);
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  ctx.fillStyle = '#ff4757';
+  ctx.font = 'bold 11px Vazirmatn';
+  ctx.textAlign = 'center';
+  ctx.fillText('V_pull-in', pxPull, padY_top + 15);
+
+  document.getElementById('bifVoltageValue').textContent = toFa(V.toFixed(1));
+  document.getElementById('bifGapValue').textContent = toFa(g_nm);
+  document.getElementById('bifPullin').textContent = toFa(V_pullin.toFixed(2)) + ' V';
+}
+
+/* ═══ شبیه‌ساز دما ═══ */
+function drawTemperature() {
+  const s = setupCanvas('tempCanvas');
+  if (!s) return;
+  const { ctx, w, h } = s;
+  ctx.clearRect(0, 0, w, h);
+
+  const T = parseFloat(document.getElementById('tempSlider').value);
+  const g = NANO.g;
+  const V_pullin_0 = computeVpullin(g);
+
+  // کاهش مؤثر با دما (مدل تقریبی)
+  // V_eff = V_0 * (1 - alpha * (T - T0) / T0)
+  const alpha = 0.0003; // ضریب تقریبی
+  const T0 = 300;
+  const V_pullin_T = V_pullin_0 * (1 - alpha * (T - T0));
+
+  // انرژی حرارتی نسبت به انرژی پتانسیل
+  const E_thermal = PHYS.k_B * T;
+  const E_pot_scale = 0.5 * computeK_eq() * Math.pow(g / 3, 2);
+  const ratio = E_thermal / E_pot_scale;
+
+  // رسم
+  const padX = 80;
+  const padY_top = 30;
+  const padY_bot = 50;
+  const plotW = w - 2 * padX;
+  const plotH = h - padY_top - padY_bot;
+
+  // پس‌زمینه
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+  ctx.fillRect(0, 0, w, h);
+
+  // شبکه
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
+  for (let i = 0; i <= 10; i++) {
+    ctx.beginPath();
+    ctx.moveTo(padX + (plotW / 10) * i, padY_top);
+    ctx.lineTo(padX + (plotW / 10) * i, padY_top + plotH);
+    ctx.stroke();
+  }
+  for (let i = 0; i <= 6; i++) {
+    ctx.beginPath();
+    ctx.moveTo(padX, padY_top + (plotH / 6) * i);
+    ctx.lineTo(padX + plotW, padY_top + (plotH / 6) * i);
+    ctx.stroke();
+  }
+
+  // محورها
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.moveTo(padX, padY_top);
+  ctx.lineTo(padX, padY_top + plotH);
+  ctx.lineTo(padX + plotW, padY_top + plotH);
+  ctx.stroke();
+
+  // برچسب‌ها
+  ctx.fillStyle = '#9aa7bd';
+  ctx.font = '11px Vazirmatn';
+  ctx.textAlign = 'right';
+  ctx.fillText('V_pull-in (V)', padX - 8, padY_top + 15);
+  ctx.textAlign = 'center';
+  ctx.fillText('دما (K)', padX + plotW / 2, padY_top + plotH + 25);
+
+  // رسم منحنی V_pull-in(T)
+  const T_min = 300, T_max = 800;
+  const V_max_plot = V_pullin_0 * 1.1;
+  const V_min_plot = V_pullin_0 * (1 - alpha * (T_max - T_min) / T_min) * 0.9;
+
+  const tToPx = (tt) => padX + ((tt - T_min) / (T_max - T_min)) * plotW;
+  const vToPy = (vv) => padY_top + plotH - ((vv - V_min_plot) / (V_max_plot - V_min_plot)) * plotH;
+
+  ctx.beginPath();
+  ctx.strokeStyle = '#ffb700';
+  ctx.lineWidth = 2.5;
+  ctx.shadowColor = '#ffb700';
+  ctx.shadowBlur = 8;
+
+  for (let i = 0; i <= 100; i++) {
+    const Tt = T_min + (i / 100) * (T_max - T_min);
+    const Vt = V_pullin_0 * (1 - alpha * (Tt - T_min) / T_min);
+    const px = tToPx(Tt);
+    const py = vToPy(Vt);
+    if (i === 0) ctx.moveTo(px, py);
+    else ctx.lineTo(px, py);
+  }
+  ctx.stroke();
+  ctx.shadowBlur = 0;
+
+  // نقطه جاری
+  const px = tToPx(T);
+  const py = vToPy(V_pullin_T);
+  ctx.fillStyle = '#ff4757';
+  ctx.shadowColor = '#ff4757';
+  ctx.shadowBlur = 15;
+  ctx.beginPath();
+  ctx.arc(px, py, 7, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.shadowBlur = 0;
+
+  // به‌روزرسانی مقادیر
+  document.getElementById('tempValue').textContent = toFa(T);
+  document.getElementById('tempPullin').textContent = toFa(V_pullin_T.toFixed(2)) + ' V';
+  document.getElementById('tempEnergy').textContent = toFa((E_thermal / 1e-21).toFixed(2)) + ' zJ';
+}
+
+/* ═══ رویدادهای اسلایدرها ═══ */
+document.getElementById('energyVoltage').addEventListener('input', drawEnergy);
+document.getElementById('bifVoltage').addEventListener('input', drawBifurcation);
+document.getElementById('bifGap').addEventListener('input', drawBifurcation);
+document.getElementById('tempSlider').addEventListener('input', drawTemperature);
+
+/* ═══ تب‌های کد ═══ */
+document.querySelectorAll('.code-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    const parent = tab.parentElement;
+    parent.querySelectorAll('.code-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    const contentId = 'code-' + tab.dataset.code;
+    const content = document.getElementById(contentId);
+    if (content) {
+      const allContents = parent.parentElement.querySelectorAll('.code-content');
+      allContents.forEach(c => c.classList.remove('active'));
+      content.classList.add('active');
+    }
+  });
+});
+
+/* ═══ رندر بر اساس اسلاید فعال ═══ */
+function initVisibleCharts() {
+  const activeSlide = document.querySelector('.slide.active');
+  if (!activeSlide) return;
+  const num = activeSlide.dataset.slide;
+  if (num === '7') drawEnergy();
+  else if (num === '11') drawBifurcation();
+  else if (num === '14') drawTemperature();
+}
+
+/* ═══ راه‌اندازی ═══ */
+updateNav();
+setTimeout(() => {
+  initVisibleCharts();
+  if (window.MathJax && window.MathJax.typesetPromise) window.MathJax.typesetPromise();
+}, 400);
+setTimeout(() => showToast('به جلسه ۱۲ خوش آمدید — پایداری و Pull-in 🔬'), 1000);
+
+window.addEventListener('resize', () => setTimeout(() => {
+  initVisibleCharts();
+  if (window.MathJax && window.MathJax.typesetPromise) window.MathJax.typesetPromise();
+}, 200));
+</script>
+
+</body>
+</html>

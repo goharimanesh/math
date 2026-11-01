@@ -1,0 +1,2307 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>جلسه ۲۲ — بهینه‌سازی با قید، لاگرانژ، KKT | دکتر مسعود گوهری منش</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+<script>
+window.MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']],
+    displayMath: [['$$', '$$'], ['\\[', '\\]']],
+    processEscapes: true
+  },
+  options: { skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'] },
+  svg: { fontCache: 'global' }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" async></script>
+
+<style>
+:root {
+  --primary: #00d4aa;
+  --secondary: #06b6d4;
+  --tertiary: #a855f7;
+  --gold: #ffb700;
+  --success: #22c55e;
+  --danger: #ff4757;
+  --pink: #ec4899;
+  --dark: #050818;
+  --darker: #020410;
+  --card-bg: rgba(255, 255, 255, 0.05);
+  --card-border: rgba(255, 255, 255, 0.1);
+  --text: #e8eef7;
+  --text-dim: #9aa7bd;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { overflow: hidden; height: 100%; }
+body {
+  font-family: 'Vazirmatn', sans-serif;
+  background: var(--dark);
+  color: var(--text);
+  direction: rtl;
+  line-height: 1.8;
+}
+#bgCanvas { position: fixed; inset: 0; z-index: -2; background: radial-gradient(ellipse at top, #0a1230 0%, var(--darker) 50%, #000 100%); }
+.glow-orb { position: fixed; border-radius: 50%; filter: blur(120px); opacity: 0.3; z-index: -1; pointer-events: none; animation: floatOrb 25s ease-in-out infinite; }
+.orb1 { width: 600px; height: 600px; background: var(--primary); top: -200px; right: -200px; }
+.orb2 { width: 500px; height: 500px; background: var(--gold); bottom: -150px; left: -150px; animation-delay: -8s; }
+.orb3 { width: 400px; height: 400px; background: var(--tertiary); top: 30%; left: 25%; animation-delay: -15s; opacity: 0.12; }
+@keyframes floatOrb { 0%, 100% { transform: translate(0, 0) scale(1); } 33% { transform: translate(50px, -40px) scale(1.15); } 66% { transform: translate(-40px, 50px) scale(0.9); } }
+
+.top-header { position: fixed; top: 0; left: 0; right: 0; height: 82px; background: rgba(5, 8, 24, 0.9); backdrop-filter: blur(15px); border-bottom: 1px solid var(--card-border); display: flex; align-items: center; justify-content: space-between; padding: 0 18px; z-index: 100; }
+.header-left { display: flex; align-items: center; gap: 14px; }
+.header-signature { height: 60px; width: auto; max-width: 170px; object-fit: contain; filter: drop-shadow(0 0 10px rgba(0, 212, 170, 0.4)); border-radius: 8px; background: rgba(255, 255, 255, 0.05); padding: 4px; }
+.header-text { display: flex; flex-direction: column; line-height: 1.35; }
+.header-name { font-size: 0.88rem; color: var(--gold); font-weight: 800; white-space: nowrap; }
+.header-univ { font-size: 0.7rem; color: var(--text-dim); font-weight: 500; }
+.header-controls { display: flex; gap: 8px; flex-shrink: 0; align-items: center; }
+.ctrl-btn { width: 38px; height: 38px; border-radius: 10px; border: 1px solid var(--card-border); background: var(--card-bg); backdrop-filter: blur(10px); color: var(--text); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; transition: all 0.3s ease; position: relative; }
+.ctrl-btn:hover { background: var(--primary); color: var(--dark); transform: translateY(-2px); }
+.ctrl-btn.active { background: var(--primary); color: var(--dark); }
+
+.print-menu-wrap { position: relative; }
+.print-menu {
+  position: absolute; top: 46px; left: 0;
+  background: rgba(10, 18, 40, 0.98);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  padding: 6px;
+  min-width: 200px;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6);
+  opacity: 0; pointer-events: none;
+  transform: translateY(-8px);
+  transition: all 0.3s ease;
+  z-index: 200;
+}
+.print-menu.show { opacity: 1; pointer-events: auto; transform: translateY(0); }
+.print-menu button {
+  display: flex; align-items: center; gap: 10px;
+  width: 100%; padding: 10px 14px;
+  background: transparent; border: none;
+  color: var(--text); font-family: inherit;
+  font-size: 0.82rem; font-weight: 600;
+  border-radius: 8px; cursor: pointer;
+  text-align: right;
+  transition: all 0.2s ease;
+}
+.print-menu button:hover { background: rgba(0, 212, 170, 0.15); color: var(--primary); }
+.print-menu button i { color: var(--gold); font-size: 0.9rem; width: 18px; text-align: center; }
+
+@media print {
+  @page { size: A4 landscape; margin: 10mm; }
+  html, body { overflow: visible !important; height: auto !important; background: white !important; }
+  #bgCanvas, .glow-orb, .top-header, .topic-nav, .progress-top, .bottom-nav,
+  .toast-container, .star-container, .ctrl-btn, .print-menu, .lightbox,
+  .modal-overlay, .slide:not(.print-visible) { display: none !important; }
+  .slide-container { position: static !important; inset: auto !important; overflow: visible !important; }
+  .slide {
+    position: relative !important; opacity: 1 !important; transform: none !important;
+    pointer-events: auto !important; page-break-after: always;
+    padding: 15px 25px !important; overflow: visible !important;
+    background: white !important; color: #1a1a1a !important;
+    inset: auto !important; height: auto !important;
+  }
+  .slide::before {
+    content: ''; position: fixed; top: 50%; left: 50%;
+    transform: translate(-50%, -50%) rotate(-30deg);
+    width: 600px; height: 300px;
+    background-image: url('images/signature.png');
+    background-repeat: no-repeat; background-position: center;
+    background-size: contain; opacity: 0.08;
+    pointer-events: none; z-index: 9999; filter: grayscale(100%);
+  }
+  .slide-h1, .slide-h3, .slide-text, .card { color: #1a1a1a !important; }
+  .card { border-color: #ccc !important; background: #f9f9f9 !important; }
+  .math-box { background: #f5f5f5 !important; border-color: #999 !important; }
+  .slide-num { background: #e0e0e0 !important; color: #333 !important; }
+  .code-content { background: #f5f5f5 !important; color: #1a1a1a !important; }
+}
+
+.lightbox {
+  position: fixed; inset: 0; background: rgba(0, 0, 0, 0.92);
+  backdrop-filter: blur(8px); z-index: 10000;
+  display: flex; align-items: center; justify-content: center;
+  padding: 40px; opacity: 0; pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+.lightbox.active { opacity: 1; pointer-events: auto; }
+.lightbox-img {
+  max-width: 90vw; max-height: 85vh; border-radius: 16px;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.8), 0 0 60px rgba(0, 212, 170, 0.3);
+  border: 2px solid var(--primary); transform: scale(0.85);
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.lightbox.active .lightbox-img { transform: scale(1); }
+.lightbox-close {
+  position: absolute; top: 24px; left: 24px;
+  width: 46px; height: 46px; border-radius: 50%;
+  background: rgba(255, 71, 87, 0.9); border: none; color: #fff;
+  font-size: 1.2rem; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.3s ease; z-index: 10001;
+}
+.lightbox-close:hover { background: var(--danger); transform: rotate(90deg); }
+.lightbox-caption {
+  position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%);
+  background: rgba(10, 18, 40, 0.95); border: 1px solid var(--card-border);
+  color: var(--text); padding: 10px 24px; border-radius: 30px;
+  font-size: 0.85rem; font-weight: 600;
+}
+
+.img-box, .hero-img, .star-img { cursor: zoom-in; transition: all 0.3s ease; }
+.img-box:hover { transform: scale(1.02); border-color: var(--primary); }
+
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(10px); z-index: 9500;
+  display: flex; align-items: center; justify-content: center;
+  padding: 30px; opacity: 0; pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+.modal-overlay.active { opacity: 1; pointer-events: auto; }
+.modal-box {
+  background: linear-gradient(145deg, rgba(10, 18, 40, 0.98), rgba(5, 8, 24, 0.98));
+  border: 1px solid var(--gold); border-radius: 22px; padding: 30px;
+  max-width: 720px; width: 100%; max-height: 85vh; overflow-y: auto;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.8), 0 0 50px rgba(255, 183, 0, 0.2);
+  position: relative; transform: scale(0.92);
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.modal-overlay.active .modal-box { transform: scale(1); }
+.modal-close {
+  position: absolute; top: 18px; left: 18px;
+  width: 38px; height: 38px; border-radius: 50%;
+  background: rgba(255, 71, 87, 0.2); border: 1px solid rgba(255, 71, 87, 0.5);
+  color: var(--danger); font-size: 1rem; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.3s ease;
+}
+.modal-close:hover { background: var(--danger); color: #fff; transform: rotate(90deg); }
+.modal-title {
+  font-size: 1.3rem; font-weight: 900; color: var(--gold);
+  margin-bottom: 18px; display: flex; align-items: center; gap: 12px;
+  padding-right: 40px;
+}
+.modal-title i { font-size: 1.5rem; }
+.modal-section { margin-bottom: 18px; }
+.modal-section-title {
+  font-size: 0.95rem; font-weight: 800; color: var(--primary);
+  margin-bottom: 8px; display: flex; align-items: center; gap: 8px;
+}
+.modal-section-title i { color: var(--primary); }
+.modal-section p { font-size: 0.88rem; color: var(--text-dim); line-height: 2; margin-bottom: 8px; }
+.modal-section ul { list-style: none; padding: 0; }
+.modal-section ul li {
+  padding: 6px 24px 6px 10px; position: relative;
+  font-size: 0.85rem; color: var(--text-dim); line-height: 1.9;
+}
+.modal-section ul li::before { content: '◆'; position: absolute; right: 4px; color: var(--gold); font-size: 0.7rem; }
+
+.concept-word {
+  color: var(--gold); font-weight: 900; cursor: pointer;
+  text-decoration: underline dotted var(--gold);
+  text-underline-offset: 5px; transition: all 0.3s ease;
+  padding: 0 2px; border-radius: 4px;
+}
+.concept-word:hover { background: rgba(255, 183, 0, 0.15); text-shadow: 0 0 12px rgba(255, 183, 0, 0.8); }
+
+.topic-nav { position: fixed; top: 82px; left: 0; right: 0; height: 36px; background: rgba(5, 8, 24, 0.9); backdrop-filter: blur(10px); border-bottom: 1px solid var(--card-border); z-index: 99; display: flex; align-items: center; gap: 6px; padding: 0 18px; overflow-x: auto; scrollbar-width: none; }
+.topic-nav::-webkit-scrollbar { display: none; }
+.topic-pill { padding: 4px 11px; border-radius: 20px; font-size: 0.7rem; font-weight: 600; white-space: nowrap; color: var(--text-dim); background: rgba(255, 255, 255, 0.04); border: 1px solid transparent; transition: all 0.3s ease; }
+.topic-pill.active { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: var(--dark); font-weight: 800; box-shadow: 0 3px 10px rgba(0, 212, 170, 0.35); }
+.topic-pill.done { color: var(--primary); border-color: rgba(0, 212, 170, 0.3); }
+
+.progress-top { position: fixed; top: 118px; left: 0; right: 0; height: 3px; background: rgba(255, 255, 255, 0.05); z-index: 98; }
+.progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--primary), var(--secondary), var(--tertiary)); transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 0 12px var(--primary); }
+
+.slide-container { position: fixed; inset: 121px 0 0 0; overflow: hidden; }
+.slide { position: absolute; inset: 0; padding: 24px 50px 90px; opacity: 0; transform: translateX(-40px); pointer-events: none; transition: opacity 0.5s ease, transform 0.5s cubic-bezier(0.4, 0, 0.2, 1); overflow-y: auto; overflow-x: hidden; }
+.slide.active { opacity: 1; transform: translateX(0); pointer-events: auto; }
+.slide.prev { transform: translateX(40px); }
+.slide::-webkit-scrollbar { width: 6px; }
+.slide::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 3px; }
+.slide-inner { max-width: 1200px; margin: 0 auto; animation: contentFade 0.6s ease; }
+@keyframes contentFade { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+.slide-num { display: inline-block; padding: 5px 14px; border-radius: 20px; background: rgba(0, 212, 170, 0.15); color: var(--primary); font-size: 0.72rem; font-weight: 700; margin-bottom: 10px; }
+.slide-h1 { font-size: clamp(1.3rem, 3.2vw, 2rem); font-weight: 900; background: linear-gradient(135deg, var(--primary), var(--secondary), var(--tertiary), var(--gold)); background-size: 300% 300%; -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; animation: gradientShift 6s ease infinite; margin-bottom: 16px; line-height: 1.35; }
+@keyframes gradientShift { 0%, 100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
+.slide-h3 { font-size: 0.98rem; font-weight: 700; color: var(--text); margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+.slide-h3 i { color: var(--gold); font-size: 0.88rem; }
+.slide-text { font-size: 0.9rem; color: var(--text-dim); line-height: 2; margin-bottom: 12px; }
+
+.card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 18px; padding: 18px; backdrop-filter: blur(12px); transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1); }
+.card:hover { transform: translateY(-4px); border-color: rgba(0, 212, 170, 0.4); box-shadow: 0 15px 35px rgba(0, 212, 170, 0.12); }
+.grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+.grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; }
+.grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; }
+
+.title-slide { text-align: center; padding-top: 5px; }
+.title-slide .hero-img { width: 100%; max-width: 520px; height: 170px; object-fit: contain; background: rgba(0, 0, 0, 0.2); padding: 6px; border-radius: 20px; margin: 0 auto 12px; display: block; border: 1px solid var(--card-border); box-shadow: 0 20px 40px rgba(0, 212, 170, 0.15); }
+.title-slide .bismillah { font-size: 1.2rem; font-weight: 500; background: linear-gradient(90deg, var(--gold), var(--primary), var(--secondary)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 4px; }
+.title-slide .hoval { font-size: 0.82rem; color: var(--text-dim); margin-bottom: 16px; letter-spacing: 1px; }
+.title-slide .main-title { font-size: clamp(1.3rem, 3.2vw, 2rem); font-weight: 900; background: linear-gradient(135deg, var(--primary), var(--gold), var(--tertiary)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 10px; line-height: 1.3; }
+.title-slide .subtitle { font-size: clamp(0.9rem, 2vw, 1.05rem); color: var(--text-dim); margin-bottom: 18px; }
+.title-slide .euler-box { display: inline-block; padding: 12px 30px; border-radius: 18px; background: var(--card-bg); border: 1px solid var(--card-border); backdrop-filter: blur(15px); margin-bottom: 16px; }
+.title-slide .instructor-line { font-size: 0.92rem; color: var(--gold); font-weight: 700; margin-bottom: 3px; }
+.title-slide .instructor-title-line { font-size: 0.78rem; color: var(--text-dim); margin-bottom: 12px; }
+.title-slide .semester { display: inline-block; padding: 6px 18px; border-radius: 50px; background: var(--card-bg); border: 1px solid var(--card-border); font-size: 0.78rem; color: var(--text-dim); }
+
+.star-container { position: fixed; top: 150px; left: 40px; z-index: 90; cursor: pointer; }
+.star-core {
+  width: 40px; height: 40px; border-radius: 50%;
+  background: radial-gradient(circle at 50% 50%, #fff 0%, var(--gold) 30%, var(--gold) 50%, rgba(255, 183, 0, 0.2) 80%, transparent 100%);
+  box-shadow: 0 0 25px var(--gold), 0 0 50px rgba(255, 183, 0, 0.5), 0 0 80px rgba(255, 183, 0, 0.3);
+  animation: starPulse 3s ease-in-out infinite; position: relative;
+}
+.star-core::before {
+  content: ''; position: absolute; inset: -20px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 183, 0, 0.3) 0%, transparent 70%);
+  animation: starHalo 4s ease-in-out infinite;
+}
+@keyframes starPulse {
+  0%, 100% { transform: scale(1); box-shadow: 0 0 25px var(--gold), 0 0 50px rgba(255, 183, 0, 0.5), 0 0 80px rgba(255, 183, 0, 0.3); }
+  50% { transform: scale(1.15); box-shadow: 0 0 35px var(--gold), 0 0 70px rgba(255, 183, 0, 0.7), 0 0 100px rgba(255, 183, 0, 0.5); }
+}
+@keyframes starHalo {
+  0%, 100% { transform: scale(1); opacity: 0.5; }
+  50% { transform: scale(1.3); opacity: 0.8; }
+}
+.star-tooltip {
+  position: absolute; top: 55px; left: 0; width: 240px;
+  background: linear-gradient(145deg, rgba(10, 18, 40, 0.98), rgba(5, 8, 24, 0.98));
+  border: 1px solid var(--gold); border-radius: 16px; padding: 16px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7), 0 0 30px rgba(255, 183, 0, 0.3);
+  opacity: 0; pointer-events: none; transform: translateY(-10px) scale(0.95);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.star-container:hover .star-tooltip { opacity: 1; transform: translateY(0) scale(1); pointer-events: auto; }
+.star-img { width: 100%; height: 180px; object-fit: contain; border-radius: 12px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 183, 0, 0.3); margin-bottom: 10px; padding: 6px; }
+.star-name { font-size: 0.95rem; font-weight: 800; color: var(--gold); text-align: center; margin-bottom: 4px; }
+.star-title { font-size: 0.75rem; color: var(--text-dim); text-align: center; margin-bottom: 6px; font-style: italic; }
+.star-years { font-size: 0.72rem; color: var(--primary); text-align: center; font-family: 'Courier New', monospace; padding-top: 6px; border-top: 1px solid rgba(255, 183, 0, 0.2); }
+.star-tooltip::before { content: ''; position: absolute; top: -8px; left: 20px; width: 16px; height: 16px; background: rgba(10, 18, 40, 0.98); border-top: 1px solid var(--gold); border-right: 1px solid var(--gold); transform: rotate(-45deg); }
+
+.math-box { background: rgba(0, 212, 170, 0.06); border: 1px solid rgba(0, 212, 170, 0.25); border-radius: 14px; padding: 16px 22px; margin: 12px 0; text-align: center; direction: ltr; position: relative; overflow-x: auto; overflow-y: hidden; }
+.math-box::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--primary), var(--secondary), var(--tertiary)); }
+.math-box .MathJax, .math-box mjx-container { color: var(--primary) !important; font-size: 1em !important; }
+.math-box.gold-math .MathJax, .math-box.gold-math mjx-container { color: var(--gold) !important; }
+.math-box.purple-math .MathJax, .math-box.purple-math mjx-container { color: var(--tertiary) !important; }
+.math-box.pink-math .MathJax, .math-box.pink-math mjx-container { color: var(--pink) !important; }
+.math-box.danger-math .MathJax, .math-box.danger-math mjx-container { color: var(--danger) !important; }
+.math-note { font-family: 'Vazirmatn', sans-serif; font-size: 0.76rem; color: var(--text-dim); direction: rtl; margin-top: 8px; font-style: italic; text-align: center; }
+
+.simulator { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 18px; padding: 16px; margin: 12px 0; backdrop-filter: blur(12px); }
+.sim-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; flex-wrap: wrap; gap: 10px; }
+.sim-title { font-size: 0.9rem; font-weight: 700; color: var(--gold); display: flex; align-items: center; gap: 8px; }
+.sim-controls { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.slider-group { display: flex; align-items: center; gap: 8px; background: rgba(0, 0, 0, 0.3); padding: 6px 12px; border-radius: 10px; border: 1px solid var(--card-border); }
+.slider-group label { font-size: 0.72rem; color: var(--text-dim); white-space: nowrap; }
+.slider-group input[type="range"] { width: 100px; accent-color: var(--primary); cursor: pointer; }
+.slider-value { font-family: 'Courier New', monospace; font-size: 0.78rem; color: var(--primary); font-weight: 700; min-width: 30px; text-align: center; }
+.canvas-wrapper { position: relative; width: 100%; height: 260px; background: rgba(0, 0, 0, 0.4); border-radius: 12px; overflow: hidden; border: 1px solid var(--card-border); }
+.canvas-wrapper canvas { width: 100%; height: 100%; display: block; }
+
+.img-box { width: 100%; max-height: 280px; border-radius: 16px; border: 1px solid var(--card-border); margin: 12px 0; display: block; object-fit: contain; background: rgba(0, 0, 0, 0.3); padding: 8px; }
+
+.step-container { background: rgba(0, 0, 0, 0.2); border-radius: 14px; padding: 16px 20px; margin: 12px 0; border-right: 3px solid var(--gold); }
+.step-title { font-size: 0.88rem; font-weight: 800; color: var(--gold); margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+.step-content { font-size: 0.85rem; color: var(--text-dim); line-height: 2; }
+.step-content .math-box { margin: 8px 0; padding: 12px 16px; }
+
+.exercise-block { border-radius: 16px; padding: 16px; border: 1px solid; position: relative; overflow: hidden; margin-bottom: 12px; }
+.exercise-block::before { content: ''; position: absolute; top: 0; right: 0; width: 4px; height: 100%; }
+.ex-yellow { background: rgba(255, 217, 61, 0.06); border-color: rgba(255, 217, 61, 0.25); }
+.ex-yellow::before { background: #ffd93d; }
+.ex-green { background: rgba(107, 207, 127, 0.06); border-color: rgba(107, 207, 127, 0.25); }
+.ex-green::before { background: #6bcf7f; }
+.ex-purple { background: rgba(168, 85, 247, 0.06); border-color: rgba(168, 85, 247, 0.25); }
+.ex-purple::before { background: var(--tertiary); }
+.ex-red { background: rgba(255, 107, 107, 0.06); border-color: rgba(255, 107, 107, 0.25); }
+.ex-red::before { background: #ff6b6b; }
+.ex-header { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+.ex-num { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 0.8rem; color: var(--dark); flex-shrink: 0; }
+.ex-yellow .ex-num { background: #ffd93d; }
+.ex-green .ex-num { background: #6bcf7f; }
+.ex-purple .ex-num { background: var(--tertiary); color: #fff; }
+.ex-red .ex-num { background: #ff6b6b; color: #fff; }
+.ex-title { font-size: 0.92rem; font-weight: 800; }
+.ex-list { list-style: none; padding: 0; counter-reset: item; }
+.ex-list li { position: relative; padding: 7px 34px 7px 10px; font-size: 0.83rem; color: var(--text-dim); line-height: 1.8; border-bottom: 1px dashed rgba(255, 255, 255, 0.05); }
+.ex-list li:last-child { border-bottom: none; }
+.ex-list li::before { counter-increment: item; content: counter(item); position: absolute; right: 4px; top: 9px; width: 22px; height: 22px; border-radius: 50%; background: rgba(255, 255, 255, 0.08); color: var(--text); font-size: 0.7rem; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+.email-banner { margin-top: 12px; padding: 12px; border-radius: 14px; background: linear-gradient(135deg, rgba(0, 212, 170, 0.1), rgba(168, 85, 247, 0.1)); border: 1px dashed rgba(0, 212, 170, 0.4); text-align: center; }
+.email-banner p { font-size: 0.8rem; color: var(--text); margin-bottom: 5px; }
+.email-banner code { display: inline-block; padding: 5px 12px; border-radius: 8px; background: rgba(0, 0, 0, 0.4); color: var(--primary); font-family: 'Courier New', monospace; font-size: 0.76rem; direction: ltr; margin-top: 3px; }
+
+.code-tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--card-border); }
+.code-tab { padding: 8px 16px; border-radius: 10px 10px 0 0; background: transparent; border: none; color: var(--text-dim); font-family: inherit; font-size: 0.8rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; }
+.code-tab.active { background: rgba(0, 212, 170, 0.1); color: var(--primary); border-bottom: 2px solid var(--primary); }
+.code-content { display: none; background: #0a0f24; border: 1px solid var(--card-border); border-top: none; border-radius: 0 0 12px 12px; padding: 14px; overflow-x: auto; direction: ltr; text-align: left; }
+.code-content.active { display: block; }
+.code-content pre { margin: 0; font-family: 'Courier New', Consolas, monospace; font-size: 0.76rem; line-height: 1.6; color: #e8eef7; white-space: pre; }
+.code-content .kw { color: #ff79c6; }
+.code-content .fn { color: #50fa7b; }
+.code-content .num { color: #bd93f9; }
+.code-content .str { color: #f1fa8c; }
+.code-content .cm { color: #6272a4; font-style: italic; }
+.code-content .cls { color: #8be9fd; }
+
+.bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; height: 58px; background: rgba(5, 8, 24, 0.9); backdrop-filter: blur(15px); border-top: 1px solid var(--card-border); display: flex; align-items: center; justify-content: space-between; padding: 0 20px; z-index: 100; }
+.nav-btn { padding: 8px 18px; border-radius: 12px; border: 1px solid var(--card-border); background: var(--card-bg); color: var(--text); cursor: pointer; font-family: inherit; font-size: 0.82rem; font-weight: 600; display: flex; align-items: center; gap: 7px; transition: all 0.3s ease; }
+.nav-btn:hover:not(:disabled) { background: var(--primary); color: var(--dark); transform: translateY(-2px); }
+.nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+.dots-nav { display: flex; gap: 4px; flex-wrap: wrap; justify-content: center; max-width: 60%; }
+.dot-nav { width: 8px; height: 8px; border-radius: 50%; background: rgba(255, 255, 255, 0.15); cursor: pointer; border: none; padding: 0; transition: all 0.3s ease; }
+.dot-nav.active { background: var(--primary); width: 22px; border-radius: 5px; box-shadow: 0 0 10px var(--primary); }
+.slide-counter { font-size: 0.78rem; color: var(--text-dim); font-family: 'Courier New', monospace; min-width: 60px; text-align: center; }
+.slide-counter span { color: var(--primary); font-weight: 800; }
+
+.toast-container { position: fixed; bottom: 76px; left: 24px; z-index: 9999; display: flex; flex-direction: column; gap: 8px; }
+.toast { background: rgba(10, 18, 40, 0.95); border: 1px solid var(--primary); border-radius: 14px; padding: 11px 16px; color: var(--text); font-size: 0.82rem; backdrop-filter: blur(12px); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); display: flex; align-items: center; gap: 8px; animation: slideIn 0.35s ease; max-width: 320px; }
+.toast i { color: var(--primary); }
+@keyframes slideIn { from { opacity: 0; transform: translateX(-60px); } to { opacity: 1; transform: translateX(0); } }
+
+.lecture-note {
+  background: rgba(0, 212, 170, 0.06); border: 1px solid rgba(0, 212, 170, 0.3);
+  border-radius: 12px; padding: 12px 16px; margin: 10px 0;
+  display: flex; gap: 10px; align-items: flex-start;
+}
+.lecture-note i { color: var(--primary); font-size: 1.1rem; margin-top: 3px; }
+.lecture-note-content { flex: 1; font-size: 0.85rem; color: var(--text-dim); line-height: 1.9; }
+
+.method-badge {
+  display: inline-block; padding: 3px 10px; border-radius: 6px;
+  font-size: 0.7rem; font-weight: 700; margin-bottom: 8px;
+}
+.badge-lag { background: rgba(0, 212, 170, 0.15); color: var(--primary); }
+.badge-kkt { background: rgba(255, 183, 0, 0.15); color: var(--gold); }
+.badge-dual { background: rgba(168, 85, 247, 0.15); color: var(--tertiary); }
+.badge-app { background: rgba(236, 72, 153, 0.15); color: var(--pink); }
+
+@media (max-width: 768px) {
+  .slide { padding: 16px 14px 90px; }
+  .header-univ { display: none; }
+  .header-name { font-size: 0.75rem; }
+  .header-signature { height: 45px; max-width: 110px; }
+  .nav-btn { padding: 7px 11px; font-size: 0.72rem; }
+  .nav-btn span { display: none; }
+  .dots-nav { max-width: 45%; }
+  .slide-counter { font-size: 0.68rem; min-width: 45px; }
+  .canvas-wrapper { height: 210px; }
+  .topic-pill { font-size: 0.64rem; padding: 3px 8px; }
+  .star-container { top: 130px; left: 20px; }
+  .star-core { width: 32px; height: 32px; }
+  .star-tooltip { width: 200px; }
+  .modal-box { padding: 20px; }
+}
+@media (max-width: 480px) {
+  .ctrl-btn { width: 34px; height: 34px; font-size: 0.8rem; }
+  .header-signature { display: none; }
+  .star-container { top: 120px; left: 12px; }
+  .star-core { width: 28px; height: 28px; }
+  .star-tooltip { width: 180px; padding: 12px; }
+  .star-img { height: 140px; }
+  .lightbox-caption { font-size: 0.75rem; padding: 8px 16px; }
+}
+</style>
+</head>
+<body>
+
+<canvas id="bgCanvas"></canvas>
+<div class="glow-orb orb1"></div>
+<div class="glow-orb orb2"></div>
+<div class="glow-orb orb3"></div>
+
+<!-- ستاره درخشان کاشانی -->
+<div class="star-container" id="starContainer">
+  <div class="star-core"></div>
+  <div class="star-tooltip">
+    <img src="images/star.png" alt="کاشانی" class="star-img img-clickable" onerror="this.style.background='linear-gradient(135deg, #ffb700, #a855f7)'; this.style.minHeight='140px';" data-caption="غیاث‌الدین جمشید کاشانی — پیشگام محاسبات دقیق با محدودیت">
+    <div class="star-name">غیاث‌الدین جمشید کاشانی</div>
+    <div class="star-title">پیشگام محاسبات دقیق با محدودیت</div>
+    <div class="star-years">۱۳۸۰ — ۱۴۲۹ میلادی</div>
+  </div>
+</div>
+
+<div class="top-header">
+  <div class="header-left">
+    <img src="images/signature.png" alt="امضا" class="header-signature" onerror="this.style.display='none'">
+    <div class="header-text">
+      <span class="header-name">دکتر مسعود گوهری منش</span>
+      <span class="header-univ">دانشیار گروه مهندسی مکانیک — دانشگاه تربت حیدریه</span>
+    </div>
+  </div>
+  <div class="header-controls">
+    <button class="ctrl-btn" id="soundToggle" title="صدا"><i class="fas fa-volume-up"></i></button>
+    <button class="ctrl-btn" id="fullscreenToggle" title="تمام‌صفحه"><i class="fas fa-expand"></i></button>
+    <div class="print-menu-wrap">
+      <button class="ctrl-btn" id="printToggle" title="چاپ"><i class="fas fa-print"></i></button>
+      <div class="print-menu" id="printMenu">
+        <button id="printCurrentBtn"><i class="fas fa-file"></i> چاپ این صفحه</button>
+        <button id="printAllBtn"><i class="fas fa-layer-group"></i> چاپ همه صفحات</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="topic-nav" id="topicNav">
+  <span class="topic-pill" data-topic="1">مقدمه</span>
+  <span class="topic-pill" data-topic="2">تعریف مسئله</span>
+  <span class="topic-pill" data-topic="3">لاگرانژ</span>
+  <span class="topic-pill" data-topic="4">KKT</span>
+  <span class="topic-pill" data-topic="5">دوگانگی</span>
+  <span class="topic-pill" data-topic="6">برنامه‌ریزی محدب</span>
+  <span class="topic-pill" data-topic="7">کاربرد</span>
+  <span class="topic-pill" data-topic="8">کد</span>
+  <span class="topic-pill" data-topic="9">جمع‌بندی</span>
+</div>
+
+<div class="progress-top"><div class="progress-fill" id="progressFill"></div></div>
+
+<div class="slide-container" id="slideContainer">
+
+  <!-- ۱ — عنوان -->
+  <div class="slide active" data-slide="1" data-topic="1">
+    <div class="slide-inner title-slide">
+      <div class="bismillah">بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِیم</div>
+      <div class="hoval">هُوَ الخَلّاقُ العَلیم</div>
+      <img src="images/hero-constrained-optimization.png" alt="Constrained Optimization" class="hero-img img-clickable" onerror="this.style.display='none'" data-caption="بهینه‌سازی با قید">
+      <h1 class="main-title">بهینه‌سازی با قید، لاگرانژ، KKT</h1>
+      <p class="subtitle">(Constrained Optimization, Lagrange, KKT) — جلسه ۲۲</p>
+      <div class="euler-box"><div style="direction: ltr; font-size: 0.9rem;">$$\min f(x) \quad \text{s.t.} \quad g_i(x) \leq 0، \; h_j(x) = 0$$</div></div>
+      <p class="instructor-line">دکتر مسعود گوهری منش</p>
+      <p class="instructor-title-line">دانشیار گروه مهندسی مکانیک — دانشگاه تربت حیدریه</p>
+      <div class="semester">نیمسال اول ۱۴۰۵–۱۴۰۶</div>
+      <div class="lecture-note" style="margin-top: 20px; max-width: 600px; margin-left: auto; margin-right: auto; text-align: right;">
+        <i class="fas fa-star" style="color: var(--gold);"></i>
+        <div class="lecture-note-content">
+          <strong style="color: var(--gold);">💫 ستاره امروز:</strong> به ستاره درخشان گوشه صفحه هاور کنید تا <strong>کاشانی</strong>، پیشگام محاسبات دقیق با محدودیت را ببینید.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۲ — مرور جلسه ۲۱ -->
+  <div class="slide" data-slide="2" data-topic="1">
+    <div class="slide-inner">
+      <span class="slide-num">مرور</span>
+      <h2 class="slide-h1">از بهینه‌سازی بدون قید به با قید</h2>
+
+      <div class="grid-2">
+        <div class="card" style="background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3);">
+          <div class="slide-h3" style="color: var(--primary);"><i class="fas fa-check-circle"></i> دستاوردهای جلسه ۲۱</div>
+          <ul style="list-style: none; padding: 0; font-size: 0.85rem; color: var(--text-dim); line-height: 2;">
+            <li>✅ تعریف مسئله بهینه‌سازی</li>
+            <li>✅ FOC و SOC</li>
+            <li>✅ محدب و غیرمحدب</li>
+            <li>✅ GD، Momentum، Adam</li>
+          </ul>
+        </div>
+        <div class="card" style="background: rgba(255, 183, 0, 0.06); border-color: rgba(255, 183, 0, 0.3);">
+          <div class="slide-h3" style="color: var(--gold);"><i class="fas fa-rocket"></i> امروز — جلسه ۲۲</div>
+          <ul style="list-style: none; padding: 0; font-size: 0.85rem; color: var(--text-dim); line-height: 2;">
+            <li>🔹 مسئله با قید برابری</li>
+            <li>🔹 روش ضرایب لاگرانژ</li>
+            <li>🔹 شرایط KKT</li>
+            <li>🔹 دوگانگی</li>
+            <li>🔹 برنامه‌ریزی محدب</li>
+            <li>🔹 کاربرد در NEMS</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top: 16px; background: rgba(168, 85, 247, 0.06); border-color: rgba(168, 85, 247, 0.3);">
+        <div class="slide-h3" style="color: var(--tertiary);"><i class="fas fa-bullseye"></i> چرا قید؟</div>
+        <p class="slide-text" style="font-size: 0.9rem;">
+          در دنیای واقعی، هیچ مسئله‌ای بدون محدودیت نیست. بودجه، زمان، انرژی، جنس ماده، ولتاژ Pull-in، فرکانس رزونانس — همه اینها <strong>قید</strong> هستند. یاد می‌گیریم چگونه این محدودیت‌ها را در بهینه‌سازی لحاظ کنیم.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۳ — چرا قید -->
+  <div class="slide" data-slide="3" data-topic="1">
+    <div class="slide-inner">
+      <span class="slide-num">انگیزه</span>
+      <h2 class="slide-h1">کاربردهای بهینه‌سازی با قید</h2>
+
+      <img src="images/why-constraints.png" alt="Why Constraints" class="img-box img-clickable" onerror="this.style.display='none'" data-caption="چرا قید">
+
+      <div class="grid-3" style="margin-top: 14px;">
+        <div class="card" style="background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3);">
+          <div class="slide-h3" style="color: var(--primary);"><i class="fas fa-cube"></i> طراحی NEMS</div>
+          <p class="slide-text" style="font-size: 0.8rem;">
+            کمینه‌سازی حجم/وزن، با قید: $V < V_{pull-in}$
+          </p>
+        </div>
+        <div class="card" style="background: rgba(255, 183, 0, 0.06); border-color: rgba(255, 183, 0, 0.3);">
+          <div class="slide-h3" style="color: var(--gold);"><i class="fas fa-robot"></i> کنترل ربات</div>
+          <p class="slide-text" style="font-size: 0.8rem;">
+            کمینه‌سازی انرژی، با قید: $q_{min} \leq q \leq q_{max}$
+          </p>
+        </div>
+        <div class="card" style="background: rgba(168, 85, 247, 0.06); border-color: rgba(168, 85, 247, 0.3);">
+          <div class="slide-h3" style="color: var(--tertiary);"><i class="fas fa-brain"></i> یادگیری ماشین</div>
+          <p class="slide-text" style="font-size: 0.8rem;">
+            کمینه‌سازی Loss، با قید: $\|\theta\|_2 \leq C$
+          </p>
+        </div>
+        <div class="card" style="background: rgba(236, 72, 153, 0.06); border-color: rgba(236, 72, 153, 0.3);">
+          <div class="slide-h3" style="color: var(--pink);"><i class="fas fa-calculator"></i> مالیه</div>
+          <p class="slide-text" style="font-size: 0.8rem;">
+            بیشینه‌سازی سود، با قید: $\sum w_i = 1$، $w_i \geq 0$
+          </p>
+        </div>
+        <div class="card" style="background: rgba(6, 182, 212, 0.06); border-color: rgba(6, 182, 212, 0.3);">
+          <div class="slide-h3" style="color: var(--secondary);"><i class="fas fa-flask"></i> مهندسی شیمی</div>
+          <p class="slide-text" style="font-size: 0.8rem;">
+            بیشینه‌سازی بازده، با قید: دما، فشار، ایمنی
+          </p>
+        </div>
+        <div class="card" style="background: rgba(34, 197, 94, 0.06); border-color: rgba(34, 197, 94, 0.3);">
+          <div class="slide-h3" style="color: var(--success);"><i class="fas fa-satellite"></i> هوافضا</div>
+          <p class="slide-text" style="font-size: 0.8rem;">
+            کمینه‌سازی سوخت، با قید: مسیر، زمان
+          </p>
+        </div>
+      </div>
+
+      <div class="lecture-note">
+        <i class="fas fa-lightbulb"></i>
+        <div class="lecture-note-content">
+          <strong>هدف امروز:</strong> یادگیری روش‌های ریاضی برای حل مسائل بهینه‌سازی با قید — از لاگرانژ ساده تا KKT کامل.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۴ — تعریف مسئله -->
+  <div class="slide" data-slide="4" data-topic="2">
+    <div class="slide-inner">
+      <span class="slide-num">تعریف</span>
+      <span class="method-badge badge-lag" style="display: inline-block; margin-right: 8px;">Problem</span>
+      <h2 class="slide-h1">تعریف مسئله با قید</h2>
+
+      <img src="images/problem-definition.png" alt="Problem Definition" class="img-box img-clickable" onerror="this.style.display='none'" data-caption="تعریف مسئله">
+
+      <div class="math-box gold-math" style="padding: 16px;">
+        <div style="font-size: 0.95rem;">
+          $$\begin{aligned} \min_{x \in \mathbb{R}^n} \quad & f(x) \\ \text{s.t.} \quad & g_i(x) \leq 0، \quad i = 1، \dots، m \\ & h_j(x) = 0، \quad j = 1، \dots، p \end{aligned}$$
+        </div>
+        <p class="math-note">$g_i$ = قید نامساوی | $h_j$ = قید برابری</p>
+      </div>
+
+      <div class="grid-2" style="margin-top: 14px;">
+        <div class="card" style="background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3);">
+          <div class="slide-h3" style="color: var(--primary);"><i class="fas fa-check-circle"></i> منطقه مجاز (Feasible Region)</div>
+          <div class="math-box" style="padding: 10px; font-size: 0.85rem;">
+            $$\mathcal{F} = \{x : g_i(x) \leq 0، h_j(x) = 0\}$$
+          </div>
+          <p class="slide-text" style="font-size: 0.8rem;">
+            نقاطی که همه قیدها را ارضا می‌کنند.
+          </p>
+        </div>
+        <div class="card" style="background: rgba(255, 183, 0, 0.06); border-color: rgba(255, 183, 0, 0.3);">
+          <div class="slide-h3" style="color: var(--gold);"><i class="fas fa-bullseye"></i> جواب بهینه</div>
+          <div class="math-box gold-math" style="padding: 10px; font-size: 0.85rem;">
+            $$x^* = \arg\min_{x \in \mathcal{F}} f(x)$$
+          </div>
+          <p class="slide-text" style="font-size: 0.8rem;">
+            کمترین $f$ در منطقه مجاز.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۵ — انواع قید -->
+  <div class="slide" data-slide="5" data-topic="2">
+    <div class="slide-inner">
+      <span class="slide-num">انواع</span>
+      <h2 class="slide-h1">انواع قید</h2>
+
+      <img src="images/constraint-types.png" alt="Constraint Types" class="img-box img-clickable" onerror="this.style.display='none'" data-caption="انواع قید">
+
+      <div class="grid-3" style="margin-top: 14px;">
+        <div class="card" style="background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3);">
+          <div class="slide-h3" style="color: var(--primary);"><i class="fas fa-equals"></i> برابری</div>
+          <div class="math-box" style="padding: 10px; font-size: 0.85rem;">
+            $$h(x) = 0$$
+          </div>
+          <p class="slide-text" style="font-size: 0.75rem;">
+            محدودیت دقیق (مثل $\sum w_i = 1$)
+          </p>
+        </div>
+        <div class="card" style="background: rgba(255, 183, 0, 0.06); border-color: rgba(255, 183, 0, 0.3);">
+          <div class="slide-h3" style="color: var(--gold);"><i class="fas fa-less-than-equal"></i> نامساوی</div>
+          <div class="math-box gold-math" style="padding: 10px; font-size: 0.85rem;">
+            $$g(x) \leq 0$$
+          </div>
+          <p class="slide-text" style="font-size: 0.75rem;">
+            محدودیت نابرابر (مثل $V < V_{pull-in}$)
+          </p>
+        </div>
+        <div class="card" style="background: rgba(168, 85, 247, 0.06); border-color: rgba(168, 85, 247, 0.3);">
+          <div class="slide-h3" style="color: var(--tertiary);"><i class="fas fa-arrows-left-right"></i> کادری</div>
+          <div class="math-box purple-math" style="padding: 10px; font-size: 0.85rem;">
+            $$l \leq x \leq u$$
+          </div>
+          <p class="slide-text" style="font-size: 0.75rem;">
+            محدودیت بازه‌ای (مثل $q_{min} \leq q \leq q_{max}$)
+          </p>
+        </div>
+      </div>
+
+      <div class="lecture-note">
+        <i class="fas fa-info-circle"></i>
+        <div class="lecture-note-content">
+          <strong>نکته:</strong> هر قید نامساوی را می‌توان به دو قید نامساوی یا یک قید برابری با متغیر slack تبدیل کرد. KKT برای حالت عمومی طراحی شده.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۶ — روش لاگرانژ -->
+  <div class="slide" data-slide="6" data-topic="3">
+    <div class="slide-inner">
+      <span class="slide-num">قید برابری</span>
+      <span class="method-badge badge-lag" style="display: inline-block; margin-right: 8px;">Lagrange</span>
+      <h2 class="slide-h1">روش ضرایب <span class="concept-word" data-concept>لاگرانژ</span></h2>
+
+      <img src="images/lagrange-method.png" alt="Lagrange" class="img-box img-clickable" style="max-height: 160px;" onerror="this.style.display='none'" data-caption="روش لاگرانژ">
+
+      <p class="slide-text">
+        برای مسئله با قید برابری $h(x) = 0$، **تابع لاگرانژ** را می‌سازیم:
+      </p>
+
+      <div class="math-box gold-math" style="padding: 16px;">
+        <div style="font-size: 1rem;">
+          $$\mathcal{L}(x، \lambda) = f(x) + \lambda h(x)$$
+        </div>
+        <p class="math-note">$\lambda$ = ضریب لاگرانژ</p>
+      </div>
+
+      <div class="step-container">
+        <div class="step-title"><i class="fas fa-1"></i> شرط لازم</div>
+        <div class="step-content">
+          <div class="math-box" style="padding: 10px; font-size: 0.85rem;">
+            $$\nabla_x \mathcal{L} = \nabla f + \lambda \nabla h = 0$$
+          </div>
+          <div class="math-box" style="padding: 10px; font-size: 0.85rem;">
+            $$\frac{\partial \mathcal{L}}{\partial \lambda} = h(x) = 0$$
+          </div>
+          <p style="font-size: 0.8rem;">
+            $n+1$ معادله و $n+1$ مجهول ($x$ و $\lambda$).
+          </p>
+        </div>
+      </div>
+
+      <div class="lecture-note">
+        <i class="fas fa-star"></i>
+        <div class="lecture-note-content">
+          <strong>تفسیر:</strong> در نقطه بهینه، $\nabla f$ و $\nabla h$ <strong>موازی</strong> هستند. این یعنی نمی‌توان در امتداد قید حرکت کرد و $f$ را کاهش داد.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۷ — تفسیر هندسی -->
+  <div class="slide" data-slide="7" data-topic="3">
+    <div class="slide-inner">
+      <span class="slide-num">تفسیر</span>
+      <h2 class="slide-h1">تفسیر هندسی لاگرانژ</h2>
+
+      <img src="images/lagrange-geometric.png" alt="Lagrange Geometric" class="img-box img-clickable" onerror="this.style.display='none'" data-caption="تفسیر هندسی">
+
+      <p class="slide-text">
+        در صفحه ۲بعدی، $\nabla f$ عمود بر خطوط تراز (contours) و $\nabla h$ عمود بر قید است. در نقطه بهینه:
+      </p>
+
+      <div class="math-box gold-math" style="padding: 14px;">
+        $$\nabla f(x^*) = -\lambda \nabla h(x^*)$$
+      </div>
+
+      <div class="grid-3" style="margin-top: 14px;">
+        <div class="card" style="background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3); text-align: center; padding: 12px;">
+          <div class="slide-h3" style="justify-content: center; font-size: 0.82rem;">$|\lambda|$ بزرگ</div>
+          <p class="slide-text" style="font-size: 0.72rem;">قید قوی‌تر</p>
+        </div>
+        <div class="card" style="background: rgba(255, 183, 0, 0.06); border-color: rgba(255, 183, 0, 0.3); text-align: center; padding: 12px;">
+          <div class="slide-h3" style="justify-content: center; font-size: 0.82rem;">$|\lambda|$ کوچک</div>
+          <p class="slide-text" style="font-size: 0.72rem;">قید ضعیف‌تر</p>
+        </div>
+        <div class="card" style="background: rgba(168, 85, 247, 0.06); border-color: rgba(168, 85, 247, 0.3); text-align: center; padding: 12px;">
+          <div class="slide-h3" style="justify-content: center; font-size: 0.82rem;">$\lambda = 0$</div>
+          <p class="slide-text" style="font-size: 0.72rem;">قید غیرفعال</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۸ — شبیه‌ساز لاگرانژ -->
+  <div class="slide" data-slide="8" data-topic="3">
+    <div class="slide-inner">
+      <span class="slide-num">شبیه‌ساز تعاملی</span>
+      <h2 class="slide-h1">مسیر لاگرانژ</h2>
+
+      <div class="simulator">
+        <div class="sim-header">
+          <div class="sim-title"><i class="fas fa-chart-line"></i> تأثیر قید بر بهینه</div>
+          <div class="sim-controls">
+            <div class="slider-group">
+              <label>مقدار قید c:</label>
+              <input type="range" id="lagC" min="0.5" max="3" value="1.5" step="0.1">
+              <span class="slider-value" id="lagCValue">۱.۵</span>
+            </div>
+          </div>
+        </div>
+        <div class="canvas-wrapper" style="height: 320px;"><canvas id="lagCanvas"></canvas></div>
+        <div class="grid-3" style="margin-top: 12px;">
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 0.72rem; color: var(--text-dim);">بهینه بدون قید</div>
+            <div id="lagUnconstrained" style="font-size: 0.9rem; color: var(--gold); font-weight: 800; font-family: 'Courier New', monospace;">—</div>
+          </div>
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 0.72rem; color: var(--text-dim);">بهینه با قید</div>
+            <div id="lagConstrained" style="font-size: 0.9rem; color: var(--primary); font-weight: 800; font-family: 'Courier New', monospace;">—</div>
+          </div>
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 0.72rem; color: var(--text-dim);">λ</div>
+            <div id="lagLambda" style="font-size: 0.9rem; color: var(--tertiary); font-weight: 800; font-family: 'Courier New', monospace;">—</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۹ — تفسیر اقتصادی -->
+  <div class="slide" data-slide="9" data-topic="3">
+    <div class="slide-inner">
+      <span class="slide-num">تفسیر</span>
+      <h2 class="slide-h1">تفسیر اقتصادی — قیمت سایه</h2>
+
+      <img src="images/shadow-price.png" alt="Shadow Price" class="img-box img-clickable" style="max-height: 160px;" onerror="this.style.display='none'" data-caption="قیمت سایه">
+
+      <p class="slide-text">
+        ضریب لاگرانژ $\lambda$ تفسیر اقتصادی مهمی دارد: <strong>قیمت سایه</strong> (shadow price) یا <strong>هزینه نهایی</strong>.
+      </p>
+
+      <div class="math-box gold-math" style="padding: 14px;">
+        $$\lambda = -\frac{\partial f^*}{\partial c}$$
+      </div>
+
+      <p class="slide-text" style="font-size: 0.85rem;">
+        که $c$ مقدار قید است. یعنی اگر قید را کمی شل کنیم، چقدر $f$ بهبود می‌یابد؟
+      </p>
+
+      <div class="grid-3" style="margin-top: 14px;">
+        <div class="card" style="background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3); text-align: center; padding: 12px;">
+          <div class="slide-h3" style="justify-content: center; font-size: 0.82rem;">λ > 0</div>
+          <p class="slide-text" style="font-size: 0.72rem;">قید فعال، شل کردن سود می‌دهد</p>
+        </div>
+        <div class="card" style="background: rgba(255, 183, 0, 0.06); border-color: rgba(255, 183, 0, 0.3); text-align: center; padding: 12px;">
+          <div class="slide-h3" style="justify-content: center; font-size: 0.82rem;">λ < 0</div>
+          <p class="slide-text" style="font-size: 0.72rem;">قید فعال، سخت‌تر کردن سود می‌دهد</p>
+        </div>
+        <div class="card" style="background: rgba(168, 85, 247, 0.06); border-color: rgba(168, 85, 247, 0.3); text-align: center; padding: 12px;">
+          <div class="slide-h3" style="justify-content: center; font-size: 0.82rem;">λ = 0</div>
+          <p class="slide-text" style="font-size: 0.72rem;">قید غیرفعال</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۱۰ — مثال طراحی نانو -->
+  <div class="slide" data-slide="10" data-topic="3">
+    <div class="slide-inner">
+      <span class="slide-num">مثال</span>
+      <h2 class="slide-h1">طراحی نانو انبرک با قید</h2>
+
+      <img src="images/nano-design-constraint.png" alt="Nano Design" class="img-box img-clickable" onerror="this.style.display='none'" data-caption="طراحی نانو انبرک">
+
+      <p class="slide-text">
+        مسئله: کمینه‌سازی حجم تیر (سبک‌ترین)، با قید اینکه ولتاژ Pull-in از مقدار مشخصی کمتر نباشد:
+      </p>
+
+      <div class="math-box gold-math" style="padding: 14px;">
+        <div style="font-size: 0.9rem;">
+          $$\begin{aligned} \min \quad & V_{beam} = b \cdot h \cdot L \\ \text{s.t.} \quad & V_{pull-in}(b، h، L) \geq V_{min} \\ & b، h، L > 0 \end{aligned}$$
+        </div>
+      </div>
+
+      <div class="step-container">
+        <div class="step-title"><i class="fas fa-1"></i> تابع لاگرانژ</div>
+        <div class="step-content">
+          <div class="math-box" style="padding: 10px; font-size: 0.85rem;">
+            $$\mathcal{L} = b h L + \lambda(V_{min} - V_{pull-in})$$
+          </div>
+        </div>
+      </div>
+
+      <div class="step-container" style="border-right-color: var(--gold);">
+        <div class="step-title"><i class="fas fa-2"></i> حل</div>
+        <div class="step-content">
+          <p style="font-size: 0.82rem;">
+            با $\nabla \mathcal{L} = 0$ به یک سیستم غیرخطی می‌رسیم که در نقطه بهینه، قید <strong>فعال</strong> است ($V_{pull-in} = V_{min}$).
+          </p>
+        </div>
+      </div>
+
+      <div class="lecture-note">
+        <i class="fas fa-star"></i>
+        <div class="lecture-note-content">
+          <strong>نتیجه:</strong> بهینه در مرز قید است — تیر به‌اندازه‌ای کوچک می‌شود که $V_{pull-in}$ دقیقاً برابر حد مجاز باشد. λ نشان می‌دهد هر واحد کاهش $V_{min}$ چقدر به حجم اضافه می‌کند.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۱۱ — شبیه‌ساز طراحی نانو -->
+  <div class="slide" data-slide="11" data-topic="3">
+    <div class="slide-inner">
+      <span class="slide-num">شبیه‌ساز تعاملی</span>
+      <h2 class="slide-h1">طراحی بهینه با قید Pull-in</h2>
+
+      <div class="simulator">
+        <div class="sim-header">
+          <div class="sim-title"><i class="fas fa-microchip"></i> کمینه‌سازی حجم با قید ولتاژ</div>
+          <div class="sim-controls">
+            <div class="slider-group">
+              <label>V_min (V):</label>
+              <input type="range" id="nanoVmin" min="2" max="15" value="8" step="0.5">
+              <span class="slider-value" id="nanoVminValue">۸.۰</span>
+            </div>
+          </div>
+        </div>
+        <div class="canvas-wrapper" style="height: 320px;"><canvas id="nanoDesignCanvas"></canvas></div>
+        <div class="grid-3" style="margin-top: 12px;">
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 0.72rem; color: var(--text-dim);">حجم بهینه</div>
+            <div id="nanoVol" style="font-size: 0.95rem; color: var(--primary); font-weight: 800; font-family: 'Courier New', monospace;">—</div>
+          </div>
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 0.72rem; color: var(--text-dim);">V_pull-in</div>
+            <div id="nanoVp" style="font-size: 0.95rem; color: var(--gold); font-weight: 800; font-family: 'Courier New', monospace;">—</div>
+          </div>
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 0.72rem; color: var(--text-dim);">λ</div>
+            <div id="nanoLambda" style="font-size: 0.95rem; color: var(--tertiary); font-weight: 800; font-family: 'Courier New', monospace;">—</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۱۲ — KKT -->
+  <div class="slide" data-slide="12" data-topic="4">
+    <div class="slide-inner">
+      <span class="slide-num">قید نامساوی</span>
+      <span class="method-badge badge-kkt" style="display: inline-block; margin-right: 8px;">KKT</span>
+      <h2 class="slide-h1">شرایط <span class="concept-word" data-concept>KKT</span></h2>
+
+      <img src="images/kkt-conditions.png" alt="KKT" class="img-box img-clickable" style="max-height: 160px;" onerror="this.style.display='none'" data-caption="شرایط KKT">
+
+      <p class="slide-text">
+        <b>KKT</b> (Karush-Kuhn-Tucker) تعمیم لاگرانژ برای قیدهای نامساوی است. برای مسئله:
+      </p>
+
+      <div class="math-box" style="padding: 12px; font-size: 0.9rem;">
+        $$\min f(x) \quad \text{s.t.} \quad g_i(x) \leq 0$$
+      </div>
+
+      <p class="slide-text">
+        تابع لاگرانژ:
+      </p>
+
+      <div class="math-box gold-math" style="padding: 14px;">
+        $$\mathcal{L}(x، \mu) = f(x) + \sum_i \mu_i g_i(x)$$
+      </div>
+
+      <div class="lecture-note">
+        <i class="fas fa-star"></i>
+        <div class="lecture-note-content">
+          <strong>نکته کلیدی:</strong> تفاوت اصلی با لاگرانژ کلاسیک، <strong>شرط متمم</strong> است: $\mu_i g_i(x) = 0$. یعنی یا قید فعال است ($g_i = 0$) یا ضریب صفر است ($\mu_i = 0$).
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۱۳ — چهار شرط KKT -->
+  <div class="slide" data-slide="13" data-topic="4">
+    <div class="slide-inner">
+      <span class="slide-num">چهار شرط</span>
+      <h2 class="slide-h1">چهار شرط KKT</h2>
+
+      <img src="images/kkt-visualization.png" alt="KKT Visualization" class="img-box img-clickable" onerror="this.style.display='none'" data-caption="KKT تصویری">
+
+      <div class="step-container">
+        <div class="step-title"><i class="fas fa-1"></i> ۱. ایستایی (Stationarity)</div>
+        <div class="step-content">
+          <div class="math-box" style="padding: 10px; font-size: 0.85rem;">
+            $$\nabla f(x^*) + \sum_i \mu_i \nabla g_i(x^*) = 0$$
+          </div>
+        </div>
+      </div>
+
+      <div class="step-container" style="border-right-color: var(--primary);">
+        <div class="step-title" style="color: var(--primary);"><i class="fas fa-2"></i> ۲. امکان‌پذیری اولیه (Primal Feasibility)</div>
+        <div class="step-content">
+          <div class="math-box" style="padding: 10px; font-size: 0.85rem;">
+            $$g_i(x^*) \leq 0 \quad \forall i$$
+          </div>
+        </div>
+      </div>
+
+      <div class="step-container" style="border-right-color: var(--gold);">
+        <div class="step-title"><i class="fas fa-3"></i> ۳. امکان‌پذیری دوگان (Dual Feasibility)</div>
+        <div class="step-content">
+          <div class="math-box gold-math" style="padding: 10px; font-size: 0.85rem;">
+            $$\mu_i \geq 0 \quad \forall i$$
+          </div>
+        </div>
+      </div>
+
+      <div class="step-container" style="border-right-color: var(--tertiary);">
+        <div class="step-title" style="color: var(--tertiary);"><i class="fas fa-4"></i> ۴. متمم (Complementary Slackness)</div>
+        <div class="step-content">
+          <div class="math-box purple-math" style="padding: 10px; font-size: 0.85rem;">
+            $$\mu_i g_i(x^*) = 0 \quad \forall i$$
+          </div>
+          <p style="font-size: 0.82rem;">
+            یعنی: یا قید فعال است ($g_i=0$) یا ضریب صفر است ($\mu_i=0$).
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۱۴ — شبیه‌ساز KKT -->
+  <div class="slide" data-slide="14" data-topic="4">
+    <div class="slide-inner">
+      <span class="slide-num">شبیه‌ساز تعاملی</span>
+      <h2 class="slide-h1">منطقه مجاز و KKT</h2>
+
+      <div class="simulator">
+        <div class="sim-header">
+          <div class="sim-title"><i class="fas fa-chart-line"></i> قید نامساوی</div>
+          <div class="sim-controls">
+            <div class="slider-group">
+              <label>مقدار قید:</label>
+              <input type="range" id="kktC" min="0.1" max="2.5" value="1" step="0.1">
+              <span class="slider-value" id="kktCValue">۱.۰</span>
+            </div>
+          </div>
+        </div>
+        <div class="canvas-wrapper" style="height: 320px;"><canvas id="kktCanvas"></canvas></div>
+        <div class="grid-3" style="margin-top: 12px;">
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 0.72rem; color: var(--text-dim);">وضعیت قید</div>
+            <div id="kktStatus" style="font-size: 0.9rem; color: var(--gold); font-weight: 800;">—</div>
+          </div>
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 0.72rem; color: var(--text-dim);">μ</div>
+            <div id="kktMu" style="font-size: 0.9rem; color: var(--primary); font-weight: 800; font-family: 'Courier New', monospace;">—</div>
+          </div>
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 0.72rem; color: var(--text-dim);">نقطه بهینه</div>
+            <div id="kktOpt" style="font-size: 0.9rem; color: var(--tertiary); font-weight: 800; font-family: 'Courier New', monospace;">—</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۱۵ — دوگانگی -->
+  <div class="slide" data-slide="15" data-topic="5">
+    <div class="slide-inner">
+      <span class="slide-num">مفهوم</span>
+      <span class="method-badge badge-dual" style="display: inline-block; margin-right: 8px;">Duality</span>
+      <h2 class="slide-h1">دوگانگی (Duality)</h2>
+
+      <img src="images/duality-concept.png" alt="Duality" class="img-box img-clickable" style="max-height: 160px;" onerror="this.style.display='none'" data-caption="دوگانگی">
+
+      <p class="slide-text">
+        هر مسئله بهینه‌سازی، یک **مسئله دوگان** (dual) دارد که گاهی حل آن آسان‌تر است:
+      </p>
+
+      <div class="grid-2" style="margin-top: 14px;">
+        <div class="card" style="background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3);">
+          <div class="slide-h3" style="color: var(--primary);"><i class="fas fa-arrow-down"></i> مسئله اولیه (Primal)</div>
+          <div class="math-box" style="padding: 10px; font-size: 0.85rem;">
+            $$\min f(x) \quad \text{s.t.} \quad g(x) \leq 0$$
+          </div>
+          <p class="slide-text" style="font-size: 0.75rem;">
+            جواب: $p^* = \min f$
+          </p>
+        </div>
+        <div class="card" style="background: rgba(255, 183, 0, 0.06); border-color: rgba(255, 183, 0, 0.3);">
+          <div class="slide-h3" style="color: var(--gold);"><i class="fas fa-arrow-up"></i> مسئله دوگان (Dual)</div>
+          <div class="math-box gold-math" style="padding: 10px; font-size: 0.85rem;">
+            $$\max_{\mu \geq 0} \min_x \mathcal{L}(x، \mu)$$
+          </div>
+          <p class="slide-text" style="font-size: 0.75rem;">
+            جواب: $d^* = \max d(\mu)$
+          </p>
+        </div>
+      </div>
+
+      <div class="math-box gold-math" style="margin-top: 14px; padding: 14px;">
+        <div style="font-size: 0.95rem;">
+          $$d^* \leq p^* \quad \text{(Weak Duality)}$$
+        </div>
+        <p class="math-note">اگر محدب و Slater برقرار باشد: $d^* = p^*$ (Strong Duality)</p>
+      </div>
+
+      <div class="lecture-note">
+        <i class="fas fa-star"></i>
+        <div class="lecture-note-content">
+          <strong>مزیت:</strong> مسئله دوگان گاهی <strong>بدون قید</strong> است یا قید کمتری دارد. اگر Strong Duality برقرار باشد، حل دوگان همان حل اولیه است.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۱۶ — برنامه‌ریزی محدب -->
+  <div class="slide" data-slide="16" data-topic="5">
+    <div class="slide-inner">
+      <span class="slide-num">کلاس مهم</span>
+      <h2 class="slide-h1">برنامه‌ریزی محدب (Convex Programming)</h2>
+
+      <img src="images/convex-programming.png" alt="Convex Programming" class="img-box img-clickable" onerror="this.style.display='none'" data-caption="برنامه‌ریزی محدب">
+
+      <p class="slide-text">
+        اگر <strong>$f$ و $g_i$ محدب</strong> و <strong>$h_j$ خطی</strong> باشند، مسئله **محدب** است:
+      </p>
+
+      <div class="math-box gold-math" style="padding: 12px;">
+        $$\min f(x) \quad \text{s.t.} \quad g_i(x) \leq 0 \; \text{(convex)}، \; Ax = b$$
+      </div>
+
+      <div class="grid-3" style="margin-top: 14px;">
+        <div class="card" style="background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3); text-align: center; padding: 12px;">
+          <div class="slide-h3" style="justify-content: center; font-size: 0.82rem;">✓ همگرایی</div>
+          <p class="slide-text" style="font-size: 0.72rem;">همه مینیمای موضعی، جهانی هستند</p>
+        </div>
+        <div class="card" style="background: rgba(255, 183, 0, 0.06); border-color: rgba(255, 183, 0, 0.3); text-align: center; padding: 12px;">
+          <div class="slide-h3" style="justify-content: center; font-size: 0.82rem;">✓ KKT کافی</div>
+          <p class="slide-text" style="font-size: 0.72rem;">KKT شرط لازم و کافی است</p>
+        </div>
+        <div class="card" style="background: rgba(168, 85, 247, 0.06); border-color: rgba(168, 85, 247, 0.3); text-align: center; padding: 12px;">
+          <div class="slide-h3" style="justify-content: center; font-size: 0.82rem;">✓ الگوریتم‌ها</div>
+          <p class="slide-text" style="font-size: 0.72rem;">Interior Point، SQP</p>
+        </div>
+      </div>
+
+      <div class="lecture-note">
+        <i class="fas fa-info-circle"></i>
+        <div class="lecture-note-content">
+          <strong>چرا مهم است؟</strong> در مسائل محدب، هر حل KKT یک جواب <strong>جهانی</strong> است. این قدرت نظری، پایه‌ی همه الگوریتم‌های مدرن بهینه‌سازی است.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۱۷ — مسائل استاندارد -->
+  <div class="slide" data-slide="17" data-topic="6">
+    <div class="slide-inner">
+      <span class="slide-num">مسائل استاندارد</span>
+      <h2 class="slide-h1">مسائل استاندارد بهینه‌سازی</h2>
+
+      <img src="images/standard-problems.png" alt="Standard Problems" class="img-box img-clickable" onerror="this.style.display='none'" data-caption="مسائل استاندارد">
+
+      <div class="grid-3" style="margin-top: 14px;">
+        <div class="card" style="background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3);">
+          <div class="slide-h3" style="color: var(--primary);"><i class="fas fa-chart-line"></i> LP</div>
+          <p class="slide-text" style="font-size: 0.82rem;">
+            Linear Programming — تابع و قیدها خطی
+          </p>
+          <p class="slide-text" style="font-size: 0.72rem;">
+            $f = c^T x$، $Ax \leq b$
+          </p>
+        </div>
+        <div class="card" style="background: rgba(255, 183, 0, 0.06); border-color: rgba(255, 183, 0, 0.3);">
+          <div class="slide-h3" style="color: var(--gold);"><i class="fas fa-parabola"></i> QP</div>
+          <p class="slide-text" style="font-size: 0.82rem;">
+            Quadratic Programming — تابع درجه ۲
+          </p>
+          <p class="slide-text" style="font-size: 0.72rem;">
+            $f = x^T Q x + c^T x$
+          </p>
+        </div>
+        <div class="card" style="background: rgba(168, 85, 247, 0.06); border-color: rgba(168, 85, 247, 0.3);">
+          <div class="slide-h3" style="color: var(--tertiary);"><i class="fas fa-cone"></i> SOCP</div>
+          <p class="slide-text" style="font-size: 0.82rem;">
+            Second-Order Cone Programming
+          </p>
+          <p class="slide-text" style="font-size: 0.72rem;">
+            $\|Ax\|_2 \leq b^T x$
+          </p>
+        </div>
+      </div>
+
+      <div class="lecture-note">
+        <i class="fas fa-lightbulb"></i>
+        <div class="lecture-note-content">
+          <strong>کاربردها:</strong> LP در لجستیک، QP در SVM و کنترل، SOCP در طراحی MEMS. برای هر کدام، حل‌کننده‌های تخصصی وجود دارد: <code style="background: rgba(0,0,0,0.4); padding: 2px 8px; border-radius: 5px;">scipy.optimize.linprog</code>، <code style="background: rgba(0,0,0,0.4); padding: 2px 8px; border-radius: 5px;">cvxpy</code>.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۱۸ — شبیه‌ساز QP -->
+  <div class="slide" data-slide="18" data-topic="6">
+    <div class="slide-inner">
+      <span class="slide-num">شبیه‌ساز تعاملی</span>
+      <h2 class="slide-h1">حل مسئله QP</h2>
+
+      <div class="simulator">
+        <div class="sim-header">
+          <div class="sim-title"><i class="fas fa-parabola"></i> مینیمم تابع درجه ۲ با قید خطی</div>
+          <div class="sim-controls">
+            <div class="slider-group">
+              <label>قید c:</label>
+              <input type="range" id="qpC" min="-2" max="2" value="1" step="0.1">
+              <span class="slider-value" id="qpCValue">۱.۰</span>
+            </div>
+          </div>
+        </div>
+        <div class="canvas-wrapper" style="height: 320px;"><canvas id="qpCanvas"></canvas></div>
+        <div class="grid-3" style="margin-top: 12px;">
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 0.72rem; color: var(--text-dim);">نقطه بهینه</div>
+            <div id="qpOpt" style="font-size: 0.9rem; color: var(--gold); font-weight: 800; font-family: 'Courier New', monospace;">—</div>
+          </div>
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 0.72rem; color: var(--text-dim);">مقدار f</div>
+            <div id="qpF" style="font-size: 0.9rem; color: var(--primary); font-weight: 800; font-family: 'Courier New', monospace;">—</div>
+          </div>
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 0.72rem; color: var(--text-dim);">وضعیت قید</div>
+            <div id="qpStatus" style="font-size: 0.9rem; color: var(--tertiary); font-weight: 800;">—</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۱۹ — کاربرد در ML -->
+  <div class="slide" data-slide="19" data-topic="7">
+    <div class="slide-inner">
+      <span class="slide-num">کاربرد</span>
+      <h2 class="slide-h1">کاربرد در یادگیری ماشین</h2>
+
+      <img src="images/ml-applications.png" alt="ML Applications" class="img-box img-clickable" onerror="this.style.display='none'" data-caption="کاربرد در ML">
+
+      <div class="grid-3" style="margin-top: 14px;">
+        <div class="card" style="background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3);">
+          <div class="slide-h3" style="color: var(--primary);"><i class="fas fa-vector-square"></i> SVM</div>
+          <div class="math-box" style="padding: 8px; font-size: 0.8rem;">
+            $$\min \frac{1}{2}\|w\|^2 \quad \text{s.t.} \quad y_i(w^Tx_i+b) \geq 1$$
+          </div>
+          <p class="slide-text" style="font-size: 0.72rem;">
+            بیشینه‌سازی حاشیه با قید.
+          </p>
+        </div>
+        <div class="card" style="background: rgba(255, 183, 0, 0.06); border-color: rgba(255, 183, 0, 0.3);">
+          <div class="slide-h3" style="color: var(--gold);"><i class="fas fa-circle-notch"></i> L2 Regularization</div>
+          <div class="math-box gold-math" style="padding: 8px; font-size: 0.8rem;">
+            $$\min \mathcal{L} \quad \text{s.t.} \quad \|\theta\|_2 \leq C$$
+          </div>
+          <p class="slide-text" style="font-size: 0.72rem;">
+            جلوگیری از Overfitting.
+          </p>
+        </div>
+        <div class="card" style="background: rgba(168, 85, 247, 0.06); border-color: rgba(168, 85, 247, 0.3);">
+          <div class="slide-h3" style="color: var(--tertiary);"><i class="fas fa-shield"></i> Adversarial</div>
+          <div class="math-box purple-math" style="padding: 8px; font-size: 0.8rem;">
+            $$\max_{\|\delta\| \leq \epsilon} \mathcal{L}(x + \delta)$$
+          </div>
+          <p class="slide-text" style="font-size: 0.72rem;">
+            مقاوم‌سازی مدل به حملات.
+          </p>
+        </div>
+      </div>
+
+      <div class="lecture-note">
+        <i class="fas fa-star"></i>
+        <div class="lecture-note-content">
+          <strong>پیوند:</strong> SVM با <b>روش دوگان</b> حل می‌شود. L2 Regularization معادل قید روی $\theta$. Adversarial Training با <b>KKT</b> حل می‌شود.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۲۰ — کد NumPy -->
+  <div class="slide" data-slide="20" data-topic="8">
+    <div class="slide-inner">
+      <span class="slide-num">کد</span>
+      <h2 class="slide-h1">پیاده‌سازی: لاگرانژ و KKT</h2>
+
+      <div class="code-tabs">
+        <button class="code-tab active" data-code="numpy-lag"><i class="fas fa-square"></i> NumPy</button>
+        <button class="code-tab" data-code="pytorch-lag"><i class="fas fa-fire"></i> PyTorch</button>
+      </div>
+
+      <div class="code-content active" id="code-numpy-lag">
+<pre><span class="cm"># ============================================</span>
+<span class="cm"># Lagrange Multipliers (NumPy)</span>
+<span class="cm"># ============================================</span>
+<span class="kw">import</span> numpy <span class="kw">as</span> np
+<span class="kw">from</span> scipy.optimize <span class="kw">import</span> minimize
+
+<span class="cm"># --- مسئله: min x^2 + y^2 s.t. x + y = 1 ---</span>
+<span class="cm"># حل تحلیلی: x = y = 0.5، f = 0.5، λ = -1</span>
+
+<span class="kw">def</span> <span class="fn">objective</span>(z):
+    x, y = z
+    <span class="kw">return</span> x**<span class="num">2</span> + y**<span class="num">2</span>
+
+<span class="kw">def</span> <span class="fn">constraint</span>(z):
+    x, y = z
+    <span class="kw">return</span> x + y - <span class="num">1</span>  <span class="cm"># = 0</span>
+
+<span class="cm"># --- حل با scipy ---</span>
+cons = {<span class="str">'type'</span>: <span class="str">'eq'</span>، <span class="str">'fun'</span>: constraint}
+x0 = np.<span class="fn">array</span>([<span class="num">0.0</span>، <span class="num">0.0</span>])
+
+result = <span class="fn">minimize</span>(objective, x0, method=<span class="str">'SLSQP'</span>, constraints=cons)
+
+<span class="fn">print</span>(<span class="str">f'Optimal x: {result.x}'</span>)
+<span class="fn">print</span>(<span class="str">f'Optimal f: {result.fun:.6f}'</span>)
+<span class="fn">print</span>(<span class="str">f'Constraint: {constraint(result.x):.2e}'</span>)
+
+<span class="cm"># --- حل با KKT (SVM ساده) ---</span>
+<span class="kw">from</span> scipy.optimize <span class="kw">import</span> minimize
+<span class="kw">import</span> numpy <span class="kw">as</span> np
+
+<span class="cm"># مسئله: min 1/2 ||w||^2 s.t. w[0] + w[1] >= 1</span>
+<span class="cm"># (شبیه SVM با یک نقطه)</span>
+<span class="kw">def</span> <span class="fn">svm_obj</span>(w):
+    <span class="kw">return</span> <span class="num">0.5</span> * np.<span class="fn">sum</span>(w**<span class="num">2</span>)
+
+<span class="kw">def</span> <span class="fn">svm_con</span>(w):
+    <span class="kw">return</span> w[<span class="num">0</span>] + w[<span class="num">1</span>] - <span class="num">1</span>  <span class="cm"># >= 0</span>
+
+cons = {<span class="str">'type'</span>: <span class="str">'ineq'</span>، <span class="str">'fun'</span>: svm_con}
+w0 = np.<span class="fn">array</span>([<span class="num">0.0</span>، <span class="num">0.0</span>])
+
+res = <span class="fn">minimize</span>(svm_obj, w0, method=<span class="str">'SLSQP'</span>, constraints=cons)
+
+<span class="fn">print</span>(<span class="str">f'\nSVM Solution:'</span>)
+<span class="fn">print</span>(<span class="str">f'w = {res.x}'</span>)
+<span class="fn">print</span>(<span class="str">f'||w||^2 = {res.fun:.4f}'</span>)
+<span class="fn">print</span>(<span class="str">f'Constraint active: {svm_con(res.x):.4f}'</span>)</pre>
+      </div>
+
+      <div class="code-content" id="code-pytorch-lag">
+<pre><span class="cm"># ============================================</span>
+<span class="cm"># Constrained optimization with PyTorch</span>
+<span class="cm"># ============================================</span>
+<span class="kw">import</span> torch
+<span class="kw">import</span> torch.optim <span class="kw">as</span> optim
+
+<span class="cm"># --- مسئله: min x^2 + y^2 s.t. x + y = 1 ---</span>
+<span class="cm"># با اضافه کردن جریمه به Loss</span>
+
+x = torch.<span class="fn">tensor</span>([<span class="num">0.0</span>], requires_grad=<span class="kw">True</span>)
+y = torch.<span class="fn">tensor</span>([<span class="num">0.0</span>], requires_grad=<span class="kw">True</span>)
+
+optimizer = optim.<span class="fn">Adam</span>([x, y], lr=<span class="num">0.05</span>)
+lambda_ = torch.<span class="fn">tensor</span>([<span class="num">0.0</span>], requires_grad=<span class="kw">True</span>)
+
+<span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="num">200</span>):
+    optimizer.<span class="fn">zero_grad</span>()
+    
+    <span class="cm"># Lagrangian: f + λ * h</span>
+    f = x**<span class="num">2</span> + y**<span class="num">2</span>
+    h = x + y - <span class="num">1</span>
+    L = f + lambda_ * h
+    
+    L.<span class="fn">backward</span>()
+    optimizer.<span class="fn">step</span>()
+    
+    <span class="kw">if</span> i % <span class="num">50</span> == <span class="num">0</span>:
+        <span class="fn">print</span>(<span class="str">f'Iter {i}: x={x.item():.4f}، y={y.item():.4f}، '</span>
+              <span class="str">f'f={f.item():.4f}، h={h.item():.4f}، λ={lambda_.item():.4f}'</span>)
+
+<span class="cm"># --- SVM ساده با KKT ---</span>
+w = torch.<span class="fn">tensor</span>([<span class="num">0.5</span>، <span class="num">0.5</span>], requires_grad=<span class="kw">True</span>)
+mu = torch.<span class="fn">tensor</span>([<span class="num">0.0</span>], requires_grad=<span class="kw">True</span>)
+
+optimizer = optim.<span class="fn">Adam</span>([w, mu], lr=<span class="num">0.05</span>)
+
+<span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="num">500</span>):
+    optimizer.<span class="fn">zero_grad</span>()
+    
+    <span class="cm"># Lagrangian: 0.5||w||^2 + μ(1 - w0 - w1)</span>
+    f = <span class="num">0.5</span> * (w[<span class="num">0</span>]**<span class="num">2</span> + w[<span class="num">1</span>]**<span class="num">2</span>)
+    g = <span class="num">1</span> - w[<span class="num">0</span>] - w[<span class="num">1</span>]  <span class="cm"># >= 0 → μ >= 0</span>
+    L = f + mu * g
+    
+    L.<span class="fn">backward</span>()
+    optimizer.<span class="fn">step</span>()
+    
+    <span class="cm"># Project μ to be non-negative</span>
+    <span class="kw">with</span> torch.<span class="fn">no_grad</span>():
+        mu.<span class="fn">clamp_</span>(min=<span class="num">0</span>)
+    
+    <span class="kw">if</span> i % <span class="num">100</span> == <span class="num">0</span>:
+        <span class="fn">print</span>(<span class="str">f'Iter {i}: w={w.detach().numpy()}، '</span>
+              <span class="str">f'f={f.item():.4f}، g={g.item():.4f}، μ={mu.item():.4f}'</span>)</pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۲۱ — کد PyTorch (بهینه‌سازی با قید) -->
+  <div class="slide" data-slide="21" data-topic="8">
+    <div class="slide-inner">
+      <span class="slide-num">کد پیشرفته</span>
+      <h2 class="slide-h1">بهینه‌سازی با قید در PyTorch</h2>
+
+      <div class="code-tabs">
+        <button class="code-tab active" data-code="pytorch-constrained"><i class="fas fa-fire"></i> PyTorch — Constrained</button>
+      </div>
+
+      <div class="code-content active" id="code-pytorch-constrained">
+<pre><span class="cm"># ============================================</span>
+<span class="cm"># Constrained Optimization with Augmented Lagrangian</span>
+<span class="cm"># ============================================</span>
+<span class="kw">import</span> torch
+<span class="kw">import</span> torch.optim <span class="kw">as</span> optim
+<span class="kw">import</span> numpy <span class="kw">as</span> np
+
+<span class="kw">def</span> <span class="fn">augmented_lagrangian</span>(f, g, x_init, n_iter=<span class="num">500</span>, rho=<span class="num">10</span>):
+    <span class="str">"""Augmented Lagrangian method"""</span>
+    x = x_init.<span class="fn">clone</span>().<span class="fn">detach</span>().<span class="fn">requires_grad_</span>(<span class="kw">True</span>)
+    lam = torch.<span class="fn">zeros</span>(<span class="num">1</span>)
+    
+    optimizer = optim.<span class="fn">Adam</span>([x], lr=<span class="num">0.05</span>)
+    
+    <span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(n_iter):
+        <span class="kw">for</span> _ <span class="kw">in</span> <span class="fn">range</span>(<span class="num">10</span>):
+            optimizer.<span class="fn">zero_grad</span>()
+            g_val = <span class="fn">g</span>(x)
+            <span class="cm"># Augmented Lagrangian</span>
+            L = <span class="fn">f</span>(x) + lam * torch.<span class="fn">relu</span>(g_val) + (<span class="num">0.5</span> * rho) * torch.<span class="fn">relu</span>(g_val)**<span class="num">2</span>
+            L.<span class="fn">backward</span>()
+            optimizer.<span class="fn">step</span>()
+        
+        <span class="cm"># Update lambda</span>
+        g_val = <span class="fn">g</span>(x).<span class="fn">detach</span>()
+        lam = lam + rho * torch.<span class="fn">relu</span>(g_val)
+        
+        <span class="kw">if</span> i % <span class="num">50</span> == <span class="num">0</span>:
+            <span class="fn">print</span>(<span class="str">f'Iter {i}: x={x.item():.4f}، f={f(x).item():.4f}، g={g_val.item():.4f}، λ={lam.item():.4f}'</span>)
+    
+    <span class="kw">return</span> x, lam
+
+<span class="cm"># --- مثال: min (x-2)^2 s.t. x <= 1 ---</span>
+<span class="kw">def</span> <span class="fn">f</span>(x):
+    <span class="kw">return</span> (x - <span class="num">2</span>)**<span class="num">2</span>
+
+<span class="kw">def</span> <span class="fn">g</span>(x):
+    <span class="kw">return</span> x - <span class="num">1</span>  <span class="cm"># <= 0</span>
+
+x_init = torch.<span class="fn">tensor</span>([<span class="num">0.0</span>])
+x_opt, lam_opt = <span class="fn">augmented_lagrangian</span>(f, g, x_init, n_iter=<span class="num">200</span>)
+
+<span class="fn">print</span>(<span class="str">f'\nFinal: x = {x_opt.item():.4f} (expected 1.0)'</span>)
+<span class="fn">print</span>(<span class="str">f'λ = {lam_opt.item():.4f} (expected 2.0)'</span>)
+
+<span class="cm"># --- مثال: SVM ساده ---</span>
+<span class="kw">def</span> <span class="fn">svm_loss</span>(w):
+    <span class="kw">return</span> <span class="num">0.5</span> * (w[<span class="num">0</span>]**<span class="num">2</span> + w[<span class="num">1</span>]**<span class="num">2</span>)
+
+<span class="kw">def</span> <span class="fn">svm_constraint</span>(w):
+    <span class="kw">return</span> <span class="num">1</span> - w[<span class="num">0</span>] - w[<span class="num">1</span>]  <span class="cm"># <= 0</span>
+
+w_init = torch.<span class="fn">tensor</span>([<span class="num">0.5</span>، <span class="num">0.5</span>])
+w_opt, mu_opt = <span class="fn">augmented_lagrangian</span>(svm_loss, svm_constraint, w_init, n_iter=<span class="num">200</span>)
+
+<span class="fn">print</span>(<span class="str">f'\nSVM Solution:'</span>)
+<span class="fn">print</span>(<span class="str">f'w = {w_opt.detach().numpy()}'</span>)
+<span class="fn">print</span>(<span class="str">f'||w||^2 = {svm_loss(w_opt).item():.4f}'</span>)</pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۲۲ — تمرین‌ها -->
+  <div class="slide" data-slide="22" data-topic="9">
+    <div class="slide-inner">
+      <span class="slide-num">تمرین</span>
+      <h2 class="slide-h1">تمرین‌های جلسه ۲۲</h2>
+
+      <div class="exercise-block ex-yellow">
+        <div class="ex-header"><div class="ex-num">الف</div><div><div class="ex-title">سؤالات مفهومی</div></div></div>
+        <ol class="ex-list">
+          <li>تفاوت لاگرانژ و KKT چیست؟</li>
+          <li>معنای اقتصادی ضریب لاگرانژ $\lambda$ چیست؟</li>
+          <li>شرط متمم در KKT چه می‌گوید؟</li>
+          <li>چرا در مسائل محدب، KKT کافی است؟</li>
+        </ol>
+      </div>
+
+      <div class="exercise-block ex-green">
+        <div class="ex-header"><div class="ex-num">ب</div><div><div class="ex-title">تمرین‌های عملی</div></div></div>
+        <ol class="ex-list">
+          <li>مسئله $\min x^2 + y^2$ s.t. $x + y = 2$ را با لاگرانژ حل کنید.</li>
+          <li>مسئله $\min xy$ s.t. $x + y = 1$، $x، y \geq 0$ را با KKT حل کنید.</li>
+          <li>یک SVM ساده با ۵ نقطه بسازید و با <code>scipy.optimize</code> حل کنید.</li>
+          <li>Augmented Lagrangian را برای طراحی نانو انبرک پیاده کنید.</li>
+        </ol>
+      </div>
+
+      <div class="exercise-block ex-purple">
+        <div class="ex-header"><div class="ex-num">ج</div><div><div class="ex-title">تمرین‌های نوشتاری</div></div></div>
+        <ol class="ex-list">
+          <li>چهار شرط KKT را برای یک مسئله دلخواه بنویسید و تفسیر کنید.</li>
+          <li>ثابت کنید که در حالت محدب، Strong Duality برقرار است.</li>
+          <li>رابطه بین Regularization و قید را توضیح دهید.</li>
+        </ol>
+      </div>
+
+      <div class="exercise-block ex-red">
+        <div class="ex-header"><div class="ex-num">★</div><div><div class="ex-title">چالش خلاقانه</div></div></div>
+        <ol class="ex-list">
+          <li>یک مسئله طراحی نانو انبرک با ۳ قید (ولتاژ، فرکانس، حساسیت) بنویسید و حل کنید.</li>
+          <li>KKT را برای یک مسئله چندهدفه (Pareto) گسترش دهید.</li>
+          <li>Augmented Lagrangian را در PyTorch برای PINN با قید فیزیکی به‌کار ببرید.</li>
+        </ol>
+      </div>
+
+      <div class="email-banner">
+        <p><i class="fas fa-envelope" style="color: var(--primary);"></i> ارسال تمرین‌ها:</p>
+        <code>m.goharimanesh@gmail.com</code>
+        <p style="margin-top: 8px; font-size: 0.78rem;">Subject الزامی:</p>
+        <code>[Advanced Engineering Mathematics] HW22 - نام و نام خانوادگی - شماره دانشجویی</code>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۲۳ — نقشه راه پژوهش -->
+  <div class="slide" data-slide="23" data-topic="9">
+    <div class="slide-inner">
+      <span class="slide-num">نقشه راه</span>
+      <h2 class="slide-h1">کاربرد بهینه‌سازی با قید در پژوهش</h2>
+
+      <img src="images/research-roadmap.png" alt="Research Roadmap" class="img-box img-clickable" onerror="this.style.display='none'" data-caption="نقشه راه">
+
+      <div class="grid-2" style="margin-top: 14px;">
+        <div class="card" style="background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3);">
+          <div class="slide-h3" style="color: var(--primary);"><i class="fas fa-cube"></i> NEMS و MEMS</div>
+          <ul style="list-style: none; padding: 0; font-size: 0.82rem; color: var(--text-dim); line-height: 2;">
+            <li>🔹 طراحی معکوس با قید Pull-in</li>
+            <li>🔹 بهینه‌سازی چندهدفه</li>
+            <li>🔹 Topology Optimization</li>
+            <li>🔹 Robust Design</li>
+          </ul>
+        </div>
+        <div class="card" style="background: rgba(255, 183, 0, 0.06); border-color: rgba(255, 183, 0, 0.3);">
+          <div class="slide-h3" style="color: var(--gold);"><i class="fas fa-robot"></i> رباتیک</div>
+          <ul style="list-style: none; padding: 0; font-size: 0.82rem; color: var(--text-dim); line-height: 2;">
+            <li>🔹 Trajectory Optimization</li>
+            <li>🔹 MPC با قید</li>
+            <li>🔹 Inverse Kinematics</li>
+            <li>🔹 رباتیک نرم</li>
+          </ul>
+        </div>
+        <div class="card" style="background: rgba(168, 85, 247, 0.06); border-color: rgba(168, 85, 247, 0.3);">
+          <div class="slide-h3" style="color: var(--tertiary);"><i class="fas fa-brain"></i> یادگیری ماشین</div>
+          <ul style="list-style: none; padding: 0; font-size: 0.82rem; color: var(--text-dim); line-height: 2;">
+            <li>🔹 SVM با روش دوگان</li>
+            <li>🔹 Adversarial Robustness</li>
+            <li>🔹 Constrained RL</li>
+            <li>🔹 PINN با قید فیزیکی</li>
+          </ul>
+        </div>
+        <div class="card" style="background: rgba(236, 72, 153, 0.06); border-color: rgba(236, 72, 153, 0.3);">
+          <div class="slide-h3" style="color: var(--pink);"><i class="fas fa-file-alt"></i> جهت‌های مقاله</div>
+          <ul style="list-style: none; padding: 0; font-size: 0.82rem; color: var(--text-dim); line-height: 2;">
+            <li>🔹 Constrained PINN</li>
+            <li>🔹 Multi-objective NEMS design</li>
+            <li>🔹 Robust control with KKT</li>
+            <li>🔹 Hybrid KKT-ML</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="lecture-note" style="margin-top: 14px;">
+        <i class="fas fa-bullseye"></i>
+        <div class="lecture-note-content">
+          <strong>پیشنهاد استاد:</strong> KKT یکی از پرکاربردترین ابزارها در مقالات Q1 IEEE است. اگر به SVM، Constrained RL، یا طراحی NEMS علاقه دارید، این ابزار ضروری است.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۲۴ — خداحافظی -->
+  <div class="slide" data-slide="24" data-topic="9">
+    <div class="slide-inner title-slide">
+      <div style="font-size: 3.5rem; color: var(--gold); margin-bottom: 18px;">
+        <i class="fas fa-check-circle"></i>
+      </div>
+      <h2 class="slide-h1">پایان جلسه ۲۲ — بهینه‌سازی با قید</h2>
+      <p class="slide-text" style="font-size: 1rem;">
+        امروز یاد گرفتید چگونه در دنیای واقعی، با محدودیت‌ها بهینه کنید! 🌟
+      </p>
+
+      <div class="grid-4" style="margin-top: 20px; max-width: 900px; margin-left: auto; margin-right: auto;">
+        <div class="card" style="text-align: center; padding: 12px;">
+          <i class="fas fa-equals" style="font-size: 1.4rem; color: var(--primary); display: block; margin-bottom: 6px;"></i>
+          <div style="font-size: 0.78rem; font-weight: 700; color: var(--primary);">Lagrange</div>
+        </div>
+        <div class="card" style="text-align: center; padding: 12px;">
+          <i class="fas fa-less-than-equal" style="font-size: 1.4rem; color: var(--gold); display: block; margin-bottom: 6px;"></i>
+          <div style="font-size: 0.78rem; font-weight: 700; color: var(--gold);">KKT</div>
+        </div>
+        <div class="card" style="text-align: center; padding: 12px;">
+          <i class="fas fa-balance-scale" style="font-size: 1.4rem; color: var(--tertiary); display: block; margin-bottom: 6px;"></i>
+          <div style="font-size: 0.78rem; font-weight: 700; color: var(--tertiary);">Duality</div>
+        </div>
+        <div class="card" style="text-align: center; padding: 12px;">
+          <i class="fas fa-cube" style="font-size: 1.4rem; color: var(--pink); display: block; margin-bottom: 6px;"></i>
+          <div style="font-size: 0.78rem; font-weight: 700; color: var(--pink);">Convex</div>
+        </div>
+      </div>
+
+      <div class="math-box gold-math" style="margin-top: 22px; background: rgba(255, 183, 0, 0.08); padding: 22px; max-width: 700px; margin-left: auto; margin-right: auto;">
+        <div style="font-size: 1rem;">
+          $$\nabla f(x^*) + \sum_i \mu_i \nabla g_i(x^*) = 0$$
+        </div>
+        <p class="math-note">شرط ایستایی KKT — با $\mu_i g_i = 0$ و $\mu_i \geq 0$</p>
+      </div>
+
+      <div class="card" style="margin-top: 20px; max-width: 700px; margin-left: auto; margin-right: auto; background: rgba(168, 85, 247, 0.06); border-color: rgba(168, 85, 247, 0.3);">
+        <div class="slide-h3" style="justify-content: center; color: var(--tertiary);"><i class="fas fa-arrow-left"></i> جلسه ۲۳</div>
+        <p class="slide-text" style="font-size: 0.88rem;">
+          <strong style="color: var(--primary);">بهینه‌سازی تکاملی: GA و PSO</strong>
+        </p>
+        <ul style="list-style: none; padding: 0; font-size: 0.82rem; color: var(--text-dim); line-height: 2; margin-top: 8px;">
+          <li>🔹 الگوریتم ژنتیک (GA)</li>
+          <li>🔹 ازدحام ذرات (PSO)</li>
+          <li>🔹 مقایسه با گرادیان</li>
+          <li>🔹 کاربرد در طراحی NEMS</li>
+        </ul>
+      </div>
+
+      <p class="instructor-line" style="margin-top: 22px;">دکتر مسعود گوهری منش</p>
+      <p class="instructor-title-line">دانشیار گروه مهندسی مکانیک — دانشگاه تربت حیدریه</p>
+
+      <p style="font-size: 0.95rem; color: var(--gold); margin-top: 24px; font-weight: 800;">
+        🇮🇷 با افتخار برای دانشجویان مکاترونیک 🇮🇷
+      </p>
+    </div>
+  </div>
+
+</div>
+
+<div class="bottom-nav">
+  <button class="nav-btn" id="prevBtn" disabled><i class="fas fa-arrow-right"></i><span>قبلی</span></button>
+  <div class="dots-nav" id="dotsNav"></div>
+  <div class="slide-counter"><span id="currentSlide">۱</span> / ۲۴</div>
+  <button class="nav-btn" id="nextBtn"><span>بعدی</span><i class="fas fa-arrow-left"></i></button>
+</div>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- Lightbox -->
+<div class="lightbox" id="lightbox">
+  <button class="lightbox-close" id="lightboxClose"><i class="fas fa-times"></i></button>
+  <img src="" alt="" class="lightbox-img" id="lightboxImg">
+  <div class="lightbox-caption" id="lightboxCaption"></div>
+</div>
+
+<!-- Modal -->
+<div class="modal-overlay" id="conceptModal">
+  <div class="modal-box">
+    <button class="modal-close" id="conceptClose"><i class="fas fa-times"></i></button>
+    <h2 class="modal-title"><i class="fas fa-book-open"></i> لاگرانژ، KKT و پیوند با کاشانی</h2>
+
+    <div class="modal-section">
+      <div class="modal-section-title"><i class="fas fa-history"></i> کاشانی — پیشگام محاسبات با محدودیت</div>
+      <p>
+        <b>غیاث‌الدین جمشید کاشانی</b> (۱۳۸۰–۱۴۲۹ م) در کتاب <b>«مفتاح الحساب»</b> روش‌های محاسبه دقیق با محدودیت را بنیان گذاشت:
+      </p>
+      <ul>
+        <li>محاسبه سینوس با دقت ۱۶ رقم اعشار — با محدودیت‌های هندسی</li>
+        <li>یافتن زاویه بهینه (مثلاً زاویه‌ای که در آن ارتفاع بیشینه است)</li>
+        <li>روش‌های تکراری برای نزدیک شدن به جواب</li>
+        <li>روش «دو خطی» برای حل معادلات با محدودیت</li>
+      </ul>
+    </div>
+
+    <div class="modal-section">
+      <div class="modal-section-title"><i class="fas fa-brain"></i> پیوند لاگرانژ با کاشانی</div>
+      <p>
+        در بهینه‌سازی با قید، ضریب لاگرانژ ($\lambda$) همان <strong>قیمت سایه</strong> است — هزینه‌ی تحمیل یک قید اضافی. کاشانی، هزار سال پیش، این مفهوم را در قالب هندسی درک کرده بود:
+      </p>
+      <ul>
+        <li><strong>قید هندسی</strong> = محدودیت زاویه</li>
+        <li><strong>ضریب لاگرانژ</strong> = تأثیر تغییر قید بر جواب</li>
+        <li><strong>روش تکراری</strong> = KKT Iterative</li>
+        <li><strong>محاسبه دقیق</strong> = حل KKT</li>
+      </ul>
+    </div>
+
+    <div class="modal-section">
+      <div class="modal-section-title"><i class="fas fa-users"></i> تقارب معنایی</div>
+      <p>
+        همان‌طور که کاشانی برای محاسبه دقیق سینوس با محدودیت‌های هندسی، روش‌های تکراری را بنیان گذاشت، KKT نیز برای حل مسائل با محدودیت، شرط‌های دقیقی را تدوین کرد. هر دو از یک <strong>فلسفه</strong> می‌آیند: <strong>دقت در برابر محدودیت</strong>.
+      </p>
+    </div>
+
+    <div class="lecture-note" style="margin-top: 16px;">
+      <i class="fas fa-star"></i>
+      <div class="lecture-note-content">
+        <strong>درس امروز:</strong> KKT، ادامه‌ی سنت هزار ساله‌ی انسان در <strong>دقت در شرایط محدود</strong> است. از کاشانی تا KKT، همان تلاش برای یافتن بهترین جواب در دنیای محدودیت‌ها.
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ═══ Navigation ═══ */
+const slides = document.querySelectorAll('.slide');
+const totalSlides = slides.length;
+let currentSlide = 0;
+const topicPills = document.querySelectorAll('.topic-pill');
+
+const dotsNav = document.getElementById('dotsNav');
+for (let i = 0; i < totalSlides; i++) {
+  const dot = document.createElement('button');
+  dot.className = 'dot-nav' + (i === 0 ? ' active' : '');
+  dot.addEventListener('click', () => goToSlide(i));
+  dotsNav.appendChild(dot);
+}
+
+function goToSlide(n) {
+  if (n < 0 || n >= totalSlides) return;
+  slides.forEach((s, i) => {
+    s.classList.remove('active', 'prev');
+    if (i < n) s.classList.add('prev');
+    if (i === n) s.classList.add('active');
+  });
+  currentSlide = n;
+  updateNav();
+  playTransition();
+  setTimeout(() => {
+    initVisibleCharts();
+    if (window.MathJax && window.MathJax.typesetPromise) window.MathJax.typesetPromise();
+  }, 100);
+}
+
+function updateNav() {
+  document.querySelectorAll('.dot-nav').forEach((d, i) => d.classList.toggle('active', i === currentSlide));
+  document.getElementById('currentSlide').textContent = toFa(currentSlide + 1);
+  document.getElementById('prevBtn').disabled = currentSlide === 0;
+  document.getElementById('nextBtn').disabled = currentSlide === totalSlides - 1;
+  document.getElementById('progressFill').style.width = ((currentSlide + 1) / totalSlides * 100) + '%';
+  const currentTopic = slides[currentSlide].dataset.topic;
+  topicPills.forEach(pill => {
+    const t = parseInt(pill.dataset.topic);
+    const ct = parseInt(currentTopic);
+    pill.classList.toggle('active', t === ct);
+    pill.classList.toggle('done', t < ct);
+    if (t === ct) pill.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+  });
+}
+
+document.getElementById('prevBtn').addEventListener('click', () => goToSlide(currentSlide - 1));
+document.getElementById('nextBtn').addEventListener('click', () => goToSlide(currentSlide + 1));
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowLeft') { e.preventDefault(); goToSlide(currentSlide + 1); }
+  else if (e.key === 'ArrowRight') { e.preventDefault(); goToSlide(currentSlide - 1); }
+  else if (e.key === ' ') { e.preventDefault(); goToSlide(currentSlide + 1); }
+  else if (e.key === 'Home') { e.preventDefault(); goToSlide(0); }
+  else if (e.key === 'End') { e.preventDefault(); goToSlide(totalSlides - 1); }
+  else if (e.key === 'Escape') {
+    if (document.fullscreenElement) document.exitFullscreen();
+    closeLightbox();
+    closeConceptModal();
+    printMenu.classList.remove('show');
+  }
+});
+
+let touchStartX = 0, touchStartY = 0;
+document.addEventListener('touchstart', e => {
+  touchStartX = e.changedTouches[0].screenX;
+  touchStartY = e.changedTouches[0].screenY;
+}, { passive: true });
+document.addEventListener('touchend', e => {
+  const dx = e.changedTouches[0].screenX - touchStartX;
+  const dy = e.changedTouches[0].screenY - touchStartY;
+  if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy)) {
+    if (dx < 0) goToSlide(currentSlide + 1);
+    else goToSlide(currentSlide - 1);
+  }
+}, { passive: true });
+
+/* ═══ Lightbox ═══ */
+const lightbox = document.getElementById('lightbox');
+const lightboxImg = document.getElementById('lightboxImg');
+const lightboxCaption = document.getElementById('lightboxCaption');
+
+document.querySelectorAll('.img-clickable').forEach(img => {
+  img.addEventListener('click', e => {
+    e.stopPropagation();
+    const src = img.getAttribute('src');
+    const caption = img.getAttribute('data-caption') || img.getAttribute('alt') || '';
+    if (src) {
+      lightboxImg.src = src;
+      lightboxCaption.textContent = caption;
+      lightbox.classList.add('active');
+    }
+  });
+});
+
+document.getElementById('lightboxClose').addEventListener('click', closeLightbox);
+lightbox.addEventListener('click', e => {
+  if (e.target === lightbox) closeLightbox();
+});
+
+function closeLightbox() { lightbox.classList.remove('active'); }
+
+/* ═══ Modal ═══ */
+const conceptModal = document.getElementById('conceptModal');
+document.querySelectorAll('[data-concept]').forEach(el => {
+  el.addEventListener('click', e => {
+    e.stopPropagation();
+    conceptModal.classList.add('active');
+  });
+});
+document.getElementById('conceptClose').addEventListener('click', closeConceptModal);
+conceptModal.addEventListener('click', e => {
+  if (e.target === conceptModal) closeConceptModal();
+});
+function closeConceptModal() { conceptModal.classList.remove('active'); }
+
+/* ═══ Print ═══ */
+const printToggle = document.getElementById('printToggle');
+const printMenu = document.getElementById('printMenu');
+
+printToggle.addEventListener('click', e => {
+  e.stopPropagation();
+  printMenu.classList.toggle('show');
+});
+
+document.addEventListener('click', e => {
+  if (!printMenu.contains(e.target) && e.target !== printToggle) {
+    printMenu.classList.remove('show');
+  }
+});
+
+document.getElementById('printCurrentBtn').addEventListener('click', () => {
+  printMenu.classList.remove('show');
+  slides.forEach(s => s.classList.remove('print-visible'));
+  slides[currentSlide].classList.add('print-visible');
+  showToast('آماده‌سازی چاپ این صفحه...');
+  setTimeout(() => {
+    window.print();
+    setTimeout(() => slides.forEach(s => s.classList.remove('print-visible')), 500);
+  }, 300);
+});
+
+document.getElementById('printAllBtn').addEventListener('click', () => {
+  printMenu.classList.remove('show');
+  slides.forEach(s => s.classList.add('print-visible'));
+  showToast('آماده‌سازی چاپ همه صفحات...');
+  setTimeout(() => {
+    window.print();
+    setTimeout(() => slides.forEach(s => s.classList.remove('print-visible')), 500);
+  }, 300);
+});
+
+/* ═══ Audio ═══ */
+let audioCtx = null, soundEnabled = true;
+function initAudio() { if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
+function playTransition() {
+  if (!soundEnabled) return;
+  initAudio();
+  [440, 554.37].forEach((freq, i) => {
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.connect(gain); gain.connect(audioCtx.destination);
+    osc.frequency.value = freq; osc.type = 'sine';
+    const t = audioCtx.currentTime + i * 0.06;
+    gain.gain.setValueAtTime(0.04, t);
+    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.18);
+    osc.start(t); osc.stop(t + 0.22);
+  });
+}
+document.getElementById('soundToggle').addEventListener('click', function() {
+  soundEnabled = !soundEnabled;
+  this.classList.toggle('active', soundEnabled);
+  this.innerHTML = soundEnabled ? '<i class="fas fa-volume-up"></i>' : '<i class="fas fa-volume-mute"></i>';
+  showToast(soundEnabled ? 'صدا فعال' : 'صدا غیرفعال');
+});
+document.getElementById('fullscreenToggle').addEventListener('click', function() {
+  if (!document.fullscreenElement) { document.documentElement.requestFullscreen(); this.innerHTML = '<i class="fas fa-compress"></i>'; }
+  else { document.exitFullscreen(); this.innerHTML = '<i class="fas fa-expand"></i>'; }
+});
+function showToast(msg) {
+  const container = document.getElementById('toastContainer');
+  const toast = document.createElement('div');
+  toast.className = 'toast';
+  toast.innerHTML = `<i class="fas fa-info-circle"></i> ${msg}`;
+  container.appendChild(toast);
+  setTimeout(() => { toast.style.opacity = '0'; toast.style.transform = 'translateX(-60px)'; setTimeout(() => toast.remove(), 300); }, 2400);
+}
+function toFa(n) { const fa = ['۰','۱','۲','۳','۴','۵','۶','۷','۸','۹']; return String(n).replace(/\d/g, d => fa[d]); }
+
+/* ═══ Background ═══ */
+const bgCanvas = document.getElementById('bgCanvas');
+const bgCtx = bgCanvas.getContext('2d');
+let particles = [];
+function resizeBg() { bgCanvas.width = window.innerWidth; bgCanvas.height = window.innerHeight; }
+resizeBg();
+window.addEventListener('resize', resizeBg);
+class Particle {
+  constructor() { this.reset(); }
+  reset() {
+    this.x = Math.random() * bgCanvas.width;
+    this.y = Math.random() * bgCanvas.height;
+    this.size = Math.random() * 1.6 + 0.4;
+    this.speedX = (Math.random() - 0.5) * 0.3;
+    this.speedY = (Math.random() - 0.5) * 0.3;
+    this.opacity = Math.random() * 0.5 + 0.15;
+    const colors = ['#00d4aa', '#06b6d4', '#a855f7', '#ffb700'];
+    this.color = colors[Math.floor(Math.random() * colors.length)];
+  }
+  update() { this.x += this.speedX; this.y += this.speedY; if (this.x < 0 || this.x > bgCanvas.width || this.y < 0 || this.y > bgCanvas.height) this.reset(); }
+  draw() { bgCtx.beginPath(); bgCtx.arc(this.x, this.y, this.size, 0, Math.PI*2); bgCtx.fillStyle = this.color; bgCtx.globalAlpha = this.opacity; bgCtx.fill(); bgCtx.globalAlpha = 1; }
+}
+for (let i = 0; i < 50; i++) particles.push(new Particle());
+function animateBg() { bgCtx.clearRect(0, 0, bgCanvas.width, bgCanvas.height); particles.forEach(p => { p.update(); p.draw(); }); requestAnimationFrame(animateBg); }
+animateBg();
+
+/* ═══ Helpers ═══ */
+function setupCanvas(canvasId) {
+  const canvas = document.getElementById(canvasId);
+  if (!canvas) return null;
+  const dpr = window.devicePixelRatio || 1;
+  const rect = canvas.getBoundingClientRect();
+  canvas.width = rect.width * dpr; canvas.height = rect.height * dpr;
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+  return { ctx, w: rect.width, h: rect.height };
+}
+
+/* ═══ Lagrange Simulator ═══ */
+function drawLag() {
+  const s = setupCanvas('lagCanvas');
+  if (!s) return;
+  const { ctx, w, h } = s;
+  ctx.clearRect(0, 0, w, h);
+
+  const c = parseFloat(document.getElementById('lagC').value);
+
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+  ctx.fillRect(0, 0, w, h);
+
+  const cx = w / 2, cy = h / 2;
+  const scale = Math.min(w, h) * 0.35;
+
+  // Objective: f(x,y) = x^2 + y^2 (concentric circles)
+  ctx.strokeStyle = 'rgba(0, 212, 170, 0.4)';
+  ctx.lineWidth = 1.5;
+  for (let r = 0.5; r <= 3; r += 0.5) {
+    ctx.beginPath();
+    ctx.arc(cx, cy, r * scale * 0.8, 0, Math.PI * 2);
+    ctx.stroke();
+  }
+
+  // Constraint: x + y = c (line)
+  ctx.strokeStyle = '#ffb700';
+  ctx.lineWidth = 2.5;
+  ctx.beginPath();
+  const px1 = cx + (-3) * scale;
+  const py1 = cy - (c + 3) * scale * 0.8;
+  const px2 = cx + (3) * scale;
+  const py2 = cy - (c - 3) * scale * 0.8;
+  ctx.moveTo(px1, py1);
+  ctx.lineTo(px2, py2);
+  ctx.stroke();
+
+  // Unconstrained minimum (0,0)
+  ctx.fillStyle = '#ff4757';
+  ctx.beginPath();
+  ctx.arc(cx, cy, 6, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Constrained minimum: x = y = c/2
+  const xOpt = c / 2, yOpt = c / 2;
+  const optPx = cx + xOpt * scale;
+  const optPy = cy - yOpt * scale * 0.8;
+  ctx.fillStyle = '#00d4aa';
+  ctx.shadowColor = '#00d4aa';
+  ctx.shadowBlur = 12;
+  ctx.beginPath();
+  ctx.arc(optPx, optPy, 8, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.shadowBlur = 0;
+
+  // Labels
+  ctx.fillStyle = '#9aa7bd';
+  ctx.font = '11px Vazirmatn';
+  ctx.textAlign = 'center';
+  ctx.fillText('x', w - 20, cy + 5);
+  ctx.fillText('y', cx + 5, 15);
+
+  // Values
+  const lambda = -c / 2; // For f = x^2+y^2, h = x+y-c: λ = -c/2
+  document.getElementById('lagCValue').textContent = toFa(c.toFixed(1));
+  document.getElementById('lagUnconstrained').textContent = '(۰، ۰)';
+  document.getElementById('lagConstrained').textContent = `(${toFa(xOpt.toFixed(2))}، ${toFa(yOpt.toFixed(2))})`;
+  document.getElementById('lagLambda').textContent = toFa(lambda.toFixed(3));
+}
+
+/* ═══ Nano Design Simulator ═══ */
+function drawNanoDesign() {
+  const s = setupCanvas('nanoDesignCanvas');
+  if (!s) return;
+  const { ctx, w, h } = s;
+  ctx.clearRect(0, 0, w, h);
+
+  const Vmin = parseFloat(document.getElementById('nanoVmin').value);
+
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+  ctx.fillRect(0, 0, w, h);
+
+  const padX = 60, padY_top = 40, padY_bot = 60;
+  const plotW = w - 2 * padX;
+  const plotH = h - padY_top - padY_bot;
+
+  const xToPx = (x) => padX + x * plotW;
+  const yToPy = (y) => padY_top + plotH - y * plotH;
+
+  // Axes
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.moveTo(padX, padY_top);
+  ctx.lineTo(padX, padY_top + plotH);
+  ctx.lineTo(padX + plotW, padY_top + plotH);
+  ctx.stroke();
+
+  // Curve: Volume vs V_pull-in (trade-off)
+  ctx.beginPath();
+  ctx.strokeStyle = '#00d4aa';
+  ctx.lineWidth = 2.5;
+  for (let i = 0; i <= 100; i++) {
+    const v = i / 100 * 15 + 2; // V from 2 to 17
+    const vol = 1000 / (v * v); // Volume decreases with V
+    const px = xToPx((v - 2) / 15);
+    const py = yToPy(Math.min(vol / 250, 1));
+    if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+  }
+  ctx.stroke();
+
+  // Constraint line at Vmin
+  const xConstraint = xToPx((Vmin - 2) / 15);
+  ctx.strokeStyle = '#ff4757';
+  ctx.lineWidth = 2;
+  ctx.setLineDash([5, 4]);
+  ctx.beginPath();
+  ctx.moveTo(xConstraint, padY_top);
+  ctx.lineTo(xConstraint, padY_top + plotH);
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Feasible region (right of constraint)
+  ctx.fillStyle = 'rgba(0, 212, 170, 0.1)';
+  ctx.fillRect(xConstraint, padY_top, padX + plotW - xConstraint, plotH);
+
+  // Optimal point (on constraint)
+  const optimalVol = 1000 / (Vmin * Vmin);
+  const optPx = xConstraint;
+  const optPy = yToPy(Math.min(optimalVol / 250, 1));
+  ctx.fillStyle = '#ffb700';
+  ctx.shadowColor = '#ffb700';
+  ctx.shadowBlur = 15;
+  ctx.beginPath();
+  ctx.arc(optPx, optPy, 8, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.shadowBlur = 0;
+
+  // Labels
+  ctx.fillStyle = '#9aa7bd';
+  ctx.font = '11px Vazirmatn';
+  ctx.textAlign = 'right';
+  ctx.fillText('حجم', padX - 8, padY_top + 15);
+  ctx.textAlign = 'center';
+  ctx.fillText('V_pull-in (V)', padX + plotW / 2, padY_top + plotH + 25);
+
+  ctx.fillStyle = '#ff4757';
+  ctx.font = 'bold 11px Vazirmatn';
+  ctx.textAlign = 'center';
+  ctx.fillText(`V_min = ${toFa(Vmin)}`, xConstraint, padY_top + 15);
+
+  // Update
+  document.getElementById('nanoVminValue').textContent = toFa(Vmin.toFixed(1));
+  document.getElementById('nanoVol').textContent = toFa(optimalVol.toFixed(0)) + ' μm³';
+  document.getElementById('nanoVp').textContent = toFa(Vmin.toFixed(1)) + ' V';
+  document.getElementById('nanoLambda').textContent = toFa((1000 / (Vmin * Vmin * Vmin)).toFixed(2));
+}
+
+/* ═══ KKT Simulator ═══ */
+function drawKKT() {
+  const s = setupCanvas('kktCanvas');
+  if (!s) return;
+  const { ctx, w, h } = s;
+  ctx.clearRect(0, 0, w, h);
+
+  const c = parseFloat(document.getElementById('kktC').value);
+
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+  ctx.fillRect(0, 0, w, h);
+
+  const padX = 50, padY_top = 30, padY_bot = 50;
+  const plotW = w - 2 * padX;
+  const plotH = h - padY_top - padY_bot;
+
+  const xToPx = (x) => padX + ((x + 2) / 4) * plotW;
+  const yToPy = (y) => padY_top + plotH - (y / 4) * plotH;
+
+  // Axes
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(padX, yToPy(0));
+  ctx.lineTo(padX + plotW, yToPy(0));
+  ctx.stroke();
+
+  // Feasible region: x <= c (shaded)
+  const xConstraint = c;
+  ctx.fillStyle = 'rgba(0, 212, 170, 0.15)';
+  ctx.fillRect(padX, padY_top, xToPx(xConstraint) - padX, plotH);
+
+  // Constraint line
+  ctx.strokeStyle = '#ff4757';
+  ctx.lineWidth = 2.5;
+  ctx.beginPath();
+  ctx.moveTo(xToPx(xConstraint), padY_top);
+  ctx.lineTo(xToPx(xConstraint), padY_top + plotH);
+  ctx.stroke();
+
+  // Objective: f(x) = (x - 1.5)^2 + 0.5 (unconstrained min at x = 1.5)
+  ctx.strokeStyle = '#00d4aa';
+  ctx.lineWidth = 2.5;
+  ctx.beginPath();
+  for (let i = 0; i <= 200; i++) {
+    const x = -2 + (i / 200) * 4;
+    const y = (x - 1.5)**2 + 0.5;
+    const px = xToPx(x);
+    const py = yToPy(y);
+    if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+  }
+  ctx.stroke();
+
+  // Unconstrained minimum
+  const unconstPx = xToPx(1.5);
+  const unconstPy = yToPy(0.5);
+  ctx.fillStyle = '#a855f7';
+  ctx.beginPath();
+  ctx.arc(unconstPx, unconstPy, 6, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Constrained minimum (project to constraint if unconstrained is outside)
+  let xOpt, mu;
+  if (1.5 <= c) {
+    xOpt = 1.5;
+    mu = 0;
+  } else {
+    xOpt = c;
+    mu = 2 * (c - 1.5); // ∂f/∂x = 2(x - 1.5)
+  }
+
+  const optPx = xToPx(xOpt);
+  const optPy = yToPy((xOpt - 1.5)**2 + 0.5);
+  ctx.fillStyle = '#ffb700';
+  ctx.shadowColor = '#ffb700';
+  ctx.shadowBlur = 12;
+  ctx.beginPath();
+  ctx.arc(optPx, optPy, 8, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.shadowBlur = 0;
+
+  // Labels
+  ctx.fillStyle = '#9aa7bd';
+  ctx.font = '11px Vazirmatn';
+  ctx.textAlign = 'center';
+  ctx.fillText('x', padX + plotW / 2, padY_top + plotH + 25);
+
+  ctx.font = 'bold 11px Vazirmatn';
+  ctx.textAlign = 'right';
+  ctx.fillStyle = '#a855f7';
+  ctx.fillText('بدون قید', w - 20, 22);
+  ctx.fillStyle = '#ffb700';
+  ctx.fillText('با قید', w - 100, 22);
+
+  // Update
+  document.getElementById('kktCValue').textContent = toFa(c.toFixed(1));
+  document.getElementById('kktOpt').textContent = toFa(xOpt.toFixed(3));
+  document.getElementById('kktMu').textContent = toFa(Math.abs(mu).toFixed(3));
+
+  const statusEl = document.getElementById('kktStatus');
+  if (mu === 0) {
+    statusEl.textContent = 'غیرفعال (μ=0)';
+    statusEl.style.color = 'var(--success)';
+  } else {
+    statusEl.textContent = 'فعال (μ>0)';
+    statusEl.style.color = 'var(--danger)';
+  }
+}
+
+/* ═══ QP Simulator ═══ */
+function drawQP() {
+  const s = setupCanvas('qpCanvas');
+  if (!s) return;
+  const { ctx, w, h } = s;
+  ctx.clearRect(0, 0, w, h);
+
+  const c = parseFloat(document.getElementById('qpC').value);
+
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+  ctx.fillRect(0, 0, w, h);
+
+  const padX = 50, padY_top = 30, padY_bot = 50;
+  const plotW = w - 2 * padX;
+  const plotH = h - padY_top - padY_bot;
+
+  const xToPx = (x) => padX + ((x + 2) / 4) * plotW;
+  const yToPy = (y) => padY_top + plotH - (y / 4) * plotH;
+
+  // Axes
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(padX, yToPy(0));
+  ctx.lineTo(padX + plotW, yToPy(0));
+  ctx.stroke();
+
+  // Constraint: x = c
+  ctx.fillStyle = 'rgba(0, 212, 170, 0.15)';
+  ctx.fillRect(padX, padY_top, xToPx(c) - padX, plotH);
+
+  ctx.strokeStyle = '#ff4757';
+  ctx.lineWidth = 2.5;
+  ctx.beginPath();
+  ctx.moveTo(xToPx(c), padY_top);
+  ctx.lineTo(xToPx(c), padY_top + plotH);
+  ctx.stroke();
+
+  // Objective: f(x) = x^2
+  ctx.strokeStyle = '#00d4aa';
+  ctx.lineWidth = 2.5;
+  ctx.beginPath();
+  for (let i = 0; i <= 200; i++) {
+    const x = -2 + (i / 200) * 4;
+    const y = x * x;
+    const px = xToPx(x);
+    const py = yToPy(y);
+    if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+  }
+  ctx.stroke();
+
+  // Unconstrained min
+  ctx.fillStyle = '#a855f7';
+  ctx.beginPath();
+  ctx.arc(xToPx(0), yToPy(0), 6, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Constrained min
+  let xOpt;
+  if (c >= 0) {
+    xOpt = 0;
+  } else {
+    xOpt = c;
+  }
+
+  const optPx = xToPx(xOpt);
+  const optPy = yToPy(xOpt * xOpt);
+  ctx.fillStyle = '#ffb700';
+  ctx.shadowColor = '#ffb700';
+  ctx.shadowBlur = 12;
+  ctx.beginPath();
+  ctx.arc(optPx, optPy, 8, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.shadowBlur = 0;
+
+  // Labels
+  ctx.fillStyle = '#9aa7bd';
+  ctx.font = '11px Vazirmatn';
+  ctx.textAlign = 'center';
+  ctx.fillText('x', padX + plotW / 2, padY_top + plotH + 25);
+
+  // Update
+  document.getElementById('qpCValue').textContent = toFa(c.toFixed(1));
+  document.getElementById('qpOpt').textContent = toFa(xOpt.toFixed(3));
+  document.getElementById('qpF').textContent = toFa((xOpt * xOpt).toFixed(3));
+
+  const statusEl = document.getElementById('qpStatus');
+  if (c >= 0) {
+    statusEl.textContent = 'غیرفعال';
+    statusEl.style.color = 'var(--success)';
+  } else {
+    statusEl.textContent = 'فعال';
+    statusEl.style.color = 'var(--danger)';
+  }
+}
+
+/* ═══ Events ═══ */
+document.getElementById('lagC').addEventListener('input', drawLag);
+document.getElementById('nanoVmin').addEventListener('input', drawNanoDesign);
+document.getElementById('kktC').addEventListener('input', drawKKT);
+document.getElementById('qpC').addEventListener('input', drawQP);
+
+/* ═══ Code Tabs ═══ */
+document.querySelectorAll('.code-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    const parent = tab.parentElement;
+    parent.querySelectorAll('.code-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    const contentId = 'code-' + tab.dataset.code;
+    const content = document.getElementById(contentId);
+    if (content) {
+      const allContents = parent.parentElement.querySelectorAll('.code-content');
+      allContents.forEach(c => c.classList.remove('active'));
+      content.classList.add('active');
+    }
+  });
+});
+
+/* ═══ Render ═══ */
+function initVisibleCharts() {
+  const activeSlide = document.querySelector('.slide.active');
+  if (!activeSlide) return;
+  const num = activeSlide.dataset.slide;
+  if (num === '8') drawLag();
+  else if (num === '11') drawNanoDesign();
+  else if (num === '14') drawKKT();
+  else if (num === '18') drawQP();
+}
+
+/* ═══ Init ═══ */
+updateNav();
+setTimeout(() => {
+  initVisibleCharts();
+  if (window.MathJax && window.MathJax.typesetPromise) window.MathJax.typesetPromise();
+}, 400);
+setTimeout(() => showToast('به جلسه ۲۲ خوش آمدید — بهینه‌سازی با قید 🌟'), 1000);
+
+window.addEventListener('resize', () => setTimeout(() => {
+  initVisibleCharts();
+  if (window.MathJax && window.MathJax.typesetPromise) window.MathJax.typesetPromise();
+}, 200));
+</script>
+
+</body>
+</html>

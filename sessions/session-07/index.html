@@ -1,0 +1,2002 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>جلسه ۷ — معادله موج و حل دالامبر | دکتر مسعود گوهری منش</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+<script>
+window.MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']],
+    displayMath: [['$$', '$$'], ['\\[', '\\]']],
+    processEscapes: true
+  },
+  options: { skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'] },
+  svg: { fontCache: 'global' }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" async></script>
+
+<style>
+:root {
+  --primary: #00d4aa;
+  --secondary: #06b6d4;
+  --tertiary: #a855f7;
+  --gold: #ffb700;
+  --success: #22c55e;
+  --danger: #ff4757;
+  --pink: #ec4899;
+  --dark: #050818;
+  --darker: #020410;
+  --card-bg: rgba(255, 255, 255, 0.05);
+  --card-border: rgba(255, 255, 255, 0.1);
+  --text: #e8eef7;
+  --text-dim: #9aa7bd;
+  --wave: #00d4aa;
+  --dalembert: #ffb700;
+  --string: #ec4899;
+  --pin: #a855f7;
+  --iran-green: #239f40;
+  --iran-red: #da0000;
+  --iran-white: #ffffff;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { overflow: hidden; height: 100%; }
+body {
+  font-family: 'Vazirmatn', sans-serif;
+  background: var(--dark);
+  color: var(--text);
+  direction: rtl;
+  line-height: 1.8;
+}
+#bgCanvas { position: fixed; inset: 0; z-index: -2; background: radial-gradient(ellipse at top, #0a1230 0%, var(--darker) 50%, #000 100%); }
+.glow-orb { position: fixed; border-radius: 50%; filter: blur(120px); opacity: 0.3; z-index: -1; pointer-events: none; animation: floatOrb 25s ease-in-out infinite; }
+.orb1 { width: 600px; height: 600px; background: var(--wave); top: -200px; right: -200px; }
+.orb2 { width: 500px; height: 500px; background: var(--dalembert); bottom: -150px; left: -150px; animation-delay: -8s; }
+.orb3 { width: 400px; height: 400px; background: var(--pin); top: 30%; left: 25%; animation-delay: -15s; opacity: 0.12; }
+@keyframes floatOrb { 0%, 100% { transform: translate(0, 0) scale(1); } 33% { transform: translate(50px, -40px) scale(1.15); } 66% { transform: translate(-40px, 50px) scale(0.9); } }
+
+.top-header { position: fixed; top: 0; left: 0; right: 0; height: 82px; background: rgba(5, 8, 24, 0.9); backdrop-filter: blur(15px); border-bottom: 1px solid var(--card-border); display: flex; align-items: center; justify-content: space-between; padding: 0 18px; z-index: 100; }
+.header-left { display: flex; align-items: center; gap: 14px; }
+.header-signature { height: 60px; width: auto; max-width: 170px; object-fit: contain; filter: drop-shadow(0 0 10px rgba(0, 212, 170, 0.4)); border-radius: 8px; background: rgba(255, 255, 255, 0.05); padding: 4px; }
+.header-text { display: flex; flex-direction: column; line-height: 1.35; }
+.header-name { font-size: 0.88rem; color: var(--gold); font-weight: 800; white-space: nowrap; }
+.header-univ { font-size: 0.7rem; color: var(--text-dim); font-weight: 500; }
+.header-controls { display: flex; gap: 8px; flex-shrink: 0; align-items: center; }
+.iran-flag-mini {
+  width: 42px;
+  height: 28px;
+  border-radius: 4px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  animation: waveFlag 2.5s ease-in-out infinite;
+  position: relative;
+}
+.iran-flag-mini::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, var(--iran-green) 0%, var(--iran-green) 33%, var(--iran-white) 33%, var(--iran-white) 66%, var(--iran-red) 66%, var(--iran-red) 100%);
+}
+.iran-flag-mini::after {
+  content: '☫';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: var(--iran-red);
+  font-size: 0.9rem;
+  font-weight: 900;
+  line-height: 1;
+}
+@keyframes waveFlag {
+  0%, 100% { transform: skewY(0deg); }
+  25% { transform: skewY(-3deg); }
+  75% { transform: skewY(3deg); }
+}
+.ctrl-btn { width: 38px; height: 38px; border-radius: 10px; border: 1px solid var(--card-border); background: var(--card-bg); backdrop-filter: blur(10px); color: var(--text); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; transition: all 0.3s ease; }
+.ctrl-btn:hover { background: var(--primary); color: var(--dark); transform: translateY(-2px); }
+.ctrl-btn.active { background: var(--primary); color: var(--dark); }
+
+.topic-nav { position: fixed; top: 82px; left: 0; right: 0; height: 36px; background: rgba(5, 8, 24, 0.9); backdrop-filter: blur(10px); border-bottom: 1px solid var(--card-border); z-index: 99; display: flex; align-items: center; gap: 6px; padding: 0 18px; overflow-x: auto; scrollbar-width: none; }
+.topic-nav::-webkit-scrollbar { display: none; }
+.topic-pill { padding: 4px 11px; border-radius: 20px; font-size: 0.7rem; font-weight: 600; white-space: nowrap; color: var(--text-dim); background: rgba(255, 255, 255, 0.04); border: 1px solid transparent; transition: all 0.3s ease; }
+.topic-pill.active { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: var(--dark); font-weight: 800; box-shadow: 0 3px 10px rgba(0, 212, 170, 0.35); }
+.topic-pill.done { color: var(--primary); border-color: rgba(0, 212, 170, 0.3); }
+
+.progress-top { position: fixed; top: 118px; left: 0; right: 0; height: 3px; background: rgba(255, 255, 255, 0.05); z-index: 98; }
+.progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--primary), var(--secondary), var(--tertiary)); transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 0 12px var(--primary); }
+
+.slide-container { position: fixed; inset: 121px 0 0 0; overflow: hidden; }
+.slide { position: absolute; inset: 0; padding: 24px 50px 90px; opacity: 0; transform: translateX(-40px); pointer-events: none; transition: opacity 0.5s ease, transform 0.5s cubic-bezier(0.4, 0, 0.2, 1); overflow-y: auto; overflow-x: hidden; }
+.slide.active { opacity: 1; transform: translateX(0); pointer-events: auto; }
+.slide.prev { transform: translateX(40px); }
+.slide::-webkit-scrollbar { width: 6px; }
+.slide::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 3px; }
+.slide-inner { max-width: 1200px; margin: 0 auto; animation: contentFade 0.6s ease; }
+@keyframes contentFade { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+.slide-num { display: inline-block; padding: 5px 14px; border-radius: 20px; background: rgba(0, 212, 170, 0.15); color: var(--primary); font-size: 0.72rem; font-weight: 700; margin-bottom: 10px; }
+.slide-h1 { font-size: clamp(1.3rem, 3.2vw, 2rem); font-weight: 900; background: linear-gradient(135deg, var(--primary), var(--secondary), var(--tertiary), var(--gold)); background-size: 300% 300%; -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; animation: gradientShift 6s ease infinite; margin-bottom: 16px; line-height: 1.35; }
+@keyframes gradientShift { 0%, 100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
+.slide-h3 { font-size: 0.98rem; font-weight: 700; color: var(--text); margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+.slide-h3 i { color: var(--gold); font-size: 0.88rem; }
+.slide-text { font-size: 0.9rem; color: var(--text-dim); line-height: 2; margin-bottom: 12px; }
+
+.card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 18px; padding: 18px; backdrop-filter: blur(12px); transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1); }
+.card:hover { transform: translateY(-4px); border-color: rgba(0, 212, 170, 0.4); box-shadow: 0 15px 35px rgba(0, 212, 170, 0.12); }
+.grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+.grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; }
+
+.title-slide { text-align: center; padding-top: 5px; }
+.title-slide .hero-img { width: 100%; max-width: 520px; height: 170px; object-fit: contain; background: rgba(0, 0, 0, 0.2); padding: 6px; border-radius: 20px; margin: 0 auto 12px; display: block; border: 1px solid var(--card-border); box-shadow: 0 20px 40px rgba(0, 212, 170, 0.15); }
+.title-slide .bismillah { font-size: 1.2rem; font-weight: 500; background: linear-gradient(90deg, var(--gold), var(--primary), var(--secondary)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 4px; }
+.title-slide .hoval { font-size: 0.82rem; color: var(--text-dim); margin-bottom: 16px; letter-spacing: 1px; }
+.title-slide .main-title { font-size: clamp(1.7rem, 4.2vw, 2.6rem); font-weight: 900; background: linear-gradient(135deg, var(--wave), var(--dalembert), var(--pin)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 10px; line-height: 1.3; }
+.title-slide .subtitle { font-size: clamp(0.9rem, 2vw, 1.05rem); color: var(--text-dim); margin-bottom: 18px; }
+.title-slide .euler-box { display: inline-block; padding: 12px 30px; border-radius: 18px; background: var(--card-bg); border: 1px solid var(--card-border); backdrop-filter: blur(15px); margin-bottom: 16px; }
+.title-slide .instructor-line { font-size: 0.92rem; color: var(--gold); font-weight: 700; margin-bottom: 3px; }
+.title-slide .instructor-title-line { font-size: 0.78rem; color: var(--text-dim); margin-bottom: 12px; }
+.title-slide .semester { display: inline-block; padding: 6px 18px; border-radius: 50px; background: var(--card-bg); border: 1px solid var(--card-border); font-size: 0.78rem; color: var(--text-dim); }
+
+.math-box { background: rgba(0, 212, 170, 0.06); border: 1px solid rgba(0, 212, 170, 0.25); border-radius: 14px; padding: 16px 22px; margin: 12px 0; text-align: center; direction: ltr; position: relative; overflow-x: auto; overflow-y: hidden; }
+.math-box::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--primary), var(--secondary), var(--tertiary)); }
+.math-box .MathJax, .math-box mjx-container { color: var(--primary) !important; font-size: 1em !important; }
+.math-box.gold-math .MathJax, .math-box.gold-math mjx-container { color: var(--gold) !important; }
+.math-box.purple-math .MathJax, .math-box.purple-math mjx-container { color: var(--tertiary) !important; }
+.math-box.pink-math .MathJax, .math-box.pink-math mjx-container { color: var(--string) !important; }
+.math-note { font-family: 'Vazirmatn', sans-serif; font-size: 0.76rem; color: var(--text-dim); direction: rtl; margin-top: 8px; font-style: italic; text-align: center; }
+
+.simulator { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 18px; padding: 16px; margin: 12px 0; backdrop-filter: blur(12px); }
+.sim-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; flex-wrap: wrap; gap: 10px; }
+.sim-title { font-size: 0.9rem; font-weight: 700; color: var(--gold); display: flex; align-items: center; gap: 8px; }
+.sim-controls { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.slider-group { display: flex; align-items: center; gap: 8px; background: rgba(0, 0, 0, 0.3); padding: 6px 12px; border-radius: 10px; border: 1px solid var(--card-border); }
+.slider-group label { font-size: 0.72rem; color: var(--text-dim); white-space: nowrap; }
+.slider-group input[type="range"] { width: 100px; accent-color: var(--primary); cursor: pointer; }
+.slider-value { font-family: 'Courier New', monospace; font-size: 0.78rem; color: var(--primary); font-weight: 700; min-width: 30px; text-align: center; }
+.canvas-wrapper { position: relative; width: 100%; height: 260px; background: rgba(0, 0, 0, 0.4); border-radius: 12px; overflow: hidden; border: 1px solid var(--card-border); }
+.canvas-wrapper canvas { width: 100%; height: 100%; display: block; }
+
+.img-box { width: 100%; max-height: 280px; border-radius: 16px; border: 1px solid var(--card-border); margin: 12px 0; display: block; object-fit: contain; background: rgba(0, 0, 0, 0.3); padding: 8px; }
+
+.exercise-block { border-radius: 16px; padding: 16px; border: 1px solid; position: relative; overflow: hidden; margin-bottom: 12px; }
+.exercise-block::before { content: ''; position: absolute; top: 0; right: 0; width: 4px; height: 100%; }
+.ex-yellow { background: rgba(255, 217, 61, 0.06); border-color: rgba(255, 217, 61, 0.25); }
+.ex-yellow::before { background: #ffd93d; }
+.ex-green { background: rgba(107, 207, 127, 0.06); border-color: rgba(107, 207, 127, 0.25); }
+.ex-green::before { background: #6bcf7f; }
+.ex-purple { background: rgba(168, 85, 247, 0.06); border-color: rgba(168, 85, 247, 0.25); }
+.ex-purple::before { background: var(--tertiary); }
+.ex-red { background: rgba(255, 107, 107, 0.06); border-color: rgba(255, 107, 107, 0.25); }
+.ex-red::before { background: #ff6b6b; }
+.ex-header { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+.ex-num { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 0.8rem; color: var(--dark); flex-shrink: 0; }
+.ex-yellow .ex-num { background: #ffd93d; }
+.ex-green .ex-num { background: #6bcf7f; }
+.ex-purple .ex-num { background: var(--tertiary); color: #fff; }
+.ex-red .ex-num { background: #ff6b6b; color: #fff; }
+.ex-title { font-size: 0.92rem; font-weight: 800; }
+.ex-list { list-style: none; padding: 0; counter-reset: item; }
+.ex-list li { position: relative; padding: 7px 34px 7px 10px; font-size: 0.83rem; color: var(--text-dim); line-height: 1.8; border-bottom: 1px dashed rgba(255, 255, 255, 0.05); }
+.ex-list li:last-child { border-bottom: none; }
+.ex-list li::before { counter-increment: item; content: counter(item); position: absolute; right: 4px; top: 9px; width: 22px; height: 22px; border-radius: 50%; background: rgba(255, 255, 255, 0.08); color: var(--text); font-size: 0.7rem; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+.email-banner { margin-top: 12px; padding: 12px; border-radius: 14px; background: linear-gradient(135deg, rgba(0, 212, 170, 0.1), rgba(168, 85, 247, 0.1)); border: 1px dashed rgba(0, 212, 170, 0.4); text-align: center; }
+.email-banner p { font-size: 0.8rem; color: var(--text); margin-bottom: 5px; }
+.email-banner code { display: inline-block; padding: 5px 12px; border-radius: 8px; background: rgba(0, 0, 0, 0.4); color: var(--primary); font-family: 'Courier New', monospace; font-size: 0.76rem; direction: ltr; margin-top: 3px; }
+
+.code-tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--card-border); }
+.code-tab { padding: 8px 16px; border-radius: 10px 10px 0 0; background: transparent; border: none; color: var(--text-dim); font-family: inherit; font-size: 0.8rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; }
+.code-tab.active { background: rgba(0, 212, 170, 0.1); color: var(--primary); border-bottom: 2px solid var(--primary); }
+.code-content { display: none; background: #0a0f24; border: 1px solid var(--card-border); border-top: none; border-radius: 0 0 12px 12px; padding: 14px; overflow-x: auto; direction: ltr; text-align: left; }
+.code-content.active { display: block; }
+.code-content pre { margin: 0; font-family: 'Courier New', Consolas, monospace; font-size: 0.76rem; line-height: 1.6; color: #e8eef7; white-space: pre; }
+.code-content .kw { color: #ff79c6; }
+.code-content .fn { color: #50fa7b; }
+.code-content .num { color: #bd93f9; }
+.code-content .str { color: #f1fa8c; }
+.code-content .cm { color: #6272a4; font-style: italic; }
+
+.bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; height: 58px; background: rgba(5, 8, 24, 0.9); backdrop-filter: blur(15px); border-top: 1px solid var(--card-border); display: flex; align-items: center; justify-content: space-between; padding: 0 20px; z-index: 100; }
+.nav-btn { padding: 8px 18px; border-radius: 12px; border: 1px solid var(--card-border); background: var(--card-bg); color: var(--text); cursor: pointer; font-family: inherit; font-size: 0.82rem; font-weight: 600; display: flex; align-items: center; gap: 7px; transition: all 0.3s ease; }
+.nav-btn:hover:not(:disabled) { background: var(--primary); color: var(--dark); transform: translateY(-2px); }
+.nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+.dots-nav { display: flex; gap: 4px; flex-wrap: wrap; justify-content: center; max-width: 60%; }
+.dot-nav { width: 8px; height: 8px; border-radius: 50%; background: rgba(255, 255, 255, 0.15); cursor: pointer; border: none; padding: 0; transition: all 0.3s ease; }
+.dot-nav.active { background: var(--primary); width: 22px; border-radius: 5px; box-shadow: 0 0 10px var(--primary); }
+.slide-counter { font-size: 0.78rem; color: var(--text-dim); font-family: 'Courier New', monospace; min-width: 60px; text-align: center; }
+.slide-counter span { color: var(--primary); font-weight: 800; }
+
+.toast-container { position: fixed; bottom: 76px; left: 24px; z-index: 9999; display: flex; flex-direction: column; gap: 8px; }
+.toast { background: rgba(10, 18, 40, 0.95); border: 1px solid var(--primary); border-radius: 14px; padding: 11px 16px; color: var(--text); font-size: 0.82rem; backdrop-filter: blur(12px); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); display: flex; align-items: center; gap: 8px; animation: slideIn 0.35s ease; max-width: 320px; }
+.toast i { color: var(--primary); }
+@keyframes slideIn { from { opacity: 0; transform: translateX(-60px); } to { opacity: 1; transform: translateX(0); } }
+
+.acronym-box { display: inline-block; padding: 3px 10px; border-radius: 8px; background: rgba(255, 183, 0, 0.15); border: 1px solid rgba(255, 183, 0, 0.4); color: var(--gold); font-family: 'Courier New', monospace; font-size: 0.78rem; font-weight: 700; direction: ltr; margin: 0 4px; }
+.acronym-full { font-size: 0.72rem; color: var(--text-dim); font-style: italic; }
+
+.quote-box {
+  background: linear-gradient(135deg, rgba(255, 183, 0, 0.08), rgba(168, 85, 247, 0.05));
+  border-right: 4px solid var(--gold);
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin: 14px 0;
+  font-style: italic;
+  position: relative;
+}
+.quote-box::before {
+  content: '"';
+  position: absolute;
+  top: -10px;
+  right: 15px;
+  font-size: 4rem;
+  color: var(--gold);
+  opacity: 0.3;
+  font-family: Georgia, serif;
+  line-height: 1;
+}
+.quote-text {
+  font-size: 0.92rem;
+  color: var(--text);
+  line-height: 2;
+  margin-bottom: 8px;
+  direction: ltr;
+  text-align: left;
+}
+.quote-translation {
+  font-size: 0.85rem;
+  color: var(--text-dim);
+  line-height: 1.9;
+  padding-right: 16px;
+  border-right: 2px solid var(--gold);
+  margin-right: 8px;
+}
+.quote-author {
+  font-size: 0.78rem;
+  color: var(--gold);
+  margin-top: 8px;
+  text-align: left;
+  font-style: normal;
+  font-weight: 700;
+}
+
+.ref-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.78rem;
+  direction: rtl;
+}
+.ref-table thead { background: rgba(0, 212, 170, 0.1); }
+.ref-table th {
+  padding: 10px;
+  color: var(--primary);
+  border: 1px solid var(--card-border);
+  text-align: center;
+  font-weight: 700;
+}
+.ref-table td {
+  padding: 8px 10px;
+  border: 1px solid var(--card-border);
+  text-align: center;
+  color: var(--text-dim);
+  font-family: 'Courier New', monospace;
+}
+.ref-table td:first-child {
+  color: var(--text);
+  font-family: 'Vazirmatn', sans-serif;
+}
+
+.podcast-card {
+  background: linear-gradient(135deg, rgba(168, 85, 247, 0.08), rgba(0, 212, 170, 0.05));
+  border: 1px solid rgba(168, 85, 247, 0.3);
+  border-radius: 16px;
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  color: var(--text);
+  transition: all 0.3s ease;
+  margin-bottom: 10px;
+}
+.podcast-card:hover {
+  transform: translateX(-6px);
+  border-color: var(--tertiary);
+  box-shadow: 0 10px 25px rgba(168, 85, 247, 0.2);
+}
+.podcast-icon {
+  width: 46px; height: 46px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, var(--tertiary), var(--pink));
+  display: flex; align-items: center; justify-content: center;
+  color: #fff; font-size: 1.2rem;
+  flex-shrink: 0;
+}
+.podcast-info { flex: 1; }
+.podcast-title { font-size: 0.9rem; font-weight: 800; color: var(--text); margin-bottom: 2px; }
+.podcast-desc { font-size: 0.72rem; color: var(--text-dim); }
+
+.lecture-note {
+  background: rgba(0, 212, 170, 0.06);
+  border: 1px solid rgba(0, 212, 170, 0.3);
+  border-radius: 12px;
+  padding: 12px 16px;
+  margin: 10px 0;
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+.lecture-note i {
+  color: var(--primary);
+  font-size: 1.1rem;
+  margin-top: 3px;
+}
+.lecture-note-content {
+  flex: 1;
+  font-size: 0.85rem;
+  color: var(--text-dim);
+  line-height: 1.9;
+}
+
+/* دکمه‌های نُت */
+.note-keyboard {
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+  margin: 14px 0;
+  flex-wrap: wrap;
+}
+.note-key {
+  width: 42px;
+  height: 60px;
+  border-radius: 8px;
+  background: linear-gradient(180deg, #ffffff 0%, #d0d0d0 100%);
+  color: #1a1a1a;
+  border: 1px solid #999;
+  cursor: pointer;
+  font-family: 'Vazirmatn', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 800;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: 6px;
+  transition: all 0.15s ease;
+  position: relative;
+  user-select: none;
+}
+.note-key:hover {
+  background: linear-gradient(180deg, #ffffff 0%, #e8e8e8 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0, 212, 170, 0.3);
+}
+.note-key:active, .note-key.playing {
+  background: linear-gradient(180deg, #00d4aa 0%, #00a888 100%);
+  color: #fff;
+  transform: translateY(2px);
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+.note-key.black {
+  width: 28px;
+  height: 40px;
+  background: linear-gradient(180deg, #2a2a2a 0%, #000 100%);
+  color: #fff;
+  font-size: 0.65rem;
+  margin: 0 -14px;
+  z-index: 2;
+}
+.note-key.black:hover {
+  background: linear-gradient(180deg, #4a4a4a 0%, #1a1a1a 100%);
+}
+.note-key.black.playing {
+  background: linear-gradient(180deg, #00d4aa 0%, #00a888 100%);
+}
+
+/* پرچم ایران بزرگ */
+.iran-flag-large {
+  width: 100%;
+  max-width: 300px;
+  height: 180px;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
+  margin: 14px auto;
+  position: relative;
+  animation: waveFlagLarge 3s ease-in-out infinite;
+}
+.iran-flag-large::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, var(--iran-green) 0%, var(--iran-green) 33%, var(--iran-white) 33%, var(--iran-white) 66%, var(--iran-red) 66%, var(--iran-red) 100%);
+}
+.iran-flag-large::after {
+  content: '☫';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: var(--iran-red);
+  font-size: 3.5rem;
+  font-weight: 900;
+  line-height: 1;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+@keyframes waveFlagLarge {
+  0%, 100% { transform: perspective(1000px) rotateY(0deg) skewY(0deg); }
+  25% { transform: perspective(1000px) rotateY(-2deg) skewY(-1.5deg); }
+  75% { transform: perspective(1000px) rotateY(2deg) skewY(1.5deg); }
+}
+
+@media (max-width: 768px) {
+  .slide { padding: 16px 14px 90px; }
+  .header-univ { display: none; }
+  .header-name { font-size: 0.75rem; }
+  .header-signature { height: 45px; max-width: 110px; }
+  .nav-btn { padding: 7px 11px; font-size: 0.72rem; }
+  .nav-btn span { display: none; }
+  .dots-nav { max-width: 45%; }
+  .slide-counter { font-size: 0.68rem; min-width: 45px; }
+  .canvas-wrapper { height: 210px; }
+  .topic-pill { font-size: 0.64rem; padding: 3px 8px; }
+  .iran-flag-mini { display: none; }
+}
+@media (max-width: 480px) {
+  .ctrl-btn { width: 32px; height: 32px; font-size: 0.75rem; }
+  .header-signature { display: none; }
+}
+</style>
+</head>
+<body>
+
+<canvas id="bgCanvas"></canvas>
+<div class="glow-orb orb1"></div>
+<div class="glow-orb orb2"></div>
+<div class="glow-orb orb3"></div>
+
+<div class="top-header">
+  <div class="header-left">
+    <img src="images/signature-blue.png" alt="امضا" class="header-signature" onerror="this.src='images/signature.png'; this.onerror=function(){this.style.display='none'}">
+    <div class="header-text">
+      <span class="header-name">دکتر مسعود گوهری منش</span>
+      <span class="header-univ">دانشیار گروه مهندسی مکانیک — دانشگاه تربت حیدریه</span>
+    </div>
+  </div>
+  <div class="header-controls">
+    <div class="iran-flag-mini" title="پرچم ایران عزیزمان"></div>
+    <button class="ctrl-btn" id="soundToggle" title="صدا"><i class="fas fa-volume-up"></i></button>
+    <button class="ctrl-btn" id="fullscreenToggle" title="تمام‌صفحه"><i class="fas fa-expand"></i></button>
+  </div>
+</div>
+
+<div class="topic-nav" id="topicNav">
+  <span class="topic-pill" data-topic="1">مرور</span>
+  <span class="topic-pill" data-topic="2">تاریخچه</span>
+  <span class="topic-pill" data-topic="3">استخراج</span>
+  <span class="topic-pill" data-topic="4">حل دالامبر</span>
+  <span class="topic-pill" data-topic="5">جداسازی</span>
+  <span class="topic-pill" data-topic="6">شرایط مرزی</span>
+  <span class="topic-pill" data-topic="7">شبیه‌ساز</span>
+  <span class="topic-pill" data-topic="8">تار ایرانی</span>
+  <span class="topic-pill" data-topic="9">ای ایران</span>
+  <span class="topic-pill" data-topic="10">PINN</span>
+</div>
+
+<div class="progress-top"><div class="progress-fill" id="progressFill"></div></div>
+
+<div class="slide-container" id="slideContainer">
+
+  <!-- ۱ — عنوان -->
+  <div class="slide active" data-slide="1" data-topic="1">
+    <div class="slide-inner title-slide">
+      <div class="bismillah">بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِیم</div>
+      <div class="hoval">هُوَ الخَلّاقُ العَلیم</div>
+      <img src="images/hero-wave-equation.png" alt="Wave Equation" class="hero-img" onerror="this.style.display='none'">
+      <h1 class="main-title">معادله موج و حل دالامبر</h1>
+      <p class="subtitle">ریاضیات مهندسی پیشرفته — جلسه ۷</p>
+      <div class="euler-box"><div style="direction: ltr; font-size: 1.4rem;">$$\frac{\partial^2 u}{\partial t^2} = c^2 \frac{\partial^2 u}{\partial x^2}$$</div></div>
+      <p class="instructor-line">دکتر مسعود گوهری منش</p>
+      <p class="instructor-title-line">دانشیار گروه مهندسی مکانیک — دانشگاه تربت حیدریه</p>
+      <div class="semester">نیمسال اول ۱۴۰۵–۱۴۰۶</div>
+      <div class="iran-flag-large" style="max-width: 140px; height: 85px;"></div>
+    </div>
+  </div>
+
+  <!-- ۲ — مرور و جایگاه امروز -->
+  <div class="slide" data-slide="2" data-topic="1">
+    <div class="slide-inner">
+      <span class="slide-num">مرور</span>
+      <h2 class="slide-h1">مرور جلسه ۶ و جایگاه امروز</h2>
+
+      <div class="grid-2">
+        <div class="card" style="background: rgba(255, 183, 0, 0.06); border-color: rgba(255, 183, 0, 0.3);">
+          <div class="slide-h3" style="color: var(--gold);"><i class="fas fa-fire"></i> جلسه ۶ — گرما</div>
+          <ul style="list-style: none; padding: 0; font-size: 0.85rem; color: var(--text-dim); line-height: 2;">
+            <li>✅ معادله گرما (سهموی)</li>
+            <li>✅ جداسازی متغیرها</li>
+            <li>✅ تخریب نمایی مودها</li>
+            <li>✅ مقدمه PINN</li>
+          </ul>
+        </div>
+        <div class="card" style="background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3);">
+          <div class="slide-h3" style="color: var(--primary);"><i class="fas fa-water"></i> جلسه ۷ — موج</div>
+          <ul style="list-style: none; padding: 0; font-size: 0.85rem; color: var(--text-dim); line-height: 2;">
+            <li>🔹 معادله موج (هذلولوی)</li>
+            <li>🔹 حل دالامبر (D'Alembert)</li>
+            <li>🔹 امواج رونده</li>
+            <li>🔹 تار مرتعش و سازهای ایرانی</li>
+            <li>🔹 پیاده‌سازی صوتی «ای ایران»</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top: 16px; background: rgba(168, 85, 247, 0.06); border-color: rgba(168, 85, 247, 0.3);">
+        <div class="slide-h3" style="color: var(--tertiary);"><i class="fas fa-bullseye"></i> تفاوت کلیدی گرما و موج</div>
+        <p class="slide-text" style="font-size: 0.88rem;">
+          <strong>گرما (سهموی):</strong> مشتق مرتبه اول در زمان — انتشار <strong>میرا</strong><br>
+          <strong>موج (هذلولوی):</strong> مشتق مرتبه دوم در زمان — انتشار <strong>بدون میرا</strong>
+        </p>
+      </div>
+
+      <div class="grid-2" style="margin-top: 14px;">
+        <div class="math-box gold-math" style="padding: 14px;">
+          <div style="font-size: 0.82rem; color: var(--gold); margin-bottom: 6px;">معادله گرما</div>
+          $$u_t = \alpha u_{xx}$$
+        </div>
+        <div class="math-box" style="padding: 14px;">
+          <div style="font-size: 0.82rem; color: var(--primary); margin-bottom: 6px;">معادله موج</div>
+          $$u_{tt} = c^2 u_{xx}$$
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۳ — تاریخچه دالامبر -->
+  <div class="slide" data-slide="3" data-topic="2">
+    <div class="slide-inner">
+      <span class="slide-num">تاریخچه</span>
+      <h2 class="slide-h1">ژان لرون دالامبر و معادله موج</h2>
+
+      <div class="grid-2" style="align-items: start;">
+        <div>
+          <img src="images/d-alembert-portrait.png" alt="D'Alembert" class="img-box" onerror="this.style.display='none'">
+        </div>
+        <div>
+          <div class="card" style="background: rgba(255, 183, 0, 0.06); border-color: rgba(255, 183, 0, 0.3);">
+            <div class="slide-h3" style="color: var(--gold);"><i class="fas fa-user"></i> Jean le Rond d'Alembert</div>
+            <p style="font-size: 0.75rem; color: var(--primary); text-align: left; direction: ltr;">(1717–1783)</p>
+            <p class="slide-text" style="font-size: 0.82rem;">
+              ریاضیدان، فیزیکدان و فیلسوف فرانسوی. در سال <strong>۱۷۴۷</strong> اولین حل عمومی معادله موج را ارائه داد و مفهوم «موج رونده» را معرفی کرد.
+            </p>
+            <p class="slide-text" style="font-size: 0.82rem;">
+              او همچنین یکی از ویرایشگران اصلی <strong>دایرةالمعارف</strong> (Encyclopédie) بود — بزرگترین پروژه روشنگری.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="quote-box">
+        <div class="quote-text">
+          «La musique est une science qui doit avoir des principes; ces principes ne peuvent être tirés que des mathématiques.»
+        </div>
+        <div class="quote-translation">
+          «موسیقی علمی است که باید اصول داشته باشد؛ این اصول تنها می‌توانند از ریاضیات استخراج شوند.»
+        </div>
+        <div class="quote-author">— Jean le Rond d'Alembert</div>
+      </div>
+
+      <div class="lecture-note">
+        <i class="fas fa-lightbulb"></i>
+        <div class="lecture-note-content">
+          <strong>ارتباط زیبا:</strong> دالامبر خودش موسیقی‌دان بود و همین باعث شد معادله موج را برای توصیف ارتعاش تار به کار ببرد — پلی بین ریاضیات و موسیقی که امروز هم زنده است.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۴ — استخراج معادله موج -->
+  <div class="slide" data-slide="4" data-topic="3">
+    <div class="slide-inner">
+      <span class="slide-num">استخراج</span>
+      <h2 class="slide-h1">استخراج معادله موج از قانون دوم نیوتن</h2>
+
+      <img src="images/wave-equation-physics.png" alt="Wave Physics" class="img-box" onerror="this.style.display='none'">
+
+      <div class="card" style="background: rgba(236, 72, 153, 0.06); border-color: rgba(236, 72, 153, 0.3);">
+        <div class="slide-h3" style="color: var(--string);"><i class="fas fa-calculator"></i> گام ۱: نیروی کشش تار</div>
+        <p class="slide-text" style="font-size: 0.85rem;">
+          در یک قطعه کوچک از تار با طول $\Delta x$، نیروی کشش $T$ در دو سر با زوایای $\theta_1$ و $\theta_2$:
+        </p>
+        <div class="math-box pink-math" style="padding: 12px;">
+          $$\sum F_y = T\sin\theta_2 - T\sin\theta_1$$
+        </div>
+      </div>
+
+      <div class="card" style="margin-top: 12px; background: rgba(236, 72, 153, 0.06); border-color: rgba(236, 72, 153, 0.3);">
+        <div class="slide-h3" style="color: var(--string);"><i class="fas fa-calculator"></i> گام ۲: تقریب زاویه کوچک</div>
+        <p class="slide-text" style="font-size: 0.85rem;">
+          برای جابجایی‌های کوچک: $\sin\theta \approx \tan\theta = \frac{\partial u}{\partial x}$
+        </p>
+        <div class="math-box pink-math" style="padding: 12px;">
+          $$\sum F_y \approx T\left[\frac{\partial u}{\partial x}\Big|_{x+\Delta x} - \frac{\partial u}{\partial x}\Big|_{x}\right]$$
+        </div>
+      </div>
+
+      <div class="card" style="margin-top: 12px; background: rgba(236, 72, 153, 0.06); border-color: rgba(236, 72, 153, 0.3);">
+        <div class="slide-h3" style="color: var(--string);"><i class="fas fa-calculator"></i> گام ۳: قانون دوم نیوتن</div>
+        <p class="slide-text" style="font-size: 0.85rem;">
+          $F = ma$ که $m = \rho \Delta x$ و $a = \frac{\partial^2 u}{\partial t^2}$:
+        </p>
+        <div class="math-box pink-math" style="padding: 12px;">
+          $$\rho \Delta x \frac{\partial^2 u}{\partial t^2} = T \Delta x \frac{\partial^2 u}{\partial x^2}$$
+        </div>
+        <p class="slide-text" style="font-size: 0.82rem;">
+          با $c = \sqrt{T/\rho}$ (سرعت موج):
+        </p>
+        <div class="math-box pink-math" style="padding: 14px; font-size: 1.05rem;">
+          $$\boxed{\frac{\partial^2 u}{\partial t^2} = c^2 \frac{\partial^2 u}{\partial x^2}}$$
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۵ — حل دالامبر -->
+  <div class="slide" data-slide="5" data-topic="4">
+    <div class="slide-inner">
+      <span class="slide-num">حل دالامبر</span>
+      <h2 class="slide-h1">حل دالامبر — امواج رونده</h2>
+
+      <img src="images/d-alembert-solution.png" alt="D'Alembert Solution" class="img-box" onerror="this.style.display='none'">
+
+      <p class="slide-text" style="margin-top: 14px;">
+        دالامبر با تغییر متغیرهای $\xi = x - ct$ و $\eta = x + ct$، معادله موج را به سادگی حل کرد:
+      </p>
+
+      <div class="card" style="background: rgba(255, 183, 0, 0.06); border-color: rgba(255, 183, 0, 0.3);">
+        <div class="slide-h3" style="color: var(--gold);"><i class="fas fa-star"></i> تغییر متغیرها</div>
+        <div class="math-box gold-math" style="padding: 12px;">
+          $$\xi = x - ct, \quad \eta = x + ct$$
+        </div>
+        <p class="slide-text" style="font-size: 0.82rem; margin-top: 8px;">
+          با این تغییر، معادله موج به شکل ساده زیر درمی‌آید:
+        </p>
+        <div class="math-box gold-math" style="padding: 12px;">
+          $$\frac{\partial^2 u}{\partial \xi \partial \eta} = 0$$
+        </div>
+      </div>
+
+      <div class="card" style="margin-top: 14px; background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3);">
+        <div class="slide-h3" style="color: var(--primary);"><i class="fas fa-star"></i> جواب عمومی دالامبر</div>
+        <div class="math-box" style="padding: 14px; font-size: 1.1rem;">
+          $$\boxed{u(x,t) = F(x - ct) + G(x + ct)}$$
+        </div>
+        <ul style="list-style: none; padding: 0; font-size: 0.82rem; color: var(--text-dim); line-height: 2; margin-top: 8px;">
+          <li>🔹 $F(x-ct)$: موج رونده به <strong>سمت راست</strong> با سرعت $c$</li>
+          <li>🔹 $G(x+ct)$: موج رونده به <strong>سمت چپ</strong> با سرعت $c$</li>
+        </ul>
+      </div>
+
+      <div class="card" style="margin-top: 14px; background: rgba(168, 85, 247, 0.06); border-color: rgba(168, 85, 247, 0.3);">
+        <div class="slide-h3" style="color: var(--tertiary);"><i class="fas fa-calculator"></i> تعیین F و G از شرایط اولیه</div>
+        <p class="slide-text" style="font-size: 0.85rem;">
+          با شرایط اولیه $u(x,0) = f(x)$ و $u_t(x,0) = g(x)$:
+        </p>
+        <div class="math-box purple-math" style="padding: 14px; font-size: 0.95rem;">
+          $$u(x,t) = \frac{f(x-ct) + f(x+ct)}{2} + \frac{1}{2c}\int_{x-ct}^{x+ct} g(s) \, ds$$
+        </div>
+        <p class="slide-text" style="font-size: 0.78rem;">
+          این فرمول معروف <strong>دالامبر</strong> است که جواب را مستقیماً از شرایط اولیه می‌دهد.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۶ — انواع موج -->
+  <div class="slide" data-slide="6" data-topic="4">
+    <div class="slide-inner">
+      <span class="slide-num">انواع موج</span>
+      <h2 class="slide-h1">انواع موج در تار مرتعش</h2>
+
+      <img src="images/wave-types-comparison.png" alt="Wave Types" class="img-box" onerror="this.style.display='none'">
+
+      <div class="grid-3" style="margin-top: 14px;">
+        <div class="card" style="background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3);">
+          <div class="slide-h3" style="color: var(--primary);"><i class="fas fa-arrow-right"></i> موج رونده</div>
+          <p class="slide-text" style="font-size: 0.8rem;">
+            موج به‌طور پیوسته در یک جهت حرکت می‌کند. $u(x,t) = F(x - ct)$.
+          </p>
+        </div>
+        <div class="card" style="background: rgba(255, 183, 0, 0.06); border-color: rgba(255, 183, 0, 0.3);">
+          <div class="slide-h3" style="color: var(--gold);"><i class="fas fa-wave-square"></i> موج ایستا</div>
+          <p class="slide-text" style="font-size: 0.8rem;">
+            موج با گره‌ها و شکم‌ها. $u(x,t) = X(x)\cos(\omega t)$.
+          </p>
+        </div>
+        <div class="card" style="background: rgba(168, 85, 247, 0.06); border-color: rgba(168, 85, 247, 0.3);">
+          <div class="slide-h3" style="color: var(--tertiary);"><i class="fas fa-bolt"></i> پالس (Pulse)</div>
+          <p class="slide-text" style="font-size: 0.8rem;">
+            یک اختلال موضعی که حرکت می‌کند.
+          </p>
+        </div>
+      </div>
+
+      <div class="lecture-note" style="margin-top: 14px;">
+        <i class="fas fa-music"></i>
+        <div class="lecture-note-content">
+          <strong>نکته موسیقی:</strong> صدای تار از ترکیب امواج ایستا با فرکانس‌های مشخص (هارمونیک‌ها) تشکیل می‌شود. هرچه تعداد هارمونیک‌ها بیشتر، صدای غنی‌تر (Timbre).
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۷ — جداسازی متغیرها برای موج -->
+  <div class="slide" data-slide="7" data-topic="5">
+    <div class="slide-inner">
+      <span class="slide-num">جداسازی متغیرها</span>
+      <h2 class="slide-h1">حل با جداسازی متغیرها</h2>
+
+      <div class="card" style="background: rgba(255, 183, 0, 0.06); border-color: rgba(255, 183, 0, 0.3);">
+        <div class="slide-h3" style="color: var(--gold);"><i class="fas fa-1"></i> گام ۱: فرض جداسازی</div>
+        <div class="math-box gold-math" style="padding: 12px;">
+          $$u(x,t) = X(x) \cdot T(t)$$
+        </div>
+        <p class="slide-text" style="font-size: 0.85rem; margin-top: 8px;">
+          با جایگذاری در $u_{tt} = c^2 u_{xx}$:
+        </p>
+        <div class="math-box gold-math" style="padding: 12px;">
+          $$X(x) T''(t) = c^2 X''(x) T(t)$$
+        </div>
+      </div>
+
+      <div class="card" style="margin-top: 12px; background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3);">
+        <div class="slide-h3" style="color: var(--primary);"><i class="fas fa-2"></i> گام ۲: جدا کردن متغیرها</div>
+        <div class="math-box" style="padding: 12px;">
+          $$\frac{T''(t)}{c^2 T(t)} = \frac{X''(x)}{X(x)} = -\lambda$$
+        </div>
+        <p class="slide-text" style="font-size: 0.85rem; margin-top: 8px;">دو ODE:</p>
+        <div class="math-box" style="padding: 10px; font-size: 0.9rem;">
+          $$T''(t) + c^2 \lambda T(t) = 0$$
+          $$X''(x) + \lambda X(x) = 0$$
+        </div>
+      </div>
+
+      <div class="card" style="margin-top: 12px; background: rgba(168, 85, 247, 0.06); border-color: rgba(168, 85, 247, 0.3);">
+        <div class="slide-h3" style="color: var(--tertiary);"><i class="fas fa-3"></i> گام ۳: حل ODE مکانی (شرایط مرزی دیریکله)</div>
+        <p class="slide-text" style="font-size: 0.85rem;">با $X(0) = X(L) = 0$:</p>
+        <div class="math-box purple-math" style="padding: 12px;">
+          $$\lambda_n = \left(\frac{n\pi}{L}\right)^2, \quad X_n(x) = \sin\left(\frac{n\pi x}{L}\right)$$
+        </div>
+        <p class="slide-text" style="font-size: 0.85rem; margin-top: 8px;">حل ODE زمانی:</p>
+        <div class="math-box purple-math" style="padding: 12px;">
+          $$T_n(t) = A_n \cos(\omega_n t) + B_n \sin(\omega_n t)$$
+        </div>
+        <p class="slide-text" style="font-size: 0.82rem;">که $\omega_n = \frac{n\pi c}{L}$ = فرکانس طبیعی مود n.</p>
+      </div>
+
+      <div class="card" style="margin-top: 12px; background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3);">
+        <div class="slide-h3" style="color: var(--primary);"><i class="fas fa-4"></i> گام ۴: حل کلی</div>
+        <div class="math-box" style="padding: 14px; font-size: 1rem;">
+          $$u(x,t) = \sum_{n=1}^{\infty} \left[A_n \cos(\omega_n t) + B_n \sin(\omega_n t)\right] \sin\left(\frac{n\pi x}{L}\right)$$
+        </div>
+        <p class="slide-text" style="font-size: 0.82rem;">
+          $A_n$ از شرط اولیه $u(x,0)$ و $B_n$ از $u_t(x,0)$ تعیین می‌شوند.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۸ — مودهای ارتعاشی -->
+  <div class="slide" data-slide="8" data-topic="5">
+    <div class="slide-inner">
+      <span class="slide-num">مودهای ارتعاشی</span>
+      <h2 class="slide-h1">مودهای ارتعاشی تار</h2>
+
+      <img src="images/string-modes.png" alt="String Modes" class="img-box" onerror="this.style.display='none'">
+
+      <p class="slide-text" style="margin-top: 14px;">
+        هر مود، یک الگوی ارتعاشی با فرکانس مشخص است. <strong>فرکانس‌ها، هماهنگ‌های طبیعی تار</strong> را تشکیل می‌دهند:
+      </p>
+
+      <div class="card" style="background: rgba(255, 183, 0, 0.06); border-color: rgba(255, 183, 0, 0.3);">
+        <div class="slide-h3" style="color: var(--gold);"><i class="fas fa-music"></i> فرکانس‌های طبیعی</div>
+        <div class="math-box gold-math" style="padding: 12px;">
+          $$f_n = \frac{n}{2L}\sqrt{\frac{T}{\rho}}, \quad n = 1, 2, 3, \ldots$$
+        </div>
+        <ul style="list-style: none; padding: 0; font-size: 0.82rem; color: var(--text-dim); line-height: 2; margin-top: 8px;">
+          <li>🔹 $f_1$ = فرکانس پایه (Fundamental)</li>
+          <li>🔹 $f_2 = 2f_1$ = اکتاو اول</li>
+          <li>🔹 $f_3 = 3f_1$ = کوینت</li>
+          <li>🔹 $f_4 = 4f_1$ = اکتاو دوم</li>
+        </ul>
+      </div>
+
+      <div class="grid-3" style="margin-top: 14px;">
+        <div class="card" style="text-align: center; background: rgba(0, 212, 170, 0.08); border-color: rgba(0, 212, 170, 0.4);">
+          <div class="slide-h3" style="justify-content: center; color: var(--primary);">n = ۱</div>
+          <p class="slide-text" style="font-size: 0.78rem;">۱ شکم، ۲ گره<br>$f_1$ = پایه</p>
+        </div>
+        <div class="card" style="text-align: center;">
+          <div class="slide-h3" style="justify-content: center;">n = ۲</div>
+          <p class="slide-text" style="font-size: 0.78rem;">۲ شکم، ۳ گره<br>$f_2 = 2f_1$</p>
+        </div>
+        <div class="card" style="text-align: center;">
+          <div class="slide-h3" style="justify-content: center;">n = ۳</div>
+          <p class="slide-text" style="font-size: 0.78rem;">۳ شکم، ۴ گره<br>$f_3 = 3f_1$</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۹ — شرایط مرزی مختلف -->
+  <div class="slide" data-slide="9" data-topic="6">
+    <div class="slide-inner">
+      <span class="slide-num">شرایط مرزی</span>
+      <h2 class="slide-h1">شرایط مرزی مختلف برای معادله موج</h2>
+
+      <img src="images/boundary-conditions-wave.png" alt="BC Wave" class="img-box" onerror="this.style.display='none'">
+
+      <div class="grid-2" style="margin-top: 14px;">
+        <div class="card" style="background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3);">
+          <div class="slide-h3" style="color: var(--primary);"><i class="fas fa-anchor"></i> دو سر ثابت (Fixed-Fixed)</div>
+          <div class="math-box" style="padding: 10px; font-size: 0.85rem;">
+            $$u(0, t) = 0, \quad u(L, t) = 0$$
+          </div>
+          <p class="slide-text" style="font-size: 0.78rem; margin-top: 8px;">مثال: تار گیتار، ویولن</p>
+          <p class="slide-text" style="font-size: 0.78rem;">توابع ویژه: $\sin(n\pi x/L)$</p>
+        </div>
+
+        <div class="card" style="background: rgba(255, 183, 0, 0.06); border-color: rgba(255, 183, 0, 0.3);">
+          <div class="slide-h3" style="color: var(--gold);"><i class="fas fa-arrow-left"></i> یک سر آزاد (Fixed-Free)</div>
+          <div class="math-box gold-math" style="padding: 10px; font-size: 0.85rem;">
+            $$u(0, t) = 0, \quad u_x(L, t) = 0$$
+          </div>
+          <p class="slide-text" style="font-size: 0.78rem; margin-top: 8px;">مثال: دیاپازون، تیغه‌های ارتعاشی</p>
+          <p class="slide-text" style="font-size: 0.78rem;">توابع ویژه: $\sin((2n-1)\pi x/(2L))$</p>
+        </div>
+
+        <div class="card" style="background: rgba(168, 85, 247, 0.06); border-color: rgba(168, 85, 247, 0.3);">
+          <div class="slide-h3" style="color: var(--tertiary);"><i class="fas fa-arrows-alt-h"></i> دو سر آزاد (Free-Free)</div>
+          <div class="math-box purple-math" style="padding: 10px; font-size: 0.85rem;">
+            $$u_x(0, t) = 0, \quad u_x(L, t) = 0$$
+          </div>
+          <p class="slide-text" style="font-size: 0.78rem; margin-top: 8px;">مثال: میله معلق در فضا</p>
+          <p class="slide-text" style="font-size: 0.78rem;">توابع ویژه: $\cos(n\pi x/L)$</p>
+        </div>
+
+        <div class="card" style="background: rgba(236, 72, 153, 0.06); border-color: rgba(236, 72, 153, 0.3);">
+          <div class="slide-h3" style="color: var(--string);"><i class="fas fa-shoe-prints"></i> کشسان (Elastic)</div>
+          <div class="math-box pink-math" style="padding: 10px; font-size: 0.85rem;">
+            $$u(0, t) = 0, \quad u_x(L, t) = -k u(L, t)$$
+          </div>
+          <p class="slide-text" style="font-size: 0.78rem; margin-top: 8px;">مثال: تار متصل به فنر</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۱۰ — شبیه‌ساز تار مرتعش تعاملی -->
+  <div class="slide" data-slide="10" data-topic="7">
+    <div class="slide-inner">
+      <span class="slide-num">شبیه‌ساز تعاملی</span>
+      <h2 class="slide-h1">شبیه‌ساز تار مرتعش</h2>
+      <p class="slide-text">با کشیدن نقطه‌ی روی تار، آن را مرتعش کنید و صدایش را بشنوید!</p>
+
+      <div class="simulator">
+        <div class="sim-header">
+          <div class="sim-title"><i class="fas fa-guitar"></i> تار مرتعش — تعاملی</div>
+          <div class="sim-controls">
+            <div class="slider-group">
+              <label>کشش T:</label>
+              <input type="range" id="waveTension" min="0.5" max="3" value="1" step="0.1">
+              <span class="slider-value" id="waveTensionValue">۱.۰</span>
+            </div>
+            <div class="slider-group">
+              <label>چگالی ρ:</label>
+              <input type="range" id="waveDensity" min="0.5" max="2" value="1" step="0.1">
+              <span class="slider-value" id="waveDensityValue">۱.۰</span>
+            </div>
+            <div class="slider-group">
+              <label>میرایی:</label>
+              <input type="range" id="waveDamping" min="0" max="0.1" value="0.01" step="0.001">
+              <span class="slider-value" id="waveDampingValue">۰.۰۱</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="canvas-wrapper" style="height: 280px; cursor: grab;"><canvas id="waveStringCanvas"></canvas></div>
+
+        <div style="text-align: center; margin-top: 12px;">
+          <button class="nav-btn" id="playString" style="padding: 8px 22px; font-size: 0.85rem;">
+            <i class="fas fa-play"></i> پخش صدای تار
+          </button>
+          <button class="nav-btn" id="stopString" style="padding: 8px 22px; font-size: 0.85rem;">
+            <i class="fas fa-stop"></i> توقف
+          </button>
+        </div>
+
+        <div class="grid-3" style="margin-top: 14px;">
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 0.72rem; color: var(--text-dim);">سرعت موج c</div>
+            <div id="waveSpeed" style="font-size: 1.1rem; color: var(--gold); font-weight: 800; font-family: 'Courier New', monospace;">—</div>
+          </div>
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 0.72rem; color: var(--text-dim);">فرکانس پایه f₁ (Hz)</div>
+            <div id="waveFreq" style="font-size: 1.1rem; color: var(--primary); font-weight: 800; font-family: 'Courier New', monospace;">—</div>
+          </div>
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 0.72rem; color: var(--text-dim);">نُت موسیقی</div>
+            <div id="waveNote" style="font-size: 1.1rem; color: var(--tertiary); font-weight: 800;">—</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۱۱ — کیبورد نُت -->
+  <div class="slide" data-slide="11" data-topic="7">
+    <div class="slide-inner">
+      <span class="slide-num">کیبورد نُت</span>
+      <h2 class="slide-h1">🎹 کیبورد تعاملی — نُت‌ها را بزنید</h2>
+
+      <p class="slide-text">
+        روی کلیدها کلیک کنید تا صدای نُت‌ها را بشنوید و موج آن‌ها را در تار ببینید.
+      </p>
+
+      <div class="note-keyboard" id="noteKeyboard">
+        <div class="note-key" data-note="262" data-name="Do">Do<div style="font-size: 0.5rem;">C4</div></div>
+        <div class="note-key black" data-note="277" data-name="Do#">C#</div>
+        <div class="note-key" data-note="294" data-name="Re">Re<div style="font-size: 0.5rem;">D4</div></div>
+        <div class="note-key black" data-note="311" data-name="Re#">D#</div>
+        <div class="note-key" data-note="330" data-name="Mi">Mi<div style="font-size: 0.5rem;">E4</div></div>
+        <div class="note-key" data-note="349" data-name="Fa">Fa<div style="font-size: 0.5rem;">F4</div></div>
+        <div class="note-key black" data-note="370" data-name="Fa#">F#</div>
+        <div class="note-key" data-note="392" data-name="Sol">Sol<div style="font-size: 0.5rem;">G4</div></div>
+        <div class="note-key black" data-note="415" data-name="Sol#">G#</div>
+        <div class="note-key" data-note="440" data-name="La">La<div style="font-size: 0.5rem;">A4</div></div>
+        <div class="note-key black" data-note="466" data-name="La#">A#</div>
+        <div class="note-key" data-note="494" data-name="Si">Si<div style="font-size: 0.5rem;">B4</div></div>
+        <div class="note-key" data-note="523" data-name="Do5">Do<div style="font-size: 0.5rem;">C5</div></div>
+      </div>
+
+      <div class="grid-3" style="margin-top: 14px;">
+        <div class="card" style="text-align: center;">
+          <div style="font-size: 0.72rem; color: var(--text-dim);">نُت فعلی</div>
+          <div id="currentNote" style="font-size: 1.3rem; color: var(--gold); font-weight: 800;">—</div>
+        </div>
+        <div class="card" style="text-align: center;">
+          <div style="font-size: 0.72rem; color: var(--text-dim);">فرکانس</div>
+          <div id="currentFreq" style="font-size: 1.3rem; color: var(--primary); font-weight: 800; font-family: 'Courier New', monospace;">—</div>
+        </div>
+        <div class="card" style="text-align: center;">
+          <div style="font-size: 0.72rem; color: var(--text-dim);">طول موج (cm)</div>
+          <div id="currentWaveLength" style="font-size: 1.3rem; color: var(--tertiary); font-weight: 800; font-family: 'Courier New', monospace;">—</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۱۲ — تار ایرانی -->
+  <div class="slide" data-slide="12" data-topic="8">
+    <div class="slide-inner">
+      <span class="slide-num">تار ایرانی</span>
+      <h2 class="slide-h1">تار ایرانی — ساز زهی کهن</h2>
+
+      <div class="grid-2" style="align-items: start;">
+        <div>
+          <img src="images/tar-anatomy.png" alt="Tar Anatomy" class="img-box" onerror="this.style.display='none'">
+        </div>
+        <div>
+          <div class="card" style="background: rgba(255, 183, 0, 0.06); border-color: rgba(255, 183, 0, 0.3);">
+            <div class="slide-h3" style="color: var(--gold);"><i class="fas fa-music"></i> آشنایی با تار</div>
+            <p class="slide-text" style="font-size: 0.85rem;">
+              تار، ساز زهی مضرابی ایرانی است که با <strong>تغییر طول تار</strong> (با حرکت دست روی دسته) فرکانس و نُت تغییر می‌کند.
+            </p>
+            <ul style="list-style: none; padding: 0; font-size: 0.82rem; color: var(--text-dim); line-height: 2;">
+              <li>🔹 <strong>کاسه:</strong> دو تکه چوب توت، پوشیده از پوست</li>
+              <li>🔹 <strong>دسته:</strong> چوب گردو، با ۲۵ پرده</li>
+              <li>🔹 <strong>سیم‌ها:</strong> ۶ سیم (۳ سفید، ۳ زرد)</li>
+              <li>🔹 <strong>خرک:</strong> استخوان شتر</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <img src="images/tar-masters.png" alt="Tar Masters" class="img-box" style="margin-top: 14px;" onerror="this.style.display='none'">
+
+      <div class="card" style="margin-top: 14px; background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3);">
+        <div class="slide-h3" style="color: var(--primary);"><i class="fas fa-star"></i> استادان ماندگار تار</div>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-top: 10px;">
+          <div style="padding: 10px; border-radius: 12px; background: rgba(255, 183, 0, 0.1); text-align: center;">
+            <div style="font-weight: 800; color: var(--gold); font-size: 0.88rem;">حسین علیزاده</div>
+            <div style="font-size: 0.7rem; color: var(--text-dim); margin-top: 4px;">آهنگساز و نوازنده</div>
+          </div>
+          <div style="padding: 10px; border-radius: 12px; background: rgba(255, 183, 0, 0.1); text-align: center;">
+            <div style="font-weight: 800; color: var(--gold); font-size: 0.88rem;">جلیل شهناز</div>
+            <div style="font-size: 0.7rem; color: var(--text-dim); margin-top: 4px;">استاد بی‌بدیل تار</div>
+          </div>
+          <div style="padding: 10px; border-radius: 12px; background: rgba(255, 183, 0, 0.1); text-align: center;">
+            <div style="font-weight: 800; color: var(--gold); font-size: 0.88rem;">محمدرضا لطفی</div>
+            <div style="font-size: 0.7rem; color: var(--text-dim); margin-top: 4px;">نوازنده و آهنگساز</div>
+          </div>
+          <div style="padding: 10px; border-radius: 12px; background: rgba(255, 183, 0, 0.1); text-align: center;">
+            <div style="font-weight: 800; color: var(--gold); font-size: 0.88rem;">فرهنگ شریف</div>
+            <div style="font-size: 0.7rem; color: var(--text-dim); margin-top: 4px;">استاد تکنیک</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۱۳ — ای ایران -->
+  <div class="slide" data-slide="13" data-topic="9">
+    <div class="slide-inner">
+      <span class="slide-num">ای ایران</span>
+      <h2 class="slide-h1">🇮🇷 پخش «ای ایران» با نُت‌های تار</h2>
+
+      <div class="grid-2" style="align-items: start;">
+        <div>
+          <div class="iran-flag-large"></div>
+          <div class="card" style="background: rgba(255, 183, 0, 0.06); border-color: rgba(255, 183, 0, 0.3); margin-top: 14px;">
+            <div class="slide-h3" style="color: var(--gold);"><i class="fas fa-info-circle"></i> سرود ای ایران</div>
+            <p class="slide-text" style="font-size: 0.82rem;">
+              سرود «ای ایران» با شعر <strong>حسین گل‌گلاب</strong> و آهنگ <strong>روح‌الله خالقی</strong> در سال ۱۳۲۳ ساخته شد. این سرود به‌عنوان یکی از زیباترین آثار میهنی ایران شناخته می‌شود.
+            </p>
+          </div>
+        </div>
+        <div>
+          <p class="slide-text">
+            با کلیک روی دکمه زیر، ملودی «ای ایران» با نُت‌های تار پخش می‌شود و همزمان تار مرتعش را می‌بینید:
+          </p>
+
+          <div style="text-align: center; margin: 20px 0;">
+            <button class="nav-btn" id="playEyIran" style="padding: 14px 30px; font-size: 1rem; background: linear-gradient(135deg, var(--iran-green), var(--iran-red)); color: #fff; border: none;">
+              <i class="fas fa-play-circle"></i> پخش «ای ایران»
+            </button>
+          </div>
+
+          <div class="canvas-wrapper" style="height: 200px; background: rgba(0,0,0,0.5);">
+            <canvas id="eyIranCanvas"></canvas>
+          </div>
+
+          <div class="card" style="margin-top: 12px;">
+            <div class="slide-h3"><i class="fas fa-list-ol"></i> نُت‌های پخش‌شده</div>
+            <div id="eyIranNotes" style="font-family: 'Courier New', monospace; font-size: 0.8rem; direction: ltr; text-align: left; color: var(--gold); line-height: 2; padding: 10px; background: rgba(0,0,0,0.3); border-radius: 8px; min-height: 60px;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۱۴ — کد MATLAB -->
+  <div class="slide" data-slide="14" data-topic="7">
+    <div class="slide-inner">
+      <span class="slide-num">کد</span>
+      <h2 class="slide-h1">حل عددی و تحلیلی معادله موج</h2>
+
+      <div class="code-tabs">
+        <button class="code-tab active" data-code="matlab-wave"><i class="fas fa-square"></i> MATLAB</button>
+        <button class="code-tab" data-code="python-wave"><i class="fab fa-python"></i> Python (Colab)</button>
+      </div>
+
+      <div class="code-content active" id="code-matlab-wave">
+<pre><span class="cm">% === حل معادله موج — تحلیلی و عددی ===</span>
+<span class="fn">clear</span>; <span class="fn">clc</span>; <span class="fn">close all</span>;
+
+L = <span class="num">1</span>; c = <span class="num">1</span>; T_final = <span class="num">2</span>;
+Nx = <span class="num">100</span>; Nt = <span class="num">500</span>;
+dx = L/(Nx-<span class="num">1</span>); dt = T_final/Nt;
+r = c*dt/dx;
+
+<span class="fn">fprintf</span>(<span class="str">'شرط CFL: r = %.4f (باید ≤ 1)\n'</span>, r);
+<span class="kw">if</span> r > <span class="num">1</span>
+    <span class="fn">error</span>(<span class="str">'شرط CFL نقض شده!'</span>);
+<span class="kw">end</span>
+
+x = <span class="fn">linspace</span>(<span class="num">0</span>, L, Nx);
+u = <span class="fn">sin</span>(pi*x/L);           <span class="cm">% شرط اولیه</span>
+u_prev = u;                  <span class="cm">% فرض سرعت اولیه صفر</span>
+
+<span class="cm">% === تکامل زمانی (FDM) ===</span>
+<span class="kw">for</span> n = <span class="num">1</span>:Nt
+    u_new = u;
+    <span class="kw">for</span> i = <span class="num">2</span>:Nx-<span class="num">1</span>
+        u_new(i) = <span class="num">2</span>*u(i) - u_prev(i) + r^<span class="num">2</span>*(u(i+<span class="num">1</span>) - <span class="num">2</span>*u(i) + u(i-<span class="num">1</span>));
+    <span class="kw">end</span>
+    u_prev = u;
+    u = u_new;
+<span class="kw">end</span>
+
+<span class="cm">% === حل تحلیلی دالامبر ===</span>
+u_exact = <span class="fn">sin</span>(pi*x/L) .* <span class="fn">cos</span>(pi*c*T_final/L);
+
+<span class="cm">% === مقایسه ===</span>
+<span class="fn">figure</span>(<span class="str">'Position'</span>, [<span class="num">100</span> <span class="num">100</span> <span class="num">1000</span> <span class="num">500</span>]);
+<span class="fn">subplot</span>(<span class="num">1</span>,<span class="num">2</span>,<span class="num">1</span>);
+<span class="fn">plot</span>(x, u_exact, <span class="str">'b-'</span>, <span class="str">'linewidth'</span>, <span class="num">2</span>); <span class="kw">hold on</span>;
+<span class="fn">plot</span>(x, u, <span class="str">'ro'</span>, <span class="str">'markersize'</span>, <span class="num">4</span>);
+<span class="fn">xlabel</span>(<span class="str">'x'</span>); <span class="fn">ylabel</span>(<span class="str">'u(x,T)'</span>);
+<span class="fn">legend</span>(<span class="str">'تحلیلی'</span>, <span class="str">'عددی'</span>);
+<span class="fn">title</span>(<span class="str">'مقایسه حل تحلیلی و عددی'</span>);
+<span class="fn">grid on</span>;
+
+<span class="cm">% === نمودار 3D ===</span>
+<span class="fn">subplot</span>(<span class="num">1</span>,<span class="num">2</span>,<span class="num">2</span>);
+[X, T] = <span class="fn">meshgrid</span>(x, <span class="fn">linspace</span>(<span class="num">0</span>, T_final, <span class="num">50</span>));
+U = <span class="fn">sin</span>(pi*X/L) .* <span class="fn">cos</span>(pi*c*T/L);
+<span class="fn">surf</span>(X, T, U);
+<span class="fn">xlabel</span>(<span class="str">'x'</span>); <span class="fn">ylabel</span>(<span class="str">'t'</span>); <span class="fn">zlabel</span>(<span class="str">'u'</span>);
+<span class="fn">title</span>(<span class="str">'سطح حل معادله موج'</span>);
+<span class="fn">shading interp</span>;</pre>
+      </div>
+
+      <div class="code-content" id="code-python-wave">
+<pre><span class="cm"># === حل معادله موج — تحلیلی و عددی ===</span>
+<span class="kw">import</span> numpy <span class="kw">as</span> np
+<span class="kw">import</span> matplotlib.pyplot <span class="kw">as</span> plt
+
+L = <span class="num">1.0</span>; c = <span class="num">1.0</span>; T_final = <span class="num">2.0</span>
+Nx = <span class="num">100</span>; Nt = <span class="num">500</span>
+dx = L/(Nx-<span class="num">1</span>); dt = T_final/Nt
+r = c*dt/dx
+<span class="fn">print</span>(<span class="str">f'شرط CFL: r = {r:.4f} (باید ≤ 1)'</span>)
+
+x = np.linspace(<span class="num">0</span>, L, Nx)
+u = np.sin(np.pi*x/L)
+u_prev = u.copy()
+
+<span class="cm"># === تکامل زمانی ===</span>
+<span class="kw">for</span> n <span class="kw">in</span> <span class="fn">range</span>(Nt):
+    u_new = u.copy()
+    u_new[<span class="num">1</span>:-<span class="num">1</span>] = <span class="num">2</span>*u[<span class="num">1</span>:-<span class="num">1</span>] - u_prev[<span class="num">1</span>:-<span class="num">1</span>] + r**<span class="num">2</span>*(u[<span class="num">2</span>:] - <span class="num">2</span>*u[<span class="num">1</span>:-<span class="num">1</span>] + u[:-<span class="num">2</span>])
+    u_prev = u
+    u = u_new
+
+<span class="cm"># === حل تحلیلی ===</span>
+u_exact = np.sin(np.pi*x/L) * np.cos(np.pi*c*T_final/L)
+
+<span class="cm"># === مقایسه ===</span>
+fig, (ax1, ax2) = plt.subplots(<span class="num">1</span>, <span class="num">2</span>, figsize=(<span class="num">14</span>, <span class="num">5</span>))
+ax1.plot(x, u_exact, <span class="str">'b-'</span>, linewidth=<span class="num">2</span>, label=<span class="str">'تحلیلی'</span>)
+ax1.plot(x, u, <span class="str">'ro'</span>, markersize=<span class="num">4</span>, label=<span class="str">'عددی'</span>)
+ax1.set_xlabel(<span class="str">'x'</span>); ax1.set_ylabel(<span class="str">'u(x,T)'</span>)
+ax1.legend(); ax1.grid(<span class="kw">True</span>, alpha=<span class="num">0.3</span>)
+
+<span class="cm"># === سطح 3D ===</span>
+X, T = np.meshgrid(x, np.linspace(<span class="num">0</span>, T_final, <span class="num">50</span>))
+U = np.sin(np.pi*X/L) * np.cos(np.pi*c*T/L)
+ax2 = fig.add_subplot(<span class="num">122</span>, projection=<span class="str">'3d'</span>)
+ax2.plot_surface(X, T, U, cmap=<span class="str">'viridis'</span>, alpha=<span class="num">0.8</span>)
+ax2.set_xlabel(<span class="str">'x'</span>); ax2.set_ylabel(<span class="str">'t'</span>); ax2.set_zlabel(<span class="str">'u'</span>)
+
+plt.tight_layout()
+plt.savefig(<span class="str">'wave_comparison.png'</span>, dpi=<span class="num">600</span>, bbox_inches=<span class="str">'tight'</span>)
+plt.show()</pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۱۵ — PINN برای معادله موج -->
+  <div class="slide" data-slide="15" data-topic="10">
+    <div class="slide-inner">
+      <span class="slide-num">PINN</span>
+      <h2 class="slide-h1">تخمین سرعت موج با PINN</h2>
+
+      <img src="images/pinning-wave.png" alt="PINN Wave" class="img-box" onerror="this.style.display='none'">
+
+      <div class="grid-2" style="margin-top: 14px;">
+        <div class="card" style="background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3);">
+          <div class="slide-h3" style="color: var(--primary);"><i class="fas fa-arrow-right"></i> مسئله مستقیم</div>
+          <p class="slide-text" style="font-size: 0.82rem;">
+            $c$ معلوم است، $u(x,t)$ را حل می‌کنیم — همان کاری که در این جلسه کردیم.
+          </p>
+        </div>
+        <div class="card" style="background: rgba(168, 85, 247, 0.06); border-color: rgba(168, 85, 247, 0.3);">
+          <div class="slide-h3" style="color: var(--tertiary);"><i class="fas fa-arrow-left"></i> مسئله معکوس</div>
+          <p class="slide-text" style="font-size: 0.82rem;">
+            $c$ نامعلوم است، داده‌های $u(x,t)$ داریم، می‌خواهیم $c$ را تخمین بزنیم.
+          </p>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top: 14px; background: rgba(255, 183, 0, 0.06); border-color: rgba(255, 183, 0, 0.3);">
+        <div class="slide-h3" style="color: var(--gold);"><i class="fas fa-lightbulb"></i> تابع هزینه PINN</div>
+        <div class="math-box gold-math" style="padding: 12px;">
+          $$\mathcal{L} = \|u_{tt} - c^2 u_{xx}\|^2 + \lambda_1 \|u(0,t)\|^2 + \lambda_2 \|u(L,t)\|^2 + \lambda_3 \|u(x,0) - f(x)\|^2 + \lambda_4 \|u_t(x,0)\|^2$$
+        </div>
+        <p class="slide-text" style="font-size: 0.82rem; margin-top: 10px;">
+          $c$ به‌عنوان یک پارامتر قابل آموزش در شبکه لحاظ می‌شود و به‌طور همزمان با وزن‌ها آموزش می‌بیند.
+        </p>
+      </div>
+
+      <div class="lecture-note">
+        <i class="fas fa-project-diagram"></i>
+        <div class="lecture-note-content">
+          <strong>اتصال به پروژه پایانی:</strong> در پروژه شما، یکی از PDE های انتخابی (تیر، نانو انبرک، ربات) را با همین روش حل خواهید کرد و پارامترهای نامعلوم را با PINN تخمین خواهید زد.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۱۶ — مقایسه با مقاله -->
+  <div class="slide" data-slide="16" data-topic="10">
+    <div class="slide-inner">
+      <span class="slide-num">مقایسه</span>
+      <h2 class="slide-h1">مقایسه با نتایج مقالات</h2>
+
+      <div class="card" style="background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3);">
+        <div class="slide-h3" style="color: var(--primary);"><i class="fas fa-book-open"></i> همگرایی روش‌های عددی برای معادله موج</div>
+        <p class="slide-text" style="font-size: 0.85rem;">
+          روش‌های تفاضل محدود مرتبه دوم، همگرایی مرتبه ۲ در فضا و زمان دارند (تحت شرط CFL).
+        </p>
+      </div>
+
+      <div class="card" style="margin-top: 14px;">
+        <div class="slide-h3"><i class="fas fa-table"></i> جدول همگرایی معمول</div>
+        <table class="ref-table">
+          <thead>
+            <tr>
+              <th>Nx</th>
+              <th>خطای L∞</th>
+              <th>نرخ همگرایی</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>۲۵</td><td>۴.۲e-۰۲</td><td>—</td></tr>
+            <tr><td>۵۰</td><td>۱.۱e-۰۲</td><td>۱.۹۳</td></tr>
+            <tr><td>۱۰۰</td><td>۲.۷e-۰۳</td><td>۲.۰۳</td></tr>
+            <tr><td>۲۰۰</td><td>۶.۹e-۰۴</td><td>۱.۹۷</td></tr>
+            <tr><td>۴۰۰</td><td>۱.۷e-۰۴</td><td>۲.۰۲</td></tr>
+          </tbody>
+        </table>
+        <p class="math-note" style="margin-top: 10px;">
+          نرخ همگرایی حدود ۲ = تأیید مرتبه دوم روش.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۱۷ — تمرین‌ها -->
+  <div class="slide" data-slide="17" data-topic="10">
+    <div class="slide-inner">
+      <span class="slide-num">تمرین</span>
+      <h2 class="slide-h1">تمرین‌های جلسه ۷</h2>
+
+      <div class="exercise-block ex-yellow">
+        <div class="ex-header"><div class="ex-num">الف</div><div><div class="ex-title">سؤالات مفهومی</div></div></div>
+        <ol class="ex-list">
+          <li>تفاوت اصلی معادله گرما و معادله موج در چیست؟</li>
+          <li>چرا در معادله موج، اطلاعات با سرعت محدود $c$ منتشر می‌شود؟</li>
+          <li>شرایط CFL چه معنایی دارد و چرا برای پایداری حل عددی ضروری است؟</li>
+          <li>در یک تار با طول $L=1$ متر، کشش $T=100$ نیوتن و چگالی $\rho=0.01$ kg/m، فرکانس پایه چقدر است؟</li>
+        </ol>
+      </div>
+
+      <div class="exercise-block ex-green">
+        <div class="ex-header"><div class="ex-num">ب</div><div><div class="ex-title">تمرین‌های عملی</div></div></div>
+        <ol class="ex-list">
+          <li>معادله موج را با شرط اولیه $u(x,0) = \sin(2\pi x/L)$ و $u_t(x,0) = 0$ حل کنید.</li>
+          <li>پالس مستطیلی را به‌عنوان شرط اولیه اعمال کنید و نحوه حرکت آن را ببینید.</li>
+          <li>شرایط مرزی Fixed-Free را با کد پیاده‌سازی کنید.</li>
+          <li>با تغییر $c$، تأثیر سرعت موج را بر فرکانس پایه ببینید.</li>
+        </ol>
+      </div>
+
+      <div class="exercise-block ex-purple">
+        <div class="ex-header"><div class="ex-num">ج</div><div><div class="ex-title">تمرین‌های نوشتاری</div></div></div>
+        <ol class="ex-list">
+          <li>حل دالامبر را برای شرط اولیه مثلثی به‌دست آورید.</li>
+          <li>ثابت کنید که جواب دالامبر در معادله موج صدق می‌کند.</li>
+          <li>پایداری روش تفاضل محدود صریح برای معادله موج (شرط CFL) را اثبات کنید.</li>
+        </ol>
+      </div>
+
+      <div class="exercise-block ex-red">
+        <div class="ex-header"><div class="ex-num">★</div><div><div class="ex-title">چالش خلاقانه</div></div></div>
+        <ol class="ex-list">
+          <li>با استفاده از شبیه‌ساز تار، فرکانس یک نُت خاص (مثلاً La=440 Hz) را با تغییر کشش تنظیم کنید.</li>
+          <li>ملودی «ای ایران» را با کیبورد نُت پخش کنید و ضبط کنید.</li>
+          <li>برای پروژه پایانی خود (مثلاً تیر یا نانو انبرک)، معادله موج متناظر را بنویسید.</li>
+        </ol>
+      </div>
+
+      <div class="email-banner">
+        <p><i class="fas fa-envelope" style="color: var(--primary);"></i> ارسال تمرین‌ها:</p>
+        <code>m.goharimanesh@gmail.com</code>
+        <p style="margin-top: 8px; font-size: 0.78rem;">Subject الزامی:</p>
+        <code>[Advanced Engineering Mathematics] HW07 - نام و نام خانوادگی - شماره دانشجویی</code>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۱۸ — جمع‌بندی -->
+  <div class="slide" data-slide="18" data-topic="10">
+    <div class="slide-inner">
+      <h2 class="slide-h1">جمع‌بندی جلسه ۷</h2>
+
+      <div class="grid-3">
+        <div class="card" style="text-align: center;">
+          <i class="fas fa-water" style="font-size: 1.8rem; color: var(--wave); display: block; margin-bottom: 10px;"></i>
+          <div class="slide-h3" style="justify-content: center;">معادله موج</div>
+          <p class="slide-text" style="font-size: 0.8rem;">$u_{tt} = c^2 u_{xx}$</p>
+        </div>
+        <div class="card" style="text-align: center;">
+          <i class="fas fa-user" style="font-size: 1.8rem; color: var(--dalembert); display: block; margin-bottom: 10px;"></i>
+          <div class="slide-h3" style="justify-content: center;">حل دالامبر</div>
+          <p class="slide-text" style="font-size: 0.8rem;">$u = F(x-ct) + G(x+ct)$</p>
+        </div>
+        <div class="card" style="text-align: center;">
+          <i class="fas fa-layer-group" style="font-size: 1.8rem; color: var(--tertiary); display: block; margin-bottom: 10px;"></i>
+          <div class="slide-h3" style="justify-content: center;">جداسازی</div>
+          <p class="slide-text" style="font-size: 0.8rem;">مودهای سینوسی</p>
+        </div>
+        <div class="card" style="text-align: center;">
+          <i class="fas fa-guitar" style="font-size: 1.8rem; color: var(--string); display: block; margin-bottom: 10px;"></i>
+          <div class="slide-h3" style="justify-content: center;">تار ایرانی</div>
+          <p class="slide-text" style="font-size: 0.8rem;">تار، سه‌تار</p>
+        </div>
+        <div class="card" style="text-align: center;">
+          <i class="fas fa-flag" style="font-size: 1.8rem; color: var(--iran-green); display: block; margin-bottom: 10px;"></i>
+          <div class="slide-h3" style="justify-content: center;">ای ایران</div>
+          <p class="slide-text" style="font-size: 0.8rem;">نُت‌های پخش‌شده</p>
+        </div>
+        <div class="card" style="text-align: center;">
+          <i class="fas fa-brain" style="font-size: 1.8rem; color: var(--pin); display: block; margin-bottom: 10px;"></i>
+          <div class="slide-h3" style="justify-content: center;">PINN</div>
+          <p class="slide-text" style="font-size: 0.8rem;">تخمین $c$</p>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top: 16px;">
+        <div class="slide-h3"><i class="fas fa-arrow-left"></i> جلسه بعد</div>
+        <p class="slide-text" style="font-size: 0.88rem;">
+          <strong style="color: var(--primary);">جلسه ۸ — معادله لاپلاس و پواسون</strong>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۱۹ — پادکست‌ها -->
+  <div class="slide" data-slide="19" data-topic="10">
+    <div class="slide-inner">
+      <span class="slide-num">منابع صوتی</span>
+      <h2 class="slide-h1">پادکست‌های آموزشی</h2>
+
+      <p class="slide-text">
+        برای هر فصل از کتاب فوریه، یک پادکست صوتی با Google NotebookLM آماده کرده‌ام. می‌توانید از این لینک‌ها استفاده کنید:
+      </p>
+
+      <a href="#" class="podcast-card">
+        <div class="podcast-icon"><i class="fas fa-headphones"></i></div>
+        <div class="podcast-info">
+          <div class="podcast-title">فصل ۱ — مقدمه‌ای بر نظریه گرما</div>
+          <div class="podcast-desc">مدت: ۱۲ دقیقه — مرور کلی کتاب فوریه</div>
+        </div>
+        <i class="fas fa-external-link-alt" style="color: var(--text-dim);"></i>
+      </a>
+
+      <a href="#" class="podcast-card">
+        <div class="podcast-icon"><i class="fas fa-headphones"></i></div>
+        <div class="podcast-info">
+          <div class="podcast-title">فصل ۲ — معادلات دیفرانسیل جزئی</div>
+          <div class="podcast-desc">مدت: ۱۵ دقیقه — تحلیل PDE و شرایط مرزی</div>
+        </div>
+        <i class="fas fa-external-link-alt" style="color: var(--text-dim);"></i>
+      </a>
+
+      <a href="#" class="podcast-card">
+        <div class="podcast-icon"><i class="fas fa-headphones"></i></div>
+        <div class="podcast-info">
+          <div class="podcast-title">فصل ۳ — ارتعاش تار و معادله موج</div>
+          <div class="podcast-desc">مدت: ۱۸ دقیقه — حل دالامبر و کاربردهای موسیقی</div>
+        </div>
+        <i class="fas fa-external-link-alt" style="color: var(--text-dim);"></i>
+      </a>
+
+      <a href="#" class="podcast-card">
+        <div class="podcast-icon"><i class="fas fa-headphones"></i></div>
+        <div class="podcast-info">
+          <div class="podcast-title">فصل ۴ — حل معادلات با جداسازی متغیرها</div>
+          <div class="podcast-desc">مدت: ۲۰ دقیقه — جزئیات ریاضی جداسازی</div>
+        </div>
+        <i class="fas fa-external-link-alt" style="color: var(--text-dim);"></i>
+      </a>
+
+      <div class="math-box gold-math" style="margin-top: 20px; background: rgba(255, 183, 0, 0.08); padding: 22px;">
+        $$u(x,t) = F(x - ct) + G(x + ct)$$
+      </div>
+    </div>
+  </div>
+
+  <!-- ۲۰ — خداحافظی -->
+  <div class="slide" data-slide="20" data-topic="10">
+    <div class="slide-inner title-slide">
+      <div style="font-size: 3.5rem; color: var(--gold); margin-bottom: 18px;">
+        <i class="fas fa-check-circle"></i>
+      </div>
+      <h2 class="slide-h1">تا جلسه بعد</h2>
+      <p class="slide-text" style="font-size: 1rem;">
+        با زیبایی ریاضیات همراه باشید 🌟
+      </p>
+      <div class="iran-flag-large" style="max-width: 200px; height: 120px; margin: 20px auto;"></div>
+      <div class="math-box gold-math" style="margin-top: 14px; background: rgba(255, 183, 0, 0.08); padding: 22px;">
+        $$\int_{-\infty}^{+\infty} e^{-x^2} dx = \sqrt{\pi}$$
+      </div>
+      <p class="instructor-line" style="margin-top: 22px;">دکتر مسعود گوهری منش</p>
+      <p class="instructor-title-line">دانشیار گروه مهندسی مکانیک — دانشگاه تربت حیدریه</p>
+      <p style="font-size: 0.8rem; color: var(--text-dim); margin-top: 18px;">
+        جلسه بعد: <strong style="color: var(--primary);">معادله لاپلاس و پواسون</strong>
+      </p>
+      <p style="font-size: 0.95rem; color: var(--gold); margin-top: 24px; font-weight: 800;">
+        🇮🇷 ای ایران، ای مرز پرگهر 🇮🇷
+      </p>
+    </div>
+  </div>
+
+</div>
+
+<div class="bottom-nav">
+  <button class="nav-btn" id="prevBtn" disabled><i class="fas fa-arrow-right"></i><span>قبلی</span></button>
+  <div class="dots-nav" id="dotsNav"></div>
+  <div class="slide-counter"><span id="currentSlide">۱</span> / ۲۰</div>
+  <button class="nav-btn" id="nextBtn"><span>بعدی</span><i class="fas fa-arrow-left"></i></button>
+</div>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+/* ═══ ناوبری ═══ */
+const slides = document.querySelectorAll('.slide');
+const totalSlides = slides.length;
+let currentSlide = 0;
+const topicPills = document.querySelectorAll('.topic-pill');
+
+const dotsNav = document.getElementById('dotsNav');
+for (let i = 0; i < totalSlides; i++) {
+  const dot = document.createElement('button');
+  dot.className = 'dot-nav' + (i === 0 ? ' active' : '');
+  dot.addEventListener('click', () => goToSlide(i));
+  dotsNav.appendChild(dot);
+}
+
+function goToSlide(n) {
+  if (n < 0 || n >= totalSlides) return;
+  slides.forEach((s, i) => {
+    s.classList.remove('active', 'prev');
+    if (i < n) s.classList.add('prev');
+    if (i === n) s.classList.add('active');
+  });
+  currentSlide = n;
+  updateNav();
+  playTransition();
+  setTimeout(() => {
+    initVisibleCharts();
+    if (window.MathJax && window.MathJax.typesetPromise) window.MathJax.typesetPromise();
+  }, 100);
+}
+
+function updateNav() {
+  document.querySelectorAll('.dot-nav').forEach((d, i) => d.classList.toggle('active', i === currentSlide));
+  document.getElementById('currentSlide').textContent = toFa(currentSlide + 1);
+  document.getElementById('prevBtn').disabled = currentSlide === 0;
+  document.getElementById('nextBtn').disabled = currentSlide === totalSlides - 1;
+  document.getElementById('progressFill').style.width = ((currentSlide + 1) / totalSlides * 100) + '%';
+  const currentTopic = slides[currentSlide].dataset.topic;
+  topicPills.forEach(pill => {
+    const t = parseInt(pill.dataset.topic);
+    const ct = parseInt(currentTopic);
+    pill.classList.toggle('active', t === ct);
+    pill.classList.toggle('done', t < ct);
+    if (t === ct) pill.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+  });
+}
+
+document.getElementById('prevBtn').addEventListener('click', () => goToSlide(currentSlide - 1));
+document.getElementById('nextBtn').addEventListener('click', () => goToSlide(currentSlide + 1));
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowLeft') { e.preventDefault(); goToSlide(currentSlide + 1); }
+  else if (e.key === 'ArrowRight') { e.preventDefault(); goToSlide(currentSlide - 1); }
+  else if (e.key === ' ') { e.preventDefault(); goToSlide(currentSlide + 1); }
+  else if (e.key === 'Home') { e.preventDefault(); goToSlide(0); }
+  else if (e.key === 'End') { e.preventDefault(); goToSlide(totalSlides - 1); }
+  else if (e.key === 'Escape' && document.fullscreenElement) document.exitFullscreen();
+});
+
+let touchStartX = 0, touchStartY = 0;
+document.addEventListener('touchstart', e => {
+  touchStartX = e.changedTouches[0].screenX;
+  touchStartY = e.changedTouches[0].screenY;
+}, { passive: true });
+document.addEventListener('touchend', e => {
+  const dx = e.changedTouches[0].screenX - touchStartX;
+  const dy = e.changedTouches[0].screenY - touchStartY;
+  if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy)) {
+    if (dx < 0) goToSlide(currentSlide + 1);
+    else goToSlide(currentSlide - 1);
+  }
+}, { passive: true });
+
+/* ═══ صدا ═══ */
+let audioCtx = null, soundEnabled = true;
+function initAudio() { if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
+function playTransition() {
+  if (!soundEnabled) return;
+  initAudio();
+  [440, 554.37].forEach((freq, i) => {
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.connect(gain); gain.connect(audioCtx.destination);
+    osc.frequency.value = freq; osc.type = 'sine';
+    const t = audioCtx.currentTime + i * 0.06;
+    gain.gain.setValueAtTime(0.04, t);
+    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.18);
+    osc.start(t); osc.stop(t + 0.22);
+  });
+}
+document.getElementById('soundToggle').addEventListener('click', function() {
+  soundEnabled = !soundEnabled;
+  this.classList.toggle('active', soundEnabled);
+  this.innerHTML = soundEnabled ? '<i class="fas fa-volume-up"></i>' : '<i class="fas fa-volume-mute"></i>';
+  showToast(soundEnabled ? 'صدا فعال' : 'صدا غیرفعال');
+});
+document.getElementById('fullscreenToggle').addEventListener('click', function() {
+  if (!document.fullscreenElement) { document.documentElement.requestFullscreen(); this.innerHTML = '<i class="fas fa-compress"></i>'; }
+  else { document.exitFullscreen(); this.innerHTML = '<i class="fas fa-expand"></i>'; }
+});
+function showToast(msg) {
+  const container = document.getElementById('toastContainer');
+  const toast = document.createElement('div');
+  toast.className = 'toast';
+  toast.innerHTML = `<i class="fas fa-info-circle"></i> ${msg}`;
+  container.appendChild(toast);
+  setTimeout(() => { toast.style.opacity = '0'; toast.style.transform = 'translateX(-60px)'; setTimeout(() => toast.remove(), 300); }, 2400);
+}
+function toFa(n) { const fa = ['۰','۱','۲','۳','۴','۵','۶','۷','۸','۹']; return String(n).replace(/\d/g, d => fa[d]); }
+
+/* ═══ پس‌زمینه ═══ */
+const bgCanvas = document.getElementById('bgCanvas');
+const bgCtx = bgCanvas.getContext('2d');
+let particles = [];
+function resizeBg() { bgCanvas.width = window.innerWidth; bgCanvas.height = window.innerHeight; }
+resizeBg();
+window.addEventListener('resize', resizeBg);
+class Particle {
+  constructor() { this.reset(); }
+  reset() {
+    this.x = Math.random() * bgCanvas.width;
+    this.y = Math.random() * bgCanvas.height;
+    this.size = Math.random() * 1.6 + 0.4;
+    this.speedX = (Math.random() - 0.5) * 0.3;
+    this.speedY = (Math.random() - 0.5) * 0.3;
+    this.opacity = Math.random() * 0.5 + 0.15;
+    const colors = ['#00d4aa', '#06b6d4', '#a855f7', '#ffb700'];
+    this.color = colors[Math.floor(Math.random() * colors.length)];
+  }
+  update() { this.x += this.speedX; this.y += this.speedY; if (this.x < 0 || this.x > bgCanvas.width || this.y < 0 || this.y > bgCanvas.height) this.reset(); }
+  draw() { bgCtx.beginPath(); bgCtx.arc(this.x, this.y, this.size, 0, Math.PI*2); bgCtx.fillStyle = this.color; bgCtx.globalAlpha = this.opacity; bgCtx.fill(); bgCtx.globalAlpha = 1; }
+}
+for (let i = 0; i < 50; i++) particles.push(new Particle());
+function animateBg() { bgCtx.clearRect(0, 0, bgCanvas.width, bgCanvas.height); particles.forEach(p => { p.update(); p.draw(); }); requestAnimationFrame(animateBg); }
+animateBg();
+
+/* ═══ ابزار ═══ */
+function setupCanvas(canvasId) {
+  const canvas = document.getElementById(canvasId);
+  if (!canvas) return null;
+  const dpr = window.devicePixelRatio || 1;
+  const rect = canvas.getBoundingClientRect();
+  canvas.width = rect.width * dpr; canvas.height = rect.height * dpr;
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+  return { ctx, w: rect.width, h: rect.height };
+}
+function drawGrid(ctx, w, h, cols = 10, rows = 10) {
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)'; ctx.lineWidth = 1;
+  for (let i = 0; i <= cols; i++) { ctx.beginPath(); ctx.moveTo((w/cols)*i, 0); ctx.lineTo((w/cols)*i, h); ctx.stroke(); }
+  for (let i = 0; i <= rows; i++) { ctx.beginPath(); ctx.moveTo(0, (h/rows)*i); ctx.lineTo(w, (h/rows)*i); ctx.stroke(); }
+}
+
+/* ═══ شبیه‌ساز تار مرتعش (تعاملی) ═══ */
+let stringAnimId = null;
+let stringTime = 0;
+let stringDisplacement = []; // موقعیت نقاط تار
+let isDragging = false;
+let dragX = 0, dragY = 0;
+let initialStringShape = null; // شکل اولیه تار برای رهاسازی
+
+const NUM_POINTS = 100;
+
+function initString() {
+  stringDisplacement = new Array(NUM_POINTS).fill(0);
+  stringTime = 0;
+}
+
+function drawWaveString() {
+  const s = setupCanvas('waveStringCanvas');
+  if (!s) return;
+  const { ctx, w, h } = s;
+  ctx.clearRect(0, 0, w, h);
+  drawGrid(ctx, w, h, 12, 6);
+
+  const T = parseFloat(document.getElementById('waveTension').value);
+  const rho = parseFloat(document.getElementById('waveDensity').value);
+  const damping = parseFloat(document.getElementById('waveDamping').value);
+  const c = Math.sqrt(T / rho);
+  const L = 1;
+  const f1 = c / (2 * L);
+
+  document.getElementById('waveSpeed').textContent = toFa(c.toFixed(2)) + ' m/s';
+  document.getElementById('waveFreq').textContent = toFa(Math.round(f1 * 1000));
+
+  // نت موسیقی تقریبی
+  const noteNames = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+  const freqRef = 440;
+  const noteIndex = Math.round(12 * Math.log2(f1 * 1000 / freqRef)) % 12;
+  const octave = 4 + Math.floor(Math.log2(f1 * 1000 / freqRef));
+  const note = noteNames[(noteIndex + 12) % 12] + octave;
+  document.getElementById('waveNote').textContent = note;
+
+  // رسم تار
+  const baseY = h / 2;
+  const padX = 30;
+
+  // خط تعادل
+  ctx.beginPath();
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
+  ctx.lineWidth = 1;
+  ctx.setLineDash([4, 4]);
+  ctx.moveTo(padX, baseY);
+  ctx.lineTo(w - padX, baseY);
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  // تار با گرادیان
+  ctx.beginPath();
+  const gradient = ctx.createLinearGradient(padX, 0, w - padX, 0);
+  gradient.addColorStop(0, '#ffb700');
+  gradient.addColorStop(0.5, '#00d4aa');
+  gradient.addColorStop(1, '#ffb700');
+  ctx.strokeStyle = gradient;
+  ctx.lineWidth = 3;
+  ctx.shadowColor = '#00d4aa';
+  ctx.shadowBlur = 10;
+  
+  for (let i = 0; i < NUM_POINTS; i++) {
+    const x = padX + (i / (NUM_POINTS - 1)) * (w - 2 * padX);
+    const y = baseY + stringDisplacement[i] * (h * 0.4);
+    if (i === 0) ctx.moveTo(x, y);
+    else ctx.lineTo(x, y);
+  }
+  ctx.stroke();
+  ctx.shadowBlur = 0;
+
+  // گره‌ها
+  ctx.fillStyle = '#ffb700';
+  ctx.beginPath();
+  ctx.arc(padX, baseY, 6, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.beginPath();
+  ctx.arc(w - padX, baseY, 6, 0, Math.PI * 2);
+  ctx.fill();
+}
+
+function animateString() {
+  if (!isDragging) {
+    // تکامل تار با فیزیک (شبیه‌سازی ساده)
+    const T = parseFloat(document.getElementById('waveTension').value);
+    const rho = parseFloat(document.getElementById('waveDensity').value);
+    const damping = parseFloat(document.getElementById('waveDamping').value);
+    const c = Math.sqrt(T / rho);
+    
+    const dt = 0.01 * c;
+    const dx = 1 / NUM_POINTS;
+    const r2 = Math.pow(c * dt / dx, 2);
+    
+    const newDisp = new Array(NUM_POINTS).fill(0);
+    newDisp[0] = 0;
+    newDisp[NUM_POINTS - 1] = 0;
+    
+    for (let i = 1; i < NUM_POINTS - 1; i++) {
+      const laplacian = stringDisplacement[i+1] - 2 * stringDisplacement[i] + stringDisplacement[i-1];
+      newDisp[i] = stringDisplacement[i] + r2 * laplacian * 0.5;
+      newDisp[i] *= (1 - damping);
+    }
+    
+    // محاسبه سرعت تقریبی
+    for (let i = 0; i < NUM_POINTS; i++) {
+      stringDisplacement[i] = newDisp[i];
+    }
+  }
+  
+  drawWaveString();
+  stringAnimId = requestAnimationFrame(animateString);
+}
+
+function stopStringAnim() {
+  if (stringAnimId) { cancelAnimationFrame(stringAnimId); stringAnimId = null; }
+}
+
+// تعامل با ماوس
+const waveStringCanvas = document.getElementById('waveStringCanvas');
+if (waveStringCanvas) {
+  waveStringCanvas.addEventListener('mousedown', e => {
+    const rect = waveStringCanvas.getBoundingClientRect();
+    dragX = e.clientX - rect.left;
+    dragY = e.clientY - rect.top;
+    isDragging = true;
+    waveStringCanvas.style.cursor = 'grabbing';
+  });
+  
+  waveStringCanvas.addEventListener('mousemove', e => {
+    if (!isDragging) return;
+    const rect = waveStringCanvas.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    
+    const padX = 30;
+    const baseY = rect.height / 2;
+    const idx = Math.round(((x - padX) / (rect.width - 2 * padX)) * (NUM_POINTS - 1));
+    
+    if (idx >= 0 && idx < NUM_POINTS) {
+      stringDisplacement[idx] = (y - baseY) / (rect.height * 0.4);
+    }
+  });
+  
+  waveStringCanvas.addEventListener('mouseup', () => {
+    isDragging = false;
+    waveStringCanvas.style.cursor = 'grab';
+  });
+  
+  waveStringCanvas.addEventListener('mouseleave', () => {
+    isDragging = false;
+  });
+  
+  // لمس (موبایل)
+  waveStringCanvas.addEventListener('touchstart', e => {
+    e.preventDefault();
+    const rect = waveStringCanvas.getBoundingClientRect();
+    const touch = e.touches[0];
+    dragX = touch.clientX - rect.left;
+    dragY = touch.clientY - rect.top;
+    isDragging = true;
+  }, { passive: false });
+  
+  waveStringCanvas.addEventListener('touchmove', e => {
+    e.preventDefault();
+    if (!isDragging) return;
+    const rect = waveStringCanvas.getBoundingClientRect();
+    const touch = e.touches[0];
+    const x = touch.clientX - rect.left;
+    const y = touch.clientY - rect.top;
+    
+    const padX = 30;
+    const baseY = rect.height / 2;
+    const idx = Math.round(((x - padX) / (rect.width - 2 * padX)) * (NUM_POINTS - 1));
+    
+    if (idx >= 0 && idx < NUM_POINTS) {
+      stringDisplacement[idx] = (y - baseY) / (rect.height * 0.4);
+    }
+  }, { passive: false });
+  
+  waveStringCanvas.addEventListener('touchend', () => {
+    isDragging = false;
+  });
+}
+
+['waveTension', 'waveDensity', 'waveDamping'].forEach(id => {
+  const el = document.getElementById(id);
+  if (el) {
+    el.addEventListener('input', function() {
+      document.getElementById(id + 'Value').textContent = toFa(parseFloat(this.value).toFixed(2));
+      drawWaveString();
+    });
+  }
+});
+
+/* ═══ پخش صدای تار ═══ */
+function playTone(freq, duration = 2, type = 'pluck') {
+  if (!audioCtx) initAudio();
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+  osc.connect(gain); gain.connect(audioCtx.destination);
+  osc.type = 'triangle';
+  osc.frequency.value = freq;
+  
+  const t = audioCtx.currentTime;
+  gain.gain.setValueAtTime(0, t);
+  gain.gain.linearRampToValueAtTime(0.15, t + 0.005);
+  gain.gain.exponentialRampToValueAtTime(0.001, t + duration);
+  
+  // هارمونیک دوم برای صدای غنی‌تر
+  const osc2 = audioCtx.createOscillator();
+  const gain2 = audioCtx.createGain();
+  osc2.connect(gain2); gain2.connect(audioCtx.destination);
+  osc2.type = 'sine';
+  osc2.frequency.value = freq * 2;
+  gain2.gain.setValueAtTime(0, t);
+  gain2.gain.linearRampToValueAtTime(0.05, t + 0.005);
+  gain2.gain.exponentialRampToValueAtTime(0.001, t + duration * 0.7);
+  
+  osc.start(t); osc.stop(t + duration);
+  osc2.start(t); osc2.stop(t + duration);
+}
+
+document.getElementById('playString')?.addEventListener('click', () => {
+  const T = parseFloat(document.getElementById('waveTension').value);
+  const rho = parseFloat(document.getElementById('waveDensity').value);
+  const c = Math.sqrt(T / rho);
+  const f1 = c / (2 * 1);
+  
+  // پخش نت پایه + هارمونیک‌ها
+  playTone(f1 * 200, 2);
+  setTimeout(() => playTone(f1 * 400, 1.5), 100);
+  setTimeout(() => playTone(f1 * 600, 1), 200);
+  
+  showToast(`پخش نُت با فرکانس ${Math.round(f1 * 200)} Hz`);
+});
+
+document.getElementById('stopString')?.addEventListener('click', () => {
+  stringDisplacement = new Array(NUM_POINTS).fill(0);
+});
+
+/* ═══ کیبورد نُت ═══ */
+document.querySelectorAll('.note-key').forEach(key => {
+  key.addEventListener('mousedown', () => {
+    const freq = parseFloat(key.dataset.note);
+    const name = key.dataset.name;
+    key.classList.add('playing');
+    playTone(freq, 1.5);
+    document.getElementById('currentNote').textContent = name;
+    document.getElementById('currentFreq').textContent = toFa(freq) + ' Hz';
+    document.getElementById('currentWaveLength').textContent = toFa((343 / freq * 100).toFixed(1));
+    
+    // نمایش موج
+    showNoteWave(freq);
+  });
+  
+  key.addEventListener('mouseup', () => key.classList.remove('playing'));
+  key.addEventListener('mouseleave', () => key.classList.remove('playing'));
+  key.addEventListener('touchstart', e => {
+    e.preventDefault();
+    const freq = parseFloat(key.dataset.note);
+    const name = key.dataset.name;
+    key.classList.add('playing');
+    playTone(freq, 1.5);
+    document.getElementById('currentNote').textContent = name;
+    document.getElementById('currentFreq').textContent = toFa(freq) + ' Hz';
+    document.getElementById('currentWaveLength').textContent = toFa((343 / freq * 100).toFixed(1));
+  }, { passive: false });
+  key.addEventListener('touchend', () => key.classList.remove('playing'));
+});
+
+function showNoteWave(freq) {
+  // اضافه کردن موج به تار
+  for (let i = 0; i < NUM_POINTS; i++) {
+    const x = i / (NUM_POINTS - 1);
+    stringDisplacement[i] = Math.sin(Math.PI * x) * 0.3;
+  }
+  setTimeout(() => {
+    if (!isDragging) {
+      for (let i = 0; i < NUM_POINTS; i++) {
+        stringDisplacement[i] *= 0.5;
+      }
+    }
+  }, 500);
+}
+
+/* ═══ ای ایران ═══ */
+const eyIranMelody = [
+  { note: 'Sol', freq: 392, dur: 0.4 },
+  { note: 'La', freq: 440, dur: 0.3 },
+  { note: 'Si', freq: 494, dur: 0.5 },
+  { note: 'La', freq: 440, dur: 0.4 },
+  { note: 'Sol', freq: 392, dur: 0.4 },
+  { note: 'Mi', freq: 330, dur: 0.6 },
+  { note: 'Sol', freq: 392, dur: 0.4 },
+  { note: 'La', freq: 440, dur: 0.5 },
+  { note: 'Si', freq: 494, dur: 0.4 },
+  { note: 'Do5', freq: 523, dur: 0.6 },
+  { note: 'Si', freq: 494, dur: 0.4 },
+  { note: 'La', freq: 440, dur: 0.5 },
+  { note: 'Sol', freq: 392, dur: 0.7 },
+  { note: 'Mi', freq: 330, dur: 0.4 },
+  { note: 'Re', freq: 294, dur: 0.5 },
+  { note: 'Do', freq: 262, dur: 0.8 }
+];
+
+let isPlayingEyIran = false;
+
+document.getElementById('playEyIran')?.addEventListener('click', async () => {
+  if (isPlayingEyIran) return;
+  isPlayingEyIran = true;
+  
+  const notesContainer = document.getElementById('eyIranNotes');
+  notesContainer.innerHTML = '';
+  
+  if (!audioCtx) initAudio();
+  
+  for (let i = 0; i < eyIranMelody.length; i++) {
+    const { note, freq, dur } = eyIranMelody[i];
+    
+    // نمایش نُت
+    const noteLine = document.createElement('div');
+    noteLine.textContent = `${(i+1).toString().padStart(2, '0')}. ${note.padEnd(6)} → ${freq} Hz (${dur}s)`;
+    noteLine.style.color = i % 2 === 0 ? 'var(--gold)' : 'var(--primary)';
+    notesContainer.appendChild(noteLine);
+    notesContainer.scrollTop = notesContainer.scrollHeight;
+    
+    // نمایش موج روی تار
+    for (let k = 0; k < NUM_POINTS; k++) {
+      const x = k / (NUM_POINTS - 1);
+      stringDisplacement[k] = Math.sin(Math.PI * x) * 0.4 * Math.sin(2 * Math.PI * freq / 200 * x);
+    }
+    
+    // پخش صدا
+    playTone(freq, dur);
+    
+    // انتظار
+    await new Promise(r => setTimeout(r, dur * 1000));
+  }
+  
+  isPlayingEyIran = false;
+  showToast('پخش ای ایران تمام شد 🇮🇷');
+});
+
+/* ═══ تب‌های کد ═══ */
+document.querySelectorAll('.code-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    const parent = tab.parentElement;
+    parent.querySelectorAll('.code-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    const contentId = 'code-' + tab.dataset.code;
+    const content = document.getElementById(contentId);
+    if (content) {
+      const allContents = parent.parentElement.querySelectorAll('.code-content');
+      allContents.forEach(c => c.classList.remove('active'));
+      content.classList.add('active');
+    }
+  });
+});
+
+/* ═══ رندر ═══ */
+function initVisibleCharts() {
+  const activeSlide = document.querySelector('.slide.active');
+  if (!activeSlide) return;
+  const num = activeSlide.dataset.slide;
+  
+  stopStringAnim();
+  
+  if (num === '10') {
+    if (stringDisplacement.length === 0) initString();
+    drawWaveString();
+    animateString();
+  } else if (num === '11') {
+    // کیبورد نُت — بدون canvas
+  } else if (num === '13') {
+    // ای ایران
+  }
+}
+
+/* ═══ راه‌اندازی ═══ */
+updateNav();
+initString();
+setTimeout(() => {
+  initVisibleCharts();
+  if (window.MathJax && window.MathJax.typesetPromise) window.MathJax.typesetPromise();
+}, 400);
+setTimeout(() => showToast('به جلسه ۷ خوش آمدید — معادله موج 🌊'), 1000);
+
+window.addEventListener('resize', () => setTimeout(() => {
+  initVisibleCharts();
+  if (window.MathJax && window.MathJax.typesetPromise) window.MathJax.typesetPromise();
+}, 200));
+</script>
+
+</body>
+</html>

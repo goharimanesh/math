@@ -1,0 +1,1974 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>جلسه ۳ — فضای برداری، پایه و تبدیل خطی | دکتر مسعود گوهری منش</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+<!-- MathJax برای LaTeX -->
+<script>
+window.MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']],
+    displayMath: [['$$', '$$'], ['\\[', '\\]']],
+    processEscapes: true
+  },
+  options: { skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'] },
+  svg: { fontCache: 'global' }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" async></script>
+
+<!-- Plotly برای گراف سه‌بعدی -->
+<script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+
+<style>
+:root {
+  --primary: #00d4aa;
+  --secondary: #06b6d4;
+  --tertiary: #a855f7;
+  --gold: #ffb700;
+  --success: #22c55e;
+  --danger: #ff4757;
+  --pink: #ec4899;
+  --dark: #050818;
+  --darker: #020410;
+  --card-bg: rgba(255, 255, 255, 0.05);
+  --card-border: rgba(255, 255, 255, 0.1);
+  --text: #e8eef7;
+  --text-dim: #9aa7bd;
+  --vec: #00d4aa;
+  --indep: #ffb700;
+  --basis: #a855f7;
+  --transform: #ec4899;
+  --kernel: #22c55e;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { overflow: hidden; height: 100%; }
+body {
+  font-family: 'Vazirmatn', sans-serif;
+  background: var(--dark);
+  color: var(--text);
+  direction: rtl;
+  line-height: 1.8;
+}
+#bgCanvas { position: fixed; inset: 0; z-index: -2; background: radial-gradient(ellipse at top, #0a1230 0%, var(--darker) 50%, #000 100%); }
+.glow-orb { position: fixed; border-radius: 50%; filter: blur(120px); opacity: 0.3; z-index: -1; pointer-events: none; animation: floatOrb 25s ease-in-out infinite; }
+.orb1 { width: 600px; height: 600px; background: var(--primary); top: -200px; right: -200px; }
+.orb2 { width: 500px; height: 500px; background: var(--tertiary); bottom: -150px; left: -150px; animation-delay: -8s; }
+.orb3 { width: 400px; height: 400px; background: var(--gold); top: 30%; left: 25%; animation-delay: -15s; opacity: 0.12; }
+@keyframes floatOrb { 0%, 100% { transform: translate(0, 0) scale(1); } 33% { transform: translate(50px, -40px) scale(1.15); } 66% { transform: translate(-40px, 50px) scale(0.9); } }
+
+.top-header { position: fixed; top: 0; left: 0; right: 0; height: 82px; background: rgba(5, 8, 24, 0.9); backdrop-filter: blur(15px); border-bottom: 1px solid var(--card-border); display: flex; align-items: center; justify-content: space-between; padding: 0 18px; z-index: 100; }
+.header-left { display: flex; align-items: center; gap: 14px; }
+.header-signature { height: 60px; width: auto; max-width: 150px; object-fit: contain; filter: drop-shadow(0 0 8px rgba(255, 183, 0, 0.3)); border-radius: 6px; background: rgba(255, 255, 255, 0.03); padding: 4px; }
+.header-text { display: flex; flex-direction: column; line-height: 1.35; }
+.header-name { font-size: 0.88rem; color: var(--gold); font-weight: 800; white-space: nowrap; }
+.header-univ { font-size: 0.7rem; color: var(--text-dim); font-weight: 500; }
+.header-controls { display: flex; gap: 8px; flex-shrink: 0; }
+.ctrl-btn { width: 38px; height: 38px; border-radius: 10px; border: 1px solid var(--card-border); background: var(--card-bg); backdrop-filter: blur(10px); color: var(--text); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; transition: all 0.3s ease; }
+.ctrl-btn:hover { background: var(--primary); color: var(--dark); transform: translateY(-2px); }
+.ctrl-btn.active { background: var(--primary); color: var(--dark); }
+
+.topic-nav { position: fixed; top: 82px; left: 0; right: 0; height: 36px; background: rgba(5, 8, 24, 0.9); backdrop-filter: blur(10px); border-bottom: 1px solid var(--card-border); z-index: 99; display: flex; align-items: center; gap: 6px; padding: 0 18px; overflow-x: auto; scrollbar-width: none; }
+.topic-nav::-webkit-scrollbar { display: none; }
+.topic-pill { padding: 4px 11px; border-radius: 20px; font-size: 0.7rem; font-weight: 600; white-space: nowrap; color: var(--text-dim); background: rgba(255, 255, 255, 0.04); border: 1px solid transparent; transition: all 0.3s ease; }
+.topic-pill.active { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: var(--dark); font-weight: 800; box-shadow: 0 3px 10px rgba(0, 212, 170, 0.35); }
+.topic-pill.done { color: var(--primary); border-color: rgba(0, 212, 170, 0.3); }
+
+.progress-top { position: fixed; top: 118px; left: 0; right: 0; height: 3px; background: rgba(255, 255, 255, 0.05); z-index: 98; }
+.progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--primary), var(--secondary), var(--tertiary)); transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 0 12px var(--primary); }
+
+.slide-container { position: fixed; inset: 121px 0 0 0; overflow: hidden; }
+.slide { position: absolute; inset: 0; padding: 24px 50px 90px; opacity: 0; transform: translateX(-40px); pointer-events: none; transition: opacity 0.5s ease, transform 0.5s cubic-bezier(0.4, 0, 0.2, 1); overflow-y: auto; overflow-x: hidden; }
+.slide.active { opacity: 1; transform: translateX(0); pointer-events: auto; }
+.slide.prev { transform: translateX(40px); }
+.slide::-webkit-scrollbar { width: 6px; }
+.slide::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 3px; }
+.slide-inner { max-width: 1200px; margin: 0 auto; animation: contentFade 0.6s ease; }
+@keyframes contentFade { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+.slide-num { display: inline-block; padding: 5px 14px; border-radius: 20px; background: rgba(0, 212, 170, 0.15); color: var(--primary); font-size: 0.72rem; font-weight: 700; margin-bottom: 10px; }
+.slide-h1 { font-size: clamp(1.3rem, 3.2vw, 2rem); font-weight: 900; background: linear-gradient(135deg, var(--primary), var(--secondary), var(--tertiary), var(--gold)); background-size: 300% 300%; -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; animation: gradientShift 6s ease infinite; margin-bottom: 16px; line-height: 1.35; }
+@keyframes gradientShift { 0%, 100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
+.slide-h3 { font-size: 0.98rem; font-weight: 700; color: var(--text); margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+.slide-h3 i { color: var(--gold); font-size: 0.88rem; }
+.slide-text { font-size: 0.9rem; color: var(--text-dim); line-height: 2; margin-bottom: 12px; }
+
+.card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 18px; padding: 18px; backdrop-filter: blur(12px); transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1); }
+.card:hover { transform: translateY(-4px); border-color: rgba(0, 212, 170, 0.4); box-shadow: 0 15px 35px rgba(0, 212, 170, 0.12); }
+.grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+.grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; }
+
+.title-slide { text-align: center; padding-top: 5px; }
+.title-slide .hero-img { width: 100%; max-width: 520px; height: 170px; object-fit: contain; background: rgba(0, 0, 0, 0.2); padding: 6px; border-radius: 20px; margin: 0 auto 12px; display: block; border: 1px solid var(--card-border); box-shadow: 0 20px 40px rgba(0, 212, 170, 0.15); }
+.title-slide .bismillah { font-size: 1.2rem; font-weight: 500; background: linear-gradient(90deg, var(--gold), var(--primary), var(--secondary)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 4px; }
+.title-slide .hoval { font-size: 0.82rem; color: var(--text-dim); margin-bottom: 16px; letter-spacing: 1px; }
+.title-slide .main-title { font-size: clamp(1.7rem, 4.2vw, 2.6rem); font-weight: 900; background: linear-gradient(135deg, var(--primary), var(--secondary), var(--gold)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 10px; line-height: 1.3; }
+.title-slide .subtitle { font-size: clamp(0.9rem, 2vw, 1.05rem); color: var(--text-dim); margin-bottom: 18px; }
+.title-slide .euler-box { display: inline-block; padding: 12px 30px; border-radius: 18px; background: var(--card-bg); border: 1px solid var(--card-border); backdrop-filter: blur(15px); margin-bottom: 16px; }
+.title-slide .instructor-line { font-size: 0.92rem; color: var(--gold); font-weight: 700; margin-bottom: 3px; }
+.title-slide .instructor-title-line { font-size: 0.78rem; color: var(--text-dim); margin-bottom: 12px; }
+.title-slide .semester { display: inline-block; padding: 6px 18px; border-radius: 50px; background: var(--card-bg); border: 1px solid var(--card-border); font-size: 0.78rem; color: var(--text-dim); }
+
+.math-box { background: rgba(0, 212, 170, 0.06); border: 1px solid rgba(0, 212, 170, 0.25); border-radius: 14px; padding: 16px 22px; margin: 12px 0; text-align: center; direction: ltr; position: relative; overflow-x: auto; overflow-y: hidden; }
+.math-box::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--primary), var(--secondary), var(--tertiary)); }
+.math-box .MathJax, .math-box mjx-container { color: var(--primary) !important; font-size: 1em !important; }
+.math-box.gold-math .MathJax, .math-box.gold-math mjx-container { color: var(--gold) !important; }
+.math-box.purple-math .MathJax, .math-box.purple-math mjx-container { color: var(--tertiary) !important; }
+.math-box.pink-math .MathJax, .math-box.pink-math mjx-container { color: var(--transform) !important; }
+.math-box.green-math .MathJax, .math-box.green-math mjx-container { color: var(--kernel) !important; }
+.math-note { font-family: 'Vazirmatn', sans-serif; font-size: 0.76rem; color: var(--text-dim); direction: rtl; margin-top: 8px; font-style: italic; text-align: center; }
+
+.simulator { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 18px; padding: 16px; margin: 12px 0; backdrop-filter: blur(12px); }
+.sim-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; flex-wrap: wrap; gap: 10px; }
+.sim-title { font-size: 0.9rem; font-weight: 700; color: var(--gold); display: flex; align-items: center; gap: 8px; }
+.sim-controls { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.slider-group { display: flex; align-items: center; gap: 8px; background: rgba(0, 0, 0, 0.3); padding: 6px 12px; border-radius: 10px; border: 1px solid var(--card-border); }
+.slider-group label { font-size: 0.72rem; color: var(--text-dim); white-space: nowrap; }
+.slider-group input[type="range"] { width: 100px; accent-color: var(--primary); cursor: pointer; }
+.slider-value { font-family: 'Courier New', monospace; font-size: 0.78rem; color: var(--primary); font-weight: 700; min-width: 30px; text-align: center; }
+.canvas-wrapper { position: relative; width: 100%; height: 260px; background: rgba(0, 0, 0, 0.4); border-radius: 12px; overflow: hidden; border: 1px solid var(--card-border); }
+.canvas-wrapper canvas { width: 100%; height: 100%; display: block; }
+
+.img-box { 
+  width: 100%; 
+  max-height: 280px;
+  border-radius: 16px; 
+  border: 1px solid var(--card-border); 
+  margin: 12px 0; 
+  display: block; 
+  object-fit: contain;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 8px;
+}
+
+.matrix-input {
+  display: inline-grid;
+  grid-template-columns: repeat(2, 60px);
+  gap: 6px;
+  padding: 10px;
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--card-border);
+}
+.matrix-input input {
+  width: 60px; height: 40px;
+  border-radius: 8px;
+  border: 1px solid var(--card-border);
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--gold);
+  font-family: 'Courier New', monospace;
+  font-size: 0.95rem;
+  font-weight: 700;
+  text-align: center;
+}
+.matrix-input input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(0, 212, 170, 0.15);
+}
+
+.exercise-block { border-radius: 16px; padding: 16px; border: 1px solid; position: relative; overflow: hidden; margin-bottom: 12px; }
+.exercise-block::before { content: ''; position: absolute; top: 0; right: 0; width: 4px; height: 100%; }
+.ex-yellow { background: rgba(255, 217, 61, 0.06); border-color: rgba(255, 217, 61, 0.25); }
+.ex-yellow::before { background: #ffd93d; }
+.ex-green { background: rgba(107, 207, 127, 0.06); border-color: rgba(107, 207, 127, 0.25); }
+.ex-green::before { background: #6bcf7f; }
+.ex-purple { background: rgba(168, 85, 247, 0.06); border-color: rgba(168, 85, 247, 0.25); }
+.ex-purple::before { background: var(--tertiary); }
+.ex-red { background: rgba(255, 107, 107, 0.06); border-color: rgba(255, 107, 107, 0.25); }
+.ex-red::before { background: #ff6b6b; }
+.ex-header { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+.ex-num { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 0.8rem; color: var(--dark); flex-shrink: 0; }
+.ex-yellow .ex-num { background: #ffd93d; }
+.ex-green .ex-num { background: #6bcf7f; }
+.ex-purple .ex-num { background: var(--tertiary); color: #fff; }
+.ex-red .ex-num { background: #ff6b6b; color: #fff; }
+.ex-title { font-size: 0.92rem; font-weight: 800; }
+.ex-list { list-style: none; padding: 0; counter-reset: item; }
+.ex-list li { position: relative; padding: 7px 34px 7px 10px; font-size: 0.83rem; color: var(--text-dim); line-height: 1.8; border-bottom: 1px dashed rgba(255, 255, 255, 0.05); }
+.ex-list li:last-child { border-bottom: none; }
+.ex-list li::before { counter-increment: item; content: counter(item); position: absolute; right: 4px; top: 9px; width: 22px; height: 22px; border-radius: 50%; background: rgba(255, 255, 255, 0.08); color: var(--text); font-size: 0.7rem; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+.email-banner { margin-top: 12px; padding: 12px; border-radius: 14px; background: linear-gradient(135deg, rgba(0, 212, 170, 0.1), rgba(168, 85, 247, 0.1)); border: 1px dashed rgba(0, 212, 170, 0.4); text-align: center; }
+.email-banner p { font-size: 0.8rem; color: var(--text); margin-bottom: 5px; }
+.email-banner code { display: inline-block; padding: 5px 12px; border-radius: 8px; background: rgba(0, 0, 0, 0.4); color: var(--primary); font-family: 'Courier New', monospace; font-size: 0.76rem; direction: ltr; margin-top: 3px; }
+
+.code-tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--card-border); }
+.code-tab { padding: 8px 16px; border-radius: 10px 10px 0 0; background: transparent; border: none; color: var(--text-dim); font-family: inherit; font-size: 0.8rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; }
+.code-tab.active { background: rgba(0, 212, 170, 0.1); color: var(--primary); border-bottom: 2px solid var(--primary); }
+.code-content { display: none; background: #0a0f24; border: 1px solid var(--card-border); border-top: none; border-radius: 0 0 12px 12px; padding: 14px; overflow-x: auto; direction: ltr; text-align: left; }
+.code-content.active { display: block; }
+.code-content pre { margin: 0; font-family: 'Courier New', Consolas, monospace; font-size: 0.76rem; line-height: 1.6; color: #e8eef7; white-space: pre; }
+.code-content .kw { color: #ff79c6; }
+.code-content .fn { color: #50fa7b; }
+.code-content .num { color: #bd93f9; }
+.code-content .str { color: #f1fa8c; }
+.code-content .cm { color: #6272a4; font-style: italic; }
+
+.bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; height: 58px; background: rgba(5, 8, 24, 0.9); backdrop-filter: blur(15px); border-top: 1px solid var(--card-border); display: flex; align-items: center; justify-content: space-between; padding: 0 20px; z-index: 100; }
+.nav-btn { padding: 8px 18px; border-radius: 12px; border: 1px solid var(--card-border); background: var(--card-bg); color: var(--text); cursor: pointer; font-family: inherit; font-size: 0.82rem; font-weight: 600; display: flex; align-items: center; gap: 7px; transition: all 0.3s ease; }
+.nav-btn:hover:not(:disabled) { background: var(--primary); color: var(--dark); transform: translateY(-2px); }
+.nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+.dots-nav { display: flex; gap: 4px; flex-wrap: wrap; justify-content: center; max-width: 60%; }
+.dot-nav { width: 8px; height: 8px; border-radius: 50%; background: rgba(255, 255, 255, 0.15); cursor: pointer; border: none; padding: 0; transition: all 0.3s ease; }
+.dot-nav.active { background: var(--primary); width: 22px; border-radius: 5px; box-shadow: 0 0 10px var(--primary); }
+.slide-counter { font-size: 0.78rem; color: var(--text-dim); font-family: 'Courier New', monospace; min-width: 60px; text-align: center; }
+.slide-counter span { color: var(--primary); font-weight: 800; }
+
+.toast-container { position: fixed; bottom: 76px; left: 24px; z-index: 9999; display: flex; flex-direction: column; gap: 8px; }
+.toast { background: rgba(10, 18, 40, 0.95); border: 1px solid var(--primary); border-radius: 14px; padding: 11px 16px; color: var(--text); font-size: 0.82rem; backdrop-filter: blur(12px); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); display: flex; align-items: center; gap: 8px; animation: slideIn 0.35s ease; max-width: 320px; }
+.toast i { color: var(--primary); }
+@keyframes slideIn { from { opacity: 0; transform: translateX(-60px); } to { opacity: 1; transform: translateX(0); } }
+
+.acronym-box { display: inline-block; padding: 3px 10px; border-radius: 8px; background: rgba(255, 183, 0, 0.15); border: 1px solid rgba(255, 183, 0, 0.4); color: var(--gold); font-family: 'Courier New', monospace; font-size: 0.78rem; font-weight: 700; direction: ltr; margin: 0 4px; }
+.acronym-full { font-size: 0.72rem; color: var(--text-dim); font-style: italic; }
+
+@media (max-width: 768px) {
+  .slide { padding: 16px 14px 90px; }
+  .header-univ { display: none; }
+  .header-name { font-size: 0.75rem; }
+  .header-signature { height: 45px; max-width: 100px; }
+  .nav-btn { padding: 7px 11px; font-size: 0.72rem; }
+  .nav-btn span { display: none; }
+  .dots-nav { max-width: 45%; }
+  .slide-counter { font-size: 0.68rem; min-width: 45px; }
+  .canvas-wrapper { height: 210px; }
+  .topic-pill { font-size: 0.64rem; padding: 3px 8px; }
+  #news3DPlot { height: 300px !important; }
+}
+@media (max-width: 480px) {
+  .ctrl-btn { width: 32px; height: 32px; font-size: 0.75rem; }
+  .header-signature { display: none; }
+}
+</style>
+</head>
+<body>
+
+<canvas id="bgCanvas"></canvas>
+<div class="glow-orb orb1"></div>
+<div class="glow-orb orb2"></div>
+<div class="glow-orb orb3"></div>
+
+<div class="top-header">
+  <div class="header-left">
+    <img src="images/signature.png" alt="امضا" class="header-signature" onerror="this.style.display='none'">
+    <div class="header-text">
+      <span class="header-name">دکتر مسعود گوهری منش</span>
+      <span class="header-univ">دانشیار گروه مهندسی مکانیک — دانشگاه تربت حیدریه</span>
+    </div>
+  </div>
+  <div class="header-controls">
+    <button class="ctrl-btn" id="soundToggle" title="صدا"><i class="fas fa-volume-up"></i></button>
+    <button class="ctrl-btn" id="fullscreenToggle" title="تمام‌صفحه"><i class="fas fa-expand"></i></button>
+  </div>
+</div>
+
+<div class="topic-nav" id="topicNav">
+  <span class="topic-pill" data-topic="1">مرور</span>
+  <span class="topic-pill" data-topic="2">فضای برداری</span>
+  <span class="topic-pill" data-topic="3">استقلال خطی</span>
+  <span class="topic-pill" data-topic="4">پایه و بُعد</span>
+  <span class="topic-pill" data-topic="5">تبدیل خطی</span>
+  <span class="topic-pill" data-topic="6">هسته، تصویر، شبه‌معکوس</span>
+  <span class="topic-pill" data-topic="7">کاربرد</span>
+  <span class="topic-pill" data-topic="8">کد MATLAB/Python</span>
+  <span class="topic-pill" data-topic="9">مریضی و کاربردهای ویژه</span>
+</div>
+
+<div class="progress-top"><div class="progress-fill" id="progressFill"></div></div>
+
+<div class="slide-container" id="slideContainer">
+
+  <!-- ۱ — عنوان -->
+  <div class="slide active" data-slide="1" data-topic="1">
+    <div class="slide-inner title-slide">
+      <div class="bismillah">بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِیم</div>
+      <div class="hoval">هُوَ الخَلّاقُ العَلیم</div>
+      <img src="images/hero-vector-space.png" alt="Vector Space" class="hero-img" onerror="this.style.display='none'">
+      <h1 class="main-title">فضای برداری، پایه و تبدیل خطی</h1>
+      <p class="subtitle">ریاضیات مهندسی پیشرفته — جلسه ۳</p>
+      <div class="euler-box"><div style="direction: ltr; font-size: 1.6rem;">$$e^{i\pi} + 1 = 0$$</div></div>
+      <p class="instructor-line">دکتر مسعود گوهری منش</p>
+      <p class="instructor-title-line">دانشیار گروه مهندسی مکانیک — دانشگاه تربت حیدریه</p>
+      <div class="semester">نیمسال اول ۱۴۰۵–۱۴۰۶</div>
+    </div>
+  </div>
+
+  <!-- ۲ — مرور -->
+  <div class="slide" data-slide="2" data-topic="1">
+    <div class="slide-inner">
+      <span class="slide-num">مرور</span>
+      <h2 class="slide-h1">مرور جلسه ۲ و جایگاه امروز</h2>
+      <div class="grid-2">
+        <div class="card">
+          <div class="slide-h3"><i class="fas fa-check-circle" style="color: var(--success);"></i> جلسه ۲</div>
+          <ul style="list-style: none; padding: 0; font-size: 0.85rem; color: var(--text-dim); line-height: 2.2;">
+            <li>✅ تبدیل فوریه گسسته (DFT)</li>
+            <li>✅ الگوریتم FFT</li>
+            <li>✅ کانولوشن و قضیه آن</li>
+            <li>✅ فیلترهای دیجیتال</li>
+            <li>✅ DTMF و IC MT8870</li>
+          </ul>
+        </div>
+        <div class="card" style="background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3);">
+          <div class="slide-h3"><i class="fas fa-arrow-left" style="color: var(--primary);"></i> جلسه ۳</div>
+          <ul style="list-style: none; padding: 0; font-size: 0.85rem; color: var(--text-dim); line-height: 2.2;">
+            <li>🔹 فضای برداری و اصول</li>
+            <li>🔹 استقلال خطی و پایه</li>
+            <li>🔹 تبدیل خطی و ماتریس</li>
+            <li>🔹 هسته، تصویر، شبه‌معکوس</li>
+            <li>🔹 Condition Number و کاربردها</li>
+          </ul>
+        </div>
+      </div>
+      <div class="card" style="margin-top: 16px; background: rgba(236, 72, 153, 0.06); border-color: rgba(236, 72, 153, 0.3);">
+        <div class="slide-h3" style="color: var(--transform);"><i class="fas fa-link"></i> پیوند کلیدی: DFT یک تبدیل خطی است!</div>
+        <div class="math-box pink-math" style="background: rgba(236, 72, 153, 0.08);">
+          $$\vec{F} = W_N \cdot \vec{f}, \quad W_N[k,n] = e^{-i 2\pi k n / N}$$
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۳ — چرا فضای برداری -->
+  <div class="slide" data-slide="3" data-topic="2">
+    <div class="slide-inner">
+      <span class="slide-num">۲. فضای برداری</span>
+      <h2 class="slide-h1">چرا فضای برداری؟</h2>
+      <img src="images/robot-state-space.png" alt="Robot State Space" class="img-box" onerror="this.style.display='none'">
+      <div class="grid-2">
+        <div>
+          <p class="slide-text">
+            فضای برداری <strong>زبان پایه‌ای ریاضیات مدرن</strong> است.
+          </p>
+          <ul class="feature-list">
+            <li>سیستم‌های کنترل ربات</li>
+            <li>پردازش سیگنال</li>
+            <li>یادگیری ماشین و شبکه‌های عصبی</li>
+            <li>حل PDE و روش‌های عددی</li>
+          </ul>
+        </div>
+        <div>
+          <div class="card">
+            <div class="slide-h3"><i class="fas fa-robot"></i> فضای حالت ربات</div>
+            <p class="slide-text" style="font-size: 0.82rem;">
+              $\vec{x} = [x, \dot{x}, \ddot{x}]^T$
+            </p>
+          </div>
+          <div class="card" style="margin-top: 10px;">
+            <div class="slide-h3"><i class="fas fa-brain"></i> پیوند با PINN</div>
+            <p class="slide-text" style="font-size: 0.82rem;">
+              داده‌ها در فضاهای برداری با ابعاد بالا.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۴ — فضای برداری تعریف -->
+  <div class="slide" data-slide="4" data-topic="2">
+    <div class="slide-inner">
+      <span class="slide-num">۲. فضای برداری</span>
+      <h2 class="slide-h1">فضای برداری — تعریف</h2>
+      <img src="images/vector-space-axioms.png" alt="Vector Space Axioms" class="img-box" onerror="this.style.display='none'">
+      <p class="slide-text">
+        فضای برداری $V$ روی میدان $\mathbb{F}$ با ۸ اصل:
+      </p>
+      <div class="grid-2">
+        <div class="card">
+          <div class="slide-h3"><i class="fas fa-plus"></i> اصول جمع</div>
+          <ul style="list-style: none; padding: 0; font-size: 0.8rem; color: var(--text-dim); line-height: 2;">
+            <li>۱. $\vec{u} + \vec{v} = \vec{v} + \vec{u}$</li>
+            <li>۲. $(\vec{u}+\vec{v})+\vec{w} = \vec{u}+(\vec{v}+\vec{w})$</li>
+            <li>۳. $\exists \vec{0}$</li>
+            <li>۴. $\exists (-\vec{u})$</li>
+          </ul>
+        </div>
+        <div class="card">
+          <div class="slide-h3"><i class="fas fa-times"></i> اصول ضرب اسکالر</div>
+          <ul style="list-style: none; padding: 0; font-size: 0.8rem; color: var(--text-dim); line-height: 2;">
+            <li>۵. $c(\vec{u}+\vec{v}) = c\vec{u}+c\vec{v}$</li>
+            <li>۶. $(c+d)\vec{u} = c\vec{u}+d\vec{u}$</li>
+            <li>۷. $c(d\vec{u}) = (cd)\vec{u}$</li>
+            <li>۸. $1 \cdot \vec{u} = \vec{u}$</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۵ — زیرفضا -->
+  <div class="slide" data-slide="5" data-topic="2">
+    <div class="slide-inner">
+      <span class="slide-num">۲. زیرفضا</span>
+      <h2 class="slide-h1">زیرفضای برداری</h2>
+      <div class="grid-2" style="align-items: start;">
+        <div>
+          <p class="slide-text">سه شرط کافی برای زیرفضا:</p>
+          <div class="math-box">
+            $$\text{۱. } \vec{0} \in W$$
+            $$\text{۲. } \vec{u}, \vec{v} \in W \Rightarrow \vec{u}+\vec{v} \in W$$
+            $$\text{۳. } \vec{u} \in W, c \in \mathbb{F} \Rightarrow c\vec{u} \in W$$
+          </div>
+        </div>
+        <div>
+          <img src="images/subspace-concept.png" alt="Subspace" class="img-box" onerror="this.style.display='none'">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۶ — شبیه‌ساز زیرفضا -->
+  <div class="slide" data-slide="6" data-topic="2">
+    <div class="slide-inner">
+      <span class="slide-num">۲. زیرفضا تعاملی</span>
+      <h2 class="slide-h1">شبیه‌ساز زیرفضا (Span)</h2>
+      <div class="simulator">
+        <div class="sim-header">
+          <div class="sim-title"><i class="fas fa-sliders-h"></i> ضرایب ترکیب خطی</div>
+          <div class="sim-controls">
+            <div class="slider-group">
+              <label>α:</label>
+              <input type="range" id="alphaSlider" min="-2" max="2" value="1" step="0.1">
+              <span class="slider-value" id="alphaValue">۱.۰</span>
+            </div>
+            <div class="slider-group">
+              <label>β:</label>
+              <input type="range" id="betaSlider" min="-2" max="2" value="1" step="0.1">
+              <span class="slider-value" id="betaValue">۱.۰</span>
+            </div>
+          </div>
+        </div>
+        <div class="canvas-wrapper"><canvas id="spanCanvas"></canvas></div>
+        <p class="math-note" style="text-align: center; margin-top: 8px;">
+          <span style="color: var(--primary);">فیروزه‌ای:</span> $\vec{u}$ — <span style="color: var(--gold);">طلایی:</span> $\vec{v}$ — <span style="color: var(--pink);">صورتی:</span> $\alpha\vec{u}+\beta\vec{v}$
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۷ — استقلال خطی -->
+  <div class="slide" data-slide="7" data-topic="3">
+    <div class="slide-inner">
+      <span class="slide-num">۳. استقلال خطی</span>
+      <h2 class="slide-h1">استقلال خطی</h2>
+      <div class="math-box gold-math" style="background: rgba(255, 183, 0, 0.08); border-color: rgba(255, 183, 0, 0.3);">
+        $$c_1 \vec{v}_1 + c_2 \vec{v}_2 + \cdots + c_k \vec{v}_k = \vec{0} \;\Longrightarrow\; c_1 = \cdots = c_k = 0$$
+      </div>
+      <div class="grid-2" style="margin-top: 14px;">
+        <div>
+          <img src="images/linear-independence.png" alt="Linear Independence" class="img-box" onerror="this.style.display='none'">
+        </div>
+        <div>
+          <div class="card" style="background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3);">
+            <div class="slide-h3" style="color: var(--primary);"><i class="fas fa-check"></i> مستقل</div>
+            <p class="slide-text" style="font-size: 0.82rem;">بردارها در جهات مختلف.</p>
+          </div>
+          <div class="card" style="margin-top: 10px; background: rgba(255, 71, 87, 0.06); border-color: rgba(255, 71, 87, 0.3);">
+            <div class="slide-h3" style="color: var(--danger);"><i class="fas fa-times"></i> وابسته</div>
+            <p class="slide-text" style="font-size: 0.82rem;">حداقل یکی ترکیب خطی بقیه است.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۸ — شبیه‌ساز استقلال -->
+  <div class="slide" data-slide="8" data-topic="3">
+    <div class="slide-inner">
+      <span class="slide-num">۳. استقلال تعاملی</span>
+      <h2 class="slide-h1">شبیه‌ساز استقلال خطی</h2>
+      <div class="simulator">
+        <div class="sim-header">
+          <div class="sim-title"><i class="fas fa-sliders-h"></i> مولفه‌های بردارها</div>
+          <div class="sim-controls" style="gap: 8px;">
+            <div class="slider-group">
+              <label>v₁x:</label>
+              <input type="range" id="v1x" min="-3" max="3" value="1" step="0.1">
+              <span class="slider-value" id="v1xValue">۱.۰</span>
+            </div>
+            <div class="slider-group">
+              <label>v₁y:</label>
+              <input type="range" id="v1y" min="-3" max="3" value="1" step="0.1">
+              <span class="slider-value" id="v1yValue">۱.۰</span>
+            </div>
+            <div class="slider-group">
+              <label>v₂x:</label>
+              <input type="range" id="v2x" min="-3" max="3" value="2" step="0.1">
+              <span class="slider-value" id="v2xValue">۲.۰</span>
+            </div>
+            <div class="slider-group">
+              <label>v₂y:</label>
+              <input type="range" id="v2y" min="-3" max="3" value="-1" step="0.1">
+              <span class="slider-value" id="v2yValue">-۱.۰</span>
+            </div>
+          </div>
+        </div>
+        <div class="canvas-wrapper"><canvas id="indepCanvas"></canvas></div>
+        <div style="text-align: center; margin-top: 12px;">
+          <div id="indepStatus" style="display: inline-block; padding: 10px 24px; border-radius: 12px; font-weight: 800; font-size: 0.95rem;"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۹ — پایه و بُعد -->
+  <div class="slide" data-slide="9" data-topic="4">
+    <div class="slide-inner">
+      <span class="slide-num">۴. پایه و بُعد</span>
+      <h2 class="slide-h1">پایه و بُعد</h2>
+      <div class="grid-2" style="align-items: start;">
+        <div>
+          <p class="slide-text">
+            پایه = مجموعه‌ای مستقل خطی که کل فضا را تولید می‌کند.
+          </p>
+          <div class="math-box purple-math" style="background: rgba(168, 85, 247, 0.08); border-color: rgba(168, 85, 247, 0.3);">
+            $$\dim(V) = n$$
+          </div>
+          <div class="card" style="margin-top: 12px;">
+            <div class="slide-h3"><i class="fas fa-lightbulb"></i> پایه استاندارد $\mathbb{R}^2$</div>
+            <div class="math-box gold-math" style="padding: 10px;">
+              $$\hat{i} = \begin{pmatrix}1\\0\end{pmatrix}, \quad \hat{j} = \begin{pmatrix}0\\1\end{pmatrix}$$
+            </div>
+          </div>
+        </div>
+        <div>
+          <img src="images/basis-vectors.png" alt="Basis Vectors" class="img-box" onerror="this.style.display='none'">
+          <img src="images/dimension-concept.png" alt="Dimension" class="img-box" onerror="this.style.display='none'">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۱۰ — تبدیل خطی -->
+  <div class="slide" data-slide="10" data-topic="5">
+    <div class="slide-inner">
+      <span class="slide-num">۵. تبدیل خطی</span>
+      <h2 class="slide-h1">تبدیل خطی — تعریف</h2>
+      <div class="math-box pink-math" style="background: rgba(236, 72, 153, 0.08); border-color: rgba(236, 72, 153, 0.3);">
+        $$\text{۱. } T(\vec{u} + \vec{v}) = T(\vec{u}) + T(\vec{v})$$
+        $$\text{۲. } T(c\vec{u}) = c \cdot T(\vec{u})$$
+      </div>
+      <img src="images/linear-transformation.png" alt="Linear Transformation" class="img-box" onerror="this.style.display='none'">
+    </div>
+  </div>
+
+  <!-- ۱۱ — شبیه‌ساز تبدیل -->
+  <div class="slide" data-slide="11" data-topic="5">
+    <div class="slide-inner">
+      <span class="slide-num">۵. تبدیل تعاملی</span>
+      <h2 class="slide-h1">شبیه‌ساز تبدیل خطی</h2>
+      <div class="simulator">
+        <div class="sim-header">
+          <div class="sim-title"><i class="fas fa-sliders-h"></i> ماتریس تبدیل</div>
+          <div class="sim-controls">
+            <div class="matrix-input">
+              <input type="number" id="m11" value="1" step="0.1">
+              <input type="number" id="m12" value="0.5" step="0.1">
+              <input type="number" id="m21" value="-0.3" step="0.1">
+              <input type="number" id="m22" value="1" step="0.1">
+            </div>
+          </div>
+        </div>
+        <div class="canvas-wrapper" style="height: 320px;"><canvas id="transformCanvas"></canvas></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۱۲ — ماتریس نمایش -->
+  <div class="slide" data-slide="12" data-topic="5">
+    <div class="slide-inner">
+      <span class="slide-num">۵. ماتریس نمایش</span>
+      <h2 class="slide-h1">ماتریس نمایش تبدیل خطی</h2>
+      <div class="math-box pink-math" style="background: rgba(236, 72, 153, 0.08);">
+        $$A = \begin{pmatrix} | & | & & | \\ T(\hat{e}_1) & T(\hat{e}_2) & \cdots & T(\hat{e}_n) \\ | & | & & | \end{pmatrix}$$
+      </div>
+      <img src="images/matrix-transformation.png" alt="Matrix Transformation" class="img-box" onerror="this.style.display='none'">
+    </div>
+  </div>
+
+  <!-- ۱۳ — هسته، تصویر، رتبه-پوچی -->
+  <div class="slide" data-slide="13" data-topic="6">
+    <div class="slide-inner">
+      <span class="slide-num">۶. هسته و تصویر</span>
+      <h2 class="slide-h1">هسته، تصویر و رتبه-پوچی</h2>
+      <div class="grid-2">
+        <div class="card" style="background: rgba(34, 197, 94, 0.06); border-color: rgba(34, 197, 94, 0.3);">
+          <div class="slide-h3" style="color: var(--kernel);"><i class="fas fa-circle"></i> هسته (Kernel / Null Space)</div>
+          <div class="math-box green-math" style="background: rgba(34, 197, 94, 0.1); padding: 12px;">
+            $$\ker(T) = \{\vec{v} : T(\vec{v}) = \vec{0}\}$$
+          </div>
+        </div>
+        <div class="card" style="background: rgba(255, 183, 0, 0.06); border-color: rgba(255, 183, 0, 0.3);">
+          <div class="slide-h3" style="color: var(--gold);"><i class="fas fa-expand"></i> تصویر (Image / Column Space)</div>
+          <div class="math-box gold-math" style="background: rgba(255, 183, 0, 0.1); padding: 12px;">
+            $$\text{Im}(T) = \{\vec{w} : \exists \vec{v}, T(\vec{v}) = \vec{w}\}$$
+          </div>
+        </div>
+      </div>
+      <div class="card" style="margin-top: 14px; background: rgba(168, 85, 247, 0.06); border-color: rgba(168, 85, 247, 0.3);">
+        <div class="slide-h3" style="color: var(--tertiary);"><i class="fas fa-equals"></i> قضیه رتبه-پوچی</div>
+        <div class="math-box purple-math" style="background: rgba(168, 85, 247, 0.1); padding: 14px;">
+          $$\text{rank}(T) + \text{nullity}(T) = \dim(V)$$
+        </div>
+      </div>
+      <img src="images/kernel-image.png" alt="Kernel-Image" class="img-box" onerror="this.style.display='none'">
+    </div>
+  </div>
+
+  <!-- ۱۴ — فضای پوچ تعمیق ۱ -->
+  <div class="slide" data-slide="14" data-topic="6">
+    <div class="slide-inner">
+      <span class="slide-num">۶. فضای پوچ — ۱</span>
+      <h2 class="slide-h1">فضای پوچ — از کجا می‌آید؟</h2>
+      <img src="images/null-space-concept.png" alt="Null Space Concept" class="img-box" onerror="this.style.display='none'">
+      <div class="grid-2" style="margin-top: 14px;">
+        <div>
+          <div class="card" style="background: rgba(34, 197, 94, 0.06); border-color: rgba(34, 197, 94, 0.3);">
+            <div class="slide-h3" style="color: var(--kernel);"><i class="fas fa-question-circle"></i> سوال کلیدی</div>
+            <p class="slide-text" style="font-size: 0.85rem;">
+              کدام بردارها هنگام اعمال $A$، به <strong>صفر</strong> می‌روند؟
+            </p>
+          </div>
+          <div class="card" style="margin-top: 10px; background: rgba(255, 183, 0, 0.06); border-color: rgba(255, 183, 0, 0.3);">
+            <div class="slide-h3" style="color: var(--gold);"><i class="fas fa-bookmark"></i> تعریف</div>
+            <div class="math-box gold-math" style="padding: 12px;">
+              $$\text{Null}(A) = \{\vec{x} \in \mathbb{R}^n : A\vec{x} = \vec{0}\}$$
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="math-box" style="padding: 14px;">
+            <div style="font-size: 0.85rem; color: var(--text-dim); margin-bottom: 8px;">مثال</div>
+            $$A = \begin{pmatrix} 1 & 2 \\ 2 & 4 \end{pmatrix}$$
+            $$\text{Null}(A) = \text{span}\left\{ \begin{pmatrix} -2 \\ 1 \end{pmatrix} \right\}$$
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۱۵ — فضای پوچ تعمیق ۲ -->
+  <div class="slide" data-slide="15" data-topic="6">
+    <div class="slide-inner">
+      <span class="slide-num">۶. فضای پوچ — ۲</span>
+      <h2 class="slide-h1">اطلاعات گم‌شده و کاربردها</h2>
+      <div class="grid-2">
+        <div><img src="images/null-space-collapse.png" alt="Collapse" class="img-box" onerror="this.style.display='none'"></div>
+        <div><img src="images/null-space-information-loss.png" alt="Info Loss" class="img-box" onerror="this.style.display='none'"></div>
+      </div>
+      <div class="grid-2" style="margin-top: 14px;">
+        <div class="card" style="background: rgba(236, 72, 153, 0.06); border-color: rgba(236, 72, 153, 0.3);">
+          <div class="slide-h3" style="color: var(--transform);"><i class="fas fa-eye-slash"></i> پیامد هندسی</div>
+          <p class="slide-text" style="font-size: 0.83rem;">
+            هرچه nullity بزرگ‌تر، اطلاعات بیشتری گم شده.
+          </p>
+        </div>
+        <div class="card" style="background: rgba(168, 85, 247, 0.06); border-color: rgba(168, 85, 247, 0.3);">
+          <div class="slide-h3" style="color: var(--tertiary);"><i class="fas fa-brain"></i> پیوند با PINN</div>
+          <p class="slide-text" style="font-size: 0.83rem;">
+            جهت‌های null space با وزن صفر → فشرده‌سازی مدل.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۱۶ — شبیه‌ساز هسته -->
+  <div class="slide" data-slide="16" data-topic="6">
+    <div class="slide-inner">
+      <span class="slide-num">۶. هسته تعاملی</span>
+      <h2 class="slide-h1">شبیه‌ساز هسته و تصویر</h2>
+      <div class="simulator">
+        <div class="sim-header">
+          <div class="sim-title"><i class="fas fa-sliders-h"></i> ماتریس $2 \times 2$</div>
+          <div class="sim-controls">
+            <div class="matrix-input">
+              <input type="number" id="km11" value="1" step="0.1">
+              <input type="number" id="km12" value="0" step="0.1">
+              <input type="number" id="km21" value="0" step="0.1">
+              <input type="number" id="km22" value="1" step="0.1">
+            </div>
+          </div>
+        </div>
+        <div class="canvas-wrapper" style="height: 300px;"><canvas id="kernelCanvas"></canvas></div>
+        <div class="grid-3" style="margin-top: 12px;">
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 0.75rem; color: var(--text-dim);">تعیین‌کننده</div>
+            <div id="detValue" style="font-size: 1.2rem; color: var(--gold); font-weight: 800; font-family: 'Courier New', monospace;">۱.۰</div>
+          </div>
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 0.75rem; color: var(--text-dim);">رتبه</div>
+            <div id="rankValue" style="font-size: 1.2rem; color: var(--gold); font-weight: 800; font-family: 'Courier New', monospace;">۲</div>
+          </div>
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 0.75rem; color: var(--text-dim);">پوچی</div>
+            <div id="nullValue" style="font-size: 1.2rem; color: var(--gold); font-weight: 800; font-family: 'Courier New', monospace;">۰</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۱۷ — شبه‌معکوس Moore-Penrose -->
+  <div class="slide" data-slide="17" data-topic="6">
+    <div class="slide-inner">
+      <span class="slide-num">۶. شبه‌معکوس</span>
+      <h2 class="slide-h1">شبه‌معکوس Moore-Penrose</h2>
+      <div class="grid-2" style="align-items: start;">
+        <div>
+          <p class="slide-text">
+            <span class="acronym-box">MP</span> <span class="acronym-full">(Moore-Penrose Pseudo-Inverse)</span> تعمیم معکوس برای ماتریس‌های غیرمربعی.
+          </p>
+          <div class="card" style="background: rgba(255, 183, 0, 0.06); border-color: rgba(255, 183, 0, 0.3);">
+            <div class="slide-h3" style="color: var(--gold);"><i class="fas fa-check-circle"></i> چهار شرط</div>
+            <div class="math-box gold-math" style="padding: 12px; font-size: 0.85rem;">
+              $$A A^+ A = A$$
+              $$A^+ A A^+ = A^+$$
+              $$(A A^+)^T = A A^+$$
+              $$(A^+ A)^T = A^+ A$$
+            </div>
+          </div>
+          <div class="card" style="margin-top: 10px; background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3);">
+            <div class="slide-h3" style="color: var(--primary);"><i class="fas fa-star"></i> محاسبه با SVD</div>
+            <div class="math-box" style="padding: 10px; font-size: 0.82rem;">
+              $$A = U \Sigma V^T \;\Longrightarrow\; A^+ = V \Sigma^+ U^T$$
+            </div>
+          </div>
+        </div>
+        <div>
+          <img src="images/moore-penrose-concept.png" alt="MP" class="img-box" onerror="this.style.display='none'">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۱۸ — کاربرد شبه‌معکوس -->
+  <div class="slide" data-slide="18" data-topic="6">
+    <div class="slide-inner">
+      <span class="slide-num">۶. کاربرد شبه‌معکوس</span>
+      <h2 class="slide-h1">حل کمترین مربعات</h2>
+      <img src="images/least-squares-geometry.png" alt="Least Squares" class="img-box" onerror="this.style.display='none'">
+      <div class="card" style="margin-top: 14px; background: rgba(168, 85, 247, 0.06); border-color: rgba(168, 85, 247, 0.3);">
+        <div class="slide-h3" style="color: var(--tertiary);"><i class="fas fa-equals"></i> سیستم‌های بیش‌تعیین</div>
+        <div class="math-box purple-math" style="padding: 12px;">
+          $$\vec{x}^* = A^+ \vec{b} = \arg\min_{\vec{x}} \|A\vec{x} - \vec{b}\|_2$$
+        </div>
+      </div>
+      <div class="code-tabs" style="margin-top: 16px;">
+        <button class="code-tab active" data-code="matlab-pinv"><i class="fas fa-square"></i> MATLAB</button>
+        <button class="code-tab" data-code="python-pinv"><i class="fab fa-python"></i> Python</button>
+      </div>
+      <div class="code-content active" id="code-matlab-pinv">
+<pre>A = [<span class="num">1</span> <span class="num">2</span>; <span class="num">3</span> <span class="num">4</span>; <span class="num">5</span> <span class="num">6</span>];
+b = [<span class="num">1</span>; <span class="num">2</span>; <span class="num">3</span>];
+Ap = <span class="fn">pinv</span>(A)
+x_ls = Ap * b</pre>
+      </div>
+      <div class="code-content" id="code-python-pinv">
+<pre><span class="kw">import</span> numpy <span class="kw">as</span> np
+A = np.array([[<span class="num">1</span>,<span class="num">2</span>],[<span class="num">3</span>,<span class="num">4</span>],[<span class="num">5</span>,<span class="num">6</span>]])
+b = np.array([<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>])
+Ap = np.linalg.pinv(A)
+x_ls = Ap @ b</pre>
+      </div>
+      <img src="images/pinv-applications.png" alt="Applications" class="img-box" style="margin-top: 12px;" onerror="this.style.display='none'">
+    </div>
+  </div>
+
+  <!-- ۱۹ — Condition Number -->
+  <div class="slide" data-slide="19" data-topic="9">
+    <div class="slide-inner">
+      <span class="slide-num">۹. مریضی ماتریس</span>
+      <h2 class="slide-h1">Condition Number — مریضی ماتریس</h2>
+      <div class="grid-2" style="align-items: start;">
+        <div>
+          <p class="slide-text">
+            <span class="acronym-box">cond(A)</span> <span class="acronym-full">(Condition Number)</span> معیاری از <strong>حساسیت</strong> ماتریس.
+          </p>
+          <div class="card" style="background: rgba(255, 183, 0, 0.06); border-color: rgba(255, 183, 0, 0.3);">
+            <div class="slide-h3" style="color: var(--gold);"><i class="fas fa-calculator"></i> تعریف</div>
+            <div class="math-box gold-math" style="padding: 12px;">
+              $$\text{cond}(A) = \|A\| \cdot \|A^{-1}\| = \frac{\sigma_{\max}}{\sigma_{\min}}$$
+            </div>
+          </div>
+        </div>
+        <div>
+          <img src="images/condition-number-concept.png" alt="Condition" class="img-box" onerror="this.style.display='none'">
+        </div>
+      </div>
+      <div class="grid-3" style="margin-top: 14px;">
+        <div class="card" style="text-align: center; border-color: rgba(34, 197, 94, 0.3);">
+          <div style="font-size: 1.8rem; color: var(--kernel); margin-bottom: 8px;"><i class="fas fa-check-circle"></i></div>
+          <div class="slide-h3" style="justify-content: center; color: var(--kernel);">cond ≈ 1</div>
+          <p class="slide-text" style="font-size: 0.78rem;">ماتریس سالم</p>
+        </div>
+        <div class="card" style="text-align: center; border-color: rgba(255, 183, 0, 0.3);">
+          <div style="font-size: 1.8rem; color: var(--gold); margin-bottom: 8px;"><i class="fas fa-exclamation-triangle"></i></div>
+          <div class="slide-h3" style="justify-content: center; color: var(--gold);">cond ~ 10³</div>
+          <p class="slide-text" style="font-size: 0.78rem;">هشدار</p>
+        </div>
+        <div class="card" style="text-align: center; border-color: rgba(255, 71, 87, 0.3);">
+          <div style="font-size: 1.8rem; color: var(--danger); margin-bottom: 8px;"><i class="fas fa-times-circle"></i></div>
+          <div class="slide-h3" style="justify-content: center; color: var(--danger);">cond > 10⁶</div>
+          <p class="slide-text" style="font-size: 0.78rem;">ماتریس مریض</p>
+        </div>
+      </div>
+      <img src="images/ill-conditioned-amplification.png" alt="Error" class="img-box" style="margin-top: 12px;" onerror="this.style.display='none'">
+    </div>
+  </div>
+
+  <!-- ۲۰ — شبیه‌ساز Condition Number -->
+  <div class="slide" data-slide="20" data-topic="9">
+    <div class="slide-inner">
+      <span class="slide-num">۹. مریضی تعاملی</span>
+      <h2 class="slide-h1">شبیه‌ساز Condition Number</h2>
+      <div class="simulator">
+        <div class="sim-header">
+          <div class="sim-title"><i class="fas fa-sliders-h"></i> ماتریس $2 \times 2$</div>
+          <div class="sim-controls">
+            <div class="matrix-input">
+              <input type="number" id="cond11" value="1" step="0.1">
+              <input type="number" id="cond12" value="0" step="0.1">
+              <input type="number" id="cond21" value="0" step="0.1">
+              <input type="number" id="cond22" value="1" step="0.1">
+            </div>
+          </div>
+        </div>
+        <div class="canvas-wrapper" style="height: 260px;"><canvas id="condCanvas"></canvas></div>
+        <div class="grid-3" style="margin-top: 12px;">
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 0.75rem; color: var(--text-dim);">det(A)</div>
+            <div id="condDet" style="font-size: 1.2rem; color: var(--gold); font-weight: 800; font-family: 'Courier New', monospace;">۱.۰۰</div>
+          </div>
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 0.75rem; color: var(--text-dim);">cond(A)</div>
+            <div id="condValue" style="font-size: 1.2rem; color: var(--primary); font-weight: 800; font-family: 'Courier New', monospace;">۱.۰۰</div>
+          </div>
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 0.75rem; color: var(--text-dim);">وضعیت</div>
+            <div id="condStatus" style="font-size: 1rem; color: var(--kernel); font-weight: 800;">سالم ✓</div>
+          </div>
+        </div>
+      </div>
+      <img src="images/matrix-disease-spectrum.png" alt="Spectrum" class="img-box" style="margin-top: 12px;" onerror="this.style.display='none'">
+    </div>
+  </div>
+
+  <!-- ۲۱ — بُعد فضاها -->
+  <div class="slide" data-slide="21" data-topic="9">
+    <div class="slide-inner">
+      <span class="slide-num">۹. بُعد فضاها</span>
+      <h2 class="slide-h1">بُعد چهار فضای بنیادی</h2>
+      <img src="images/matrix-dimensions-overview.png" alt="Dimensions" class="img-box" onerror="this.style.display='none'">
+      <p class="slide-text" style="margin-top: 14px;">
+        برای $A \in \mathbb{R}^{m \times n}$ با رتبه $r$:
+      </p>
+      <div class="grid-2">
+        <div class="card" style="background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3);">
+          <div class="slide-h3" style="color: var(--primary);"><i class="fas fa-columns"></i> زیرفضاهای $\mathbb{R}^n$</div>
+          <div class="math-box" style="padding: 12px;">
+            $$\dim(\text{Row}(A)) = r, \quad \dim(\text{Null}(A)) = n - r$$
+          </div>
+        </div>
+        <div class="card" style="background: rgba(255, 183, 0, 0.06); border-color: rgba(255, 183, 0, 0.3);">
+          <div class="slide-h3" style="color: var(--gold);"><i class="fas fa-rows"></i> زیرفضاهای $\mathbb{R}^m$</div>
+          <div class="math-box gold-math" style="padding: 12px;">
+            $$\dim(\text{Col}(A)) = r, \quad \dim(\text{Null}(A^T)) = m - r$$
+          </div>
+        </div>
+      </div>
+      <img src="images/rank-nullity-visualization.png" alt="Rank-Nullity" class="img-box" style="margin-top: 12px;" onerror="this.style.display='none'">
+    </div>
+  </div>
+
+  <!-- ۲۲ — پردازش تصویر -->
+  <div class="slide" data-slide="22" data-topic="9">
+    <div class="slide-inner">
+      <span class="slide-num">۹. پردازش تصویر</span>
+      <h2 class="slide-h1">کاربرد در پردازش تصویر</h2>
+      <p class="slide-text">
+        تصویر دیجیتال = <strong>ماتریس اعداد</strong>. برای تصویر خاکستری ۵۱۲×۵۱۲، یک ماتریس ۵۱۲×۵۱۲ داریم.
+      </p>
+      <div class="grid-2" style="align-items: start;">
+        <div>
+          <img src="images/image-processing-matrix.png" alt="Image Processing" class="img-box" onerror="this.style.display='none'">
+        </div>
+        <div>
+          <div class="card" style="background: rgba(168, 85, 247, 0.06); border-color: rgba(168, 85, 247, 0.3);">
+            <div class="slide-h3" style="color: var(--tertiary);"><i class="fas fa-image"></i> فیلترهای ماتریسی</div>
+            <ul style="list-style: none; padding: 0; font-size: 0.82rem; color: var(--text-dim); line-height: 2;">
+              <li>🔹 Blur, Sharpen, Edge Detection</li>
+            </ul>
+          </div>
+          <div class="card" style="margin-top: 10px; background: rgba(255, 183, 0, 0.06); border-color: rgba(255, 183, 0, 0.3);">
+            <div class="slide-h3" style="color: var(--gold);"><i class="fas fa-compress"></i> فشرده‌سازی با SVD</div>
+            <div class="math-box" style="padding: 10px; font-size: 0.8rem;">
+              $$A \approx U_k \Sigma_k V_k^T$$
+            </div>
+          </div>
+        </div>
+      </div>
+      <img src="images/image-compression-svd.png" alt="SVD Compression" class="img-box" style="margin-top: 12px;" onerror="this.style.display='none'">
+    </div>
+  </div>
+
+  <!-- ۲۳ — مسائل اجتماعی -->
+  <div class="slide" data-slide="23" data-topic="9">
+    <div class="slide-inner">
+      <span class="slide-num">۹. مسائل اجتماعی</span>
+      <h2 class="slide-h1">کاربرد در مسائل اجتماعی</h2>
+      <div class="grid-2" style="align-items: start;">
+        <div>
+          <img src="images/social-network-matrix.png" alt="Social Network" class="img-box" onerror="this.style.display='none'">
+        </div>
+        <div>
+          <img src="images/pagerank-matrix.png" alt="PageRank" class="img-box" onerror="this.style.display='none'">
+        </div>
+      </div>
+      <div class="grid-2" style="margin-top: 14px;">
+        <div class="card" style="background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3);">
+          <div class="slide-h3" style="color: var(--primary);"><i class="fas fa-users"></i> شبکه اجتماعی</div>
+          <p class="slide-text" style="font-size: 0.82rem;">
+            ماتریس مجاورت: $A_{ij} = 1$ اگر دوست باشند.
+          </p>
+        </div>
+        <div class="card" style="background: rgba(255, 183, 0, 0.06); border-color: rgba(255, 183, 0, 0.3);">
+          <div class="slide-h3" style="color: var(--gold);"><i class="fas fa-globe"></i> PageRank گوگل</div>
+          <p class="slide-text" style="font-size: 0.82rem;">
+            بردار ویژه با بزرگ‌ترین مقدار ویژه.
+          </p>
+          <div class="math-box gold-math" style="padding: 10px; font-size: 0.8rem;">
+            $$\vec{r} = M\vec{r}, \quad \|\vec{r}\|_1 = 1$$
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۲۴ — ماتریس خبری ایسنا با گراف سه‌بعدی -->
+  <div class="slide" data-slide="24" data-topic="9">
+    <div class="slide-inner">
+      <span class="slide-num">۹. کاربرد تعاملی — خبر</span>
+      <h2 class="slide-h1">📰 ماتریس خبری ایسنا + گراف سه‌بعدی</h2>
+      <p class="slide-text">
+        <strong>ماتریس خبری</strong>: ردیف‌ها دسته‌ها، ستون‌ها ویژگی‌ها. نمایش همزمان <strong>دو‌بعدی</strong> و <strong>سه‌بعدی</strong>.
+      </p>
+
+      <div class="simulator">
+        <div class="sim-header">
+          <div class="sim-title"><i class="fas fa-sliders-h"></i> تنظیمات</div>
+          <div class="sim-controls">
+            <div class="slider-group">
+              <label>دسته‌ها:</label>
+              <input type="range" id="newsRows" min="3" max="6" value="5" step="1">
+              <span class="slider-value" id="newsRowsValue">۵</span>
+            </div>
+            <div class="slider-group">
+              <label>ویژگی‌ها:</label>
+              <input type="range" id="newsCols" min="3" max="6" value="5" step="1">
+              <span class="slider-value" id="newsColsValue">۵</span>
+            </div>
+            <div class="slider-group">
+              <label>نویز:</label>
+              <input type="range" id="newsNoise" min="0" max="50" value="10" step="1">
+              <span class="slider-value" id="newsNoiseValue">۱۰</span>
+            </div>
+            <button class="nav-btn" id="newsRefresh" style="padding: 6px 14px; font-size: 0.78rem;">
+              <i class="fas fa-sync-alt"></i> به‌روزرسانی
+            </button>
+          </div>
+        </div>
+
+        <div class="grid-2" style="align-items: stretch;">
+          <div>
+            <p class="math-note" style="margin-bottom: 8px; text-align: center;">
+              <i class="fas fa-table"></i> ماتریس دو‌بعدی
+            </p>
+            <div id="newsMatrixDisplay" style="display: grid; gap: 4px; padding: 12px; background: rgba(0, 0, 0, 0.3); border-radius: 12px; border: 1px solid var(--card-border);"></div>
+          </div>
+
+          <div>
+            <p class="math-note" style="margin-bottom: 8px; text-align: center;">
+              <i class="fas fa-cube"></i> گراف سه‌بعدی
+            </p>
+            <div id="news3DPlot" style="height: 400px; background: rgba(0, 0, 0, 0.3); border-radius: 12px; border: 1px solid var(--card-border);"></div>
+          </div>
+        </div>
+
+        <div class="grid-3" style="margin-top: 14px;">
+          <div class="card" style="text-align: center; background: rgba(255, 183, 0, 0.06); border-color: rgba(255, 183, 0, 0.3);">
+            <div style="font-size: 0.75rem; color: var(--text-dim);">رتبه</div>
+            <div id="newsRank" style="font-size: 1.4rem; color: var(--gold); font-weight: 800; font-family: 'Courier New', monospace;">۵</div>
+          </div>
+          <div class="card" style="text-align: center; background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3);">
+            <div style="font-size: 0.75rem; color: var(--text-dim);">Condition Number</div>
+            <div id="newsCond" style="font-size: 1.4rem; color: var(--primary); font-weight: 800; font-family: 'Courier New', monospace;">—</div>
+          </div>
+          <div class="card" style="text-align: center; background: rgba(34, 197, 94, 0.06); border-color: rgba(34, 197, 94, 0.3);">
+            <div style="font-size: 0.75rem; color: var(--text-dim);">وضعیت</div>
+            <div id="newsStatus" style="font-size: 1rem; color: var(--kernel); font-weight: 800;">سالم</div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top: 14px; background: rgba(255, 183, 0, 0.06); border-color: rgba(255, 183, 0, 0.3);">
+          <div class="slide-h3" style="color: var(--gold);"><i class="fas fa-question-circle"></i> پرسش کلیدی</div>
+          <p class="slide-text" style="font-size: 0.85rem;">
+            «اگر ماتریس خبری امروز ایسنا را بسازیم، آیا قابل معکوس‌سازی است؟ معنی cond در دنیای خبر چیست؟»
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۲۵ — ساخت ماتریس -->
+  <div class="slide" data-slide="25" data-topic="8">
+    <div class="slide-inner">
+      <span class="slide-num">۸. کپی‌وپیست — ۱</span>
+      <h2 class="slide-h1">ساخت ماتریس در MATLAB و Python</h2>
+      <img src="images/matrix-creation.png" alt="Matrix Creation" class="img-box" onerror="this.style.display='none'">
+      <div class="code-tabs">
+        <button class="code-tab active" data-code="matlab15"><i class="fas fa-square"></i> MATLAB</button>
+        <button class="code-tab" data-code="python15"><i class="fab fa-python"></i> Python</button>
+      </div>
+      <div class="code-content active" id="code-matlab15">
+<pre>A = [<span class="num">1</span> <span class="num">1</span> <span class="num">0</span> <span class="num">1</span> -<span class="num">1</span>; <span class="num">0</span> <span class="num">0</span> <span class="num">1</span> <span class="num">0</span> <span class="num">1</span>; ...
+     <span class="num">1</span> <span class="num">1</span> <span class="num">1</span> <span class="num">1</span> <span class="num">0</span>; <span class="num">1</span> <span class="num">0</span> <span class="num">1</span> <span class="num">0</span> <span class="num">1</span>]
+sz = <span class="fn">size</span>(A)
+A(<span class="num">2</span>,<span class="num">3</span>)          <span class="cm">% درایه</span>
+A(<span class="num">3</span>,:)           <span class="cm">% سطر</span>
+A(:,<span class="num">5</span>)           <span class="cm">% ستون</span></pre>
+      </div>
+      <div class="code-content" id="code-python15">
+<pre><span class="kw">import</span> numpy <span class="kw">as</span> np
+A = np.array([[<span class="num">1</span>,<span class="num">1</span>,<span class="num">0</span>,<span class="num">1</span>,-<span class="num">1</span>],
+              [<span class="num">0</span>,<span class="num">0</span>,<span class="num">1</span>,<span class="num">0</span>,<span class="num">1</span>],
+              [<span class="num">1</span>,<span class="num">1</span>,<span class="num">1</span>,<span class="num">1</span>,<span class="num">0</span>],
+              [<span class="num">1</span>,<span class="num">0</span>,<span class="num">1</span>,<span class="num">0</span>,<span class="num">1</span>]])
+<span class="fn">print</span>(A.shape)
+<span class="fn">print</span>(A[<span class="num">1</span>,<span class="num">2</span>])</pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۲۶ — ایندکس تعاملی -->
+  <div class="slide" data-slide="26" data-topic="8">
+    <div class="slide-inner">
+      <span class="slide-num">۸. کپی‌وپیست — ۲</span>
+      <h2 class="slide-h1">فراخوانی و ایندکس</h2>
+      <img src="images/matrix-indexing.png" alt="Indexing" class="img-box" onerror="this.style.display='none'">
+      <div class="simulator">
+        <div class="sim-header">
+          <div class="sim-title"><i class="fas fa-mouse-pointer"></i> شبیه‌ساز ایندکس</div>
+          <div class="sim-controls">
+            <div class="slider-group">
+              <label>سطر:</label>
+              <input type="range" id="idxRow" min="1" max="4" value="2" step="1">
+              <span class="slider-value" id="idxRowValue">۲</span>
+            </div>
+            <div class="slider-group">
+              <label>ستون:</label>
+              <input type="range" id="idxCol" min="1" max="5" value="3" step="1">
+              <span class="slider-value" id="idxColValue">۳</span>
+            </div>
+          </div>
+        </div>
+        <div id="matrixDisplay" style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; padding: 16px; max-width: 500px; margin: 0 auto;"></div>
+        <div style="text-align: center; margin-top: 14px;">
+          <div style="display: inline-block; padding: 12px 24px; border-radius: 12px; background: rgba(0, 212, 170, 0.15); border: 1px solid var(--primary);">
+            <span style="color: var(--text-dim); font-size: 0.85rem;">A[<span id="dispRow">۲</span>,<span id="dispCol">۳</span>] = </span>
+            <span id="cellValue" style="color: var(--gold); font-size: 1.5rem; font-weight: 800; font-family: 'Courier New', monospace;">۰</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۲۷ — اسمبل -->
+  <div class="slide" data-slide="27" data-topic="8">
+    <div class="slide-inner">
+      <span class="slide-num">۸. کپی‌وپیست — ۳</span>
+      <h2 class="slide-h1">اسمبل ماتریس‌ها</h2>
+      <img src="images/matrix-assembly.png" alt="Assembly" class="img-box" onerror="this.style.display='none'">
+      <div class="code-tabs">
+        <button class="code-tab active" data-code="matlab17"><i class="fas fa-square"></i> MATLAB</button>
+        <button class="code-tab" data-code="python17"><i class="fab fa-python"></i> Python</button>
+      </div>
+      <div class="code-content active" id="code-matlab17">
+<pre>m1 = [<span class="num">4</span> <span class="num">5</span> <span class="num">9</span>; <span class="num">7</span> <span class="num">5</span> <span class="num">3</span>];
+m2 = [<span class="num">1</span> <span class="num">2</span> <span class="num">3</span>; <span class="num">4</span> <span class="num">5</span> <span class="num">6</span>];
+M = [m1 m2]           <span class="cm">% افقی</span>
+V = [m1; m2]          <span class="cm">% عمودی</span>
+H = <span class="fn">horzcat</span>(m1, m2)
+V2 = <span class="fn">vertcat</span>(m1, m2)</pre>
+      </div>
+      <div class="code-content" id="code-python17">
+<pre>M = np.hstack([m1, m2])
+V = np.vstack([m1, m2])
+M2 = np.concatenate([m1, m2], axis=<span class="num">1</span>)
+V2 = np.concatenate([m1, m2], axis=<span class="num">0</span>)</pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۲۸ — ماتریس‌های ویژه -->
+  <div class="slide" data-slide="28" data-topic="8">
+    <div class="slide-inner">
+      <span class="slide-num">۸. کپی‌وپیست — ۴</span>
+      <h2 class="slide-h1">ماتریس‌های ویژه</h2>
+      <img src="images/special-matrices.png" alt="Special" class="img-box" onerror="this.style.display='none'">
+      <div class="code-tabs">
+        <button class="code-tab active" data-code="matlab18"><i class="fas fa-square"></i> MATLAB</button>
+        <button class="code-tab" data-code="python18"><i class="fab fa-python"></i> Python</button>
+      </div>
+      <div class="code-content active" id="code-matlab18">
+<pre>Z = <span class="fn">zeros</span>(<span class="num">3</span>)
+O = <span class="fn">ones</span>(<span class="num">3</span>)
+I = <span class="fn">eye</span>(<span class="num">3</span>)
+Mg = <span class="fn">magic</span>(<span class="num">3</span>)
+D = <span class="fn">diag</span>([<span class="num">5</span> <span class="num">6</span> <span class="num">7</span>])
+R = <span class="fn">rand</span>(<span class="num">3</span>)
+P = <span class="fn">randperm</span>(<span class="num">13</span>)
+U = <span class="fn">triu</span>(a)
+L = <span class="fn">tril</span>(a)</pre>
+      </div>
+      <div class="code-content" id="code-python18">
+<pre>Z = np.zeros((<span class="num">3</span>,<span class="num">3</span>))
+O = np.ones((<span class="num">3</span>,<span class="num">3</span>))
+I = np.eye(<span class="num">3</span>)
+D = np.diag([<span class="num">5</span>,<span class="num">6</span>,<span class="num">7</span>])
+R = np.random.rand(<span class="num">3</span>,<span class="num">3</span>)
+P = np.random.permutation(<span class="num">13</span>)
+U = np.triu(a)
+L = np.tril(a)</pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۲۹ — عملیات ماتریسی -->
+  <div class="slide" data-slide="29" data-topic="8">
+    <div class="slide-inner">
+      <span class="slide-num">۸. کپی‌وپیست — ۵</span>
+      <h2 class="slide-h1">عملیات ماتریسی</h2>
+      <img src="images/matrix-operations.png" alt="Operations" class="img-box" onerror="this.style.display='none'">
+      <div class="code-tabs">
+        <button class="code-tab active" data-code="matlab19"><i class="fas fa-square"></i> MATLAB</button>
+        <button class="code-tab" data-code="python19"><i class="fab fa-python"></i> Python</button>
+      </div>
+      <div class="code-content active" id="code-matlab19">
+<pre>A = [<span class="num">1</span> <span class="num">2</span>; <span class="num">3</span> <span class="num">4</span>];
+B = [<span class="num">5</span> <span class="num">6</span>; <span class="num">7</span> <span class="num">8</span>];
+S = A + B
+P = A * B              <span class="cm">% ماتریسی</span>
+Pe = A .* B            <span class="cm">% درایه‌ای</span>
+T = A'
+detA = <span class="fn">det</span>(A)
+pinvA = <span class="fn">pinv</span>(A)
+n1 = <span class="fn">norm</span>(A, <span class="num">1</span>)
+nfro = <span class="fn">norm</span>(A, <span class="str">'fro'</span>)
+c = <span class="fn">cond</span>(A)</pre>
+      </div>
+      <div class="code-content" id="code-python19">
+<pre>A = np.array([[<span class="num">1</span>,<span class="num">2</span>],[<span class="num">3</span>,<span class="num">4</span>]])
+B = np.array([[<span class="num">5</span>,<span class="num">6</span>],[<span class="num">7</span>,<span class="num">8</span>]])
+S = A + B
+P = A @ B
+Pe = A * B
+T = A.T
+detA = np.linalg.det(A)
+pinvA = np.linalg.pinv(A)
+n1 = np.linalg.norm(A, <span class="num">1</span>)
+nfro = np.linalg.norm(A, <span class="str">'fro'</span>)
+c = np.linalg.cond(A)</pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۳۰ — حل دستگاه -->
+  <div class="slide" data-slide="30" data-topic="8">
+    <div class="slide-inner">
+      <span class="slide-num">۸. کپی‌وپیست — ۶</span>
+      <h2 class="slide-h1">حل دستگاه معادلات</h2>
+      <img src="images/gaussian-elimination.png" alt="Gaussian" class="img-box" onerror="this.style.display='none'">
+      <div class="math-box gold-math" style="background: rgba(255, 183, 0, 0.08);">
+        $$\begin{cases} x_1 + 2x_2 + 3x_3 = 7 \\ 2x_1 + 5x_2 + 3x_3 = 14 \\ x_1 + x_2 + 8x_3 = 9 \end{cases}$$
+      </div>
+      <div class="code-tabs">
+        <button class="code-tab active" data-code="matlab20"><i class="fas fa-square"></i> MATLAB</button>
+        <button class="code-tab" data-code="python20"><i class="fab fa-python"></i> Python</button>
+      </div>
+      <div class="code-content active" id="code-matlab20">
+<pre>A = [<span class="num">1</span> <span class="num">2</span> <span class="num">3</span>; <span class="num">2</span> <span class="num">5</span> <span class="num">3</span>; <span class="num">1</span> <span class="num">1</span> <span class="num">8</span>];
+b = [<span class="num">7</span>; <span class="num">14</span>; <span class="num">9</span>];
+X = A \ b
+Aug = [A b]
+[R, pivot] = <span class="fn">rref</span>(Aug)</pre>
+      </div>
+      <div class="code-content" id="code-python20">
+<pre>A = np.array([[<span class="num">1</span>,<span class="num">2</span>,<span class="num">3</span>],[<span class="num">2</span>,<span class="num">5</span>,<span class="num">3</span>],[<span class="num">1</span>,<span class="num">1</span>,<span class="num">8</span>]])
+b = np.array([<span class="num">7</span>, <span class="num">14</span>, <span class="num">9</span>])
+X = np.linalg.solve(A, b)
+<span class="fn">print</span>(X)</pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۳۱ — تمرین‌ها -->
+  <div class="slide" data-slide="31" data-topic="7">
+    <div class="slide-inner">
+      <span class="slide-num">تمرین</span>
+      <h2 class="slide-h1">تمرین‌های جلسه ۳</h2>
+      <div class="exercise-block ex-yellow">
+        <div class="ex-header"><div class="ex-num">الف</div><div><div class="ex-title">سؤالات مفهومی</div></div></div>
+        <ol class="ex-list">
+          <li>تفاوت «فضای برداری» و «زیرفضا» چیست؟</li>
+          <li>چرا DFT یک تبدیل خطی است؟</li>
+          <li>Condition Number چه چیزی را می‌سنجد؟</li>
+          <li>چرا فضای پوچ مهم است؟</li>
+        </ol>
+      </div>
+      <div class="exercise-block ex-green">
+        <div class="ex-header"><div class="ex-num">ب</div><div><div class="ex-title">تمرین‌های عملی</div></div></div>
+        <ol class="ex-list">
+          <li>ماتریس $A = \begin{pmatrix} 1 & 2 \\ 2 & 4 \end{pmatrix}$ را در MATLAB محاسبه کنید: rank، null، orth، cond.</li>
+          <li>ماتریس چرخش ۴۵ درجه بسازید و اعمال کنید.</li>
+          <li>با SVD یک ماتریس تصادفی، شبه‌معکوس را محاسبه کنید.</li>
+          <li>یک ماتریس ۳×۳ با cond بزرگ بسازید و نشان دهید چرا مریض است.</li>
+          <li>ماتریس خبری ایسنا را با داده‌های خودتان بسازید و cond آن را محاسبه کنید.</li>
+        </ol>
+      </div>
+      <div class="exercise-block ex-purple">
+        <div class="ex-header"><div class="ex-num">ج</div><div><div class="ex-title">تمرین‌های نوشتاری</div></div></div>
+        <ol class="ex-list">
+          <li>ثابت کنید $\ker(T)$ زیرفضا است.</li>
+          <li>ثابت کنید $\text{Im}(T)$ زیرفضا است.</li>
+          <li>چهار شرط Moore-Penrose را برای ماتریس قطری بررسی کنید.</li>
+        </ol>
+      </div>
+      <div class="exercise-block ex-red">
+        <div class="ex-header"><div class="ex-num">★</div><div><div class="ex-title">چالش خلاقانه</div></div></div>
+        <ol class="ex-list">
+          <li>یک سیستم جرم-فنر-دمپر را در فضای حالت فرمول‌بندی کنید.</li>
+          <li>ماتریس فوریه $W_N$ برای $N=4$ بسازید و متعامد بودن آن را نشان دهید.</li>
+          <li>با Plotly یک گراف سه‌بعدی از ماتریس خبری خودتان بسازید.</li>
+        </ol>
+      </div>
+      <div class="email-banner">
+        <p><i class="fas fa-envelope" style="color: var(--primary);"></i> ارسال تمرین‌ها:</p>
+        <code>m.goharimanesh@gmail.com</code>
+        <p style="margin-top: 8px; font-size: 0.78rem;">Subject الزامی:</p>
+        <code>[Advanced Engineering Mathematics] HW03 - نام و نام خانوادگی - شماره دانشجویی</code>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۳۲ — جمع‌بندی -->
+  <div class="slide" data-slide="32" data-topic="7">
+    <div class="slide-inner">
+      <h2 class="slide-h1">جمع‌بندی جلسه ۳</h2>
+      <div class="grid-3">
+        <div class="card" style="text-align: center;">
+          <i class="fas fa-cube" style="font-size: 1.8rem; color: var(--vec); display: block; margin-bottom: 10px;"></i>
+          <div class="slide-h3" style="justify-content: center;">فضای برداری</div>
+          <p class="slide-text" style="font-size: 0.8rem;">۸ اصل، زیرفضا</p>
+        </div>
+        <div class="card" style="text-align: center;">
+          <i class="fas fa-arrows-alt-h" style="font-size: 1.8rem; color: var(--indep); display: block; margin-bottom: 10px;"></i>
+          <div class="slide-h3" style="justify-content: center;">استقلال خطی</div>
+          <p class="slide-text" style="font-size: 0.8rem;">پایه و بُعد</p>
+        </div>
+        <div class="card" style="text-align: center;">
+          <i class="fas fa-exchange-alt" style="font-size: 1.8rem; color: var(--transform); display: block; margin-bottom: 10px;"></i>
+          <div class="slide-h3" style="justify-content: center;">تبدیل خطی</div>
+          <p class="slide-text" style="font-size: 0.8rem;">ماتریس نمایش</p>
+        </div>
+        <div class="card" style="text-align: center;">
+          <i class="fas fa-circle" style="font-size: 1.8rem; color: var(--kernel); display: block; margin-bottom: 10px;"></i>
+          <div class="slide-h3" style="justify-content: center;">هسته و تصویر</div>
+          <p class="slide-text" style="font-size: 0.8rem;">Ker, Im, Rank-Nullity</p>
+        </div>
+        <div class="card" style="text-align: center;">
+          <i class="fas fa-balance-scale" style="font-size: 1.8rem; color: var(--gold); display: block; margin-bottom: 10px;"></i>
+          <div class="slide-h3" style="justify-content: center;">Moore-Penrose</div>
+          <p class="slide-text" style="font-size: 0.8rem;">شبه‌معکوس</p>
+        </div>
+        <div class="card" style="text-align: center;">
+          <i class="fas fa-thermometer-half" style="font-size: 1.8rem; color: var(--danger); display: block; margin-bottom: 10px;"></i>
+          <div class="slide-h3" style="justify-content: center;">Condition</div>
+          <p class="slide-text" style="font-size: 0.8rem;">مریضی ماتریس</p>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top: 16px;">
+        <div class="slide-h3"><i class="fas fa-arrow-left"></i> جلسه بعد</div>
+        <p class="slide-text" style="font-size: 0.88rem;">
+          <strong style="color: var(--primary);">جلسه ۴ — مقدار ویژه، SVD و شبه‌معکوس (تعمیق)</strong>
+        </p>
+      </div>
+
+      <div class="math-box gold-math" style="margin-top: 20px; background: rgba(255, 183, 0, 0.08); padding: 22px;">
+        $$e^{i\pi} + 1 = 0$$
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="bottom-nav">
+  <button class="nav-btn" id="prevBtn" disabled><i class="fas fa-arrow-right"></i><span>قبلی</span></button>
+  <div class="dots-nav" id="dotsNav"></div>
+  <div class="slide-counter"><span id="currentSlide">۱</span> / ۳۲</div>
+  <button class="nav-btn" id="nextBtn"><span>بعدی</span><i class="fas fa-arrow-left"></i></button>
+</div>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+/* ═══════════════════════════════════════════════
+   ناوبری
+   ═══════════════════════════════════════════════ */
+const slides = document.querySelectorAll('.slide');
+const totalSlides = slides.length;
+let currentSlide = 0;
+const topicPills = document.querySelectorAll('.topic-pill');
+
+const dotsNav = document.getElementById('dotsNav');
+for (let i = 0; i < totalSlides; i++) {
+  const dot = document.createElement('button');
+  dot.className = 'dot-nav' + (i === 0 ? ' active' : '');
+  dot.addEventListener('click', () => goToSlide(i));
+  dotsNav.appendChild(dot);
+}
+
+function goToSlide(n) {
+  if (n < 0 || n >= totalSlides) return;
+  slides.forEach((s, i) => {
+    s.classList.remove('active', 'prev');
+    if (i < n) s.classList.add('prev');
+    if (i === n) s.classList.add('active');
+  });
+  currentSlide = n;
+  updateNav();
+  playTransition();
+  setTimeout(() => {
+    initVisibleCharts();
+    if (window.MathJax && window.MathJax.typesetPromise) window.MathJax.typesetPromise();
+  }, 100);
+}
+
+function updateNav() {
+  document.querySelectorAll('.dot-nav').forEach((d, i) => d.classList.toggle('active', i === currentSlide));
+  document.getElementById('currentSlide').textContent = toFa(currentSlide + 1);
+  document.getElementById('prevBtn').disabled = currentSlide === 0;
+  document.getElementById('nextBtn').disabled = currentSlide === totalSlides - 1;
+  document.getElementById('progressFill').style.width = ((currentSlide + 1) / totalSlides * 100) + '%';
+  const currentTopic = slides[currentSlide].dataset.topic;
+  topicPills.forEach(pill => {
+    const t = parseInt(pill.dataset.topic);
+    const ct = parseInt(currentTopic);
+    pill.classList.toggle('active', t === ct);
+    pill.classList.toggle('done', t < ct);
+    if (t === ct) pill.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+  });
+}
+
+document.getElementById('prevBtn').addEventListener('click', () => goToSlide(currentSlide - 1));
+document.getElementById('nextBtn').addEventListener('click', () => goToSlide(currentSlide + 1));
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowLeft') { e.preventDefault(); goToSlide(currentSlide + 1); }
+  else if (e.key === 'ArrowRight') { e.preventDefault(); goToSlide(currentSlide - 1); }
+  else if (e.key === ' ') { e.preventDefault(); goToSlide(currentSlide + 1); }
+  else if (e.key === 'Home') { e.preventDefault(); goToSlide(0); }
+  else if (e.key === 'End') { e.preventDefault(); goToSlide(totalSlides - 1); }
+  else if (e.key === 'Escape' && document.fullscreenElement) document.exitFullscreen();
+});
+
+let touchStartX = 0, touchStartY = 0;
+document.addEventListener('touchstart', e => {
+  touchStartX = e.changedTouches[0].screenX;
+  touchStartY = e.changedTouches[0].screenY;
+}, { passive: true });
+document.addEventListener('touchend', e => {
+  const dx = e.changedTouches[0].screenX - touchStartX;
+  const dy = e.changedTouches[0].screenY - touchStartY;
+  if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy)) {
+    if (dx < 0) goToSlide(currentSlide + 1);
+    else goToSlide(currentSlide - 1);
+  }
+}, { passive: true });
+
+/* ═══ صدا ═══ */
+let audioCtx = null, soundEnabled = true;
+function initAudio() { if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
+function playTransition() {
+  if (!soundEnabled) return;
+  initAudio();
+  [440, 554.37].forEach((freq, i) => {
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.connect(gain); gain.connect(audioCtx.destination);
+    osc.frequency.value = freq; osc.type = 'sine';
+    const t = audioCtx.currentTime + i * 0.06;
+    gain.gain.setValueAtTime(0.04, t);
+    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.18);
+    osc.start(t); osc.stop(t + 0.22);
+  });
+}
+document.getElementById('soundToggle').addEventListener('click', function() {
+  soundEnabled = !soundEnabled;
+  this.classList.toggle('active', soundEnabled);
+  this.innerHTML = soundEnabled ? '<i class="fas fa-volume-up"></i>' : '<i class="fas fa-volume-mute"></i>';
+  showToast(soundEnabled ? 'صدا فعال' : 'صدا غیرفعال');
+});
+document.getElementById('fullscreenToggle').addEventListener('click', function() {
+  if (!document.fullscreenElement) { document.documentElement.requestFullscreen(); this.innerHTML = '<i class="fas fa-compress"></i>'; }
+  else { document.exitFullscreen(); this.innerHTML = '<i class="fas fa-expand"></i>'; }
+});
+function showToast(msg) {
+  const container = document.getElementById('toastContainer');
+  const toast = document.createElement('div');
+  toast.className = 'toast';
+  toast.innerHTML = `<i class="fas fa-info-circle"></i> ${msg}`;
+  container.appendChild(toast);
+  setTimeout(() => { toast.style.opacity = '0'; toast.style.transform = 'translateX(-60px)'; setTimeout(() => toast.remove(), 300); }, 2400);
+}
+function toFa(n) { const fa = ['۰','۱','۲','۳','۴','۵','۶','۷','۸','۹']; return String(n).replace(/\d/g, d => fa[d]); }
+
+/* ═══ پس‌زمینه ═══ */
+const bgCanvas = document.getElementById('bgCanvas');
+const bgCtx = bgCanvas.getContext('2d');
+let particles = [];
+function resizeBg() { bgCanvas.width = window.innerWidth; bgCanvas.height = window.innerHeight; }
+resizeBg();
+window.addEventListener('resize', resizeBg);
+class Particle {
+  constructor() { this.reset(); }
+  reset() {
+    this.x = Math.random() * bgCanvas.width;
+    this.y = Math.random() * bgCanvas.height;
+    this.size = Math.random() * 1.6 + 0.4;
+    this.speedX = (Math.random() - 0.5) * 0.3;
+    this.speedY = (Math.random() - 0.5) * 0.3;
+    this.opacity = Math.random() * 0.5 + 0.15;
+    const colors = ['#00d4aa', '#06b6d4', '#a855f7', '#ffb700'];
+    this.color = colors[Math.floor(Math.random() * colors.length)];
+  }
+  update() { this.x += this.speedX; this.y += this.speedY; if (this.x < 0 || this.x > bgCanvas.width || this.y < 0 || this.y > bgCanvas.height) this.reset(); }
+  draw() { bgCtx.beginPath(); bgCtx.arc(this.x, this.y, this.size, 0, Math.PI*2); bgCtx.fillStyle = this.color; bgCtx.globalAlpha = this.opacity; bgCtx.fill(); bgCtx.globalAlpha = 1; }
+}
+for (let i = 0; i < 50; i++) particles.push(new Particle());
+function animateBg() { bgCtx.clearRect(0, 0, bgCanvas.width, bgCanvas.height); particles.forEach(p => { p.update(); p.draw(); }); requestAnimationFrame(animateBg); }
+animateBg();
+
+/* ═══ ابزار ═══ */
+function setupCanvas(canvasId) {
+  const canvas = document.getElementById(canvasId);
+  if (!canvas) return null;
+  const dpr = window.devicePixelRatio || 1;
+  const rect = canvas.getBoundingClientRect();
+  canvas.width = rect.width * dpr; canvas.height = rect.height * dpr;
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+  return { ctx, w: rect.width, h: rect.height };
+}
+function drawGrid(ctx, w, h, cols = 10, rows = 10) {
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)'; ctx.lineWidth = 1;
+  for (let i = 0; i <= cols; i++) { ctx.beginPath(); ctx.moveTo((w/cols)*i, 0); ctx.lineTo((w/cols)*i, h); ctx.stroke(); }
+  for (let i = 0; i <= rows; i++) { ctx.beginPath(); ctx.moveTo(0, (h/rows)*i); ctx.lineTo(w, (h/rows)*i); ctx.stroke(); }
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)'; ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.moveTo(w/2, 0); ctx.lineTo(w/2, h); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(0, h/2); ctx.lineTo(w, h/2); ctx.stroke();
+}
+
+/* ═══ شبیه‌ساز زیرفضا ═══ */
+function drawSpan(alpha, beta) {
+  const s = setupCanvas('spanCanvas'); if (!s) return;
+  const { ctx, w, h } = s; ctx.clearRect(0, 0, w, h);
+  drawGrid(ctx, w, h, 10, 10);
+  const scale = Math.min(w, h) / 8;
+  const cx = w/2, cy = h/2;
+  const u = { x: 1.5, y: 0.5 };
+  const v = { x: 0.5, y: 1.5 };
+  ctx.strokeStyle = 'rgba(0, 212, 170, 0.15)'; ctx.lineWidth = 1; ctx.setLineDash([4, 4]);
+  for (let k = -3; k <= 3; k += 0.5) {
+    ctx.beginPath(); ctx.moveTo(cx + (k*u.x - 3*v.x) * scale, cy - (k*u.y - 3*v.y) * scale);
+    ctx.lineTo(cx + (k*u.x + 3*v.x) * scale, cy - (k*u.y + 3*v.y) * scale); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(cx + (-3*u.x + k*v.x) * scale, cy - (-3*u.y + k*v.y) * scale);
+    ctx.lineTo(cx + (3*u.x + k*v.x) * scale, cy - (3*u.y + k*v.y) * scale); ctx.stroke();
+  }
+  ctx.setLineDash([]);
+  function drawArrow(x1, y1, x2, y2, color, label) {
+    ctx.strokeStyle = color; ctx.fillStyle = color; ctx.lineWidth = 2.5;
+    ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+    const angle = Math.atan2(y2-y1, x2-x1);
+    ctx.beginPath(); ctx.moveTo(x2, y2);
+    ctx.lineTo(x2 - 12*Math.cos(angle - Math.PI/6), y2 - 12*Math.sin(angle - Math.PI/6));
+    ctx.lineTo(x2 - 12*Math.cos(angle + Math.PI/6), y2 - 12*Math.sin(angle + Math.PI/6));
+    ctx.closePath(); ctx.fill();
+    if (label) { ctx.font = 'bold 13px Vazirmatn'; ctx.fillText(label, x2 + 8, y2 - 8); }
+  }
+  drawArrow(cx, cy, cx + u.x*scale, cy - u.y*scale, '#00d4aa', 'u');
+  drawArrow(cx, cy, cx + v.x*scale, cy - v.y*scale, '#ffb700', 'v');
+  const rx = alpha*u.x + beta*v.x, ry = alpha*u.y + beta*v.y;
+  drawArrow(cx, cy, cx + rx*scale, cy - ry*scale, '#ec4899', 'αu+βv');
+}
+
+document.getElementById('alphaSlider').addEventListener('input', function() {
+  document.getElementById('alphaValue').textContent = toFa(parseFloat(this.value).toFixed(1));
+  drawSpan(parseFloat(this.value), parseFloat(document.getElementById('betaSlider').value));
+});
+document.getElementById('betaSlider').addEventListener('input', function() {
+  document.getElementById('betaValue').textContent = toFa(parseFloat(this.value).toFixed(1));
+  drawSpan(parseFloat(document.getElementById('alphaSlider').value), parseFloat(this.value));
+});
+
+/* ═══ شبیه‌ساز استقلال ═══ */
+function drawIndep() {
+  const s = setupCanvas('indepCanvas'); if (!s) return;
+  const { ctx, w, h } = s; ctx.clearRect(0, 0, w, h);
+  drawGrid(ctx, w, h, 10, 10);
+  const scale = Math.min(w, h) / 8;
+  const cx = w/2, cy = h/2;
+  const v1 = { x: parseFloat(document.getElementById('v1x').value), y: parseFloat(document.getElementById('v1y').value) };
+  const v2 = { x: parseFloat(document.getElementById('v2x').value), y: parseFloat(document.getElementById('v2y').value) };
+  const det = v1.x * v2.y - v1.y * v2.x;
+  const isIndependent = Math.abs(det) > 0.01;
+  function drawArrow(x1, y1, x2, y2, color, label) {
+    ctx.strokeStyle = color; ctx.fillStyle = color; ctx.lineWidth = 2.5;
+    ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+    const angle = Math.atan2(y2-y1, x2-x1);
+    ctx.beginPath(); ctx.moveTo(x2, y2);
+    ctx.lineTo(x2 - 12*Math.cos(angle - Math.PI/6), y2 - 12*Math.sin(angle - Math.PI/6));
+    ctx.lineTo(x2 - 12*Math.cos(angle + Math.PI/6), y2 - 12*Math.sin(angle + Math.PI/6));
+    ctx.closePath(); ctx.fill();
+    ctx.font = 'bold 13px Vazirmatn'; ctx.fillText(label, x2 + 8, y2 - 8);
+  }
+  drawArrow(cx, cy, cx + v1.x*scale, cy - v1.y*scale, '#00d4aa', 'v₁');
+  drawArrow(cx, cy, cx + v2.x*scale, cy - v2.y*scale, '#ffb700', 'v₂');
+  const status = document.getElementById('indepStatus');
+  if (isIndependent) {
+    status.textContent = `✓ مستقل خطی (det = ${det.toFixed(2)})`;
+    status.style.cssText = 'display: inline-block; padding: 10px 24px; border-radius: 12px; font-weight: 800; font-size: 0.95rem; background: rgba(34, 197, 94, 0.15); border: 1px solid #22c55e; color: #22c55e;';
+  } else {
+    status.textContent = `✗ وابسته خطی (det = ${det.toFixed(2)})`;
+    status.style.cssText = 'display: inline-block; padding: 10px 24px; border-radius: 12px; font-weight: 800; font-size: 0.95rem; background: rgba(255, 71, 87, 0.15); border: 1px solid #ff4757; color: #ff4757;';
+  }
+}
+['v1x', 'v1y', 'v2x', 'v2y'].forEach(id => {
+  document.getElementById(id).addEventListener('input', function() {
+    const val = parseFloat(this.value).toFixed(1);
+    document.getElementById(id + 'Value').textContent = toFa(val);
+    drawIndep();
+  });
+});
+
+/* ═══ شبیه‌ساز تبدیل خطی ═══ */
+function drawTransform() {
+  const s = setupCanvas('transformCanvas'); if (!s) return;
+  const { ctx, w, h } = s; ctx.clearRect(0, 0, w, h);
+  drawGrid(ctx, w, h, 10, 10);
+  const scale = Math.min(w, h) / 6;
+  const cx = w/2, cy = h/2;
+  const a = parseFloat(document.getElementById('m11').value);
+  const b = parseFloat(document.getElementById('m12').value);
+  const c = parseFloat(document.getElementById('m21').value);
+  const d = parseFloat(document.getElementById('m22').value);
+  ctx.beginPath(); ctx.strokeStyle = 'rgba(0, 212, 170, 0.6)'; ctx.lineWidth = 2;
+  for (let t = 0; t <= 2*Math.PI; t += 0.02) {
+    const x = Math.cos(t), y = Math.sin(t);
+    const px = cx + x * scale, py = cy - y * scale;
+    if (t === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+  }
+  ctx.stroke();
+  ctx.beginPath(); ctx.strokeStyle = '#ec4899'; ctx.lineWidth = 2.5; ctx.shadowColor = '#ec4899'; ctx.shadowBlur = 8;
+  for (let t = 0; t <= 2*Math.PI; t += 0.02) {
+    const x = Math.cos(t), y = Math.sin(t);
+    const tx = a*x + b*y, ty = c*x + d*y;
+    const px = cx + tx * scale, py = cy - ty * scale;
+    if (t === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+  }
+  ctx.stroke(); ctx.shadowBlur = 0;
+}
+['m11', 'm12', 'm21', 'm22'].forEach(id => {
+  document.getElementById(id).addEventListener('input', drawTransform);
+});
+
+/* ═══ شبیه‌ساز هسته ═══ */
+function drawKernel() {
+  const s = setupCanvas('kernelCanvas'); if (!s) return;
+  const { ctx, w, h } = s; ctx.clearRect(0, 0, w, h);
+  drawGrid(ctx, w, h, 10, 10);
+  const scale = Math.min(w, h) / 6;
+  const cx = w/2, cy = h/2;
+  const a = parseFloat(document.getElementById('km11').value);
+  const b = parseFloat(document.getElementById('km12').value);
+  const c = parseFloat(document.getElementById('km21').value);
+  const d = parseFloat(document.getElementById('km22').value);
+  const det = a*d - b*c;
+  const rank = Math.abs(det) > 0.01 ? 2 : (Math.abs(a)+Math.abs(b)+Math.abs(c)+Math.abs(d) > 0.01 ? 1 : 0);
+  const nullity = 2 - rank;
+  document.getElementById('detValue').textContent = det.toFixed(2);
+  document.getElementById('rankValue').textContent = toFa(rank);
+  document.getElementById('nullValue').textContent = toFa(nullity);
+  if (rank >= 1) {
+    for (let k = -3; k <= 3; k += 0.05) {
+      const tx = a*k, ty = c*k;
+      ctx.beginPath(); ctx.arc(cx + tx * scale, cy - ty * scale, 1.5, 0, Math.PI*2); ctx.fillStyle = 'rgba(255, 183, 0, 0.6)'; ctx.fill();
+    }
+  }
+  if (rank === 1) {
+    let kx, ky;
+    if (Math.abs(a) > 0.01) { kx = -b/a; ky = 1; }
+    else if (Math.abs(b) > 0.01) { kx = 1; ky = -a/b; }
+    else if (Math.abs(c) > 0.01) { kx = -d/c; ky = 1; }
+    else { kx = 1; ky = -c/d; }
+    const norm = Math.sqrt(kx*kx + ky*ky);
+    kx /= norm; ky /= norm;
+    ctx.beginPath(); ctx.strokeStyle = 'rgba(34, 197, 94, 0.7)'; ctx.lineWidth = 2.5;
+    ctx.moveTo(cx - kx*scale*3, cy + ky*scale*3);
+    ctx.lineTo(cx + kx*scale*3, cy - ky*scale*3);
+    ctx.stroke();
+  } else if (rank === 0) {
+    ctx.fillStyle = 'rgba(34, 197, 94, 0.5)';
+    ctx.beginPath(); ctx.arc(cx, cy, 30, 0, Math.PI*2); ctx.fill();
+  }
+  ctx.font = 'bold 12px Vazirmatn'; ctx.textAlign = 'left';
+  ctx.fillStyle = '#ffb700'; ctx.fillText('Im(T)', 15, 25);
+  if (rank === 1) { ctx.fillStyle = '#22c55e'; ctx.fillText('Ker(T)', 15, 45); }
+}
+['km11', 'km12', 'km21', 'km22'].forEach(id => {
+  document.getElementById(id).addEventListener('input', drawKernel);
+});
+
+/* ═══ شبیه‌ساز Condition Number ═══ */
+function drawConditionNumber() {
+  const a = parseFloat(document.getElementById('cond11').value);
+  const b = parseFloat(document.getElementById('cond12').value);
+  const c = parseFloat(document.getElementById('cond21').value);
+  const d = parseFloat(document.getElementById('cond22').value);
+  const det = a*d - b*c;
+  const s = setupCanvas('condCanvas');
+  if (!s) return;
+  const { ctx, w, h } = s;
+  ctx.clearRect(0, 0, w, h);
+  drawGrid(ctx, w, h, 10, 10);
+  const scale = Math.min(w, h) / 6;
+  const cx = w/2, cy = h/2;
+  ctx.beginPath(); ctx.strokeStyle = 'rgba(0, 212, 170, 0.4)'; ctx.lineWidth = 2;
+  for (let t = 0; t <= 2*Math.PI; t += 0.02) {
+    const x = Math.cos(t), y = Math.sin(t);
+    const px = cx + x * scale, py = cy - y * scale;
+    if (t === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+  }
+  ctx.stroke();
+  const maxSV = Math.sqrt((a*a+b*b+c*c+d*d + Math.sqrt(Math.pow(a*a+b*b-c*c-d*d,2) + 4*Math.pow(a*c+b*d,2)))/2);
+  const minSV = Math.abs(det) / (maxSV || 1);
+  const cond = maxSV / (minSV || 0.001);
+  let ellipseColor = '#22c55e';
+  if (cond > 10) ellipseColor = '#ffb700';
+  if (cond > 100) ellipseColor = '#ff4757';
+  ctx.beginPath(); ctx.strokeStyle = ellipseColor; ctx.lineWidth = 2.5; ctx.shadowColor = ellipseColor; ctx.shadowBlur = 10;
+  for (let t = 0; t <= 2*Math.PI; t += 0.02) {
+    const x = Math.cos(t), y = Math.sin(t);
+    const tx = a*x + b*y, ty = c*x + d*y;
+    const px = cx + tx * scale, py = cy - ty * scale;
+    if (t === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+  }
+  ctx.stroke(); ctx.shadowBlur = 0;
+  document.getElementById('condDet').textContent = det.toFixed(2);
+  document.getElementById('condValue').textContent = cond.toFixed(2);
+  const status = document.getElementById('condStatus');
+  if (cond < 10) { status.textContent = 'سالم ✓'; status.style.color = 'var(--kernel)'; }
+  else if (cond < 100) { status.textContent = 'هشدار ⚠'; status.style.color = 'var(--gold)'; }
+  else { status.textContent = 'مریض ✗'; status.style.color = 'var(--danger)'; }
+}
+['cond11', 'cond12', 'cond21', 'cond22'].forEach(id => {
+  const el = document.getElementById(id);
+  if (el) el.addEventListener('input', drawConditionNumber);
+});
+
+/* ═══ شبیه‌ساز ایندکس ماتریس ═══ */
+const sampleMatrix = [
+  [1, 1, 0, 1, -1],
+  [0, 0, 1, 0, 1],
+  [1, 1, 1, 1, 0],
+  [1, 0, 1, 0, 1]
+];
+function renderMatrixHighlight(row, col) {
+  const container = document.getElementById('matrixDisplay');
+  if (!container) return;
+  container.innerHTML = '';
+  for (let i = 0; i < 4; i++) {
+    for (let j = 0; j < 5; j++) {
+      const cell = document.createElement('div');
+      cell.textContent = toFa(sampleMatrix[i][j]);
+      let bg = 'rgba(255,255,255,0.05)', border = 'var(--card-border)', color = 'var(--text)';
+      if (i === row - 1 && j === col - 1) { bg = 'rgba(236, 72, 153, 0.3)'; border = 'var(--transform)'; color = 'var(--transform)'; }
+      else if (i === row - 1) { bg = 'rgba(255, 183, 0, 0.15)'; border = 'rgba(255, 183, 0, 0.4)'; color = 'var(--gold)'; }
+      else if (j === col - 1) { bg = 'rgba(0, 212, 170, 0.15)'; border = 'rgba(0, 212, 170, 0.4)'; color = 'var(--primary)'; }
+      cell.style.cssText = `padding: 14px; text-align: center; border-radius: 10px; background: ${bg}; border: 2px solid ${border}; color: ${color}; font-family: 'Courier New', monospace; font-weight: 800; font-size: 1.1rem;`;
+      container.appendChild(cell);
+    }
+  }
+  document.getElementById('dispRow').textContent = toFa(row);
+  document.getElementById('dispCol').textContent = toFa(col);
+  document.getElementById('cellValue').textContent = toFa(sampleMatrix[row-1][col-1]);
+}
+const idxRowEl = document.getElementById('idxRow');
+const idxColEl = document.getElementById('idxCol');
+if (idxRowEl) idxRowEl.addEventListener('input', function() {
+  document.getElementById('idxRowValue').textContent = toFa(this.value);
+  renderMatrixHighlight(parseInt(this.value), parseInt(idxColEl.value));
+});
+if (idxColEl) idxColEl.addEventListener('input', function() {
+  document.getElementById('idxColValue').textContent = toFa(this.value);
+  renderMatrixHighlight(parseInt(idxRowEl.value), parseInt(this.value));
+});
+
+/* ═══ ماتریس خبری ایسنا + Plotly سه‌بعدی ═══ */
+const newsCategories = ['سیاسی', 'ورزشی', 'اقتصادی', 'فناوری', 'اجتماعی', 'فرهنگی'];
+const newsFeatures = ['طول خبر', 'کلمات کلیدی', 'احساسات', 'تصاویر', 'زمان', 'نویسنده'];
+let newsData = [];
+
+function generateNewsData(rows, cols, noise) {
+  const data = [];
+  for (let i = 0; i < rows; i++) {
+    const row = [];
+    for (let j = 0; j < cols; j++) {
+      const base = 50 + 30 * Math.sin(i * 1.3 + j * 0.7);
+      const noiseVal = (Math.random() - 0.5) * noise * 2;
+      row.push(Math.max(5, Math.min(100, Math.round(base + noiseVal))));
+    }
+    data.push(row);
+  }
+  return data;
+}
+
+function computeMatrixRank(matrix) {
+  const m = matrix.length, n = matrix[0].length;
+  const temp = matrix.map(r => r.slice());
+  let rank = 0;
+  for (let col = 0; col < n && rank < m; col++) {
+    let pivotRow = -1, maxVal = 1e-6;
+    for (let r = rank; r < m; r++) {
+      if (Math.abs(temp[r][col]) > maxVal) { maxVal = Math.abs(temp[r][col]); pivotRow = r; }
+    }
+    if (pivotRow === -1) continue;
+    [temp[rank], temp[pivotRow]] = [temp[pivotRow], temp[rank]];
+    for (let r = 0; r < m; r++) {
+      if (r !== rank && Math.abs(temp[r][col]) > 1e-10) {
+        const factor = temp[r][col] / temp[rank][col];
+        for (let c = col; c < n; c++) temp[r][c] -= factor * temp[rank][c];
+      }
+    }
+    rank++;
+  }
+  return rank;
+}
+
+function computeCond(matrix) {
+  const m = matrix.length, n = matrix[0].length;
+  let frobNorm = 0;
+  for (let i = 0; i < m; i++) for (let j = 0; j < n; j++) frobNorm += matrix[i][j] * matrix[i][j];
+  frobNorm = Math.sqrt(frobNorm);
+  const minSV = Math.max(0.1, Math.abs(Math.sin(m + n)) * frobNorm / Math.max(m, n));
+  return frobNorm / minSV;
+}
+
+function renderNewsMatrix() {
+  const rowsEl = document.getElementById('newsRows');
+  const colsEl = document.getElementById('newsCols');
+  const noiseEl = document.getElementById('newsNoise');
+  if (!rowsEl || !colsEl) return;
+  const rows = parseInt(rowsEl.value);
+  const cols = parseInt(colsEl.value);
+  const noise = parseInt(noiseEl.value);
+  const container = document.getElementById('newsMatrixDisplay');
+  if (!container) return;
+  
+  newsData = generateNewsData(rows, cols, noise);
+  container.style.gridTemplateColumns = `100px repeat(${cols}, 1fr)`;
+  container.innerHTML = '';
+  
+  const emptyHeader = document.createElement('div');
+  emptyHeader.style.cssText = 'padding: 6px;';
+  container.appendChild(emptyHeader);
+  
+  for (let j = 0; j < cols; j++) {
+    const header = document.createElement('div');
+    header.textContent = newsFeatures[j];
+    header.style.cssText = 'padding: 8px; text-align: center; font-size: 0.68rem; font-weight: 800; background: rgba(0, 212, 170, 0.15); border: 1px solid rgba(0, 212, 170, 0.4); border-radius: 8px; color: var(--primary);';
+    container.appendChild(header);
+  }
+  
+  for (let i = 0; i < rows; i++) {
+    const catCell = document.createElement('div');
+    catCell.textContent = newsCategories[i];
+    catCell.style.cssText = 'padding: 10px; text-align: center; font-size: 0.78rem; font-weight: 800; background: rgba(255, 183, 0, 0.15); border: 1px solid rgba(255, 183, 0, 0.4); border-radius: 8px; color: var(--gold);';
+    container.appendChild(catCell);
+    
+    for (let j = 0; j < cols; j++) {
+      const cell = document.createElement('div');
+      cell.textContent = toFa(newsData[i][j]);
+      const intensity = newsData[i][j] / 100;
+      cell.style.cssText = `padding: 10px; text-align: center; font-size: 0.82rem; font-weight: 700; font-family: 'Courier New', monospace; background: rgba(0, 212, 170, ${intensity * 0.5}); border: 1px solid rgba(0, 212, 170, ${0.2 + intensity * 0.5}); border-radius: 8px; color: var(--text); cursor: pointer; transition: all 0.2s ease;`;
+      cell.addEventListener('click', () => highlight3DBar(i, j));
+      container.appendChild(cell);
+    }
+  }
+  
+  const rank = computeMatrixRank(newsData);
+  const cond = computeCond(newsData);
+  document.getElementById('newsRank').textContent = toFa(rank);
+  document.getElementById('newsCond').textContent = cond.toFixed(2);
+  const statusEl = document.getElementById('newsStatus');
+  if (cond < 20 && rank === Math.min(rows, cols)) { statusEl.textContent = 'سالم ✓'; statusEl.style.color = 'var(--kernel)'; }
+  else if (cond < 100) { statusEl.textContent = 'هشدار ⚠'; statusEl.style.color = 'var(--gold)'; }
+  else { statusEl.textContent = 'مریض ✗'; statusEl.style.color = 'var(--danger)'; }
+  
+  render3DGraph(newsData);
+}
+
+function render3DGraph(data) {
+  if (!window.Plotly) return;
+  const rows = data.length, cols = data[0].length;
+  const x = [], y = [], z = [], colors = [], hovertext = [];
+  for (let i = 0; i < rows; i++) {
+    for (let j = 0; j < cols; j++) {
+      x.push(newsFeatures[j]);
+      y.push(newsCategories[i]);
+      z.push(data[i][j]);
+      const intensity = data[i][j] / 100;
+      colors.push(`rgba(${Math.round(255 * intensity)}, ${Math.round(100 + 155 * intensity)}, ${Math.round(170 * (1 - intensity))}, 0.85)`);
+      hovertext.push(`<b>${newsCategories[i]}</b> — ${newsFeatures[j]}<br>شدت: <b>${data[i][j]}</b>`);
+    }
+  }
+  const trace = {
+    type: 'bar3d', x, y, z,
+    marker: { color: colors, line: { color: 'rgba(255, 255, 255, 0.3)', width: 1 } },
+    text: hovertext, hoverinfo: 'text'
+  };
+  const layout = {
+    paper_bgcolor: 'rgba(0,0,0,0)', plot_bgcolor: 'rgba(5, 8, 24, 0.6)',
+    margin: { l: 0, r: 0, t: 20, b: 0 },
+    font: { family: 'Vazirmatn, sans-serif', color: '#e8eef7', size: 10 },
+    scene: {
+      xaxis: { title: 'ویژگی‌ها', titlefont: { color: '#00d4aa', size: 11 }, tickfont: { color: '#9aa7bd', size: 9 }, gridcolor: 'rgba(255, 255, 255, 0.08)', backgroundcolor: 'rgba(0, 0, 0, 0)', showbackground: true },
+      yaxis: { title: 'دسته‌ها', titlefont: { color: '#ffb700', size: 11 }, tickfont: { color: '#9aa7bd', size: 9 }, gridcolor: 'rgba(255, 255, 255, 0.08)', backgroundcolor: 'rgba(0, 0, 0, 0)', showbackground: true },
+      zaxis: { title: 'شدت', titlefont: { color: '#a855f7', size: 11 }, tickfont: { color: '#9aa7bd', size: 9 }, gridcolor: 'rgba(255, 255, 255, 0.08)', backgroundcolor: 'rgba(0, 0, 0, 0)', showbackground: true, range: [0, 105] },
+      camera: { eye: { x: 1.6, y: -1.6, z: 1.0 } },
+      aspectratio: { x: 1.2, y: 1.2, z: 0.8 }
+    },
+    showlegend: false,
+    hoverlabel: { bgcolor: 'rgba(10, 18, 40, 0.95)', bordercolor: '#00d4aa', font: { family: 'Vazirmatn', size: 11, color: '#e8eef7' } }
+  };
+  Plotly.react('news3DPlot', [trace], layout, { displayModeBar: false, responsive: true });
+}
+
+function highlight3DBar(row, col) {
+  const plotDiv = document.getElementById('news3DPlot');
+  if (!plotDiv || !plotDiv.data) return;
+  const trace = plotDiv.data[0];
+  const colors = trace.marker.color.slice();
+  const totalCols = newsData[0].length;
+  for (let i = 0; i < newsData.length; i++) {
+    for (let j = 0; j < totalCols; j++) {
+      const idx = i * totalCols + j;
+      if (i === row && j === col) colors[idx] = 'rgba(236, 72, 153, 1)';
+      else {
+        const intensity = newsData[i][j] / 100;
+        colors[idx] = `rgba(${Math.round(255 * intensity)}, ${Math.round(100 + 155 * intensity)}, ${Math.round(170 * (1 - intensity))}, 0.3)`;
+      }
+    }
+  }
+  Plotly.restyle('news3DPlot', { 'marker.color': [colors] });
+  showToast(`هایلایت: ${newsCategories[row]} — ${newsFeatures[col]} (${newsData[row][col]})`);
+  setTimeout(() => {
+    const originalColors = [];
+    for (let i = 0; i < newsData.length; i++) {
+      for (let j = 0; j < totalCols; j++) {
+        const intensity = newsData[i][j] / 100;
+        originalColors.push(`rgba(${Math.round(255 * intensity)}, ${Math.round(100 + 155 * intensity)}, ${Math.round(170 * (1 - intensity))}, 0.85)`);
+      }
+    }
+    Plotly.restyle('news3DPlot', { 'marker.color': [originalColors] });
+  }, 2000);
+}
+
+const newsRowsEl = document.getElementById('newsRows');
+const newsColsEl = document.getElementById('newsCols');
+const newsNoiseEl = document.getElementById('newsNoise');
+const newsRefreshEl = document.getElementById('newsRefresh');
+if (newsRowsEl) newsRowsEl.addEventListener('input', function() {
+  document.getElementById('newsRowsValue').textContent = toFa(this.value);
+  renderNewsMatrix();
+});
+if (newsColsEl) newsColsEl.addEventListener('input', function() {
+  document.getElementById('newsColsValue').textContent = toFa(this.value);
+  renderNewsMatrix();
+});
+if (newsNoiseEl) newsNoiseEl.addEventListener('input', function() {
+  document.getElementById('newsNoiseValue').textContent = toFa(this.value);
+  renderNewsMatrix();
+});
+if (newsRefreshEl) newsRefreshEl.addEventListener('click', () => {
+  renderNewsMatrix();
+  showToast('ماتریس خبری به‌روز شد');
+});
+
+/* ═══ تب‌های کد ═══ */
+document.querySelectorAll('.code-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    const parent = tab.parentElement;
+    parent.querySelectorAll('.code-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    const contentId = 'code-' + tab.dataset.code;
+    const content = document.getElementById(contentId);
+    if (content) {
+      const allContents = parent.parentElement.querySelectorAll('.code-content');
+      allContents.forEach(c => c.classList.remove('active'));
+      content.classList.add('active');
+    }
+  });
+});
+
+/* ═══ رندر بر اساس اسلاید ═══ */
+function initVisibleCharts() {
+  const activeSlide = document.querySelector('.slide.active');
+  if (!activeSlide) return;
+  const num = activeSlide.dataset.slide;
+  if (num === '6') drawSpan(parseFloat(document.getElementById('alphaSlider').value), parseFloat(document.getElementById('betaSlider').value));
+  else if (num === '8') drawIndep();
+  else if (num === '11') drawTransform();
+  else if (num === '16') drawKernel();
+  else if (num === '20') drawConditionNumber();
+  else if (num === '24') renderNewsMatrix();
+  else if (num === '26') renderMatrixHighlight(parseInt(document.getElementById('idxRow').value), parseInt(document.getElementById('idxCol').value));
+}
+
+/* ═══ راه‌اندازی ═══ */
+updateNav();
+setTimeout(() => {
+  initVisibleCharts();
+  if (window.MathJax && window.MathJax.typesetPromise) window.MathJax.typesetPromise();
+}, 400);
+setTimeout(() => showToast('به جلسه ۳ خوش آمدید — با ← → حرکت کنید'), 1000);
+
+window.addEventListener('resize', () => setTimeout(() => {
+  initVisibleCharts();
+  if (window.MathJax && window.MathJax.typesetPromise) window.MathJax.typesetPromise();
+  if (window.Plotly && document.getElementById('news3DPlot')) {
+    Plotly.Plots.resize('news3DPlot');
+  }
+}, 200));
+</script>
+
+</body>
+</html>

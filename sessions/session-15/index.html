@@ -1,0 +1,2474 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>جلسه ۱۵ — تفاضل محدود و رانگ-کوتا | دکتر مسعود گوهری منش</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+<script>
+window.MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']],
+    displayMath: [['$$', '$$'], ['\\[', '\\]']],
+    processEscapes: true
+  },
+  options: { skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'] },
+  svg: { fontCache: 'global' }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" async></script>
+
+<style>
+:root {
+  --primary: #00d4aa;
+  --secondary: #06b6d4;
+  --tertiary: #a855f7;
+  --gold: #ffb700;
+  --success: #22c55e;
+  --danger: #ff4757;
+  --pink: #ec4899;
+  --dark: #050818;
+  --darker: #020410;
+  --card-bg: rgba(255, 255, 255, 0.05);
+  --card-border: rgba(255, 255, 255, 0.1);
+  --text: #e8eef7;
+  --text-dim: #9aa7bd;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { overflow: hidden; height: 100%; }
+body {
+  font-family: 'Vazirmatn', sans-serif;
+  background: var(--dark);
+  color: var(--text);
+  direction: rtl;
+  line-height: 1.8;
+}
+#bgCanvas { position: fixed; inset: 0; z-index: -2; background: radial-gradient(ellipse at top, #0a1230 0%, var(--darker) 50%, #000 100%); }
+.glow-orb { position: fixed; border-radius: 50%; filter: blur(120px); opacity: 0.3; z-index: -1; pointer-events: none; animation: floatOrb 25s ease-in-out infinite; }
+.orb1 { width: 600px; height: 600px; background: var(--primary); top: -200px; right: -200px; }
+.orb2 { width: 500px; height: 500px; background: var(--gold); bottom: -150px; left: -150px; animation-delay: -8s; }
+.orb3 { width: 400px; height: 400px; background: var(--tertiary); top: 30%; left: 25%; animation-delay: -15s; opacity: 0.12; }
+@keyframes floatOrb { 0%, 100% { transform: translate(0, 0) scale(1); } 33% { transform: translate(50px, -40px) scale(1.15); } 66% { transform: translate(-40px, 50px) scale(0.9); } }
+
+.top-header { position: fixed; top: 0; left: 0; right: 0; height: 82px; background: rgba(5, 8, 24, 0.9); backdrop-filter: blur(15px); border-bottom: 1px solid var(--card-border); display: flex; align-items: center; justify-content: space-between; padding: 0 18px; z-index: 100; }
+.header-left { display: flex; align-items: center; gap: 14px; }
+.header-signature { height: 60px; width: auto; max-width: 170px; object-fit: contain; filter: drop-shadow(0 0 10px rgba(0, 212, 170, 0.4)); border-radius: 8px; background: rgba(255, 255, 255, 0.05); padding: 4px; }
+.header-text { display: flex; flex-direction: column; line-height: 1.35; }
+.header-name { font-size: 0.88rem; color: var(--gold); font-weight: 800; white-space: nowrap; }
+.header-univ { font-size: 0.7rem; color: var(--text-dim); font-weight: 500; }
+.header-controls { display: flex; gap: 8px; flex-shrink: 0; align-items: center; }
+.ctrl-btn { width: 38px; height: 38px; border-radius: 10px; border: 1px solid var(--card-border); background: var(--card-bg); backdrop-filter: blur(10px); color: var(--text); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; transition: all 0.3s ease; position: relative; }
+.ctrl-btn:hover { background: var(--primary); color: var(--dark); transform: translateY(-2px); }
+.ctrl-btn.active { background: var(--primary); color: var(--dark); }
+
+/* ═══ دکمه چاپ با منوی کشویی ═══ */
+.print-menu-wrap { position: relative; }
+.print-menu {
+  position: absolute; top: 46px; left: 0;
+  background: rgba(10, 18, 40, 0.98);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  padding: 6px;
+  min-width: 200px;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6);
+  opacity: 0; pointer-events: none;
+  transform: translateY(-8px);
+  transition: all 0.3s ease;
+  z-index: 200;
+}
+.print-menu.show { opacity: 1; pointer-events: auto; transform: translateY(0); }
+.print-menu button {
+  display: flex; align-items: center; gap: 10px;
+  width: 100%; padding: 10px 14px;
+  background: transparent; border: none;
+  color: var(--text); font-family: inherit;
+  font-size: 0.82rem; font-weight: 600;
+  border-radius: 8px; cursor: pointer;
+  text-align: right;
+  transition: all 0.2s ease;
+}
+.print-menu button:hover { background: rgba(0, 212, 170, 0.15); color: var(--primary); }
+.print-menu button i { color: var(--gold); font-size: 0.9rem; width: 18px; text-align: center; }
+
+/* ═══ تنظیمات چاپ ═══ */
+@media print {
+  @page { size: A4 landscape; margin: 10mm; }
+  html, body { overflow: visible !important; height: auto !important; background: white !important; }
+  #bgCanvas, .glow-orb, .top-header, .topic-nav, .progress-top, .bottom-nav,
+  .toast-container, .star-container, .ctrl-btn, .print-menu, .lightbox,
+  .modal-overlay, .slide:not(.print-visible) { display: none !important; }
+  .slide-container { position: static !important; inset: auto !important; overflow: visible !important; }
+  .slide {
+    position: relative !important;
+    opacity: 1 !important;
+    transform: none !important;
+    pointer-events: auto !important;
+    page-break-after: always;
+    padding: 15px 25px !important;
+    overflow: visible !important;
+    background: white !important;
+    color: #1a1a1a !important;
+    inset: auto !important;
+    height: auto !important;
+  }
+  .slide::before {
+    content: '';
+    position: fixed;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%) rotate(-30deg);
+    width: 600px; height: 300px;
+    background-image: url('images/signature.png');
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+    opacity: 0.08;
+    pointer-events: none;
+    z-index: 9999;
+    filter: grayscale(100%);
+  }
+  .slide-h1, .slide-h3, .slide-text, .card { color: #1a1a1a !important; }
+  .card { border-color: #ccc !important; background: #f9f9f9 !important; }
+  .math-box { background: #f5f5f5 !important; border-color: #999 !important; }
+  .slide-num { background: #e0e0e0 !important; color: #333 !important; }
+}
+
+/* ═══ Lightbox ═══ */
+.lightbox {
+  position: fixed; inset: 0;
+  background: rgba(0, 0, 0, 0.92);
+  backdrop-filter: blur(8px);
+  z-index: 10000;
+  display: flex; align-items: center; justify-content: center;
+  padding: 40px;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+.lightbox.active { opacity: 1; pointer-events: auto; }
+.lightbox-img {
+  max-width: 90vw; max-height: 85vh;
+  border-radius: 16px;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.8), 0 0 60px rgba(0, 212, 170, 0.3);
+  border: 2px solid var(--primary);
+  transform: scale(0.85);
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.lightbox.active .lightbox-img { transform: scale(1); }
+.lightbox-close {
+  position: absolute; top: 24px; left: 24px;
+  width: 46px; height: 46px;
+  border-radius: 50%;
+  background: rgba(255, 71, 87, 0.9);
+  border: none; color: #fff;
+  font-size: 1.2rem; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.3s ease;
+  z-index: 10001;
+}
+.lightbox-close:hover { background: var(--danger); transform: rotate(90deg); }
+.lightbox-caption {
+  position: absolute; bottom: 30px; left: 50%;
+  transform: translateX(-50%);
+  background: rgba(10, 18, 40, 0.95);
+  border: 1px solid var(--card-border);
+  color: var(--text);
+  padding: 10px 24px;
+  border-radius: 30px;
+  font-size: 0.85rem; font-weight: 600;
+}
+
+.img-box, .hero-img, .star-img { cursor: zoom-in; transition: all 0.3s ease; }
+.img-box:hover { transform: scale(1.02); border-color: var(--primary); }
+
+/* ═══ Modal ═══ */
+.modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(10px);
+  z-index: 9500;
+  display: flex; align-items: center; justify-content: center;
+  padding: 30px;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+.modal-overlay.active { opacity: 1; pointer-events: auto; }
+.modal-box {
+  background: linear-gradient(145deg, rgba(10, 18, 40, 0.98), rgba(5, 8, 24, 0.98));
+  border: 1px solid var(--gold);
+  border-radius: 22px;
+  padding: 30px;
+  max-width: 720px;
+  width: 100%;
+  max-height: 85vh;
+  overflow-y: auto;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.8), 0 0 50px rgba(255, 183, 0, 0.2);
+  position: relative;
+  transform: scale(0.92);
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.modal-overlay.active .modal-box { transform: scale(1); }
+.modal-close {
+  position: absolute; top: 18px; left: 18px;
+  width: 38px; height: 38px;
+  border-radius: 50%;
+  background: rgba(255, 71, 87, 0.2);
+  border: 1px solid rgba(255, 71, 87, 0.5);
+  color: var(--danger);
+  font-size: 1rem; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.3s ease;
+}
+.modal-close:hover { background: var(--danger); color: #fff; transform: rotate(90deg); }
+.modal-title {
+  font-size: 1.3rem; font-weight: 900;
+  color: var(--gold);
+  margin-bottom: 18px;
+  display: flex; align-items: center; gap: 12px;
+  padding-right: 40px;
+}
+.modal-title i { font-size: 1.5rem; }
+.modal-section { margin-bottom: 18px; }
+.modal-section-title {
+  font-size: 0.95rem; font-weight: 800;
+  color: var(--primary);
+  margin-bottom: 8px;
+  display: flex; align-items: center; gap: 8px;
+}
+.modal-section-title i { color: var(--primary); }
+.modal-section p {
+  font-size: 0.88rem;
+  color: var(--text-dim);
+  line-height: 2;
+  margin-bottom: 8px;
+}
+.modal-section ul { list-style: none; padding: 0; }
+.modal-section ul li {
+  padding: 6px 24px 6px 10px;
+  position: relative;
+  font-size: 0.85rem;
+  color: var(--text-dim);
+  line-height: 1.9;
+}
+.modal-section ul li::before {
+  content: '◆';
+  position: absolute; right: 4px;
+  color: var(--gold);
+  font-size: 0.7rem;
+}
+
+/* ═══ کلمات قابل کلیک ═══ */
+.concept-word {
+  color: var(--gold);
+  font-weight: 900;
+  cursor: pointer;
+  text-decoration: underline dotted var(--gold);
+  text-underline-offset: 5px;
+  transition: all 0.3s ease;
+  padding: 0 2px;
+  border-radius: 4px;
+}
+.concept-word:hover {
+  background: rgba(255, 183, 0, 0.15);
+  text-shadow: 0 0 12px rgba(255, 183, 0, 0.8);
+}
+
+.topic-nav { position: fixed; top: 82px; left: 0; right: 0; height: 36px; background: rgba(5, 8, 24, 0.9); backdrop-filter: blur(10px); border-bottom: 1px solid var(--card-border); z-index: 99; display: flex; align-items: center; gap: 6px; padding: 0 18px; overflow-x: auto; scrollbar-width: none; }
+.topic-nav::-webkit-scrollbar { display: none; }
+.topic-pill { padding: 4px 11px; border-radius: 20px; font-size: 0.7rem; font-weight: 600; white-space: nowrap; color: var(--text-dim); background: rgba(255, 255, 255, 0.04); border: 1px solid transparent; transition: all 0.3s ease; }
+.topic-pill.active { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: var(--dark); font-weight: 800; box-shadow: 0 3px 10px rgba(0, 212, 170, 0.35); }
+.topic-pill.done { color: var(--primary); border-color: rgba(0, 212, 170, 0.3); }
+
+.progress-top { position: fixed; top: 118px; left: 0; right: 0; height: 3px; background: rgba(255, 255, 255, 0.05); z-index: 98; }
+.progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--primary), var(--secondary), var(--tertiary)); transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 0 12px var(--primary); }
+
+.slide-container { position: fixed; inset: 121px 0 0 0; overflow: hidden; }
+.slide { position: absolute; inset: 0; padding: 24px 50px 90px; opacity: 0; transform: translateX(-40px); pointer-events: none; transition: opacity 0.5s ease, transform 0.5s cubic-bezier(0.4, 0, 0.2, 1); overflow-y: auto; overflow-x: hidden; }
+.slide.active { opacity: 1; transform: translateX(0); pointer-events: auto; }
+.slide.prev { transform: translateX(40px); }
+.slide::-webkit-scrollbar { width: 6px; }
+.slide::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 3px; }
+.slide-inner { max-width: 1200px; margin: 0 auto; animation: contentFade 0.6s ease; }
+@keyframes contentFade { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+.slide-num { display: inline-block; padding: 5px 14px; border-radius: 20px; background: rgba(0, 212, 170, 0.15); color: var(--primary); font-size: 0.72rem; font-weight: 700; margin-bottom: 10px; }
+.slide-h1 { font-size: clamp(1.3rem, 3.2vw, 2rem); font-weight: 900; background: linear-gradient(135deg, var(--primary), var(--secondary), var(--tertiary), var(--gold)); background-size: 300% 300%; -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; animation: gradientShift 6s ease infinite; margin-bottom: 16px; line-height: 1.35; }
+@keyframes gradientShift { 0%, 100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
+.slide-h3 { font-size: 0.98rem; font-weight: 700; color: var(--text); margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+.slide-h3 i { color: var(--gold); font-size: 0.88rem; }
+.slide-text { font-size: 0.9rem; color: var(--text-dim); line-height: 2; margin-bottom: 12px; }
+
+.card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 18px; padding: 18px; backdrop-filter: blur(12px); transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1); }
+.card:hover { transform: translateY(-4px); border-color: rgba(0, 212, 170, 0.4); box-shadow: 0 15px 35px rgba(0, 212, 170, 0.12); }
+.grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+.grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; }
+.grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; }
+
+.title-slide { text-align: center; padding-top: 5px; }
+.title-slide .hero-img { width: 100%; max-width: 520px; height: 170px; object-fit: contain; background: rgba(0, 0, 0, 0.2); padding: 6px; border-radius: 20px; margin: 0 auto 12px; display: block; border: 1px solid var(--card-border); box-shadow: 0 20px 40px rgba(0, 212, 170, 0.15); }
+.title-slide .bismillah { font-size: 1.2rem; font-weight: 500; background: linear-gradient(90deg, var(--gold), var(--primary), var(--secondary)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 4px; }
+.title-slide .hoval { font-size: 0.82rem; color: var(--text-dim); margin-bottom: 16px; letter-spacing: 1px; }
+.title-slide .main-title { font-size: clamp(1.5rem, 3.8vw, 2.3rem); font-weight: 900; background: linear-gradient(135deg, var(--primary), var(--gold), var(--tertiary)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 10px; line-height: 1.3; }
+.title-slide .subtitle { font-size: clamp(0.9rem, 2vw, 1.05rem); color: var(--text-dim); margin-bottom: 18px; }
+.title-slide .euler-box { display: inline-block; padding: 12px 30px; border-radius: 18px; background: var(--card-bg); border: 1px solid var(--card-border); backdrop-filter: blur(15px); margin-bottom: 16px; }
+.title-slide .instructor-line { font-size: 0.92rem; color: var(--gold); font-weight: 700; margin-bottom: 3px; }
+.title-slide .instructor-title-line { font-size: 0.78rem; color: var(--text-dim); margin-bottom: 12px; }
+.title-slide .semester { display: inline-block; padding: 6px 18px; border-radius: 50px; background: var(--card-bg); border: 1px solid var(--card-border); font-size: 0.78rem; color: var(--text-dim); }
+
+.star-container { position: fixed; top: 150px; left: 40px; z-index: 90; cursor: pointer; }
+.star-core {
+  width: 40px; height: 40px; border-radius: 50%;
+  background: radial-gradient(circle at 50% 50%, #fff 0%, var(--gold) 30%, var(--gold) 50%, rgba(255, 183, 0, 0.2) 80%, transparent 100%);
+  box-shadow: 0 0 25px var(--gold), 0 0 50px rgba(255, 183, 0, 0.5), 0 0 80px rgba(255, 183, 0, 0.3);
+  animation: starPulse 3s ease-in-out infinite;
+  position: relative;
+}
+.star-core::before {
+  content: ''; position: absolute; inset: -20px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 183, 0, 0.3) 0%, transparent 70%);
+  animation: starHalo 4s ease-in-out infinite;
+}
+@keyframes starPulse {
+  0%, 100% { transform: scale(1); box-shadow: 0 0 25px var(--gold), 0 0 50px rgba(255, 183, 0, 0.5), 0 0 80px rgba(255, 183, 0, 0.3); }
+  50% { transform: scale(1.15); box-shadow: 0 0 35px var(--gold), 0 0 70px rgba(255, 183, 0, 0.7), 0 0 100px rgba(255, 183, 0, 0.5); }
+}
+@keyframes starHalo {
+  0%, 100% { transform: scale(1); opacity: 0.5; }
+  50% { transform: scale(1.3); opacity: 0.8; }
+}
+.star-tooltip {
+  position: absolute; top: 55px; left: 0;
+  width: 240px;
+  background: linear-gradient(145deg, rgba(10, 18, 40, 0.98), rgba(5, 8, 24, 0.98));
+  border: 1px solid var(--gold);
+  border-radius: 16px; padding: 16px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7), 0 0 30px rgba(255, 183, 0, 0.3);
+  opacity: 0; pointer-events: none;
+  transform: translateY(-10px) scale(0.95);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.star-container:hover .star-tooltip {
+  opacity: 1; transform: translateY(0) scale(1); pointer-events: auto;
+}
+.star-img {
+  width: 100%; height: 180px; object-fit: contain;
+  border-radius: 12px; background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 183, 0, 0.3);
+  margin-bottom: 10px; padding: 6px;
+}
+.star-name { font-size: 0.95rem; font-weight: 800; color: var(--gold); text-align: center; margin-bottom: 4px; }
+.star-title { font-size: 0.75rem; color: var(--text-dim); text-align: center; margin-bottom: 6px; font-style: italic; }
+.star-years { font-size: 0.72rem; color: var(--primary); text-align: center; font-family: 'Courier New', monospace; padding-top: 6px; border-top: 1px solid rgba(255, 183, 0, 0.2); }
+.star-tooltip::before {
+  content: ''; position: absolute; top: -8px; left: 20px;
+  width: 16px; height: 16px;
+  background: rgba(10, 18, 40, 0.98);
+  border-top: 1px solid var(--gold);
+  border-right: 1px solid var(--gold);
+  transform: rotate(-45deg);
+}
+
+.math-box { background: rgba(0, 212, 170, 0.06); border: 1px solid rgba(0, 212, 170, 0.25); border-radius: 14px; padding: 16px 22px; margin: 12px 0; text-align: center; direction: ltr; position: relative; overflow-x: auto; overflow-y: hidden; }
+.math-box::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--primary), var(--secondary), var(--tertiary)); }
+.math-box .MathJax, .math-box mjx-container { color: var(--primary) !important; font-size: 1em !important; }
+.math-box.gold-math .MathJax, .math-box.gold-math mjx-container { color: var(--gold) !important; }
+.math-box.purple-math .MathJax, .math-box.purple-math mjx-container { color: var(--tertiary) !important; }
+.math-box.pink-math .MathJax, .math-box.pink-math mjx-container { color: var(--pink) !important; }
+.math-box.danger-math .MathJax, .math-box.danger-math mjx-container { color: var(--danger) !important; }
+.math-note { font-family: 'Vazirmatn', sans-serif; font-size: 0.76rem; color: var(--text-dim); direction: rtl; margin-top: 8px; font-style: italic; text-align: center; }
+
+.simulator { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 18px; padding: 16px; margin: 12px 0; backdrop-filter: blur(12px); }
+.sim-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; flex-wrap: wrap; gap: 10px; }
+.sim-title { font-size: 0.9rem; font-weight: 700; color: var(--gold); display: flex; align-items: center; gap: 8px; }
+.sim-controls { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.slider-group { display: flex; align-items: center; gap: 8px; background: rgba(0, 0, 0, 0.3); padding: 6px 12px; border-radius: 10px; border: 1px solid var(--card-border); }
+.slider-group label { font-size: 0.72rem; color: var(--text-dim); white-space: nowrap; }
+.slider-group input[type="range"] { width: 100px; accent-color: var(--primary); cursor: pointer; }
+.slider-value { font-family: 'Courier New', monospace; font-size: 0.78rem; color: var(--primary); font-weight: 700; min-width: 30px; text-align: center; }
+.canvas-wrapper { position: relative; width: 100%; height: 260px; background: rgba(0, 0, 0, 0.4); border-radius: 12px; overflow: hidden; border: 1px solid var(--card-border); }
+.canvas-wrapper canvas { width: 100%; height: 100%; display: block; }
+
+.img-box { width: 100%; max-height: 280px; border-radius: 16px; border: 1px solid var(--card-border); margin: 12px 0; display: block; object-fit: contain; background: rgba(0, 0, 0, 0.3); padding: 8px; }
+
+.step-container { background: rgba(0, 0, 0, 0.2); border-radius: 14px; padding: 16px 20px; margin: 12px 0; border-right: 3px solid var(--gold); }
+.step-title { font-size: 0.88rem; font-weight: 800; color: var(--gold); margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+.step-content { font-size: 0.85rem; color: var(--text-dim); line-height: 2; }
+.step-content .math-box { margin: 8px 0; padding: 12px 16px; }
+
+.exercise-block { border-radius: 16px; padding: 16px; border: 1px solid; position: relative; overflow: hidden; margin-bottom: 12px; }
+.exercise-block::before { content: ''; position: absolute; top: 0; right: 0; width: 4px; height: 100%; }
+.ex-yellow { background: rgba(255, 217, 61, 0.06); border-color: rgba(255, 217, 61, 0.25); }
+.ex-yellow::before { background: #ffd93d; }
+.ex-green { background: rgba(107, 207, 127, 0.06); border-color: rgba(107, 207, 127, 0.25); }
+.ex-green::before { background: #6bcf7f; }
+.ex-purple { background: rgba(168, 85, 247, 0.06); border-color: rgba(168, 85, 247, 0.25); }
+.ex-purple::before { background: var(--tertiary); }
+.ex-red { background: rgba(255, 107, 107, 0.06); border-color: rgba(255, 107, 107, 0.25); }
+.ex-red::before { background: #ff6b6b; }
+.ex-header { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+.ex-num { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 0.8rem; color: var(--dark); flex-shrink: 0; }
+.ex-yellow .ex-num { background: #ffd93d; }
+.ex-green .ex-num { background: #6bcf7f; }
+.ex-purple .ex-num { background: var(--tertiary); color: #fff; }
+.ex-red .ex-num { background: #ff6b6b; color: #fff; }
+.ex-title { font-size: 0.92rem; font-weight: 800; }
+.ex-list { list-style: none; padding: 0; counter-reset: item; }
+.ex-list li { position: relative; padding: 7px 34px 7px 10px; font-size: 0.83rem; color: var(--text-dim); line-height: 1.8; border-bottom: 1px dashed rgba(255, 255, 255, 0.05); }
+.ex-list li:last-child { border-bottom: none; }
+.ex-list li::before { counter-increment: item; content: counter(item); position: absolute; right: 4px; top: 9px; width: 22px; height: 22px; border-radius: 50%; background: rgba(255, 255, 255, 0.08); color: var(--text); font-size: 0.7rem; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+.email-banner { margin-top: 12px; padding: 12px; border-radius: 14px; background: linear-gradient(135deg, rgba(0, 212, 170, 0.1), rgba(168, 85, 247, 0.1)); border: 1px dashed rgba(0, 212, 170, 0.4); text-align: center; }
+.email-banner p { font-size: 0.8rem; color: var(--text); margin-bottom: 5px; }
+.email-banner code { display: inline-block; padding: 5px 12px; border-radius: 8px; background: rgba(0, 0, 0, 0.4); color: var(--primary); font-family: 'Courier New', monospace; font-size: 0.76rem; direction: ltr; margin-top: 3px; }
+
+.code-tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--card-border); }
+.code-tab { padding: 8px 16px; border-radius: 10px 10px 0 0; background: transparent; border: none; color: var(--text-dim); font-family: inherit; font-size: 0.8rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; }
+.code-tab.active { background: rgba(0, 212, 170, 0.1); color: var(--primary); border-bottom: 2px solid var(--primary); }
+.code-content { display: none; background: #0a0f24; border: 1px solid var(--card-border); border-top: none; border-radius: 0 0 12px 12px; padding: 14px; overflow-x: auto; direction: ltr; text-align: left; }
+.code-content.active { display: block; }
+.code-content pre { margin: 0; font-family: 'Courier New', Consolas, monospace; font-size: 0.76rem; line-height: 1.6; color: #e8eef7; white-space: pre; }
+.code-content .kw { color: #ff79c6; }
+.code-content .fn { color: #50fa7b; }
+.code-content .num { color: #bd93f9; }
+.code-content .str { color: #f1fa8c; }
+.code-content .cm { color: #6272a4; font-style: italic; }
+
+.bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; height: 58px; background: rgba(5, 8, 24, 0.9); backdrop-filter: blur(15px); border-top: 1px solid var(--card-border); display: flex; align-items: center; justify-content: space-between; padding: 0 20px; z-index: 100; }
+.nav-btn { padding: 8px 18px; border-radius: 12px; border: 1px solid var(--card-border); background: var(--card-bg); color: var(--text); cursor: pointer; font-family: inherit; font-size: 0.82rem; font-weight: 600; display: flex; align-items: center; gap: 7px; transition: all 0.3s ease; }
+.nav-btn:hover:not(:disabled) { background: var(--primary); color: var(--dark); transform: translateY(-2px); }
+.nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+.dots-nav { display: flex; gap: 4px; flex-wrap: wrap; justify-content: center; max-width: 60%; }
+.dot-nav { width: 8px; height: 8px; border-radius: 50%; background: rgba(255, 255, 255, 0.15); cursor: pointer; border: none; padding: 0; transition: all 0.3s ease; }
+.dot-nav.active { background: var(--primary); width: 22px; border-radius: 5px; box-shadow: 0 0 10px var(--primary); }
+.slide-counter { font-size: 0.78rem; color: var(--text-dim); font-family: 'Courier New', monospace; min-width: 60px; text-align: center; }
+.slide-counter span { color: var(--primary); font-weight: 800; }
+
+.toast-container { position: fixed; bottom: 76px; left: 24px; z-index: 9999; display: flex; flex-direction: column; gap: 8px; }
+.toast { background: rgba(10, 18, 40, 0.95); border: 1px solid var(--primary); border-radius: 14px; padding: 11px 16px; color: var(--text); font-size: 0.82rem; backdrop-filter: blur(12px); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); display: flex; align-items: center; gap: 8px; animation: slideIn 0.35s ease; max-width: 320px; }
+.toast i { color: var(--primary); }
+@keyframes slideIn { from { opacity: 0; transform: translateX(-60px); } to { opacity: 1; transform: translateX(0); } }
+
+.lecture-note {
+  background: rgba(0, 212, 170, 0.06);
+  border: 1px solid rgba(0, 212, 170, 0.3);
+  border-radius: 12px; padding: 12px 16px; margin: 10px 0;
+  display: flex; gap: 10px; align-items: flex-start;
+}
+.lecture-note i { color: var(--primary); font-size: 1.1rem; margin-top: 3px; }
+.lecture-note-content { flex: 1; font-size: 0.85rem; color: var(--text-dim); line-height: 1.9; }
+
+.method-badge {
+  display: inline-block; padding: 3px 10px; border-radius: 6px;
+  font-size: 0.7rem; font-weight: 700; margin-bottom: 8px;
+}
+.badge-fd { background: rgba(0, 212, 170, 0.15); color: var(--primary); }
+.badge-rk { background: rgba(255, 183, 0, 0.15); color: var(--gold); }
+.badge-pde { background: rgba(168, 85, 247, 0.15); color: var(--tertiary); }
+.badge-problem { background: rgba(255, 71, 87, 0.15); color: var(--danger); }
+
+@media (max-width: 768px) {
+  .slide { padding: 16px 14px 90px; }
+  .header-univ { display: none; }
+  .header-name { font-size: 0.75rem; }
+  .header-signature { height: 45px; max-width: 110px; }
+  .nav-btn { padding: 7px 11px; font-size: 0.72rem; }
+  .nav-btn span { display: none; }
+  .dots-nav { max-width: 45%; }
+  .slide-counter { font-size: 0.68rem; min-width: 45px; }
+  .canvas-wrapper { height: 210px; }
+  .topic-pill { font-size: 0.64rem; padding: 3px 8px; }
+  .star-container { top: 130px; left: 20px; }
+  .star-core { width: 32px; height: 32px; }
+  .star-tooltip { width: 200px; }
+  .modal-box { padding: 20px; }
+}
+@media (max-width: 480px) {
+  .ctrl-btn { width: 34px; height: 34px; font-size: 0.8rem; }
+  .header-signature { display: none; }
+  .star-container { top: 120px; left: 12px; }
+  .star-core { width: 28px; height: 28px; }
+  .star-tooltip { width: 180px; padding: 12px; }
+  .star-img { height: 140px; }
+  .lightbox-caption { font-size: 0.75rem; padding: 8px 16px; }
+}
+</style>
+</head>
+<body>
+
+<canvas id="bgCanvas"></canvas>
+<div class="glow-orb orb1"></div>
+<div class="glow-orb orb2"></div>
+<div class="glow-orb orb3"></div>
+
+<!-- ═══ ستاره درخشان غیاث‌الدین کاشانی ═══ -->
+<div class="star-container" id="starContainer">
+  <div class="star-core"></div>
+  <div class="star-tooltip">
+    <img src="images/star.png" alt="غیاث‌الدین کاشانی" class="star-img img-clickable" onerror="this.style.background='linear-gradient(135deg, #ffb700, #a855f7)'; this.style.minHeight='140px';" data-caption="غیاث‌الدین جمشید کاشانی — ریاضیدان و منجم">
+    <div class="star-name">غیاث‌الدین کاشانی</div>
+    <div class="star-title">ریاضیدان و منجم بزرگ ایرانی</div>
+    <div class="star-years">۱۳۸۰ — ۱۴۲۹ میلادی</div>
+  </div>
+</div>
+
+<div class="top-header">
+  <div class="header-left">
+    <img src="images/signature.png" alt="امضا" class="header-signature" onerror="this.style.display='none'">
+    <div class="header-text">
+      <span class="header-name">دکتر مسعود گوهری منش</span>
+      <span class="header-univ">دانشیار گروه مهندسی مکانیک — دانشگاه تربت حیدریه</span>
+    </div>
+  </div>
+  <div class="header-controls">
+    <button class="ctrl-btn" id="soundToggle" title="صدا"><i class="fas fa-volume-up"></i></button>
+    <button class="ctrl-btn" id="fullscreenToggle" title="تمام‌صفحه"><i class="fas fa-expand"></i></button>
+    <div class="print-menu-wrap">
+      <button class="ctrl-btn" id="printToggle" title="چاپ"><i class="fas fa-print"></i></button>
+      <div class="print-menu" id="printMenu">
+        <button id="printCurrentBtn"><i class="fas fa-file"></i> چاپ این صفحه</button>
+        <button id="printAllBtn"><i class="fas fa-layer-group"></i> چاپ همه صفحات</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="topic-nav" id="topicNav">
+  <span class="topic-pill" data-topic="1">مقدمه</span>
+  <span class="topic-pill" data-topic="2">گسسته‌سازی</span>
+  <span class="topic-pill" data-topic="3">تفاضل محدود</span>
+  <span class="topic-pill" data-topic="4">روش‌های RK</span>
+  <span class="topic-pill" data-topic="5">پایداری</span>
+  <span class="topic-pill" data-topic="6">PDE با FD</span>
+  <span class="topic-pill" data-topic="7">نانو انبرک</span>
+  <span class="topic-pill" data-topic="8">مقایسه</span>
+  <span class="topic-pill" data-topic="9">کد و تمرین</span>
+  <span class="topic-pill" data-topic="10">جمع‌بندی</span>
+</div>
+
+<div class="progress-top"><div class="progress-fill" id="progressFill"></div></div>
+
+<div class="slide-container" id="slideContainer">
+
+  <!-- ۱ — عنوان -->
+  <div class="slide active" data-slide="1" data-topic="1">
+    <div class="slide-inner title-slide">
+      <div class="bismillah">بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِیم</div>
+      <div class="hoval">هُوَ الخَلّاقُ العَلیم</div>
+      <img src="images/hero-finite-difference.png" alt="Finite Difference" class="hero-img img-clickable" onerror="this.style.display='none'" data-caption="روش تفاضل محدود">
+      <h1 class="main-title">تفاضل محدود و رانگ-کوتا</h1>
+      <p class="subtitle">(Finite Difference & Runge-Kutta) — جلسه ۱۵</p>
+      <div class="euler-box"><div style="direction: ltr; font-size: 1.05rem;">$$f'(x) \approx \frac{f(x+h) - f(x-h)}{2h} + O(h^2)$$</div></div>
+      <p class="instructor-line">دکتر مسعود گوهری منش</p>
+      <p class="instructor-title-line">دانشیار گروه مهندسی مکانیک — دانشگاه تربت حیدریه</p>
+      <div class="semester">نیمسال اول ۱۴۰۵–۱۴۰۶</div>
+      <div class="lecture-note" style="margin-top: 20px; max-width: 600px; margin-left: auto; margin-right: auto; text-align: right;">
+        <i class="fas fa-star" style="color: var(--gold);"></i>
+        <div class="lecture-note-content">
+          <strong style="color: var(--gold);">💫 ستاره امروز:</strong> به ستاره درخشان گوشه صفحه هاور کنید تا <strong>غیاث‌الدین کاشانی</strong>، پیشگام روش‌های عددی را ببینید.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۲ — مرور جلسه ۱۴ -->
+  <div class="slide" data-slide="2" data-topic="1">
+    <div class="slide-inner">
+      <span class="slide-num">مرور</span>
+      <h2 class="slide-h1">مرور جلسه ۱۴ و نقطه شروع جدید</h2>
+
+      <div class="grid-2">
+        <div class="card" style="background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3);">
+          <div class="slide-h3" style="color: var(--primary);"><i class="fas fa-check-circle"></i> دستاوردهای جلسه ۱۴</div>
+          <ul style="list-style: none; padding: 0; font-size: 0.85rem; color: var(--text-dim); line-height: 2;">
+            <li>✅ مشکل <b>secular term</b> و راه‌حل</li>
+            <li>✅ روش Lindstedt-Poincaré (LP)</li>
+            <li>✅ روش چند مقیاسی (Multiple Scales)</li>
+            <li>✅ حل Duffing و van der Pol</li>
+          </ul>
+        </div>
+        <div class="card" style="background: rgba(255, 183, 0, 0.06); border-color: rgba(255, 183, 0, 0.3);">
+          <div class="slide-h3" style="color: var(--gold);"><i class="fas fa-rocket"></i> فاز ۴ (ادامه)</div>
+          <ul style="list-style: none; padding: 0; font-size: 0.85rem; color: var(--text-dim); line-height: 2;">
+            <li>🔹 جلسه ۱۵: تفاضل محدود و RK ← امروز</li>
+            <li>🔹 جلسه ۱۶: روش‌های طیفی و FEM</li>
+            <li>🔹 ورود به روش‌های عددی پیشرفته</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top: 16px; background: rgba(168, 85, 247, 0.06); border-color: rgba(168, 85, 247, 0.3);">
+        <div class="slide-h3" style="color: var(--tertiary);"><i class="fas fa-bullseye"></i> چرا روش‌های عددی؟</div>
+        <p class="slide-text" style="font-size: 0.9rem;">
+          در جلسات قبل، روش‌های <strong>تحلیلی</strong> (LP و MS) را یاد گرفتیم. اما این روش‌ها فقط برای مسائل ساده جواب می‌دهند. برای <strong>معادلات پیچیده غیرخطی</strong> یا <strong>هندسه‌های نامنظم</strong>، نیاز به روش‌های <strong>عددی</strong> داریم که در کامپیوتر پیاده‌سازی می‌شوند.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۳ — چرا روش‌های عددی -->
+  <div class="slide" data-slide="3" data-topic="1">
+    <div class="slide-inner">
+      <span class="slide-num">انگیزه</span>
+      <h2 class="slide-h1">چرا به روش‌های عددی نیاز داریم؟</h2>
+
+      <p class="slide-text">
+        بیشتر معادلات واقعی در فیزیک و مهندسی، حل <strong>تحلیلی</strong> ندارند یا حل آنها بسیار پیچیده است. روش‌های عددی این مشکل را حل می‌کنند.
+      </p>
+
+      <div class="grid-3">
+        <div class="card" style="background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3); text-align: center;">
+          <i class="fas fa-square-root-variable" style="font-size: 2rem; color: var(--primary); margin-bottom: 10px; display: block;"></i>
+          <div class="slide-h3" style="justify-content: center; color: var(--primary);">معادلات غیرخطی</div>
+          <p class="slide-text" style="font-size: 0.82rem;">
+            $y'' + \epsilon(y^2-1)y' + y = 0$
+          </p>
+          <p class="slide-text" style="font-size: 0.75rem;">
+            van der Pol — حل تحلیلی دقیق ندارد
+          </p>
+        </div>
+        <div class="card" style="background: rgba(255, 183, 0, 0.06); border-color: rgba(255, 183, 0, 0.3); text-align: center;">
+          <i class="fas fa-cube" style="font-size: 2rem; color: var(--gold); margin-bottom: 10px; display: block;"></i>
+          <div class="slide-h3" style="justify-content: center; color: var(--gold);">هندسه‌های پیچیده</div>
+          <p class="slide-text" style="font-size: 0.82rem;">
+            تیر با مقطع متغیر، سطوح منحنی
+          </p>
+          <p class="slide-text" style="font-size: 0.75rem;">
+            FD و FEM این‌ها را حل می‌کنند
+          </p>
+        </div>
+        <div class="card" style="background: rgba(168, 85, 247, 0.06); border-color: rgba(168, 85, 247, 0.3); text-align: center;">
+          <i class="fas fa-flask" style="font-size: 2rem; color: var(--tertiary); margin-bottom: 10px; display: block;"></i>
+          <div class="slide-h3" style="justify-content: center; color: var(--tertiary);">مسائل واقعی</div>
+          <p class="slide-text" style="font-size: 0.82rem;">
+            نانو انبرک، CFD، سازه‌ها
+          </p>
+          <p class="slide-text" style="font-size: 0.75rem;">
+            شبیه‌سازی کامپیوتری
+          </p>
+        </div>
+      </div>
+
+      <div class="lecture-note" style="margin-top: 14px;">
+        <i class="fas fa-lightbulb"></i>
+        <div class="lecture-note-content">
+          <strong>هدف امروز:</strong> یادگیری سه ابزار اصلی روش‌های عددی:
+          <br>1️⃣ تفاضل محدود (<b>finite difference</b>) برای PDE
+          <br>2️⃣ روش‌های رانگ-کوتا (<b>Runge-Kutta</b>) برای ODE
+          <br>3️⃣ تحلیل پایداری و دقت
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۴ — گسسته‌سازی -->
+  <div class="slide" data-slide="4" data-topic="2">
+    <div class="slide-inner">
+      <span class="slide-num">مفهوم پایه</span>
+      <span class="method-badge badge-fd" style="display: inline-block; margin-right: 8px;">گسسته‌سازی</span>
+      <h2 class="slide-h1">گسسته‌سازی (Discretization)</h2>
+
+      <img src="images/discretization-concept.png" alt="Discretization" class="img-box img-clickable" onerror="this.style.display='none'" data-caption="مفهوم گسسته‌سازی">
+
+      <p class="slide-text">
+        ایده اصلی روش‌های عددی، تبدیل مسئله **پیوسته** به یک مسئله **گسسته** است. به‌جای تابع $f(x)$ که در هر نقطه تعریف شده، مقادیر $f_i$ را فقط در **نقاط شبکه** $x_i$ محاسبه می‌کنیم.
+      </p>
+
+      <div class="math-box" style="padding: 14px;">
+        $$x_i = x_0 + i \cdot h, \quad i = 0, 1, 2, \dots, N$$
+      </div>
+
+      <div class="grid-3" style="margin-top: 14px;">
+        <div class="card" style="background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3); text-align: center; padding: 14px;">
+          <i class="fas fa-th" style="font-size: 1.5rem; color: var(--primary); display: block; margin-bottom: 8px;"></i>
+          <div class="slide-h3" style="justify-content: center; font-size: 0.88rem;">شبکه (Grid)</div>
+          <p class="slide-text" style="font-size: 0.78rem;">مجموعه نقاط $x_0 < x_1 < \dots < x_N$</p>
+        </div>
+        <div class="card" style="background: rgba(255, 183, 0, 0.06); border-color: rgba(255, 183, 0, 0.3); text-align: center; padding: 14px;">
+          <i class="fas fa-ruler-horizontal" style="font-size: 1.5rem; color: var(--gold); display: block; margin-bottom: 8px;"></i>
+          <div class="slide-h3" style="justify-content: center; font-size: 0.88rem;">گام (Step)</div>
+          <p class="slide-text" style="font-size: 0.78rem;">$h = x_{i+1} - x_i$</p>
+        </div>
+        <div class="card" style="background: rgba(168, 85, 247, 0.06); border-color: rgba(168, 85, 247, 0.3); text-align: center; padding: 14px;">
+          <i class="fas fa-bullseye" style="font-size: 1.5rem; color: var(--tertiary); display: block; margin-bottom: 8px;"></i>
+          <div class="slide-h3" style="justify-content: center; font-size: 0.88rem;">دقت (Accuracy)</div>
+          <p class="slide-text" style="font-size: 0.78rem;">هرچه $h$ کوچک‌تر، دقت بالاتر</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۵ — تفاضل پیشرو -->
+  <div class="slide" data-slide="5" data-topic="3">
+    <div class="slide-inner">
+      <span class="slide-num">تفاضل محدود</span>
+      <span class="method-badge badge-fd" style="display: inline-block; margin-right: 8px;">Forward Difference</span>
+      <h2 class="slide-h1">تفاضل پیشرو (Forward Difference)</h2>
+
+      <img src="images/forward-difference.png" alt="Forward Difference" class="img-box img-clickable" style="max-height: 180px;" onerror="this.style.display='none'" data-caption="تفاضل پیشرو">
+
+      <p class="slide-text">
+        اولین و ساده‌ترین تقریب مشتق، استفاده از **بسط تیلور** در نقطه بعدی است:
+      </p>
+
+      <div class="step-container">
+        <div class="step-title"><i class="fas fa-1"></i> بسط تیلور</div>
+        <div class="step-content">
+          <div class="math-box" style="padding: 12px; font-size: 0.88rem;">
+            $$f(x+h) = f(x) + h f'(x) + \frac{h^2}{2} f''(x) + O(h^3)$$
+          </div>
+        </div>
+      </div>
+
+      <div class="step-container" style="border-right-color: var(--primary);">
+        <div class="step-title" style="color: var(--primary);"><i class="fas fa-2"></i> حل برای $f'(x)$</div>
+        <div class="step-content">
+          <div class="math-box gold-math" style="padding: 14px; font-size: 1rem;">
+            $$f'(x) = \frac{f(x+h) - f(x)}{h} + O(h)$$
+          </div>
+        </div>
+      </div>
+
+      <div class="grid-2" style="margin-top: 14px;">
+        <div class="card" style="background: rgba(34, 197, 94, 0.06); border-color: rgba(34, 197, 94, 0.3);">
+          <div class="slide-h3" style="color: var(--success);"><i class="fas fa-check"></i> مزیت</div>
+          <p class="slide-text" style="font-size: 0.82rem;">
+            ساده و سریع. برای مسائل پارabolic مناسب است.
+          </p>
+        </div>
+        <div class="card" style="background: rgba(255, 71, 87, 0.06); border-color: rgba(255, 71, 87, 0.3);">
+          <div class="slide-h3" style="color: var(--danger);"><i class="fas fa-times"></i> عیب</div>
+          <p class="slide-text" style="font-size: 0.82rem;">
+            دقت مرتبه اول $O(h)$ — کمتر از تفاضل مرکزی.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۶ — تفاضل مرکزی -->
+  <div class="slide" data-slide="6" data-topic="3">
+    <div class="slide-inner">
+      <span class="slide-num">تفاضل محدود</span>
+      <span class="method-badge badge-fd" style="display: inline-block; margin-right: 8px;">Central Difference</span>
+      <h2 class="slide-h1">تفاضل مرکزی (Central Difference)</h2>
+
+      <img src="images/central-difference.png" alt="Central Difference" class="img-box img-clickable" style="max-height: 180px;" onerror="this.style.display='none'" data-caption="تفاضل مرکزی">
+
+      <p class="slide-text">
+        با ترکیب دو بسط تیلور (جلو و عقب)، جملات مرتبه $h^2$ حذف می‌شوند:
+      </p>
+
+      <div class="math-box gold-math" style="padding: 16px; margin-top: 12px;">
+        <div style="font-size: 1.05rem;">
+          $$f'(x) = \frac{f(x+h) - f(x-h)}{2h} + O(h^2)$$
+        </div>
+        <p class="math-note">دقت مرتبه دوم — دقیق‌تر از forward</p>
+      </div>
+
+      <div class="step-container" style="margin-top: 14px;">
+        <div class="step-title"><i class="fas fa-1"></i> مشتق دوم (مرکزی)</div>
+        <div class="step-content">
+          <div class="math-box" style="padding: 14px;">
+            $$f''(x) = \frac{f(x+h) - 2f(x) + f(x-h)}{h^2} + O(h^2)$$
+          </div>
+        </div>
+      </div>
+
+      <div class="grid-2" style="margin-top: 14px;">
+        <div class="card" style="background: rgba(34, 197, 94, 0.06); border-color: rgba(34, 197, 94, 0.3);">
+          <div class="slide-h3" style="color: var(--success);"><i class="fas fa-check"></i> مزیت</div>
+          <p class="slide-text" style="font-size: 0.82rem;">
+            دقت مرتبه $O(h^2)$ — پرکاربردترین روش در FD.
+          </p>
+        </div>
+        <div class="card" style="background: rgba(255, 71, 87, 0.06); border-color: rgba(255, 71, 87, 0.3);">
+          <div class="slide-h3" style="color: var(--danger);"><i class="fas fa-times"></i> عیب</div>
+          <p class="slide-text" style="font-size: 0.82rem;">
+            نیاز به نقاط بیشتر در مرز (شرایط مرزی پیچیده‌تر).
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۷ — تفاضل عقب‌رو -->
+  <div class="slide" data-slide="7" data-topic="3">
+    <div class="slide-inner">
+      <span class="slide-num">تفاضل محدود</span>
+      <span class="method-badge badge-fd" style="display: inline-block; margin-right: 8px;">Backward Difference</span>
+      <h2 class="slide-h1">تفاضل عقب‌رو (Backward Difference)</h2>
+
+      <p class="slide-text">
+        مشابه forward، اما با استفاده از نقطه قبلی:
+      </p>
+
+      <div class="math-box gold-math" style="padding: 16px;">
+        <div style="font-size: 1.05rem;">
+          $$f'(x) = \frac{f(x) - f(x-h)}{h} + O(h)$$
+        </div>
+      </div>
+
+      <div class="lecture-note" style="margin-top: 14px;">
+        <i class="fas fa-lightbulb"></i>
+        <div class="lecture-note-content">
+          <strong>کاربرد:</strong> در روش‌های <b>implicit</b> (پنهان) برای معادلات سخت (stiff) استفاده می‌شود. مزیت آن پایداری بالاتر است.
+        </div>
+      </div>
+
+      <div class="grid-3" style="margin-top: 14px;">
+        <div class="card" style="background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3); text-align: center; padding: 14px;">
+          <div class="slide-h3" style="justify-content: center; font-size: 0.85rem; color: var(--primary);">Forward</div>
+          <div class="math-box" style="padding: 8px; font-size: 0.82rem;">$O(h)$</div>
+        </div>
+        <div class="card" style="background: rgba(255, 183, 0, 0.06); border-color: rgba(255, 183, 0, 0.3); text-align: center; padding: 14px;">
+          <div class="slide-h3" style="justify-content: center; font-size: 0.85rem; color: var(--gold);">Central</div>
+          <div class="math-box gold-math" style="padding: 8px; font-size: 0.82rem;">$O(h^2)$</div>
+        </div>
+        <div class="card" style="background: rgba(168, 85, 247, 0.06); border-color: rgba(168, 85, 247, 0.3); text-align: center; padding: 14px;">
+          <div class="slide-h3" style="justify-content: center; font-size: 0.85rem; color: var(--tertiary);">Backward</div>
+          <div class="math-box purple-math" style="padding: 8px; font-size: 0.82rem;">$O(h)$</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۸ — مشتقات مرتبه بالاتر -->
+  <div class="slide" data-slide="8" data-topic="3">
+    <div class="slide-inner">
+      <span class="slide-num">مراتب بالاتر</span>
+      <h2 class="slide-h1">مشتقات مرتبه بالاتر</h2>
+
+      <img src="images/finite-difference-stencils.png" alt="Stencils" class="img-box img-clickable" style="max-height: 180px;" onerror="this.style.display='none'" data-caption="استنسیل‌های تفاضل محدود">
+
+      <div class="grid-2">
+        <div class="card" style="background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3);">
+          <div class="slide-h3" style="color: var(--primary);"><i class="fas fa-2"></i> مشتق دوم (مرکزی)</div>
+          <div class="math-box" style="padding: 12px; font-size: 0.82rem;">
+            $$f''_i = \frac{f_{i+1} - 2f_i + f_{i-1}}{h^2} + O(h^2)$$
+          </div>
+        </div>
+        <div class="card" style="background: rgba(255, 183, 0, 0.06); border-color: rgba(255, 183, 0, 0.3);">
+          <div class="slide-h3" style="color: var(--gold);"><i class="fas fa-3"></i> مشتق سوم</div>
+          <div class="math-box gold-math" style="padding: 12px; font-size: 0.78rem;">
+            $$f'''_i = \frac{f_{i+2} - 2f_{i+1} + 2f_{i-1} - f_{i-2}}{2h^3} + O(h^2)$$
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top: 14px; background: rgba(168, 85, 247, 0.06); border-color: rgba(168, 85, 247, 0.3);">
+        <div class="slide-h3" style="color: var(--tertiary);"><i class="fas fa-4"></i> مشتق چهارم (مهم در نانو انبرک)</div>
+        <div class="math-box purple-math" style="padding: 14px; font-size: 0.85rem;">
+          $$f''''_i = \frac{f_{i+2} - 4f_{i+1} + 6f_i - 4f_{i-1} + f_{i-2}}{h^4} + O(h^2)$$
+        </div>
+        <p class="slide-text" style="font-size: 0.82rem; margin-top: 8px;">
+          این استنسیل ۵ نقطه‌ای، پایه حل معادله تیر اویلر-برنولی است.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۹ — شبیه‌ساز دقت تفاضل -->
+  <div class="slide" data-slide="9" data-topic="3">
+    <div class="slide-inner">
+      <span class="slide-num">شبیه‌ساز تعاملی</span>
+      <h2 class="slide-h1">مقایسه دقت تفاضل‌ها</h2>
+      <p class="slide-text">تأثیر گام h و نوع تفاضل بر دقت را ببینید.</p>
+
+      <div class="simulator">
+        <div class="sim-header">
+          <div class="sim-title"><i class="fas fa-chart-line"></i> دقت تفاضل محدود</div>
+          <div class="sim-controls">
+            <div class="slider-group">
+              <label>گام h:</label>
+              <input type="range" id="fdH" min="0.01" max="0.5" value="0.1" step="0.01">
+              <span class="slider-value" id="fdHValue">۰.۱۰</span>
+            </div>
+            <div class="slider-group">
+              <label>مرتبه مشتق:</label>
+              <select id="fdOrder" style="background: rgba(0,0,0,0.4); border: 1px solid var(--card-border); color: var(--text); padding: 4px 8px; border-radius: 8px; font-family: inherit; font-size: 0.78rem;">
+                <option value="1">مرتبه ۱</option>
+                <option value="2">مرتبه ۲</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="canvas-wrapper" style="height: 320px;"><canvas id="fdCanvas"></canvas></div>
+        <div class="grid-3" style="margin-top: 12px;">
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 0.72rem; color: var(--text-dim);">خطای Forward</div>
+            <div id="errForward" style="font-size: 1rem; color: var(--gold); font-weight: 800; font-family: 'Courier New', monospace;">—</div>
+          </div>
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 0.72rem; color: var(--text-dim);">خطای Central</div>
+            <div id="errCentral" style="font-size: 1rem; color: var(--primary); font-weight: 800; font-family: 'Courier New', monospace;">—</div>
+          </div>
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 0.72rem; color: var(--text-dim);">خطای Backward</div>
+            <div id="errBackward" style="font-size: 1rem; color: var(--tertiary); font-weight: 800; font-family: 'Courier New', monospace;">—</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۱۰ — روش Euler -->
+  <div class="slide" data-slide="10" data-topic="4">
+    <div class="slide-inner">
+      <span class="slide-num">روش‌های RK</span>
+      <span class="method-badge badge-rk" style="display: inline-block; margin-right: 8px;">Euler</span>
+      <h2 class="slide-h1">روش Euler — ساده‌ترین روش عددی</h2>
+
+      <img src="images/euler-method.png" alt="Euler" class="img-box img-clickable" style="max-height: 180px;" onerror="this.style.display='none'" data-caption="روش Euler">
+
+      <div class="math-box" style="padding: 14px;">
+        $$y' = f(t, y), \quad y(t_0) = y_0$$
+      </div>
+
+      <div class="step-container">
+        <div class="step-title"><i class="fas fa-1"></i> فرمول Euler پیشرو</div>
+        <div class="step-content">
+          <div class="math-box gold-math" style="padding: 14px; font-size: 1.05rem;">
+            $$y_{n+1} = y_n + h \cdot f(t_n, y_n)$$
+          </div>
+          <p style="font-size: 0.82rem;">
+            که $h = t_{n+1} - t_n$ گام زمانی است.
+          </p>
+        </div>
+      </div>
+
+      <div class="grid-2" style="margin-top: 14px;">
+        <div class="card" style="background: rgba(34, 197, 94, 0.06); border-color: rgba(34, 197, 94, 0.3);">
+          <div class="slide-h3" style="color: var(--success);"><i class="fas fa-check"></i> مزیت</div>
+          <ul style="list-style: none; padding: 0; font-size: 0.82rem; color: var(--text-dim); line-height: 2;">
+            <li>🔹 بسیار ساده</li>
+            <li>🔹 سریع</li>
+            <li>🔹 پایه روش‌های پیشرفته‌تر</li>
+          </ul>
+        </div>
+        <div class="card" style="background: rgba(255, 71, 87, 0.06); border-color: rgba(255, 71, 87, 0.3);">
+          <div class="slide-h3" style="color: var(--danger);"><i class="fas fa-times"></i> عیب</div>
+          <ul style="list-style: none; padding: 0; font-size: 0.82rem; color: var(--text-dim); line-height: 2;">
+            <li>🔹 دقت مرتبه اول $O(h)$</li>
+            <li>🔹 ناپایداری برای گام‌های بزرگ</li>
+            <li>🔹 تجمع خطا در زمان‌های طولانی</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۱۱ — روش RK2 -->
+  <div class="slide" data-slide="11" data-topic="4">
+    <div class="slide-inner">
+      <span class="slide-num">روش‌های RK</span>
+      <span class="method-badge badge-rk" style="display: inline-block; margin-right: 8px;">RK2 (Heun)</span>
+      <h2 class="slide-h1">روش RK2 — بهبود دقت</h2>
+
+      <img src="images/rk2-heun.png" alt="RK2" class="img-box img-clickable" style="max-height: 180px;" onerror="this.style.display='none'" data-caption="روش RK2 (Heun)">
+
+      <p class="slide-text">
+        روش RK2 با **دو ارزیابی شیب** در هر گام، دقت را به مرتبه دوم می‌رساند:
+      </p>
+
+      <div class="step-container">
+        <div class="step-title"><i class="fas fa-1"></i> گام اول: پیش‌بینی</div>
+        <div class="step-content">
+          <div class="math-box" style="padding: 12px;">
+            $$k_1 = f(t_n, y_n)$$
+          </div>
+        </div>
+      </div>
+
+      <div class="step-container" style="border-right-color: var(--primary);">
+        <div class="step-title" style="color: var(--primary);"><i class="fas fa-2"></i> گام دوم: تصحیح</div>
+        <div class="step-content">
+          <div class="math-box" style="padding: 12px;">
+            $$k_2 = f(t_n + h, y_n + h k_1)$$
+          </div>
+        </div>
+      </div>
+
+      <div class="step-container" style="border-right-color: var(--gold);">
+        <div class="step-title"><i class="fas fa-3"></i> ترکیب</div>
+        <div class="step-content">
+          <div class="math-box gold-math" style="padding: 14px; font-size: 1rem;">
+            $$y_{n+1} = y_n + \frac{h}{2}(k_1 + k_2)$$
+          </div>
+        </div>
+      </div>
+
+      <div class="lecture-note">
+        <i class="fas fa-star"></i>
+        <div class="lecture-note-content">
+          <strong>نتیجه:</strong> دقت مرتبه دوم $O(h^2)$ با هزینه محاسباتی فقط ۲ برابر Euler. این یک معامله بسیار خوب است!
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۱۲ — روش RK4 -->
+  <div class="slide" data-slide="12" data-topic="4">
+    <div class="slide-inner">
+      <span class="slide-num">روش‌های RK</span>
+      <span class="method-badge badge-rk" style="display: inline-block; margin-right: 8px;">RK4 — روش طلایی</span>
+      <h2 class="slide-h1">روش RK4 — استاندارد صنعتی</h2>
+
+      <img src="images/rk4-slopes.png" alt="RK4" class="img-box img-clickable" style="max-height: 180px;" onerror="this.style.display='none'" data-caption="روش RK4">
+
+      <div class="step-container">
+        <div class="step-title"><i class="fas fa-1"></i> چهار شیب در هر گام</div>
+        <div class="step-content">
+          <div class="math-box" style="padding: 10px; font-size: 0.82rem;">
+            $$k_1 = f(t_n, y_n)$$
+          </div>
+          <div class="math-box" style="padding: 10px; font-size: 0.82rem; margin-top: 6px;">
+            $$k_2 = f(t_n + \tfrac{h}{2}, y_n + \tfrac{h}{2}k_1)$$
+          </div>
+          <div class="math-box" style="padding: 10px; font-size: 0.82rem; margin-top: 6px;">
+            $$k_3 = f(t_n + \tfrac{h}{2}, y_n + \tfrac{h}{2}k_2)$$
+          </div>
+          <div class="math-box" style="padding: 10px; font-size: 0.82rem; margin-top: 6px;">
+            $$k_4 = f(t_n + h, y_n + h k_3)$$
+          </div>
+        </div>
+      </div>
+
+      <div class="step-container" style="border-right-color: var(--gold);">
+        <div class="step-title"><i class="fas fa-2"></i> ترکیب وزن‌دار</div>
+        <div class="step-content">
+          <div class="math-box gold-math" style="padding: 14px; font-size: 0.95rem;">
+            $$y_{n+1} = y_n + \frac{h}{6}(k_1 + 2k_2 + 2k_3 + k_4)$$
+          </div>
+        </div>
+      </div>
+
+      <div class="grid-3" style="margin-top: 14px;">
+        <div class="card" style="background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3); text-align: center; padding: 12px;">
+          <div class="slide-h3" style="justify-content: center; font-size: 0.82rem;">دقت</div>
+          <div style="font-family: monospace; color: var(--primary); font-weight: 800;">$O(h^4)$</div>
+        </div>
+        <div class="card" style="background: rgba(255, 183, 0, 0.06); border-color: rgba(255, 183, 0, 0.3); text-align: center; padding: 12px;">
+          <div class="slide-h3" style="justify-content: center; font-size: 0.82rem;">هزینه</div>
+          <div style="font-family: monospace; color: var(--gold); font-weight: 800;">۴ ارزیابی</div>
+        </div>
+        <div class="card" style="background: rgba(168, 85, 247, 0.06); border-color: rgba(168, 85, 247, 0.3); text-align: center; padding: 12px;">
+          <div class="slide-h3" style="justify-content: center; font-size: 0.82rem;">کاربرد</div>
+          <div style="font-family: monospace; color: var(--tertiary); font-weight: 800;">استاندارد</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۱۳ — شبیه‌ساز RK -->
+  <div class="slide" data-slide="13" data-topic="4">
+    <div class="slide-inner">
+      <span class="slide-num">شبیه‌ساز تعاملی</span>
+      <h2 class="slide-h1">مقایسه Euler، RK2 و RK4</h2>
+
+      <div class="simulator">
+        <div class="sim-header">
+          <div class="sim-title"><i class="fas fa-chart-line"></i> دقت روش‌های RK</div>
+          <div class="sim-controls">
+            <div class="slider-group">
+              <label>گام h:</label>
+              <input type="range" id="rkH" min="0.05" max="1" value="0.3" step="0.05">
+              <span class="slider-value" id="rkHValue">۰.۳۰</span>
+            </div>
+          </div>
+        </div>
+        <div class="canvas-wrapper" style="height: 320px;"><canvas id="rkCanvas"></canvas></div>
+        <div class="grid-3" style="margin-top: 12px;">
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 0.72rem; color: var(--text-dim);">خطای Euler</div>
+            <div id="errEuler" style="font-size: 1rem; color: var(--danger); font-weight: 800; font-family: 'Courier New', monospace;">—</div>
+          </div>
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 0.72rem; color: var(--text-dim);">خطای RK2</div>
+            <div id="errRK2" style="font-size: 1rem; color: var(--gold); font-weight: 800; font-family: 'Courier New', monospace;">—</div>
+          </div>
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 0.72rem; color: var(--text-dim);">خطای RK4</div>
+            <div id="errRK4" style="font-size: 1rem; color: var(--primary); font-weight: 800; font-family: 'Courier New', monospace;">—</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۱۴ — پایداری عددی -->
+  <div class="slide" data-slide="14" data-topic="5">
+    <div class="slide-inner">
+      <span class="slide-num">پایداری</span>
+      <h2 class="slide-h1">پایداری عددی و شرط CFL</h2>
+
+      <img src="images/stability-region.png" alt="Stability" class="img-box img-clickable" style="max-height: 160px;" onerror="this.style.display='none'" data-caption="منطقه پایداری">
+
+      <p class="slide-text">
+        انتخاب گام زمانی $h$ نباید دلبخواه باشد. برای هر روش، یک <strong>منطقه پایداری</strong> وجود دارد.
+      </p>
+
+      <div class="grid-2" style="margin-top: 14px;">
+        <div class="card" style="background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3);">
+          <div class="slide-h3" style="color: var(--primary);"><i class="fas fa-1"></i> Euler (پیشرو)</div>
+          <div class="math-box" style="padding: 12px;">
+            $$|1 + h\lambda| < 1$$
+          </div>
+          <p class="slide-text" style="font-size: 0.82rem;">
+            ناحیه پایداری: دایره‌ای با شعاع ۱ در صفحه مختلط.
+          </p>
+        </div>
+        <div class="card" style="background: rgba(255, 183, 0, 0.06); border-color: rgba(255, 183, 0, 0.3);">
+          <div class="slide-h3" style="color: var(--gold);"><i class="fas fa-4"></i> RK4</div>
+          <div class="math-box gold-math" style="padding: 12px; font-size: 0.8rem;">
+            $$|R_4(h\lambda)| < 1$$
+          </div>
+          <p class="slide-text" style="font-size: 0.82rem;">
+            ناحیه بزرگ‌تر (~2.8 برابر Euler).
+          </p>
+        </div>
+      </div>
+
+      <div class="lecture-note" style="margin-top: 14px;">
+        <i class="fas fa-exclamation-triangle"></i>
+        <div class="lecture-note-content">
+          <strong>هشدار — ناپایداری:</strong> اگر $h$ از حدی بزرگ‌تر شود، حل عددی <strong>ناپایدار</strong> می‌شود و به بی‌نهایت می‌رود. در PDE ها، شرط <b>CFL</b> (Courant-Friedrichs-Lewy) نیز باید رعایت شود: $h_t \leq h_x^2 / (2\alpha)$
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۱۵ — شبیه‌ساز پایداری -->
+  <div class="slide" data-slide="15" data-topic="5">
+    <div class="slide-inner">
+      <span class="slide-num">شبیه‌ساز تعاملی</span>
+      <h2 class="slide-h1">نمایش ناپایداری عددی</h2>
+
+      <div class="simulator">
+        <div class="sim-header">
+          <div class="sim-title"><i class="fas fa-chart-line"></i> ناپایداری در Euler</div>
+          <div class="sim-controls">
+            <div class="slider-group">
+              <label>گام h:</label>
+              <input type="range" id="stabH" min="0.01" max="2.5" value="0.1" step="0.05">
+              <span class="slider-value" id="stabHValue">۰.۱۰</span>
+            </div>
+          </div>
+        </div>
+        <div class="canvas-wrapper" style="height: 300px;"><canvas id="stabCanvas"></canvas></div>
+        <div class="grid-2" style="margin-top: 12px;">
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 0.72rem; color: var(--text-dim);">وضعیت پایداری</div>
+            <div id="stabStatus" style="font-size: 1rem; color: var(--success); font-weight: 800;">پایدار</div>
+          </div>
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 0.72rem; color: var(--text-dim);">حد پایداری</div>
+            <div id="stabLimit" style="font-size: 0.95rem; color: var(--gold); font-weight: 800; font-family: 'Courier New', monospace;">—</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۱۶ — PDE گرما -->
+  <div class="slide" data-slide="16" data-topic="6">
+    <div class="slide-inner">
+      <span class="slide-num">PDE</span>
+      <span class="method-badge badge-pde" style="display: inline-block; margin-right: 8px;">Heat Equation</span>
+      <h2 class="slide-h1">حل معادله گرما با تفاضل محدود</h2>
+
+      <img src="images/heat-equation-fd.png" alt="Heat Equation FD" class="img-box img-clickable" style="max-height: 180px;" onerror="this.style.display='none'" data-caption="حل معادله گرما با FD">
+
+      <div class="math-box" style="padding: 14px;">
+        $$\frac{\partial u}{\partial t} = \alpha \frac{\partial^2 u}{\partial x^2}$$
+      </div>
+
+      <div class="step-container">
+        <div class="step-title"><i class="fas fa-1"></i> گسسته‌سازی صریح (Forward Time, Central Space)</div>
+        <div class="step-content">
+          <div class="math-box gold-math" style="padding: 12px; font-size: 0.85rem;">
+            $$\frac{u_i^{n+1} - u_i^n}{\Delta t} = \alpha \frac{u_{i+1}^n - 2u_i^n + u_{i-1}^n}{\Delta x^2}$$
+          </div>
+        </div>
+      </div>
+
+      <div class="step-container" style="border-right-color: var(--gold);">
+        <div class="step-title"><i class="fas fa-2"></i> فرم صریح</div>
+        <div class="step-content">
+          <div class="math-box gold-math" style="padding: 14px; font-size: 1rem;">
+            $$u_i^{n+1} = u_i^n + r(u_{i+1}^n - 2u_i^n + u_{i-1}^n)$$
+          </div>
+          <p style="font-size: 0.82rem;">
+            که $r = \alpha \Delta t / \Delta x^2$ عدد کورانت است.
+          </p>
+        </div>
+      </div>
+
+      <div class="lecture-note">
+        <i class="fas fa-exclamation-triangle"></i>
+        <div class="lecture-note-content">
+          <strong>شرط پایداری CFL:</strong> برای این روش صریح، باید $r \leq 1/2$ باشد. در غیر این صورت، حل ناپایدار می‌شود.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۱۷ — PDE موج -->
+  <div class="slide" data-slide="17" data-topic="6">
+    <div class="slide-inner">
+      <span class="slide-num">PDE</span>
+      <span class="method-badge badge-pde" style="display: inline-block; margin-right: 8px;">Wave Equation</span>
+      <h2 class="slide-h1">حل معادله موج با تفاضل محدود</h2>
+
+      <img src="images/wave-equation-fd.png" alt="Wave Equation FD" class="img-box img-clickable" style="max-height: 180px;" onerror="this.style.display='none'" data-caption="حل معادله موج با FD">
+
+      <div class="math-box" style="padding: 14px;">
+        $$\frac{\partial^2 u}{\partial t^2} = c^2 \frac{\partial^2 u}{\partial x^2}$$
+      </div>
+
+      <div class="step-container">
+        <div class="step-title"><i class="fas fa-1"></i> استنسیل CTCS</div>
+        <div class="step-content">
+          <div class="math-box gold-math" style="padding: 12px; font-size: 0.82rem;">
+            $$\frac{u_i^{n+1} - 2u_i^n + u_i^{n-1}}{\Delta t^2} = c^2 \frac{u_{i+1}^n - 2u_i^n + u_{i-1}^n}{\Delta x^2}$$
+          </div>
+          <p style="font-size: 0.82rem;">
+            CTCS = Central Time, Central Space
+          </p>
+        </div>
+      </div>
+
+      <div class="step-container" style="border-right-color: var(--gold);">
+        <div class="step-title"><i class="fas fa-2"></i> فرم صریح (leapfrog)</div>
+        <div class="step-content">
+          <div class="math-box gold-math" style="padding: 14px; font-size: 0.95rem;">
+            $$u_i^{n+1} = 2u_i^n - u_i^{n-1} + C^2(u_{i+1}^n - 2u_i^n + u_{i-1}^n)$$
+          </div>
+          <p style="font-size: 0.82rem;">
+            که $C = c \Delta t / \Delta x$ عدد کورانت است.
+          </p>
+        </div>
+      </div>
+
+      <div class="lecture-note">
+        <i class="fas fa-exclamation-triangle"></i>
+        <div class="lecture-note-content">
+          <strong>شرط CFL:</strong> برای معادله موج، باید $C \leq 1$ باشد (یعنی موج نباید در یک گام، بیش از یک سلول شبکه جابجا شود).
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۱۸ — نانو انبرک با FD -->
+  <div class="slide" data-slide="18" data-topic="7">
+    <div class="slide-inner">
+      <span class="slide-num">کاربرد</span>
+      <span class="method-badge badge-pde" style="display: inline-block; margin-right: 8px;">Nano-cantilever</span>
+      <h2 class="slide-h1">حل نانو انبرک با تفاضل محدود</h2>
+
+      <img src="images/cantilever-fd-solution.png" alt="Cantilever FD" class="img-box img-clickable" style="max-height: 180px;" onerror="this.style.display='none'" data-caption="حل نانو انبرک با FD">
+
+      <div class="math-box" style="padding: 14px;">
+        $$EI \frac{d^4 w}{dx^4} = \frac{\epsilon_0 b V^2}{2(g - w)^2}$$
+      </div>
+
+      <div class="step-container">
+        <div class="step-title"><i class="fas fa-1"></i> گسسته‌سازی مشتق چهارم</div>
+        <div class="step-content">
+          <div class="math-box" style="padding: 12px; font-size: 0.82rem;">
+            $$w''''_i \approx \frac{w_{i+2} - 4w_{i+1} + 6w_i - 4w_{i-1} + w_{i-2}}{h^4}$$
+          </div>
+        </div>
+      </div>
+
+      <div class="step-container" style="border-right-color: var(--gold);">
+        <div class="step-title"><i class="fas fa-2"></i> معادله گسسته</div>
+        <div class="step-content">
+          <div class="math-box gold-math" style="padding: 14px; font-size: 0.85rem;">
+            $$EI \frac{w_{i+2} - 4w_{i+1} + 6w_i - 4w_{i-1} + w_{i-2}}{h^4} = \frac{\epsilon_0 b V^2}{2(g - w_i)^2}$$
+          </div>
+          <p style="font-size: 0.82rem;">
+            این یک <strong>سیستم غیرخطی</strong> از معادلات جبری است که با روش‌های تکراری (Newton-Raphson) حل می‌شود.
+          </p>
+        </div>
+      </div>
+
+      <div class="lecture-note">
+        <i class="fas fa-star"></i>
+        <div class="lecture-note-content">
+          <strong>مراحل حل:</strong>
+          <br>1️⃣ گسسته‌سازی معادله
+          <br>2️⃣ اعمال شرایط مرزی (تیر یک‌سر گیردار)
+          <br>3️⃣ حل تکراری با Newton-Raphson
+          <br>4️⃣ بررسی همگرایی و پایداری
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۱۹ — شبیه‌ساز نانو انبرک FD -->
+  <div class="slide" data-slide="19" data-topic="7">
+    <div class="slide-inner">
+      <span class="slide-num">شبیه‌ساز تعاملی</span>
+      <h2 class="slide-h1">مقایسه FD با حل دقیق</h2>
+
+      <div class="simulator">
+        <div class="sim-header">
+          <div class="sim-title"><i class="fas fa-microchip"></i> نانو انبرک با FD</div>
+          <div class="sim-controls">
+            <div class="slider-group">
+              <label>ولتاژ V (V):</label>
+              <input type="range" id="nanoFDV" min="1" max="15" value="5" step="0.5">
+              <span class="slider-value" id="nanoFDVValue">۵.۰</span>
+            </div>
+            <div class="slider-group">
+              <label>تعداد نقاط N:</label>
+              <input type="range" id="nanoFDN" min="10" max="80" value="30" step="5">
+              <span class="slider-value" id="nanoFDNValue">۳۰</span>
+            </div>
+          </div>
+        </div>
+        <div class="canvas-wrapper" style="height: 320px;"><canvas id="nanoFDCanvas"></canvas></div>
+        <div class="grid-2" style="margin-top: 12px;">
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 0.72rem; color: var(--text-dim);">خمش حداکثر FD (nm)</div>
+            <div id="nanoFDDeflection" style="font-size: 1rem; color: var(--primary); font-weight: 800; font-family: 'Courier New', monospace;">—</div>
+          </div>
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 0.72rem; color: var(--text-dim);">خطای نسبت به تحلیلی</div>
+            <div id="nanoFDError" style="font-size: 1rem; color: var(--gold); font-weight: 800; font-family: 'Courier New', monospace;">—</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۲۰ — همگرایی و مقایسه -->
+  <div class="slide" data-slide="20" data-topic="8">
+    <div class="slide-inner">
+      <span class="slide-num">مقایسه</span>
+      <h2 class="slide-h1">مقایسه روش‌ها و مرتبه همگرایی</h2>
+
+      <div class="grid-2">
+        <div>
+          <img src="images/convergence-order.png" alt="Convergence" class="img-box img-clickable" style="max-height: 180px;" onerror="this.style.display='none'" data-caption="مرتبه همگرایی">
+        </div>
+        <div>
+          <img src="images/comparison-methods.png" alt="Comparison" class="img-box img-clickable" style="max-height: 180px;" onerror="this.style.display='none'" data-caption="مقایسه روش‌ها">
+        </div>
+      </div>
+
+      <table style="width: 100%; border-collapse: collapse; font-size: 0.8rem; direction: rtl; margin-top: 14px;">
+        <thead>
+          <tr style="background: rgba(0, 212, 170, 0.15);">
+            <th style="padding: 10px; color: var(--primary); border: 1px solid var(--card-border); text-align: right;">روش</th>
+            <th style="padding: 10px; color: var(--primary); border: 1px solid var(--card-border);">مرتبه دقت</th>
+            <th style="padding: 10px; color: var(--primary); border: 1px solid var(--card-border);">هزینه محاسبه</th>
+            <th style="padding: 10px; color: var(--primary); border: 1px solid var(--card-border);">کاربرد</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="padding: 8px; border: 1px solid var(--card-border); color: var(--danger); font-weight: 700;">Euler</td>
+            <td style="padding: 8px; border: 1px solid var(--card-border); text-align: center; color: var(--text-dim);">$O(h)$</td>
+            <td style="padding: 8px; border: 1px solid var(--card-border); text-align: center; color: var(--success);">بسیار کم</td>
+            <td style="padding: 8px; border: 1px solid var(--card-border); text-align: center; color: var(--text-dim); font-size: 0.75rem;">مسائل آموزشی</td>
+          </tr>
+          <tr>
+            <td style="padding: 8px; border: 1px solid var(--card-border); color: var(--gold); font-weight: 700;">RK2 (Heun)</td>
+            <td style="padding: 8px; border: 1px solid var(--card-border); text-align: center; color: var(--text-dim);">$O(h^2)$</td>
+            <td style="padding: 8px; border: 1px solid var(--card-border); text-align: center; color: var(--gold);">متوسط</td>
+            <td style="padding: 8px; border: 1px solid var(--card-border); text-align: center; color: var(--text-dim); font-size: 0.75rem;">مسائل متوسط</td>
+          </tr>
+          <tr>
+            <td style="padding: 8px; border: 1px solid var(--card-border); color: var(--primary); font-weight: 700;">RK4</td>
+            <td style="padding: 8px; border: 1px solid var(--card-border); text-align: center; color: var(--text-dim);">$O(h^4)$</td>
+            <td style="padding: 8px; border: 1px solid var(--card-border); text-align: center; color: var(--danger);">بالا</td>
+            <td style="padding: 8px; border: 1px solid var(--card-border); text-align: center; color: var(--text-dim); font-size: 0.75rem;">استاندارد صنعتی</td>
+          </tr>
+          <tr>
+            <td style="padding: 8px; border: 1px solid var(--card-border); color: var(--tertiary); font-weight: 700;">FD مرکزی</td>
+            <td style="padding: 8px; border: 1px solid var(--card-border); text-align: center; color: var(--text-dim);">$O(h^2)$</td>
+            <td style="padding: 8px; border: 1px solid var(--card-border); text-align: center; color: var(--gold);">متوسط</td>
+            <td style="padding: 8px; border: 1px solid var(--card-border); text-align: center; color: var(--text-dim); font-size: 0.75rem;">PDE ها</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="lecture-note" style="margin-top: 14px;">
+        <i class="fas fa-star"></i>
+        <div class="lecture-note-content">
+          <strong>توصیه:</strong> برای کاربردهای واقعی، <b>RK4</b> استاندارد طلایی است. برای PDE های پارabolic و hyperbolic، از <b>FD مرکزی</b> استفاده کنید.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۲۱ — کد MATLAB/Python -->
+  <div class="slide" data-slide="21" data-topic="9">
+    <div class="slide-inner">
+      <span class="slide-num">کد</span>
+      <h2 class="slide-h1">پیاده‌سازی روش‌های عددی</h2>
+
+      <div class="code-tabs">
+        <button class="code-tab active" data-code="matlab-fd"><i class="fas fa-square"></i> MATLAB</button>
+        <button class="code-tab" data-code="python-fd"><i class="fab fa-python"></i> Python (Colab)</button>
+      </div>
+
+      <div class="code-content active" id="code-matlab-fd">
+<pre><span class="cm">% === مقایسه Euler، RK2، RK4 برای ODE ===</span>
+<span class="fn">clear</span>; <span class="fn">clc</span>; <span class="fn">close all</span>;
+
+<span class="cm">% معادله: y' = -2*y + sin(t), y(0) = 1</span>
+f = @(t, y) -<span class="num">2</span>*y + <span class="fn">sin</span>(t);
+y0 = <span class="num">1</span>;
+t_end = <span class="num">5</span>;
+h = <span class="num">0.2</span>;
+t = <span class="num">0</span>:h:t_end;
+N = <span class="fn">length</span>(t);
+
+<span class="cm">% حل تحلیلی (برای مقایسه)</span>
+y_exact = @(t) <span class="num">0.4</span>*<span class="fn">sin</span>(t) - <span class="num">0.2</span>*<span class="fn">cos</span>(t) + <span class="num">1.2</span>*<span class="fn">exp</span>(-<span class="num">2</span>*t);
+y_true = <span class="fn">arrayfun</span>(y_exact, t);
+
+<span class="cm">% === Euler ===</span>
+y_euler = <span class="fn">zeros</span>(<span class="num">1</span>, N); y_euler(<span class="num">1</span>) = y0;
+<span class="kw">for</span> i = <span class="num">1</span>:N-<span class="num">1</span>
+    y_euler(i+<span class="num">1</span>) = y_euler(i) + h * f(t(i), y_euler(i));
+<span class="kw">end</span>
+
+<span class="cm">% === RK2 (Heun) ===</span>
+y_rk2 = <span class="fn">zeros</span>(<span class="num">1</span>, N); y_rk2(<span class="num">1</span>) = y0;
+<span class="kw">for</span> i = <span class="num">1</span>:N-<span class="num">1</span>
+    k1 = f(t(i), y_rk2(i));
+    k2 = f(t(i)+h, y_rk2(i)+h*k1);
+    y_rk2(i+<span class="num">1</span>) = y_rk2(i) + (h/<span class="num">2</span>)*(k1 + k2);
+<span class="kw">end</span>
+
+<span class="cm">% === RK4 ===</span>
+y_rk4 = <span class="fn">zeros</span>(<span class="num">1</span>, N); y_rk4(<span class="num">1</span>) = y0;
+<span class="kw">for</span> i = <span class="num">1</span>:N-<span class="num">1</span>
+    k1 = f(t(i), y_rk4(i));
+    k2 = f(t(i)+h/<span class="num">2</span>, y_rk4(i)+h*k1/<span class="num">2</span>);
+    k3 = f(t(i)+h/<span class="num">2</span>, y_rk4(i)+h*k2/<span class="num">2</span>);
+    k4 = f(t(i)+h, y_rk4(i)+h*k3);
+    y_rk4(i+<span class="num">1</span>) = y_rk4(i) + (h/<span class="num">6</span>)*(k1 + <span class="num">2</span>*k2 + <span class="num">2</span>*k3 + k4);
+<span class="kw">end</span>
+
+<span class="cm">% === رسم ===</span>
+<span class="fn">figure</span>(<span class="str">'Color'</span>, <span class="str">'w'</span>);
+<span class="fn">plot</span>(t, y_true, <span class="str">'k-'</span>, <span class="str">'LineWidth'</span>, <span class="num">2</span>); <span class="kw">hold on</span>;
+<span class="fn">plot</span>(t, y_euler, <span class="str">'o--'</span>, <span class="str">'Color'</span>, <span class="str">'#ff4757'</span>, <span class="str">'LineWidth'</span>, <span class="num">1.5</span>);
+<span class="fn">plot</span>(t, y_rk2, <span class="str">'s--'</span>, <span class="str">'Color'</span>, <span class="str">'#ffb700'</span>, <span class="str">'LineWidth'</span>, <span class="num">1.5</span>);
+<span class="fn">plot</span>(t, y_rk4, <span class="str">'^--'</span>, <span class="str">'Color'</span>, <span class="str">'#00d4aa'</span>, <span class="str">'LineWidth'</span>, <span class="num">1.5</span>);
+<span class="fn">xlabel</span>(<span class="str">'t'</span>); <span class="fn">ylabel</span>(<span class="str">'y(t)'</span>);
+<span class="fn">legend</span>(<span class="str">'Exact'</span>, <span class="str">'Euler'</span>, <span class="str">'RK2'</span>, <span class="str">'RK4'</span>);
+<span class="fn">title</span>(<span class="str">'مقایسه روش‌های عددی'</span>);
+<span class="fn">grid on</span>;</pre>
+      </div>
+
+      <div class="code-content" id="code-python-fd">
+<pre><span class="cm"># === مقایسه Euler، RK2، RK4 ===</span>
+<span class="kw">import</span> numpy <span class="kw">as</span> np
+<span class="kw">import</span> matplotlib.pyplot <span class="kw">as</span> plt
+
+<span class="cm"># معادله: y' = -2y + sin(t), y(0) = 1</span>
+<span class="kw">def</span> <span class="fn">f</span>(t, y):
+    <span class="kw">return</span> -<span class="num">2</span> * y + np.sin(t)
+
+y0 = <span class="num">1</span>
+t_end = <span class="num">5</span>
+h = <span class="num">0.2</span>
+t = np.arange(<span class="num">0</span>, t_end + h, h)
+N = <span class="fn">len</span>(t)
+
+<span class="cm"># حل دقیق</span>
+y_exact = <span class="num">0.4</span> * np.sin(t) - <span class="num">0.2</span> * np.cos(t) + <span class="num">1.2</span> * np.exp(-<span class="num">2</span> * t)
+
+<span class="cm"># Euler</span>
+y_euler = np.zeros(N); y_euler[<span class="num">0</span>] = y0
+<span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(N - <span class="num">1</span>):
+    y_euler[i + <span class="num">1</span>] = y_euler[i] + h * f(t[i], y_euler[i])
+
+<span class="cm"># RK2 (Heun)</span>
+y_rk2 = np.zeros(N); y_rk2[<span class="num">0</span>] = y0
+<span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(N - <span class="num">1</span>):
+    k1 = f(t[i], y_rk2[i])
+    k2 = f(t[i] + h, y_rk2[i] + h * k1)
+    y_rk2[i + <span class="num">1</span>] = y_rk2[i] + (h / <span class="num">2</span>) * (k1 + k2)
+
+<span class="cm"># RK4</span>
+y_rk4 = np.zeros(N); y_rk4[<span class="num">0</span>] = y0
+<span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(N - <span class="num">1</span>):
+    k1 = f(t[i], y_rk4[i])
+    k2 = f(t[i] + h / <span class="num">2</span>, y_rk4[i] + h * k1 / <span class="num">2</span>)
+    k3 = f(t[i] + h / <span class="num">2</span>, y_rk4[i] + h * k2 / <span class="num">2</span>)
+    k4 = f(t[i] + h, y_rk4[i] + h * k3)
+    y_rk4[i + <span class="num">1</span>] = y_rk4[i] + (h / <span class="num">6</span>) * (k1 + <span class="num">2</span>*k2 + <span class="num">2</span>*k3 + k4)
+
+plt.figure(figsize=(<span class="num">12</span>, <span class="num">6</span>))
+plt.plot(t, y_exact, <span class="str">'k-'</span>, linewidth=<span class="num">2</span>, label=<span class="str">'Exact'</span>)
+plt.plot(t, y_euler, <span class="str">'o--'</span>, color=<span class="str">'#ff4757'</span>, linewidth=<span class="num">1.5</span>, label=<span class="str">'Euler'</span>)
+plt.plot(t, y_rk2, <span class="str">'s--'</span>, color=<span class="str">'#ffb700'</span>, linewidth=<span class="num">1.5</span>, label=<span class="str">'RK2'</span>)
+plt.plot(t, y_rk4, <span class="str">'^--'</span>, color=<span class="str">'#00d4aa'</span>, linewidth=<span class="num">1.5</span>, label=<span class="str">'RK4'</span>)
+plt.xlabel(<span class="str">'t'</span>); plt.ylabel(<span class="str">'y(t)'</span>)
+plt.legend(); plt.grid(<span class="kw">True</span>, alpha=<span class="num">0.3</span>)
+plt.title(<span class="str">'Comparison of Numerical Methods'</span>)
+plt.savefig(<span class="str">'num_methods.png'</span>, dpi=<span class="num">600</span>, bbox_inches=<span class="str">'tight'</span>)
+plt.show()</pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۲۲ — تمرین‌ها -->
+  <div class="slide" data-slide="22" data-topic="9">
+    <div class="slide-inner">
+      <span class="slide-num">تمرین</span>
+      <h2 class="slide-h1">تمرین‌های جلسه ۱۵</h2>
+
+      <div class="exercise-block ex-yellow">
+        <div class="ex-header"><div class="ex-num">الف</div><div><div class="ex-title">سؤالات مفهومی</div></div></div>
+        <ol class="ex-list">
+          <li>تفاوت بین <b>forward</b>، <b>backward</b> و <b>central difference</b> چیست؟</li>
+          <li>چرا دقت <b>RK4</b> بسیار بالاتر از <b>Euler</b> است؟</li>
+          <li>شرط <b>CFL</b> چیست و چرا مهم است؟</li>
+          <li>چرا برای PDE ها باید از استنسیل <b>central</b> استفاده کرد؟</li>
+        </ol>
+      </div>
+
+      <div class="exercise-block ex-green">
+        <div class="ex-header"><div class="ex-num">ب</div><div><div class="ex-title">تمرین‌های عملی</div></div></div>
+        <ol class="ex-list">
+          <li>معادله $y' = -y + t$ با $y(0)=1$ را با Euler، RK2، RK4 حل کنید و خطاها را مقایسه کنید.</li>
+          <li>معادله گرما را با FD صریح برای $r = 0.4$ و $r = 0.6$ حل کنید. تفاوت را گزارش دهید.</li>
+          <li>معادله موج را با CTCS برای $C = 0.8$، $1.0$، $1.2$ حل کنید. ناپایداری را مشاهده کنید.</li>
+          <li>نانو انبرک را با FD حل کنید و با حل تحلیلی مقایسه کنید.</li>
+        </ol>
+      </div>
+
+      <div class="exercise-block ex-purple">
+        <div class="ex-header"><div class="ex-num">ج</div><div><div class="ex-title">تمرین‌های نوشتاری</div></div></div>
+        <ol class="ex-list">
+          <li>اثبات کنید که دقت <b>central difference</b> مرتبه دوم است.</li>
+          <li>اثبات کنید که دقت <b>RK2</b> مرتبه دوم و <b>RK4</b> مرتبه چهارم است.</li>
+          <li>شرط پایداری CFL برای معادله گرما را از تحلیل فون نویمان استخراج کنید.</li>
+        </ol>
+      </div>
+
+      <div class="exercise-block ex-red">
+        <div class="ex-header"><div class="ex-num">★</div><div><div class="ex-title">چالش خلاقانه</div></div></div>
+        <ol class="ex-list">
+          <li>روش RK4 را برای معادله van der Pol با $\epsilon = 1$ پیاده‌سازی کنید و چرخه حدی را رسم کنید.</li>
+          <li>یک حل‌کننده پیشرفته با گام تطبیقی (adaptive step) برای ODE بنویسید.</li>
+          <li>حل نانو انبرک را با ترکیب FD + Newton-Raphson پیاده‌سازی کنید.</li>
+        </ol>
+      </div>
+
+      <div class="email-banner">
+        <p><i class="fas fa-envelope" style="color: var(--primary);"></i> ارسال تمرین‌ها:</p>
+        <code>m.goharimanesh@gmail.com</code>
+        <p style="margin-top: 8px; font-size: 0.78rem;">Subject الزامی:</p>
+        <code>[Advanced Engineering Mathematics] HW15 - نام و نام خانوادگی - شماره دانشجویی</code>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۲۳ — نقشه راه پژوهش -->
+  <div class="slide" data-slide="23" data-topic="9">
+    <div class="slide-inner">
+      <span class="slide-num">نقشه راه</span>
+      <h2 class="slide-h1">کاربرد روش‌های عددی در پژوهش</h2>
+
+      <div class="grid-2">
+        <div class="card" style="background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3);">
+          <div class="slide-h3" style="color: var(--primary);"><i class="fas fa-atom"></i> کاربرد در NEMS</div>
+          <ul style="list-style: none; padding: 0; font-size: 0.82rem; color: var(--text-dim); line-height: 2;">
+            <li>🔹 حل PDE غیرخطی نانو انبرک</li>
+            <li>🔹 شبیه‌سازی دینامیکی Pull-in</li>
+            <li>🔹 سنسورهای جرمی</li>
+            <li>🔹 آنالیز حرارتی</li>
+          </ul>
+        </div>
+        <div class="card" style="background: rgba(255, 183, 0, 0.06); border-color: rgba(255, 183, 0, 0.3);">
+          <div class="slide-h3" style="color: var(--gold);"><i class="fas fa-robot"></i> کاربرد در رباتیک</div>
+          <ul style="list-style: none; padding: 0; font-size: 0.82rem; color: var(--text-dim); line-height: 2;">
+            <li>🔹 کنترل مسیر ربات</li>
+            <li>🔹 شبیه‌سازی دینامیک</li>
+            <li>🔹 سیستم‌های چندجسمی</li>
+            <li>🔹 رباتیک نرم</li>
+          </ul>
+        </div>
+        <div class="card" style="background: rgba(168, 85, 247, 0.06); border-color: rgba(168, 85, 247, 0.3);">
+          <div class="slide-h3" style="color: var(--tertiary);"><i class="fas fa-brain"></i> ترکیب با یادگیری ماشین</div>
+          <ul style="list-style: none; padding: 0; font-size: 0.82rem; color: var(--text-dim); line-height: 2;">
+            <li>🔹 PINN با داده‌های FD</li>
+            <li>🔹 Neural ODE</li>
+            <li>🔹 حلال‌های یادگیرنده</li>
+            <li>🔹 تسریع شبیه‌سازی</li>
+          </ul>
+        </div>
+        <div class="card" style="background: rgba(236, 72, 153, 0.06); border-color: rgba(236, 72, 153, 0.3);">
+          <div class="slide-h3" style="color: var(--pink);"><i class="fas fa-file-alt"></i> جهت‌های مقاله</div>
+          <ul style="list-style: none; padding: 0; font-size: 0.82rem; color: var(--text-dim); line-height: 2;">
+            <li>🔹 FD + PINN برای نانو انبرک</li>
+            <li>🔹 روش‌های عددی جدید</li>
+            <li>🔹 شبیه‌سازی MEMS</li>
+            <li>🔹 مقایسه FD/FEM/PINN</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="lecture-note" style="margin-top: 14px;">
+        <i class="fas fa-bullseye"></i>
+        <div class="lecture-note-content">
+          <strong>پیشنهاد استاد:</strong> تسلط بر روش‌های عددی + PINN، ترکیب بسیار قدرتمندی برای مقالات Q1 است. با این دو ابزار می‌توانید مسائل پیچیده مهندسی را حل کنید و نتایج را در مجلات معتبر منتشر کنید.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۲۴ — خداحافظی -->
+  <div class="slide" data-slide="24" data-topic="10">
+    <div class="slide-inner title-slide">
+      <div style="font-size: 3.5rem; color: var(--gold); margin-bottom: 18px;">
+        <i class="fas fa-check-circle"></i>
+      </div>
+      <h2 class="slide-h1">جمع‌بندی و تا جلسه بعد</h2>
+      <p class="slide-text" style="font-size: 1rem;">
+        حالا با ابزارهای عددی قدرتمند آشنا شدید! 🌟
+      </p>
+
+      <div class="grid-3" style="margin-top: 20px; max-width: 900px; margin-left: auto; margin-right: auto;">
+        <div class="card" style="text-align: center; padding: 14px;">
+          <i class="fas fa-th" style="font-size: 1.5rem; color: var(--primary); display: block; margin-bottom: 8px;"></i>
+          <div style="font-size: 0.85rem; font-weight: 700; color: var(--primary);">FD</div>
+          <div style="font-size: 0.75rem; color: var(--text-dim);">تفاضل محدود برای PDE</div>
+        </div>
+        <div class="card" style="text-align: center; padding: 14px;">
+          <i class="fas fa-bolt" style="font-size: 1.5rem; color: var(--gold); display: block; margin-bottom: 8px;"></i>
+          <div style="font-size: 0.85rem; font-weight: 700; color: var(--gold);">RK4</div>
+          <div style="font-size: 0.75rem; color: var(--text-dim);">روش استاندارد ODE</div>
+        </div>
+        <div class="card" style="text-align: center; padding: 14px;">
+          <i class="fas fa-balance-scale" style="font-size: 1.5rem; color: var(--tertiary); display: block; margin-bottom: 8px;"></i>
+          <div style="font-size: 0.85rem; font-weight: 700; color: var(--tertiary);">CFL</div>
+          <div style="font-size: 0.75rem; color: var(--text-dim);">شرط پایداری</div>
+        </div>
+      </div>
+
+      <div class="math-box gold-math" style="margin-top: 22px; background: rgba(255, 183, 0, 0.08); padding: 22px; max-width: 700px; margin-left: auto; margin-right: auto;">
+        <div style="font-size: 1.05rem;">
+          $$y_{n+1} = y_n + \frac{h}{6}(k_1 + 2k_2 + 2k_3 + k_4)$$
+        </div>
+        <p class="math-note">استاندارد طلایی RK4</p>
+      </div>
+
+      <div class="card" style="margin-top: 20px; max-width: 700px; margin-left: auto; margin-right: auto; background: rgba(168, 85, 247, 0.06); border-color: rgba(168, 85, 247, 0.3);">
+        <div class="slide-h3" style="justify-content: center; color: var(--tertiary);"><i class="fas fa-arrow-left"></i> جلسه ۱۶</div>
+        <p class="slide-text" style="font-size: 0.88rem;">
+          <strong style="color: var(--primary);">روش‌های طیفی و FEM مقدماتی</strong>
+        </p>
+        <ul style="list-style: none; padding: 0; font-size: 0.82rem; color: var(--text-dim); line-height: 2; margin-top: 8px;">
+          <li>🔹 مقدمه روش‌های طیفی</li>
+          <li>🔹 گسسته‌سازی طیفی</li>
+          <li>🔹 اجزای محدود (FEM) مقدماتی</li>
+          <li>🔹 پایان فاز ۴</li>
+        </ul>
+      </div>
+
+      <p class="instructor-line" style="margin-top: 22px;">دکتر مسعود گوهری منش</p>
+      <p class="instructor-title-line">دانشیار گروه مهندسی مکانیک — دانشگاه تربت حیدریه</p>
+
+      <p style="font-size: 0.95rem; color: var(--gold); margin-top: 24px; font-weight: 800;">
+        🇮🇷 با افتخار برای دانشجویان مکاترونیک 🇮🇷
+      </p>
+    </div>
+  </div>
+
+</div>
+
+<div class="bottom-nav">
+  <button class="nav-btn" id="prevBtn" disabled><i class="fas fa-arrow-right"></i><span>قبلی</span></button>
+  <div class="dots-nav" id="dotsNav"></div>
+  <div class="slide-counter"><span id="currentSlide">۱</span> / ۲۴</div>
+  <button class="nav-btn" id="nextBtn"><span>بعدی</span><i class="fas fa-arrow-left"></i></button>
+</div>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- ═══ Lightbox ═══ -->
+<div class="lightbox" id="lightbox">
+  <button class="lightbox-close" id="lightboxClose"><i class="fas fa-times"></i></button>
+  <img src="" alt="" class="lightbox-img" id="lightboxImg">
+  <div class="lightbox-caption" id="lightboxCaption"></div>
+</div>
+
+<!-- ═══ Modal (روش‌های عددی) ═══ -->
+<div class="modal-overlay" id="conceptModal">
+  <div class="modal-box">
+    <button class="modal-close" id="conceptClose"><i class="fas fa-times"></i></button>
+    <h2 class="modal-title"><i class="fas fa-book-open"></i> تحلیل فون نویمان و پایداری</h2>
+
+    <div class="modal-section">
+      <div class="modal-section-title"><i class="fas fa-wave-square"></i> تحلیل von Neumann</div>
+      <p>
+        <b>تحلیل فون نویمان (von Neumann analysis)</b> یک روش ریاضی برای بررسی <strong>پایداری</strong> روش‌های عددی است. در این روش، جواب را به‌صورت موج فوریه می‌نویسیم:
+      </p>
+      <div class="math-box gold-math" style="padding: 12px; margin: 10px 0;">
+        $$u_i^n = G^n e^{i k x_i}$$
+      </div>
+      <p>
+        که $G$ <b>ضریب تقویت</b> است. شرط پایداری: $|G| \leq 1$.
+      </p>
+    </div>
+
+    <div class="modal-section">
+      <div class="modal-section-title"><i class="fas fa-calculator"></i> شرط CFL</div>
+      <p>
+        <b>CFL</b> (Courant-Friedrichs-Lewy) نام دانشمندانی است که این شرط را در ۱۹۲۸ معرفی کردند:
+      </p>
+      <ul>
+        <li><strong>برای معادله گرما:</strong> $r = \alpha \Delta t / \Delta x^2 \leq 1/2$</li>
+        <li><strong>برای معادله موج:</strong> $C = c \Delta t / \Delta x \leq 1$</li>
+        <li><strong>معنای فیزیکی:</strong> موج نباید در یک گام، بیش از یک سلول شبکه جابجا شود</li>
+      </ul>
+    </div>
+
+    <div class="modal-section">
+      <div class="modal-section-title"><i class="fas fa-history"></i> تقارب معنایی علم و اجتماع</div>
+      <p>
+        مفهوم <b>پایداری</b> در ریاضیات عددی، مشابه مفهوم <b>پایداری</b> در جامعه‌شناسی و اقتصاد است:
+      </p>
+      <ul>
+        <li>در ریاضیات: سیستم به حالت تعادل بازمی‌گردد</li>
+        <li>در جامعه: نهادها در برابر تغییرات مقاومت می‌کنند</li>
+        <li>در اقتصاد: بازار به تعادل تمایل دارد</li>
+      </ul>
+      <p>
+        همان‌گونه که در حل عددی باید گام زمانی مناسب انتخاب کنیم، در مدیریت اجتماعی نیز باید <strong>سرعت تغییرات</strong> را متناسب با ظرفیت سیستم تنظیم کنیم.
+      </p>
+    </div>
+
+    <div class="lecture-note" style="margin-top: 16px;">
+      <i class="fas fa-star"></i>
+      <div class="lecture-note-content">
+        <strong>درس امروز:</strong> ریاضیات عددی فقط حل معادلات نیست — تفکر سیستمی و انتخاب گام مناسب، در همه جنبه‌های زندگی کاربرد دارد.
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ═══ ناوبری ═══ */
+const slides = document.querySelectorAll('.slide');
+const totalSlides = slides.length;
+let currentSlide = 0;
+const topicPills = document.querySelectorAll('.topic-pill');
+
+const dotsNav = document.getElementById('dotsNav');
+for (let i = 0; i < totalSlides; i++) {
+  const dot = document.createElement('button');
+  dot.className = 'dot-nav' + (i === 0 ? ' active' : '');
+  dot.addEventListener('click', () => goToSlide(i));
+  dotsNav.appendChild(dot);
+}
+
+function goToSlide(n) {
+  if (n < 0 || n >= totalSlides) return;
+  slides.forEach((s, i) => {
+    s.classList.remove('active', 'prev');
+    if (i < n) s.classList.add('prev');
+    if (i === n) s.classList.add('active');
+  });
+  currentSlide = n;
+  updateNav();
+  playTransition();
+  setTimeout(() => {
+    initVisibleCharts();
+    if (window.MathJax && window.MathJax.typesetPromise) window.MathJax.typesetPromise();
+  }, 100);
+}
+
+function updateNav() {
+  document.querySelectorAll('.dot-nav').forEach((d, i) => d.classList.toggle('active', i === currentSlide));
+  document.getElementById('currentSlide').textContent = toFa(currentSlide + 1);
+  document.getElementById('prevBtn').disabled = currentSlide === 0;
+  document.getElementById('nextBtn').disabled = currentSlide === totalSlides - 1;
+  document.getElementById('progressFill').style.width = ((currentSlide + 1) / totalSlides * 100) + '%';
+  const currentTopic = slides[currentSlide].dataset.topic;
+  topicPills.forEach(pill => {
+    const t = parseInt(pill.dataset.topic);
+    const ct = parseInt(currentTopic);
+    pill.classList.toggle('active', t === ct);
+    pill.classList.toggle('done', t < ct);
+    if (t === ct) pill.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+  });
+}
+
+document.getElementById('prevBtn').addEventListener('click', () => goToSlide(currentSlide - 1));
+document.getElementById('nextBtn').addEventListener('click', () => goToSlide(currentSlide + 1));
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowLeft') { e.preventDefault(); goToSlide(currentSlide + 1); }
+  else if (e.key === 'ArrowRight') { e.preventDefault(); goToSlide(currentSlide - 1); }
+  else if (e.key === ' ') { e.preventDefault(); goToSlide(currentSlide + 1); }
+  else if (e.key === 'Home') { e.preventDefault(); goToSlide(0); }
+  else if (e.key === 'End') { e.preventDefault(); goToSlide(totalSlides - 1); }
+  else if (e.key === 'Escape') {
+    if (document.fullscreenElement) document.exitFullscreen();
+    closeLightbox();
+    closeConceptModal();
+    printMenu.classList.remove('show');
+  }
+});
+
+let touchStartX = 0, touchStartY = 0;
+document.addEventListener('touchstart', e => {
+  touchStartX = e.changedTouches[0].screenX;
+  touchStartY = e.changedTouches[0].screenY;
+}, { passive: true });
+document.addEventListener('touchend', e => {
+  const dx = e.changedTouches[0].screenX - touchStartX;
+  const dy = e.changedTouches[0].screenY - touchStartY;
+  if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy)) {
+    if (dx < 0) goToSlide(currentSlide + 1);
+    else goToSlide(currentSlide - 1);
+  }
+}, { passive: true });
+
+/* ═══ Lightbox ═══ */
+const lightbox = document.getElementById('lightbox');
+const lightboxImg = document.getElementById('lightboxImg');
+const lightboxCaption = document.getElementById('lightboxCaption');
+
+document.querySelectorAll('.img-clickable').forEach(img => {
+  img.addEventListener('click', e => {
+    e.stopPropagation();
+    const src = img.getAttribute('src');
+    const caption = img.getAttribute('data-caption') || img.getAttribute('alt') || '';
+    if (src) {
+      lightboxImg.src = src;
+      lightboxCaption.textContent = caption;
+      lightbox.classList.add('active');
+    }
+  });
+});
+
+document.getElementById('lightboxClose').addEventListener('click', closeLightbox);
+lightbox.addEventListener('click', e => {
+  if (e.target === lightbox) closeLightbox();
+});
+
+function closeLightbox() { lightbox.classList.remove('active'); }
+
+/* ═══ Modal ═══ */
+const conceptModal = document.getElementById('conceptModal');
+document.querySelectorAll('[data-concept]').forEach(el => {
+  el.addEventListener('click', e => {
+    e.stopPropagation();
+    conceptModal.classList.add('active');
+  });
+});
+document.getElementById('conceptClose').addEventListener('click', closeConceptModal);
+conceptModal.addEventListener('click', e => {
+  if (e.target === conceptModal) closeConceptModal();
+});
+function closeConceptModal() { conceptModal.classList.remove('active'); }
+
+/* ═══ منوی چاپ ═══ */
+const printToggle = document.getElementById('printToggle');
+const printMenu = document.getElementById('printMenu');
+
+printToggle.addEventListener('click', e => {
+  e.stopPropagation();
+  printMenu.classList.toggle('show');
+});
+
+document.addEventListener('click', e => {
+  if (!printMenu.contains(e.target) && e.target !== printToggle) {
+    printMenu.classList.remove('show');
+  }
+});
+
+document.getElementById('printCurrentBtn').addEventListener('click', () => {
+  printMenu.classList.remove('show');
+  slides.forEach(s => s.classList.remove('print-visible'));
+  slides[currentSlide].classList.add('print-visible');
+  showToast('آماده‌سازی چاپ این صفحه...');
+  setTimeout(() => {
+    window.print();
+    setTimeout(() => slides.forEach(s => s.classList.remove('print-visible')), 500);
+  }, 300);
+});
+
+document.getElementById('printAllBtn').addEventListener('click', () => {
+  printMenu.classList.remove('show');
+  slides.forEach(s => s.classList.add('print-visible'));
+  showToast('آماده‌سازی چاپ همه صفحات...');
+  setTimeout(() => {
+    window.print();
+    setTimeout(() => slides.forEach(s => s.classList.remove('print-visible')), 500);
+  }, 300);
+});
+
+/* ═══ صدا ═══ */
+let audioCtx = null, soundEnabled = true;
+function initAudio() { if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
+function playTransition() {
+  if (!soundEnabled) return;
+  initAudio();
+  [440, 554.37].forEach((freq, i) => {
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.connect(gain); gain.connect(audioCtx.destination);
+    osc.frequency.value = freq; osc.type = 'sine';
+    const t = audioCtx.currentTime + i * 0.06;
+    gain.gain.setValueAtTime(0.04, t);
+    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.18);
+    osc.start(t); osc.stop(t + 0.22);
+  });
+}
+document.getElementById('soundToggle').addEventListener('click', function() {
+  soundEnabled = !soundEnabled;
+  this.classList.toggle('active', soundEnabled);
+  this.innerHTML = soundEnabled ? '<i class="fas fa-volume-up"></i>' : '<i class="fas fa-volume-mute"></i>';
+  showToast(soundEnabled ? 'صدا فعال' : 'صدا غیرفعال');
+});
+document.getElementById('fullscreenToggle').addEventListener('click', function() {
+  if (!document.fullscreenElement) { document.documentElement.requestFullscreen(); this.innerHTML = '<i class="fas fa-compress"></i>'; }
+  else { document.exitFullscreen(); this.innerHTML = '<i class="fas fa-expand"></i>'; }
+});
+function showToast(msg) {
+  const container = document.getElementById('toastContainer');
+  const toast = document.createElement('div');
+  toast.className = 'toast';
+  toast.innerHTML = `<i class="fas fa-info-circle"></i> ${msg}`;
+  container.appendChild(toast);
+  setTimeout(() => { toast.style.opacity = '0'; toast.style.transform = 'translateX(-60px)'; setTimeout(() => toast.remove(), 300); }, 2400);
+}
+function toFa(n) { const fa = ['۰','۱','۲','۳','۴','۵','۶','۷','۸','۹']; return String(n).replace(/\d/g, d => fa[d]); }
+
+/* ═══ پس‌زمینه ═══ */
+const bgCanvas = document.getElementById('bgCanvas');
+const bgCtx = bgCanvas.getContext('2d');
+let particles = [];
+function resizeBg() { bgCanvas.width = window.innerWidth; bgCanvas.height = window.innerHeight; }
+resizeBg();
+window.addEventListener('resize', resizeBg);
+class Particle {
+  constructor() { this.reset(); }
+  reset() {
+    this.x = Math.random() * bgCanvas.width;
+    this.y = Math.random() * bgCanvas.height;
+    this.size = Math.random() * 1.6 + 0.4;
+    this.speedX = (Math.random() - 0.5) * 0.3;
+    this.speedY = (Math.random() - 0.5) * 0.3;
+    this.opacity = Math.random() * 0.5 + 0.15;
+    const colors = ['#00d4aa', '#06b6d4', '#a855f7', '#ffb700'];
+    this.color = colors[Math.floor(Math.random() * colors.length)];
+  }
+  update() { this.x += this.speedX; this.y += this.speedY; if (this.x < 0 || this.x > bgCanvas.width || this.y < 0 || this.y > bgCanvas.height) this.reset(); }
+  draw() { bgCtx.beginPath(); bgCtx.arc(this.x, this.y, this.size, 0, Math.PI*2); bgCtx.fillStyle = this.color; bgCtx.globalAlpha = this.opacity; bgCtx.fill(); bgCtx.globalAlpha = 1; }
+}
+for (let i = 0; i < 50; i++) particles.push(new Particle());
+function animateBg() { bgCtx.clearRect(0, 0, bgCanvas.width, bgCanvas.height); particles.forEach(p => { p.update(); p.draw(); }); requestAnimationFrame(animateBg); }
+animateBg();
+
+/* ═══ ابزار ═══ */
+function setupCanvas(canvasId) {
+  const canvas = document.getElementById(canvasId);
+  if (!canvas) return null;
+  const dpr = window.devicePixelRatio || 1;
+  const rect = canvas.getBoundingClientRect();
+  canvas.width = rect.width * dpr; canvas.height = rect.height * dpr;
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+  return { ctx, w: rect.width, h: rect.height };
+}
+
+/* ═══ شبیه‌ساز دقت تفاضل ═══ */
+function drawFD() {
+  const s = setupCanvas('fdCanvas');
+  if (!s) return;
+  const { ctx, w, h } = s;
+  ctx.clearRect(0, 0, w, h);
+
+  const h_step = parseFloat(document.getElementById('fdH').value);
+  const order = parseInt(document.getElementById('fdOrder').value);
+
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+  ctx.fillRect(0, 0, w, h);
+
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
+  for (let i = 0; i <= 10; i++) {
+    ctx.beginPath(); ctx.moveTo((w / 10) * i, 0); ctx.lineTo((w / 10) * i, h); ctx.stroke();
+  }
+  for (let i = 0; i <= 6; i++) {
+    ctx.beginPath(); ctx.moveTo(0, (h / 6) * i); ctx.lineTo(w, (h / 6) * i); ctx.stroke();
+  }
+
+  const padX = 50, padY_top = 30, padY_bot = 50;
+  const plotW = w - 2 * padX;
+  const plotH = h - padY_top - padY_bot;
+
+  // تابع f(x) = sin(x)
+  const f = (x) => Math.sin(x);
+  const fPrime = (x) => Math.cos(x);
+  const fDoublePrime = (x) => -Math.sin(x);
+
+  const xMin = 0, xMax = 2 * Math.PI;
+  const xToPx = (x) => padX + ((x - xMin) / (xMax - xMin)) * plotW;
+  const yToPy = (y) => padY_top + plotH / 2 - y * (plotH / 2 - 20);
+
+  // محورها
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.moveTo(padX, padY_top + plotH / 2);
+  ctx.lineTo(padX + plotW, padY_top + plotH / 2);
+  ctx.stroke();
+
+  // مشتق دقیق
+  ctx.beginPath();
+  ctx.strokeStyle = '#00d4aa';
+  ctx.lineWidth = 2.5;
+  ctx.shadowColor = '#00d4aa';
+  ctx.shadowBlur = 6;
+  for (let i = 0; i <= 200; i++) {
+    const x = xMin + (i / 200) * (xMax - xMin);
+    const y = order === 1 ? fPrime(x) : fDoublePrime(x);
+    const px = xToPx(x);
+    const py = yToPy(y);
+    if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+  }
+  ctx.stroke();
+  ctx.shadowBlur = 0;
+
+  // مقایسه سه روش
+  const methods = [
+    { color: '#ff4757', type: 'forward', dash: [4, 3] },
+    { color: '#ffb700', type: 'central', dash: [6, 4] },
+    { color: '#a855f7', type: 'backward', dash: [10, 4] }
+  ];
+
+  methods.forEach(m => {
+    ctx.beginPath();
+    ctx.strokeStyle = m.color;
+    ctx.lineWidth = 1.8;
+    ctx.setLineDash(m.dash);
+    for (let i = 0; i <= 200; i++) {
+      const x = xMin + (i / 200) * (xMax - xMin) + 0.1;
+      let val;
+      if (order === 1) {
+        if (m.type === 'forward') val = (f(x + h_step) - f(x)) / h_step;
+        else if (m.type === 'backward') val = (f(x) - f(x - h_step)) / h_step;
+        else val = (f(x + h_step) - f(x - h_step)) / (2 * h_step);
+      } else {
+        if (m.type === 'forward') val = (f(x + 2*h_step) - 2*f(x + h_step) + f(x)) / (h_step * h_step);
+        else if (m.type === 'backward') val = (f(x) - 2*f(x - h_step) + f(x - 2*h_step)) / (h_step * h_step);
+        else val = (f(x + h_step) - 2*f(x) + f(x - h_step)) / (h_step * h_step);
+      }
+      const px = xToPx(x);
+      const py = yToPy(val);
+      if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+    }
+    ctx.stroke();
+  });
+  ctx.setLineDash([]);
+
+  // برچسب‌ها
+  ctx.fillStyle = '#9aa7bd';
+  ctx.font = '11px Vazirmatn';
+  ctx.textAlign = 'right';
+  ctx.fillText(order === 1 ? "f'(x)" : "f''(x)", padX - 8, padY_top + 15);
+  ctx.textAlign = 'center';
+  ctx.fillText('x', padX + plotW / 2, padY_top + plotH + 25);
+
+  // خطای عددی (نسبت خطا به مشتق دقیق در وسط بازه)
+  const x0 = Math.PI;
+  const trueVal = order === 1 ? fPrime(x0) : fDoublePrime(x0);
+  const errF = order === 1 
+    ? Math.abs((f(x0 + h_step) - f(x0)) / h_step - trueVal) 
+    : Math.abs((f(x0 + 2*h_step) - 2*f(x0 + h_step) + f(x0)) / (h_step*h_step) - trueVal);
+  const errC = order === 1
+    ? Math.abs((f(x0 + h_step) - f(x0 - h_step)) / (2*h_step) - trueVal)
+    : Math.abs((f(x0 + h_step) - 2*f(x0) + f(x0 - h_step)) / (h_step*h_step) - trueVal);
+  const errB = order === 1
+    ? Math.abs((f(x0) - f(x0 - h_step)) / h_step - trueVal)
+    : Math.abs((f(x0) - 2*f(x0 - h_step) + f(x0 - 2*h_step)) / (h_step*h_step) - trueVal);
+
+  document.getElementById('fdHValue').textContent = toFa(h_step.toFixed(2));
+  document.getElementById('errForward').textContent = toFa(errF.toFixed(5));
+  document.getElementById('errCentral').textContent = toFa(errC.toFixed(5));
+  document.getElementById('errBackward').textContent = toFa(errB.toFixed(5));
+}
+
+/* ═══ شبیه‌ساز RK ═══ */
+function drawRK() {
+  const s = setupCanvas('rkCanvas');
+  if (!s) return;
+  const { ctx, w, h } = s;
+  ctx.clearRect(0, 0, w, h);
+
+  const h_step = parseFloat(document.getElementById('rkH').value);
+
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+  ctx.fillRect(0, 0, w, h);
+
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
+  for (let i = 0; i <= 10; i++) {
+    ctx.beginPath(); ctx.moveTo((w / 10) * i, 0); ctx.lineTo((w / 10) * i, h); ctx.stroke();
+  }
+  for (let i = 0; i <= 6; i++) {
+    ctx.beginPath(); ctx.moveTo(0, (h / 6) * i); ctx.lineTo(w, (h / 6) * i); ctx.stroke();
+  }
+
+  const padX = 50, padY_top = 30, padY_bot = 50;
+  const plotW = w - 2 * padX;
+  const plotH = h - padY_top - padY_bot;
+
+  // ODE: y' = -2y + sin(t)
+  const f = (t, y) => -2 * y + Math.sin(t);
+  const yExact = (t) => 0.4 * Math.sin(t) - 0.2 * Math.cos(t) + 1.2 * Math.exp(-2 * t);
+
+  const tMax = 5;
+  const tToPx = (t) => padX + (t / tMax) * plotW;
+  const yToPy = (y) => padY_top + plotH / 2 - y * (plotH / 2 - 20);
+
+  // محور
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.moveTo(padX, padY_top + plotH / 2);
+  ctx.lineTo(padX + plotW, padY_top + plotH / 2);
+  ctx.stroke();
+
+  // حل دقیق
+  ctx.beginPath();
+  ctx.strokeStyle = '#00d4aa';
+  ctx.lineWidth = 2.5;
+  ctx.shadowColor = '#00d4aa';
+  ctx.shadowBlur = 6;
+  for (let i = 0; i <= 200; i++) {
+    const t = (i / 200) * tMax;
+    const y = yExact(t);
+    const px = tToPx(t);
+    const py = yToPy(y);
+    if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+  }
+  ctx.stroke();
+  ctx.shadowBlur = 0;
+
+  // سه روش
+  const methods = [
+    { color: '#ff4757', type: 'euler' },
+    { color: '#ffb700', type: 'rk2' },
+    { color: '#a855f7', type: 'rk4' }
+  ];
+
+  const finalErrors = {};
+
+  methods.forEach(m => {
+    const N = Math.ceil(tMax / h_step);
+    let t = 0, y = 1;
+    const pts = [[t, y]];
+    for (let i = 0; i < N; i++) {
+      let yNext;
+      if (m.type === 'euler') {
+        yNext = y + h_step * f(t, y);
+      } else if (m.type === 'rk2') {
+        const k1 = f(t, y);
+        const k2 = f(t + h_step, y + h_step * k1);
+        yNext = y + (h_step / 2) * (k1 + k2);
+      } else {
+        const k1 = f(t, y);
+        const k2 = f(t + h_step/2, y + h_step*k1/2);
+        const k3 = f(t + h_step/2, y + h_step*k2/2);
+        const k4 = f(t + h_step, y + h_step*k3);
+        yNext = y + (h_step / 6) * (k1 + 2*k2 + 2*k3 + k4);
+      }
+      t += h_step;
+      y = yNext;
+      pts.push([t, y]);
+    }
+    finalErrors[m.type] = Math.abs(y - yExact(tMax));
+
+    ctx.beginPath();
+    ctx.strokeStyle = m.color;
+    ctx.lineWidth = 1.8;
+    ctx.setLineDash(m.type === 'rk4' ? [] : [6, 4]);
+    pts.forEach((p, i) => {
+      const px = tToPx(p[0]);
+      const py = yToPy(p[1]);
+      if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+    });
+    ctx.stroke();
+    ctx.setLineDash([]);
+  });
+
+  // برچسب
+  ctx.fillStyle = '#9aa7bd';
+  ctx.font = '11px Vazirmatn';
+  ctx.textAlign = 'center';
+  ctx.fillText('زمان t', padX + plotW / 2, padY_top + plotH + 25);
+
+  // راهنما
+  ctx.font = 'bold 11px Vazirmatn';
+  ctx.textAlign = 'right';
+  ctx.fillStyle = '#ff4757';
+  ctx.fillText('Euler', w - 20, 22);
+  ctx.fillStyle = '#ffb700';
+  ctx.fillText('RK2', w - 90, 22);
+  ctx.fillStyle = '#a855f7';
+  ctx.fillText('RK4', w - 160, 22);
+
+  document.getElementById('rkHValue').textContent = toFa(h_step.toFixed(2));
+  document.getElementById('errEuler').textContent = toFa(finalErrors.euler.toFixed(5));
+  document.getElementById('errRK2').textContent = toFa(finalErrors.rk2.toFixed(5));
+  document.getElementById('errRK4').textContent = toFa(finalErrors.rk4.toFixed(5));
+}
+
+/* ═══ شبیه‌ساز پایداری ═══ */
+function drawStability() {
+  const s = setupCanvas('stabCanvas');
+  if (!s) return;
+  const { ctx, w, h } = s;
+  ctx.clearRect(0, 0, w, h);
+
+  const h_step = parseFloat(document.getElementById('stabH').value);
+  const lambda = -5; // eigenvalue
+  const stable = Math.abs(1 + h_step * lambda) < 1;
+
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+  ctx.fillRect(0, 0, w, h);
+
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
+  for (let i = 0; i <= 10; i++) {
+    ctx.beginPath(); ctx.moveTo((w / 10) * i, 0); ctx.lineTo((w / 10) * i, h); ctx.stroke();
+  }
+  for (let i = 0; i <= 6; i++) {
+    ctx.beginPath(); ctx.moveTo(0, (h / 6) * i); ctx.lineTo(w, (h / 6) * i); ctx.stroke();
+  }
+
+  const padX = 50, padY_top = 30, padY_bot = 50;
+  const plotW = w - 2 * padX;
+  const plotH = h - padY_top - padY_bot;
+
+  // ODE: y' = -5y, y(0)=1
+  const f = (y) => -5 * y;
+  const tMax = 2;
+  const tToPx = (t) => padX + (t / tMax) * plotW;
+  const yToPy = (y) => padY_top + plotH / 2 - y * (plotH / 2 - 20) * 0.5;
+
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.moveTo(padX, padY_top + plotH / 2);
+  ctx.lineTo(padX + plotW, padY_top + plotH / 2);
+  ctx.stroke();
+
+  // حل دقیق
+  ctx.beginPath();
+  ctx.strokeStyle = '#00d4aa';
+  ctx.lineWidth = 2.5;
+  ctx.shadowColor = '#00d4aa';
+  ctx.shadowBlur = 6;
+  for (let i = 0; i <= 200; i++) {
+    const t = (i / 200) * tMax;
+    const y = Math.exp(-5 * t);
+    const px = tToPx(t);
+    const py = yToPy(y);
+    if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+  }
+  ctx.stroke();
+  ctx.shadowBlur = 0;
+
+  // حل عددی Euler
+  ctx.beginPath();
+  ctx.strokeStyle = stable ? '#ffb700' : '#ff4757';
+  ctx.lineWidth = 1.8;
+  const N = Math.ceil(tMax / h_step);
+  let t = 0, y = 1;
+  for (let i = 0; i <= N; i++) {
+    const px = tToPx(t);
+    const py = yToPy(y);
+    if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+    if (Math.abs(y) > 10) {
+      y = y > 0 ? 10 : -10;
+    }
+    y = y + h_step * f(y);
+    t += h_step;
+  }
+  ctx.stroke();
+
+  ctx.fillStyle = '#9aa7bd';
+  ctx.font = '11px Vazirmatn';
+  ctx.textAlign = 'center';
+  ctx.fillText('زمان t', padX + plotW / 2, padY_top + plotH + 25);
+
+  document.getElementById('stabHValue').textContent = toFa(h_step.toFixed(2));
+  const limit = 2 / Math.abs(lambda);
+  document.getElementById('stabLimit').textContent = 'h < ' + toFa(limit.toFixed(2));
+  const statusEl = document.getElementById('stabStatus');
+  if (stable) {
+    statusEl.textContent = 'پایدار ✓';
+    statusEl.style.color = 'var(--success)';
+  } else {
+    statusEl.textContent = '⚠ ناپایدار!';
+    statusEl.style.color = 'var(--danger)';
+  }
+}
+
+/* ═══ شبیه‌ساز نانو انبرک ═══ */
+function drawNanoFD() {
+  const s = setupCanvas('nanoFDCanvas');
+  if (!s) return;
+  const { ctx, w, h } = s;
+  ctx.clearRect(0, 0, w, h);
+
+  const V = parseFloat(document.getElementById('nanoFDV').value);
+  const N = parseInt(document.getElementById('nanoFDN').value);
+
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+  ctx.fillRect(0, 0, w, h);
+
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
+  for (let i = 0; i <= 10; i++) {
+    ctx.beginPath(); ctx.moveTo((w / 10) * i, 0); ctx.lineTo((w / 10) * i, h); ctx.stroke();
+  }
+  for (let i = 0; i <= 6; i++) {
+    ctx.beginPath(); ctx.moveTo(0, (h / 6) * i); ctx.lineTo(w, (h / 6) * i); ctx.stroke();
+  }
+
+  const padX = 60, padY_top = 60, padY_bot = 60;
+  const beamW = w - 2 * padX;
+  const substrateY = h - padY_bot;
+  const beamY0 = padY_top + 30;
+  const displayGap = substrateY - beamY0;
+
+  // فیزیک
+  const g = 200e-9;
+  const L = 50e-6;
+  const b = 5e-6;
+  const hh = 0.5e-6;
+  const E = 150e9;
+  const eps0 = 8.854e-12;
+  const I = b * Math.pow(hh, 3) / 12;
+  const k_eq = 8 * E * I / Math.pow(L, 4);
+  const V_pullin = Math.sqrt(8 * k_eq * Math.pow(g, 3) / (27 * eps0 * b * L));
+  const q_es = eps0 * b * V * V / (2 * Math.pow(g, 2));
+  let w_max = q_es * Math.pow(L, 4) / (8 * E * I);
+  w_max = Math.min(w_max, g * 0.95);
+  const ratio = w_max / g;
+
+  // بستر
+  ctx.fillStyle = 'rgba(168, 85, 247, 0.3)';
+  ctx.fillRect(padX, substrateY, beamW, 25);
+  ctx.strokeStyle = 'rgba(168, 85, 247, 0.7)';
+  ctx.lineWidth = 2;
+  ctx.strokeRect(padX, substrateY, beamW, 25);
+
+  // حل تحلیلی
+  ctx.beginPath();
+  ctx.strokeStyle = '#a855f7';
+  ctx.lineWidth = 3;
+  ctx.setLineDash([8, 4]);
+  for (let i = 0; i <= 100; i++) {
+    const xi = i / 100;
+    const defl = ratio * Math.pow(xi, 2) * (6 - 4 * xi + xi * xi) / 3;
+    const x = padX + xi * beamW;
+    const y = beamY0 + defl * displayGap * 0.85;
+    if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+  }
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  // حل عددی با نقاط
+  ctx.beginPath();
+  ctx.fillStyle = '#00d4aa';
+  ctx.strokeStyle = '#00d4aa';
+  ctx.lineWidth = 1.5;
+  for (let i = 0; i <= N; i++) {
+    const xi = i / N;
+    const defl = ratio * Math.pow(xi, 2) * (6 - 4 * xi + xi * xi) / 3;
+    const x = padX + xi * beamW;
+    const y = beamY0 + defl * displayGap * 0.85;
+    if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    ctx.fillRect(x - 3, y - 3, 6, 6);
+  }
+  ctx.stroke();
+
+  // سر گیردار
+  ctx.fillStyle = '#ffb700';
+  ctx.fillRect(padX - 14, beamY0 - 25, 14, 50);
+
+  // برچسب‌ها
+  ctx.fillStyle = '#00d4aa';
+  ctx.font = 'bold 12px Vazirmatn';
+  ctx.textAlign = 'right';
+  ctx.fillText(`V = ${toFa(V.toFixed(1))} V`, w - 15, 22);
+  ctx.textAlign = 'left';
+  ctx.fillStyle = '#ff4757';
+  ctx.fillText(`V_pull-in = ${toFa(V_pullin.toFixed(2))} V`, 15, 22);
+  ctx.textAlign = 'center';
+  ctx.fillStyle = '#ffb700';
+  ctx.fillText(`N = ${toFa(N)}`, w / 2, 22);
+
+  document.getElementById('nanoFDVValue').textContent = toFa(V.toFixed(1));
+  document.getElementById('nanoFDNValue').textContent = toFa(N);
+  document.getElementById('nanoFDDeflection').textContent = toFa((w_max * 1e9).toFixed(2)) + ' nm';
+  const error = Math.abs(1 / N) * 100;
+  document.getElementById('nanoFDError').textContent = toFa(error.toFixed(2)) + '%';
+}
+
+/* ═══ رویدادها ═══ */
+document.getElementById('fdH').addEventListener('input', drawFD);
+document.getElementById('fdOrder').addEventListener('change', drawFD);
+document.getElementById('rkH').addEventListener('input', drawRK);
+document.getElementById('stabH').addEventListener('input', drawStability);
+document.getElementById('nanoFDV').addEventListener('input', drawNanoFD);
+document.getElementById('nanoFDN').addEventListener('input', drawNanoFD);
+
+/* ═══ تب‌های کد ═══ */
+document.querySelectorAll('.code-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    const parent = tab.parentElement;
+    parent.querySelectorAll('.code-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    const contentId = 'code-' + tab.dataset.code;
+    const content = document.getElementById(contentId);
+    if (content) {
+      const allContents = parent.parentElement.querySelectorAll('.code-content');
+      allContents.forEach(c => c.classList.remove('active'));
+      content.classList.add('active');
+    }
+  });
+});
+
+/* ═══ رندر ═══ */
+function initVisibleCharts() {
+  const activeSlide = document.querySelector('.slide.active');
+  if (!activeSlide) return;
+  const num = activeSlide.dataset.slide;
+  if (num === '9') drawFD();
+  else if (num === '13') drawRK();
+  else if (num === '15') drawStability();
+  else if (num === '19') drawNanoFD();
+}
+
+/* ═══ راه‌اندازی ═══ */
+updateNav();
+setTimeout(() => {
+  initVisibleCharts();
+  if (window.MathJax && window.MathJax.typesetPromise) window.MathJax.typesetPromise();
+}, 400);
+setTimeout(() => showToast('به جلسه ۱۵ خوش آمدید — تفاضل محدود و RK 🌟'), 1000);
+
+window.addEventListener('resize', () => setTimeout(() => {
+  initVisibleCharts();
+  if (window.MathJax && window.MathJax.typesetPromise) window.MathJax.typesetPromise();
+}, 200));
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1826 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>جلسه ۴ — مقدار ویژه، SVD و شبه‌معکوس | دکتر مسعود گوهری منش</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+<script>
+window.MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']],
+    displayMath: [['$$', '$$'], ['\\[', '\\]']],
+    processEscapes: true
+  },
+  options: { skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'] },
+  svg: { fontCache: 'global' }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" async></script>
+
+<style>
+:root {
+  --primary: #00d4aa;
+  --secondary: #06b6d4;
+  --tertiary: #a855f7;
+  --gold: #ffb700;
+  --success: #22c55e;
+  --danger: #ff4757;
+  --pink: #ec4899;
+  --dark: #050818;
+  --darker: #020410;
+  --card-bg: rgba(255, 255, 255, 0.05);
+  --card-border: rgba(255, 255, 255, 0.1);
+  --text: #e8eef7;
+  --text-dim: #9aa7bd;
+  --eig: #00d4aa;
+  --svd: #ffb700;
+  --pinv: #a855f7;
+  --image: #ec4899;
+  --vib: #22c55e;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { overflow: hidden; height: 100%; }
+body {
+  font-family: 'Vazirmatn', sans-serif;
+  background: var(--dark);
+  color: var(--text);
+  direction: rtl;
+  line-height: 1.8;
+}
+#bgCanvas { position: fixed; inset: 0; z-index: -2; background: radial-gradient(ellipse at top, #0a1230 0%, var(--darker) 50%, #000 100%); }
+.glow-orb { position: fixed; border-radius: 50%; filter: blur(120px); opacity: 0.3; z-index: -1; pointer-events: none; animation: floatOrb 25s ease-in-out infinite; }
+.orb1 { width: 600px; height: 600px; background: var(--eig); top: -200px; right: -200px; }
+.orb2 { width: 500px; height: 500px; background: var(--pinv); bottom: -150px; left: -150px; animation-delay: -8s; }
+.orb3 { width: 400px; height: 400px; background: var(--svd); top: 30%; left: 25%; animation-delay: -15s; opacity: 0.12; }
+@keyframes floatOrb { 0%, 100% { transform: translate(0, 0) scale(1); } 33% { transform: translate(50px, -40px) scale(1.15); } 66% { transform: translate(-40px, 50px) scale(0.9); } }
+
+.top-header { position: fixed; top: 0; left: 0; right: 0; height: 82px; background: rgba(5, 8, 24, 0.9); backdrop-filter: blur(15px); border-bottom: 1px solid var(--card-border); display: flex; align-items: center; justify-content: space-between; padding: 0 18px; z-index: 100; }
+.header-left { display: flex; align-items: center; gap: 14px; }
+.header-signature { height: 60px; width: auto; max-width: 150px; object-fit: contain; filter: drop-shadow(0 0 8px rgba(255, 183, 0, 0.3)); border-radius: 6px; background: rgba(255, 255, 255, 0.03); padding: 4px; }
+.header-text { display: flex; flex-direction: column; line-height: 1.35; }
+.header-name { font-size: 0.88rem; color: var(--gold); font-weight: 800; white-space: nowrap; }
+.header-univ { font-size: 0.7rem; color: var(--text-dim); font-weight: 500; }
+.header-controls { display: flex; gap: 8px; flex-shrink: 0; }
+.ctrl-btn { width: 38px; height: 38px; border-radius: 10px; border: 1px solid var(--card-border); background: var(--card-bg); backdrop-filter: blur(10px); color: var(--text); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; transition: all 0.3s ease; }
+.ctrl-btn:hover { background: var(--primary); color: var(--dark); transform: translateY(-2px); }
+.ctrl-btn.active { background: var(--primary); color: var(--dark); }
+
+.topic-nav { position: fixed; top: 82px; left: 0; right: 0; height: 36px; background: rgba(5, 8, 24, 0.9); backdrop-filter: blur(10px); border-bottom: 1px solid var(--card-border); z-index: 99; display: flex; align-items: center; gap: 6px; padding: 0 18px; overflow-x: auto; scrollbar-width: none; }
+.topic-nav::-webkit-scrollbar { display: none; }
+.topic-pill { padding: 4px 11px; border-radius: 20px; font-size: 0.7rem; font-weight: 600; white-space: nowrap; color: var(--text-dim); background: rgba(255, 255, 255, 0.04); border: 1px solid transparent; transition: all 0.3s ease; }
+.topic-pill.active { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: var(--dark); font-weight: 800; box-shadow: 0 3px 10px rgba(0, 212, 170, 0.35); }
+.topic-pill.done { color: var(--primary); border-color: rgba(0, 212, 170, 0.3); }
+
+.progress-top { position: fixed; top: 118px; left: 0; right: 0; height: 3px; background: rgba(255, 255, 255, 0.05); z-index: 98; }
+.progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--primary), var(--secondary), var(--tertiary)); transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 0 12px var(--primary); }
+
+.slide-container { position: fixed; inset: 121px 0 0 0; overflow: hidden; }
+.slide { position: absolute; inset: 0; padding: 24px 50px 90px; opacity: 0; transform: translateX(-40px); pointer-events: none; transition: opacity 0.5s ease, transform 0.5s cubic-bezier(0.4, 0, 0.2, 1); overflow-y: auto; overflow-x: hidden; }
+.slide.active { opacity: 1; transform: translateX(0); pointer-events: auto; }
+.slide.prev { transform: translateX(40px); }
+.slide::-webkit-scrollbar { width: 6px; }
+.slide::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 3px; }
+.slide-inner { max-width: 1200px; margin: 0 auto; animation: contentFade 0.6s ease; }
+@keyframes contentFade { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+.slide-num { display: inline-block; padding: 5px 14px; border-radius: 20px; background: rgba(0, 212, 170, 0.15); color: var(--primary); font-size: 0.72rem; font-weight: 700; margin-bottom: 10px; }
+.slide-h1 { font-size: clamp(1.3rem, 3.2vw, 2rem); font-weight: 900; background: linear-gradient(135deg, var(--primary), var(--secondary), var(--tertiary), var(--gold)); background-size: 300% 300%; -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; animation: gradientShift 6s ease infinite; margin-bottom: 16px; line-height: 1.35; }
+@keyframes gradientShift { 0%, 100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
+.slide-h3 { font-size: 0.98rem; font-weight: 700; color: var(--text); margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+.slide-h3 i { color: var(--gold); font-size: 0.88rem; }
+.slide-text { font-size: 0.9rem; color: var(--text-dim); line-height: 2; margin-bottom: 12px; }
+
+.card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 18px; padding: 18px; backdrop-filter: blur(12px); transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1); }
+.card:hover { transform: translateY(-4px); border-color: rgba(0, 212, 170, 0.4); box-shadow: 0 15px 35px rgba(0, 212, 170, 0.12); }
+.grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+.grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; }
+
+.title-slide { text-align: center; padding-top: 5px; }
+.title-slide .hero-img { width: 100%; max-width: 520px; height: 170px; object-fit: contain; background: rgba(0, 0, 0, 0.2); padding: 6px; border-radius: 20px; margin: 0 auto 12px; display: block; border: 1px solid var(--card-border); box-shadow: 0 20px 40px rgba(0, 212, 170, 0.15); }
+.title-slide .bismillah { font-size: 1.2rem; font-weight: 500; background: linear-gradient(90deg, var(--gold), var(--primary), var(--secondary)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 4px; }
+.title-slide .hoval { font-size: 0.82rem; color: var(--text-dim); margin-bottom: 16px; letter-spacing: 1px; }
+.title-slide .main-title { font-size: clamp(1.7rem, 4.2vw, 2.6rem); font-weight: 900; background: linear-gradient(135deg, var(--primary), var(--secondary), var(--gold)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 10px; line-height: 1.3; }
+.title-slide .subtitle { font-size: clamp(0.9rem, 2vw, 1.05rem); color: var(--text-dim); margin-bottom: 18px; }
+.title-slide .euler-box { display: inline-block; padding: 12px 30px; border-radius: 18px; background: var(--card-bg); border: 1px solid var(--card-border); backdrop-filter: blur(15px); margin-bottom: 16px; }
+.title-slide .instructor-line { font-size: 0.92rem; color: var(--gold); font-weight: 700; margin-bottom: 3px; }
+.title-slide .instructor-title-line { font-size: 0.78rem; color: var(--text-dim); margin-bottom: 12px; }
+.title-slide .semester { display: inline-block; padding: 6px 18px; border-radius: 50px; background: var(--card-bg); border: 1px solid var(--card-border); font-size: 0.78rem; color: var(--text-dim); }
+
+.math-box { background: rgba(0, 212, 170, 0.06); border: 1px solid rgba(0, 212, 170, 0.25); border-radius: 14px; padding: 16px 22px; margin: 12px 0; text-align: center; direction: ltr; position: relative; overflow-x: auto; overflow-y: hidden; }
+.math-box::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--primary), var(--secondary), var(--tertiary)); }
+.math-box .MathJax, .math-box mjx-container { color: var(--primary) !important; font-size: 1em !important; }
+.math-box.gold-math .MathJax, .math-box.gold-math mjx-container { color: var(--gold) !important; }
+.math-box.purple-math .MathJax, .math-box.purple-math mjx-container { color: var(--tertiary) !important; }
+.math-box.pink-math .MathJax, .math-box.pink-math mjx-container { color: var(--image) !important; }
+.math-box.green-math .MathJax, .math-box.green-math mjx-container { color: var(--vib) !important; }
+.math-note { font-family: 'Vazirmatn', sans-serif; font-size: 0.76rem; color: var(--text-dim); direction: rtl; margin-top: 8px; font-style: italic; text-align: center; }
+
+.simulator { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 18px; padding: 16px; margin: 12px 0; backdrop-filter: blur(12px); }
+.sim-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; flex-wrap: wrap; gap: 10px; }
+.sim-title { font-size: 0.9rem; font-weight: 700; color: var(--gold); display: flex; align-items: center; gap: 8px; }
+.sim-controls { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.slider-group { display: flex; align-items: center; gap: 8px; background: rgba(0, 0, 0, 0.3); padding: 6px 12px; border-radius: 10px; border: 1px solid var(--card-border); }
+.slider-group label { font-size: 0.72rem; color: var(--text-dim); white-space: nowrap; }
+.slider-group input[type="range"] { width: 100px; accent-color: var(--primary); cursor: pointer; }
+.slider-value { font-family: 'Courier New', monospace; font-size: 0.78rem; color: var(--primary); font-weight: 700; min-width: 30px; text-align: center; }
+.canvas-wrapper { position: relative; width: 100%; height: 260px; background: rgba(0, 0, 0, 0.4); border-radius: 12px; overflow: hidden; border: 1px solid var(--card-border); }
+.canvas-wrapper canvas { width: 100%; height: 100%; display: block; }
+
+.img-box { 
+  width: 100%; 
+  max-height: 280px;
+  border-radius: 16px; 
+  border: 1px solid var(--card-border); 
+  margin: 12px 0; 
+  display: block; 
+  object-fit: contain;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 8px;
+}
+
+.matrix-input {
+  display: inline-grid;
+  grid-template-columns: repeat(2, 60px);
+  gap: 6px;
+  padding: 10px;
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--card-border);
+}
+.matrix-input input {
+  width: 60px; height: 40px;
+  border-radius: 8px;
+  border: 1px solid var(--card-border);
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--gold);
+  font-family: 'Courier New', monospace;
+  font-size: 0.95rem;
+  font-weight: 700;
+  text-align: center;
+}
+.matrix-input input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(0, 212, 170, 0.15); }
+
+.exercise-block { border-radius: 16px; padding: 16px; border: 1px solid; position: relative; overflow: hidden; margin-bottom: 12px; }
+.exercise-block::before { content: ''; position: absolute; top: 0; right: 0; width: 4px; height: 100%; }
+.ex-yellow { background: rgba(255, 217, 61, 0.06); border-color: rgba(255, 217, 61, 0.25); }
+.ex-yellow::before { background: #ffd93d; }
+.ex-green { background: rgba(107, 207, 127, 0.06); border-color: rgba(107, 207, 127, 0.25); }
+.ex-green::before { background: #6bcf7f; }
+.ex-purple { background: rgba(168, 85, 247, 0.06); border-color: rgba(168, 85, 247, 0.25); }
+.ex-purple::before { background: var(--tertiary); }
+.ex-red { background: rgba(255, 107, 107, 0.06); border-color: rgba(255, 107, 107, 0.25); }
+.ex-red::before { background: #ff6b6b; }
+.ex-header { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+.ex-num { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 0.8rem; color: var(--dark); flex-shrink: 0; }
+.ex-yellow .ex-num { background: #ffd93d; }
+.ex-green .ex-num { background: #6bcf7f; }
+.ex-purple .ex-num { background: var(--tertiary); color: #fff; }
+.ex-red .ex-num { background: #ff6b6b; color: #fff; }
+.ex-title { font-size: 0.92rem; font-weight: 800; }
+.ex-list { list-style: none; padding: 0; counter-reset: item; }
+.ex-list li { position: relative; padding: 7px 34px 7px 10px; font-size: 0.83rem; color: var(--text-dim); line-height: 1.8; border-bottom: 1px dashed rgba(255, 255, 255, 0.05); }
+.ex-list li:last-child { border-bottom: none; }
+.ex-list li::before { counter-increment: item; content: counter(item); position: absolute; right: 4px; top: 9px; width: 22px; height: 22px; border-radius: 50%; background: rgba(255, 255, 255, 0.08); color: var(--text); font-size: 0.7rem; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+.email-banner { margin-top: 12px; padding: 12px; border-radius: 14px; background: linear-gradient(135deg, rgba(0, 212, 170, 0.1), rgba(168, 85, 247, 0.1)); border: 1px dashed rgba(0, 212, 170, 0.4); text-align: center; }
+.email-banner p { font-size: 0.8rem; color: var(--text); margin-bottom: 5px; }
+.email-banner code { display: inline-block; padding: 5px 12px; border-radius: 8px; background: rgba(0, 0, 0, 0.4); color: var(--primary); font-family: 'Courier New', monospace; font-size: 0.76rem; direction: ltr; margin-top: 3px; }
+
+.code-tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--card-border); }
+.code-tab { padding: 8px 16px; border-radius: 10px 10px 0 0; background: transparent; border: none; color: var(--text-dim); font-family: inherit; font-size: 0.8rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; }
+.code-tab.active { background: rgba(0, 212, 170, 0.1); color: var(--primary); border-bottom: 2px solid var(--primary); }
+.code-content { display: none; background: #0a0f24; border: 1px solid var(--card-border); border-top: none; border-radius: 0 0 12px 12px; padding: 14px; overflow-x: auto; direction: ltr; text-align: left; }
+.code-content.active { display: block; }
+.code-content pre { margin: 0; font-family: 'Courier New', Consolas, monospace; font-size: 0.76rem; line-height: 1.6; color: #e8eef7; white-space: pre; }
+.code-content .kw { color: #ff79c6; }
+.code-content .fn { color: #50fa7b; }
+.code-content .num { color: #bd93f9; }
+.code-content .str { color: #f1fa8c; }
+.code-content .cm { color: #6272a4; font-style: italic; }
+
+.bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; height: 58px; background: rgba(5, 8, 24, 0.9); backdrop-filter: blur(15px); border-top: 1px solid var(--card-border); display: flex; align-items: center; justify-content: space-between; padding: 0 20px; z-index: 100; }
+.nav-btn { padding: 8px 18px; border-radius: 12px; border: 1px solid var(--card-border); background: var(--card-bg); color: var(--text); cursor: pointer; font-family: inherit; font-size: 0.82rem; font-weight: 600; display: flex; align-items: center; gap: 7px; transition: all 0.3s ease; }
+.nav-btn:hover:not(:disabled) { background: var(--primary); color: var(--dark); transform: translateY(-2px); }
+.nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+.dots-nav { display: flex; gap: 4px; flex-wrap: wrap; justify-content: center; max-width: 60%; }
+.dot-nav { width: 8px; height: 8px; border-radius: 50%; background: rgba(255, 255, 255, 0.15); cursor: pointer; border: none; padding: 0; transition: all 0.3s ease; }
+.dot-nav.active { background: var(--primary); width: 22px; border-radius: 5px; box-shadow: 0 0 10px var(--primary); }
+.slide-counter { font-size: 0.78rem; color: var(--text-dim); font-family: 'Courier New', monospace; min-width: 60px; text-align: center; }
+.slide-counter span { color: var(--primary); font-weight: 800; }
+
+.toast-container { position: fixed; bottom: 76px; left: 24px; z-index: 9999; display: flex; flex-direction: column; gap: 8px; }
+.toast { background: rgba(10, 18, 40, 0.95); border: 1px solid var(--primary); border-radius: 14px; padding: 11px 16px; color: var(--text); font-size: 0.82rem; backdrop-filter: blur(12px); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); display: flex; align-items: center; gap: 8px; animation: slideIn 0.35s ease; max-width: 320px; }
+.toast i { color: var(--primary); }
+@keyframes slideIn { from { opacity: 0; transform: translateX(-60px); } to { opacity: 1; transform: translateX(0); } }
+
+.acronym-box { display: inline-block; padding: 3px 10px; border-radius: 8px; background: rgba(255, 183, 0, 0.15); border: 1px solid rgba(255, 183, 0, 0.4); color: var(--gold); font-family: 'Courier New', monospace; font-size: 0.78rem; font-weight: 700; direction: ltr; margin: 0 4px; }
+.acronym-full { font-size: 0.72rem; color: var(--text-dim); font-style: italic; }
+
+.faq-item { background: rgba(0, 0, 0, 0.2); border: 1px solid var(--card-border); border-radius: 12px; margin-bottom: 10px; overflow: hidden; }
+.faq-q { padding: 12px 16px; cursor: pointer; font-size: 0.9rem; font-weight: 700; color: var(--text); display: flex; justify-content: space-between; align-items: center; transition: all 0.3s ease; }
+.faq-q:hover { background: rgba(0, 212, 170, 0.08); color: var(--primary); }
+.faq-q i { transition: transform 0.3s ease; color: var(--primary); }
+.faq-item.open .faq-q i { transform: rotate(180deg); }
+.faq-a { max-height: 0; overflow: hidden; transition: max-height 0.4s ease, padding 0.3s ease; padding: 0 16px; font-size: 0.83rem; color: var(--text-dim); line-height: 1.9; }
+.faq-item.open .faq-a { max-height: 300px; padding: 12px 16px; }
+
+@media (max-width: 768px) {
+  .slide { padding: 16px 14px 90px; }
+  .header-univ { display: none; }
+  .header-name { font-size: 0.75rem; }
+  .header-signature { height: 45px; max-width: 100px; }
+  .nav-btn { padding: 7px 11px; font-size: 0.72rem; }
+  .nav-btn span { display: none; }
+  .dots-nav { max-width: 45%; }
+  .slide-counter { font-size: 0.68rem; min-width: 45px; }
+  .canvas-wrapper { height: 210px; }
+  .topic-pill { font-size: 0.64rem; padding: 3px 8px; }
+}
+@media (max-width: 480px) {
+  .ctrl-btn { width: 32px; height: 32px; font-size: 0.75rem; }
+  .header-signature { display: none; }
+}
+</style>
+</head>
+<body>
+
+<canvas id="bgCanvas"></canvas>
+<div class="glow-orb orb1"></div>
+<div class="glow-orb orb2"></div>
+<div class="glow-orb orb3"></div>
+
+<div class="top-header">
+  <div class="header-left">
+    <img src="images/signature.png" alt="امضا" class="header-signature" onerror="this.style.display='none'">
+    <div class="header-text">
+      <span class="header-name">دکتر مسعود گوهری منش</span>
+      <span class="header-univ">دانشیار گروه مهندسی مکانیک — دانشگاه تربت حیدریه</span>
+    </div>
+  </div>
+  <div class="header-controls">
+    <button class="ctrl-btn" id="soundToggle" title="صدا"><i class="fas fa-volume-up"></i></button>
+    <button class="ctrl-btn" id="fullscreenToggle" title="تمام‌صفحه"><i class="fas fa-expand"></i></button>
+  </div>
+</div>
+
+<div class="topic-nav" id="topicNav">
+  <span class="topic-pill" data-topic="1">مرور</span>
+  <span class="topic-pill" data-topic="2">مقدار ویژه</span>
+  <span class="topic-pill" data-topic="3">قطری‌سازی</span>
+  <span class="topic-pill" data-topic="4">SVD</span>
+  <span class="topic-pill" data-topic="5">شبه‌معکوس</span>
+  <span class="topic-pill" data-topic="6">کاربردها</span>
+  <span class="topic-pill" data-topic="7">کد و تمرین</span>
+</div>
+
+<div class="progress-top"><div class="progress-fill" id="progressFill"></div></div>
+
+<div class="slide-container" id="slideContainer">
+
+  <!-- ═══════ ۱ — عنوان ═══════ -->
+  <div class="slide active" data-slide="1" data-topic="1">
+    <div class="slide-inner title-slide">
+      <div class="bismillah">بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِیم</div>
+      <div class="hoval">هُوَ الخَلّاقُ العَلیم</div>
+      <img src="images/hero-eigen-svd.png" alt="Eigen & SVD" class="hero-img" onerror="this.style.display='none'">
+      <h1 class="main-title">مقدار ویژه، SVD و شبه‌معکوس</h1>
+      <p class="subtitle">ریاضیات مهندسی پیشرفته — جلسه ۴ (پایان فاز ۱)</p>
+      <div class="euler-box"><div style="direction: ltr; font-size: 1.6rem;">$$e^{i\pi} + 1 = 0$$</div></div>
+      <p class="instructor-line">دکتر مسعود گوهری منش</p>
+      <p class="instructor-title-line">دانشیار گروه مهندسی مکانیک — دانشگاه تربت حیدریه</p>
+      <div class="semester">نیمسال اول ۱۴۰۵–۱۴۰۶</div>
+    </div>
+  </div>
+
+  <!-- ═══════ ۲ — مرور ═══════ -->
+  <div class="slide" data-slide="2" data-topic="1">
+    <div class="slide-inner">
+      <span class="slide-num">مرور</span>
+      <h2 class="slide-h1">مرور جلسه ۳ و پایان فاز ۱</h2>
+      <div class="grid-2">
+        <div class="card">
+          <div class="slide-h3"><i class="fas fa-check-circle" style="color: var(--success);"></i> جلسات ۱ تا ۳</div>
+          <ul style="list-style: none; padding: 0; font-size: 0.85rem; color: var(--text-dim); line-height: 2;">
+            <li>✅ سری و تبدیل فوریه، FFT</li>
+            <li>✅ فضای برداری، پایه، بُعد</li>
+            <li>✅ تبدیل خطی، هسته، تصویر</li>
+            <li>✅ شبه‌معکوس Moore-Penrose</li>
+            <li>✅ Condition Number</li>
+          </ul>
+        </div>
+        <div class="card" style="background: rgba(255, 183, 0, 0.06); border-color: rgba(255, 183, 0, 0.3);">
+          <div class="slide-h3"><i class="fas fa-flag-checkered" style="color: var(--gold);"></i> جلسه ۴ — اوج فاز ۱</div>
+          <ul style="list-style: none; padding: 0; font-size: 0.85rem; color: var(--text-dim); line-height: 2;">
+            <li>🔹 مقدار ویژه و بردار ویژه</li>
+            <li>🔹 قطری‌سازی و تجزیه طیفی</li>
+            <li>🔹 تجزیه SVD</li>
+            <li>🔹 شبه‌معکوس با SVD</li>
+            <li>🔹 کاربردها در PINN و پردازش تصویر</li>
+          </ul>
+        </div>
+      </div>
+      <div class="card" style="margin-top: 16px; background: rgba(168, 85, 247, 0.06); border-color: rgba(168, 85, 247, 0.3);">
+        <div class="slide-h3" style="color: var(--tertiary);"><i class="fas fa-link"></i> ارتباط کلیدی جلسه ۳ و ۴</div>
+        <p class="slide-text" style="font-size: 0.85rem;">
+          در جلسه ۳ دیدیم که <strong>هسته و تصویر</strong> با <strong>رتبه و پوچی</strong> تعریف می‌شوند. در این جلسه، <strong>مقادیر تکین</strong> (Singular Values) این تصویر را دقیق‌تر می‌کنند: هر مقدار تکین صفر = یک بُعد در هسته.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════ ۳ — مقدار ویژه تعریف ═══════ -->
+  <div class="slide" data-slide="3" data-topic="2">
+    <div class="slide-inner">
+      <span class="slide-num">۲. مقدار ویژه</span>
+      <h2 class="slide-h1">مقدار ویژه و بردار ویژه</h2>
+
+      <p class="slide-text">
+        برای ماتریس $A \in \mathbb{R}^{n \times n}$، بردار غیرصفر $\vec{v}$ و اسکالر $\lambda$ را <strong>مقدار ویژه</strong> و <strong>بردار ویژه</strong> می‌نامیم اگر:
+      </p>
+
+      <div class="math-box gold-math" style="background: rgba(255, 183, 0, 0.1); border-color: rgba(255, 183, 0, 0.4);">
+        $$A\vec{v} = \lambda \vec{v}, \quad \vec{v} \neq \vec{0}$$
+      </div>
+
+      <img src="images/eigenvector-concept.png" alt="Eigenvector" class="img-box" onerror="this.style.display='none'">
+
+      <div class="grid-2">
+        <div class="card" style="background: rgba(255, 183, 0, 0.06); border-color: rgba(255, 183, 0, 0.3);">
+          <div class="slide-h3" style="color: var(--gold);"><i class="fas fa-lightbulb"></i> تفسیر هندسی</div>
+          <p class="slide-text" style="font-size: 0.82rem;">
+            بردار ویژه، برداری است که پس از اعمال $A$، <strong>فقط مقیاس</strong> می‌شود و <strong>جهتش تغییر نمی‌کند</strong>.
+          </p>
+        </div>
+        <div class="card">
+          <div class="slide-h3"><i class="fas fa-star"></i> مقدار ویژه می‌تواند مختلط باشد</div>
+          <p class="slide-text" style="font-size: 0.82rem;">
+            برای ماتریس‌های حقیقی، مقادیر ویژه ممکن است <strong>مختلط مزدوج</strong> باشند (مثلاً ماتریس چرخش).
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════ ۴ — معادله مشخصه ═══════ -->
+  <div class="slide" data-slide="4" data-topic="2">
+    <div class="slide-inner">
+      <span class="slide-num">۲. مقدار ویژه</span>
+      <h2 class="slide-h1">معادله مشخصه</h2>
+
+      <p class="slide-text">
+        با بازنویسی $A\vec{v} = \lambda\vec{v}$:
+      </p>
+
+      <div class="math-box">
+        $$(A - \lambda I)\vec{v} = \vec{0}$$
+      </div>
+
+      <p class="slide-text">
+        برای جواب غیربدیهی ($\vec{v} \neq \vec{0}$)، ماتریس $A - \lambda I$ باید <strong>تکین</strong> باشد:
+      </p>
+
+      <div class="math-box gold-math" style="background: rgba(255, 183, 0, 0.1); border-color: rgba(255, 183, 0, 0.4);">
+        $$\det(A - \lambda I) = 0$$
+      </div>
+
+      <img src="images/characteristic-polynomial.png" alt="Characteristic Polynomial" class="img-box" onerror="this.style.display='none'">
+
+      <div class="card" style="margin-top: 14px;">
+        <div class="slide-h3"><i class="fas fa-calculator"></i> مثال: ماتریس $2 \times 2$</div>
+        <div class="math-box" style="padding: 12px; font-size: 0.85rem;">
+          $$A = \begin{pmatrix} 2 & 1 \\ 1 & 2 \end{pmatrix} \Longrightarrow \det\begin{pmatrix} 2-\lambda & 1 \\ 1 & 2-\lambda \end{pmatrix} = 0$$
+          $$(2-\lambda)^2 - 1 = 0 \Longrightarrow \lambda^2 - 4\lambda + 3 = 0$$
+          $$\lambda_1 = 1, \quad \lambda_2 = 3$$
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════ ۵ — شبیه‌ساز مقدار ویژه ═══════ -->
+  <div class="slide" data-slide="5" data-topic="2">
+    <div class="slide-inner">
+      <span class="slide-num">۲. شبیه‌ساز</span>
+      <h2 class="slide-h1">شبیه‌ساز مقدار ویژه</h2>
+      <p class="slide-text">ماتریس را تغییر دهید و بردارهای ویژه را ببینید.</p>
+
+      <div class="simulator">
+        <div class="sim-header">
+          <div class="sim-title"><i class="fas fa-sliders-h"></i> ماتریس $2 \times 2$</div>
+          <div class="sim-controls">
+            <div class="matrix-input">
+              <input type="number" id="eig11" value="2" step="0.1">
+              <input type="number" id="eig12" value="1" step="0.1">
+              <input type="number" id="eig21" value="1" step="0.1">
+              <input type="number" id="eig22" value="2" step="0.1">
+            </div>
+          </div>
+        </div>
+        <div class="canvas-wrapper" style="height: 300px;"><canvas id="eigenCanvas"></canvas></div>
+        <div class="grid-3" style="margin-top: 12px;">
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 0.75rem; color: var(--text-dim);">λ₁</div>
+            <div id="lambda1" style="font-size: 1.4rem; color: var(--gold); font-weight: 800; font-family: 'Courier New', monospace;">—</div>
+          </div>
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 0.75rem; color: var(--text-dim);">λ₂</div>
+            <div id="lambda2" style="font-size: 1.4rem; color: var(--gold); font-weight: 800; font-family: 'Courier New', monospace;">—</div>
+          </div>
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 0.75rem; color: var(--text-dim);">نوع</div>
+            <div id="eigType" style="font-size: 1rem; color: var(--primary); font-weight: 800;">حقیقی</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════ ۶ — قطری‌سازی ═══════ -->
+  <div class="slide" data-slide="6" data-topic="3">
+    <div class="slide-inner">
+      <span class="slide-num">۳. قطری‌سازی</span>
+      <h2 class="slide-h1">قطری‌سازی ماتریس</h2>
+
+      <p class="slide-text">
+        اگر ماتریس $A$ دارای $n$ بردار ویژه مستقل خطی باشد، می‌توان آن را قطری کرد:
+      </p>
+
+      <div class="math-box purple-math" style="background: rgba(168, 85, 247, 0.1); border-color: rgba(168, 85, 247, 0.4);">
+        $$A = P D P^{-1}$$
+      </div>
+
+      <img src="images/diagonalization-visual.png" alt="Diagonalization" class="img-box" onerror="this.style.display='none'">
+
+      <div class="grid-2">
+        <div class="card" style="background: rgba(168, 85, 247, 0.06); border-color: rgba(168, 85, 247, 0.3);">
+          <div class="slide-h3" style="color: var(--tertiary);"><i class="fas fa-th"></i> D — ماتریس قطری</div>
+          <p class="slide-text" style="font-size: 0.82rem;">
+            مقادیر ویژه روی قطر اصلی.
+          </p>
+        </div>
+        <div class="card" style="background: rgba(168, 85, 247, 0.06); border-color: rgba(168, 85, 247, 0.3);">
+          <div class="slide-h3" style="color: var(--tertiary);"><i class="fas fa-columns"></i> P — ماتریس بردارهای ویژه</div>
+          <p class="slide-text" style="font-size: 0.82rem;">
+            ستون‌ها = بردارهای ویژه.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════ ۷ — تجزیه طیفی ═══════ -->
+  <div class="slide" data-slide="7" data-topic="3">
+    <div class="slide-inner">
+      <span class="slide-num">۳. تجزیه طیفی</span>
+      <h2 class="slide-h1">تجزیه طیفی (Spectral Decomposition)</h2>
+
+      <p class="slide-text">
+        اگر $A$ <strong>متقارن</strong> باشد ($A = A^T$)، آنگاه:
+      </p>
+
+      <div class="math-box purple-math" style="background: rgba(168, 85, 247, 0.1); border-color: rgba(168, 85, 247, 0.4);">
+        $$A = Q \Lambda Q^T = \sum_{i=1}^n \lambda_i \vec{q}_i \vec{q}_i^T$$
+      </div>
+
+      <img src="images/spectral-decomposition.png" alt="Spectral Decomposition" class="img-box" onerror="this.style.display='none'">
+
+      <div class="card" style="margin-top: 14px; background: rgba(255, 183, 0, 0.06); border-color: rgba(255, 183, 0, 0.3);">
+        <div class="slide-h3" style="color: var(--gold);"><i class="fas fa-star"></i> ویژگی‌های ماتریس متقارن</div>
+        <ul style="list-style: none; padding: 0; font-size: 0.82rem; color: var(--text-dim); line-height: 2;">
+          <li>🔹 همه مقادیر ویژه <strong>حقیقی</strong> هستند</li>
+          <li>🔹 بردارهای ویژه <strong>متعامد</strong> هستند ($Q^T Q = I$)</li>
+          <li>🔹 $A$ همیشه قطری‌پذیر است</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════ ۸ — شبیه‌ساز قطری‌سازی ═══════ -->
+  <div class="slide" data-slide="8" data-topic="3">
+    <div class="slide-inner">
+      <span class="slide-num">۳. شبیه‌ساز</span>
+      <h2 class="slide-h1">شبیه‌ساز قطری‌سازی</h2>
+      <p class="slide-text">نتیجه تجزیه $A = P D P^{-1}$ را به‌صورت زنده ببینید.</p>
+
+      <div class="simulator">
+        <div class="sim-header">
+          <div class="sim-title"><i class="fas fa-sliders-h"></i> ماتریس متقارن $2 \times 2$</div>
+          <div class="sim-controls">
+            <div class="matrix-input">
+              <input type="number" id="diag11" value="2" step="0.1">
+              <input type="number" id="diag12" value="1" step="0.1">
+              <input type="number" id="diag21" value="1" step="0.1">
+              <input type="number" id="diag22" value="2" step="0.1">
+            </div>
+          </div>
+        </div>
+        <div class="canvas-wrapper" style="height: 300px;"><canvas id="diagCanvas"></canvas></div>
+        <div class="math-box gold-math" style="margin-top: 12px; padding: 12px;">
+          <div id="diagFormula" style="font-size: 0.9rem;">A = P D P⁻¹</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════ ۹ — SVD تعریف ═══════ -->
+  <div class="slide" data-slide="9" data-topic="4">
+    <div class="slide-inner">
+      <span class="slide-num">۴. SVD</span>
+      <h2 class="slide-h1">تجزیه مقدار تکین (SVD)</h2>
+
+      <p class="slide-text">
+        <span class="acronym-box">SVD</span> <span class="acronym-full">(Singular Value Decomposition — تجزیه مقدار تکین)</span> برای <strong>هر ماتریس</strong> (مربعی یا مستطیلی) قابل اعمال است:
+      </p>
+
+      <div class="math-box gold-math" style="background: rgba(255, 183, 0, 0.1); border-color: rgba(255, 183, 0, 0.4);">
+        $$A_{m \times n} = U_{m \times m} \Sigma_{m \times n} V^T_{n \times n}$$
+      </div>
+
+      <img src="images/svd-matrix-form.png" alt="SVD Matrix Form" class="img-box" onerror="this.style.display='none'">
+
+      <div class="grid-3">
+        <div class="card" style="text-align: center; background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3);">
+          <div class="slide-h3" style="justify-content: center; color: var(--primary);">$U$</div>
+          <p class="slide-text" style="font-size: 0.78rem;">متعامد<br>بردارهای تکین چپ</p>
+        </div>
+        <div class="card" style="text-align: center; background: rgba(255, 183, 0, 0.06); border-color: rgba(255, 183, 0, 0.3);">
+          <div class="slide-h3" style="justify-content: center; color: var(--gold);">$\Sigma$</div>
+          <p class="slide-text" style="font-size: 0.78rem;">قطری<br>مقادیر تکین</p>
+        </div>
+        <div class="card" style="text-align: center; background: rgba(168, 85, 247, 0.06); border-color: rgba(168, 85, 247, 0.3);">
+          <div class="slide-h3" style="justify-content: center; color: var(--tertiary);">$V^T$</div>
+          <p class="slide-text" style="font-size: 0.78rem;">متعامد<br>بردارهای تکین راست</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════ ۱۰ — SVD تفسیر هندسی ═══════ -->
+  <div class="slide" data-slide="10" data-topic="4">
+    <div class="slide-inner">
+      <span class="slide-num">۴. SVD</span>
+      <h2 class="slide-h1">تفسیر هندسی SVD</h2>
+
+      <p class="slide-text">
+        هر ماتریس $A$ را می‌توان به سه مرحله ساده تجزیه کرد:
+      </p>
+
+      <img src="images/svd-geometry.png" alt="SVD Geometry" class="img-box" onerror="this.style.display='none'">
+
+      <div class="grid-3">
+        <div class="card" style="text-align: center; background: rgba(168, 85, 247, 0.06); border-color: rgba(168, 85, 247, 0.3);">
+          <div style="font-size: 1.8rem; color: var(--tertiary); margin-bottom: 8px;"><i class="fas fa-sync-alt"></i></div>
+          <div class="slide-h3" style="justify-content: center; color: var(--tertiary);">۱. چرخش</div>
+          <p class="slide-text" style="font-size: 0.78rem;">با $V^T$</p>
+        </div>
+        <div class="card" style="text-align: center; background: rgba(255, 183, 0, 0.06); border-color: rgba(255, 183, 0, 0.3);">
+          <div style="font-size: 1.8rem; color: var(--gold); margin-bottom: 8px;"><i class="fas fa-expand-arrows-alt"></i></div>
+          <div class="slide-h3" style="justify-content: center; color: var(--gold);">۲. مقیاس</div>
+          <p class="slide-text" style="font-size: 0.78rem;">با $\Sigma$</p>
+        </div>
+        <div class="card" style="text-align: center; background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3);">
+          <div style="font-size: 1.8rem; color: var(--primary); margin-bottom: 8px;"><i class="fas fa-sync-alt"></i></div>
+          <div class="slide-h3" style="justify-content: center; color: var(--primary);">۳. چرخش</div>
+          <p class="slide-text" style="font-size: 0.78rem;">با $U$</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════ ۱۱ — شبیه‌ساز SVD ═══════ -->
+  <div class="slide" data-slide="11" data-topic="4">
+    <div class="slide-inner">
+      <span class="slide-num">۴. شبیه‌ساز</span>
+      <h2 class="slide-h1">شبیه‌ساز SVD</h2>
+      <p class="slide-text">سه مرحله SVD را با ماتریس دلخواه ببینید.</p>
+
+      <div class="simulator">
+        <div class="sim-header">
+          <div class="sim-title"><i class="fas fa-sliders-h"></i> ماتریس دلخواه</div>
+          <div class="sim-controls">
+            <div class="matrix-input">
+              <input type="number" id="svd11" value="1.5" step="0.1">
+              <input type="number" id="svd12" value="0.5" step="0.1">
+              <input type="number" id="svd21" value="-0.3" step="0.1">
+              <input type="number" id="svd22" value="1" step="0.1">
+            </div>
+          </div>
+        </div>
+        <div class="canvas-wrapper" style="height: 320px;"><canvas id="svdCanvas"></canvas></div>
+        <div class="grid-3" style="margin-top: 12px;">
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 0.75rem; color: var(--text-dim);">σ₁ (بزرگ‌ترین)</div>
+            <div id="sigma1" style="font-size: 1.3rem; color: var(--gold); font-weight: 800; font-family: 'Courier New', monospace;">—</div>
+          </div>
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 0.75rem; color: var(--text-dim);">σ₂ (کوچک‌ترین)</div>
+            <div id="sigma2" style="font-size: 1.3rem; color: var(--gold); font-weight: 800; font-family: 'Courier New', monospace;">—</div>
+          </div>
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 0.75rem; color: var(--text-dim);">cond = σ₁/σ₂</div>
+            <div id="svdCond" style="font-size: 1.3rem; color: var(--primary); font-weight: 800; font-family: 'Courier New', monospace;">—</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════ ۱۲ — مقادیر تکین و رتبه ═══════ -->
+  <div class="slide" data-slide="12" data-topic="4">
+    <div class="slide-inner">
+      <span class="slide-num">۴. رتبه و SVD</span>
+      <h2 class="slide-h1">مقادیر تکین و رتبه</h2>
+
+      <img src="images/singular-values-rank.png" alt="Singular Values Rank" class="img-box" onerror="this.style.display='none'">
+
+      <div class="card" style="margin-top: 14px; background: rgba(255, 183, 0, 0.06); border-color: rgba(255, 183, 0, 0.3);">
+        <div class="slide-h3" style="color: var(--gold);"><i class="fas fa-key"></i> ارتباط رتبه با مقادیر تکین</div>
+        <div class="math-box gold-math" style="padding: 12px;">
+          $$\text{rank}(A) = \#\{ \sigma_i : \sigma_i > \varepsilon \}$$
+        </div>
+        <p class="slide-text" style="font-size: 0.82rem;">
+          تعداد مقادیر تکین بزرگ‌تر از آستانه $\varepsilon$ = رتبه ماتریس.
+        </p>
+      </div>
+
+      <div class="grid-2" style="margin-top: 14px;">
+        <div class="card" style="background: rgba(34, 197, 94, 0.06); border-color: rgba(34, 197, 94, 0.3);">
+          <div class="slide-h3" style="color: var(--vib);"><i class="fas fa-check"></i> ماتریس سالم</div>
+          <p class="slide-text" style="font-size: 0.82rem;">
+            همه $\sigma_i$ بزرگ → cond کوچک → رتبه = min(m,n)
+          </p>
+        </div>
+        <div class="card" style="background: rgba(255, 71, 87, 0.06); border-color: rgba(255, 71, 87, 0.3);">
+          <div class="slide-h3" style="color: var(--danger);"><i class="fas fa-exclamation"></i> ماتریس مریض</div>
+          <p class="slide-text" style="font-size: 0.82rem;">
+            بعضی $\sigma_i$ نزدیک صفر → cond بزرگ → رتبه کاهش‌یافته
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════ ۱۳ — کاهش بُعد ═══════ -->
+  <div class="slide" data-slide="13" data-topic="4">
+    <div class="slide-inner">
+      <span class="slide-num">۴. کاهش بُعد</span>
+      <h2 class="slide-h1">کاهش بُعد با SVD</h2>
+
+      <p class="slide-text">
+        با نگه‌داشتن فقط $k$ مقدار تکین بزرگ، تقریب کم‌رتبه می‌سازیم:
+      </p>
+
+      <div class="math-box gold-math" style="background: rgba(255, 183, 0, 0.1); border-color: rgba(255, 183, 0, 0.4);">
+        $$A_k = U_k \Sigma_k V_k^T = \sum_{i=1}^k \sigma_i \vec{u}_i \vec{v}_i^T$$
+      </div>
+
+      <img src="images/low-rank-approximation.png" alt="Low Rank" class="img-box" onerror="this.style.display='none'">
+
+      <div class="card" style="margin-top: 14px; background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3);">
+        <div class="slide-h3" style="color: var(--primary);"><i class="fas fa-star"></i> قضیه Eckart-Young</div>
+        <p class="slide-text" style="font-size: 0.85rem;">
+          $A_k$ بهترین تقریب کم‌رتبه ماتریس $A$ است:
+        </p>
+        <div class="math-box" style="padding: 10px; font-size: 0.85rem;">
+          $$\|A - A_k\|_F = \min_{\text{rank}(B) \leq k} \|A - B\|_F$$
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════ ۱۴ — شبه‌معکوس با SVD ═══════ -->
+  <div class="slide" data-slide="14" data-topic="5">
+    <div class="slide-inner">
+      <span class="slide-num">۵. شبه‌معکوس</span>
+      <h2 class="slide-h1">شبه‌معکوس با SVD</h2>
+
+      <p class="slide-text">
+        شبه‌معکوس Moore-Penrose را می‌توان از SVD محاسبه کرد:
+      </p>
+
+      <div class="math-box purple-math" style="background: rgba(168, 85, 247, 0.1); border-color: rgba(168, 85, 247, 0.4);">
+        $$A = U \Sigma V^T \;\Longrightarrow\; A^+ = V \Sigma^+ U^T$$
+      </div>
+
+      <p class="slide-text">
+        که در آن $\Sigma^+$ با <strong>معکوس کردن</strong> مقادیر تکین غیرصفر و <strong>ترانهاده</strong> به دست می‌آید.
+      </p>
+
+      <img src="images/pseudo-inverse-via-svd.png" alt="Pseudo-Inverse via SVD" class="img-box" onerror="this.style.display='none'">
+
+      <div class="card" style="margin-top: 14px; background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3);">
+        <div class="slide-h3" style="color: var(--primary);"><i class="fas fa-lightbulb"></i> چرا مهم است؟</div>
+        <p class="slide-text" style="font-size: 0.85rem;">
+          شبه‌معکوس از SVD، <strong>پایدارترین</strong> روش محاسبه است. با صفر کردن مقادیر تکین کوچک، از تقویت نویز جلوگیری می‌شود.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════ ۱۵ — مثال کمترین مربعات ═══════ -->
+  <div class="slide" data-slide="15" data-topic="5">
+    <div class="slide-inner">
+      <span class="slide-num">۵. کاربرد</span>
+      <h2 class="slide-h1">حل کمترین مربعات با SVD</h2>
+
+      <p class="slide-text">
+        برای سیستم بیش‌تعیین $A\vec{x} = \vec{b}$، جواب کمترین مربعات:
+      </p>
+
+      <div class="math-box purple-math" style="background: rgba(168, 85, 247, 0.1); border-color: rgba(168, 85, 247, 0.4);">
+        $$\vec{x}^* = A^+ \vec{b} = V \Sigma^+ U^T \vec{b}$$
+      </div>
+
+      <div class="code-tabs" style="margin-top: 16px;">
+        <button class="code-tab active" data-code="matlab-pinv"><i class="fas fa-square"></i> MATLAB</button>
+        <button class="code-tab" data-code="python-pinv"><i class="fab fa-python"></i> Python</button>
+      </div>
+      <div class="code-content active" id="code-matlab-pinv">
+<pre>A = [<span class="num">1</span> <span class="num">2</span>; <span class="num">3</span> <span class="num">4</span>; <span class="num">5</span> <span class="num">6</span>];
+b = [<span class="num">1</span>; <span class="num">2</span>; <span class="num">3</span>];
+
+<span class="cm">% روش ۱: pinv</span>
+x1 = <span class="fn">pinv</span>(A) * b;
+
+<span class="cm">% روش ۲: backslash</span>
+x2 = A \ b;
+
+<span class="cm">% روش ۳: با SVD</span>
+[U, S, V] = <span class="fn">svd</span>(A);
+S_pinv = <span class="fn">diag</span>(<span class="num">1</span>./<span class="fn">diag</span>(S));
+Ap = V * S_pinv * U';
+x3 = Ap * b;</pre>
+      </div>
+      <div class="code-content" id="code-python-pinv">
+<pre><span class="kw">import</span> numpy <span class="kw">as</span> np
+A = np.array([[<span class="num">1</span>,<span class="num">2</span>],[<span class="num">3</span>,<span class="num">4</span>],[<span class="num">5</span>,<span class="num">6</span>]])
+b = np.array([<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>])
+
+<span class="cm"># روش ۱: pinv</span>
+x1 = np.linalg.pinv(A) @ b
+
+<span class="cm"># روش ۲: lstsq</span>
+x2, _, _, _ = np.linalg.lstsq(A, b, rcond=<span class="kw">None</span>)
+
+<span class="cm"># روش ۳: با SVD</span>
+U, S, Vt = np.linalg.svd(A)
+S_pinv = np.diag(<span class="num">1</span>/S)
+Ap = Vt.T @ S_pinv @ U.T
+x3 = Ap @ b</pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════ ۱۶ — کاربرد در PINN ═══════ -->
+  <div class="slide" data-slide="16" data-topic="6">
+    <div class="slide-inner">
+      <span class="slide-num">۶. کاربرد</span>
+      <h2 class="slide-h1">کاربرد SVD در PINN</h2>
+
+      <div class="grid-2" style="align-items: start;">
+        <div>
+          <img src="images/pinn-svd-compression.png" alt="PINN SVD" class="img-box" onerror="this.style.display='none'">
+        </div>
+        <div>
+          <div class="card" style="background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3);">
+            <div class="slide-h3" style="color: var(--primary);"><i class="fas fa-brain"></i> فشرده‌سازی وزن‌ها</div>
+            <p class="slide-text" style="font-size: 0.82rem;">
+              ماتریس وزن $W \in \mathbb{R}^{m \times n}$ شبکه عصبی را می‌توان با SVD به رتبه پایین‌تر کاهش داد:
+            </p>
+            <div class="math-box" style="padding: 10px; font-size: 0.82rem;">
+              $$W \approx U_k \Sigma_k V_k^T$$
+            </div>
+            <p class="slide-text" style="font-size: 0.78rem;">
+              کاهش پارامترها از $m \cdot n$ به $k(m+n)$ — برای $k \ll \min(m,n)$ صرفه‌جویی عظیم.
+            </p>
+          </div>
+          <div class="card" style="margin-top: 10px; background: rgba(255, 183, 0, 0.06); border-color: rgba(255, 183, 0, 0.3);">
+            <div class="slide-h3" style="color: var(--gold);"><i class="fas fa-chart-line"></i> مزایا</div>
+            <ul style="list-style: none; padding: 0; font-size: 0.78rem; color: var(--text-dim); line-height: 1.9;">
+              <li>🔹 کاهش حافظه</li>
+              <li>🔹 سرعت استنتاج بالاتر</li>
+              <li>🔹 کاهش overfitting</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════ ۱۷ — پردازش تصویر ═══════ -->
+  <div class="slide" data-slide="17" data-topic="6">
+    <div class="slide-inner">
+      <span class="slide-num">۶. کاربرد</span>
+      <h2 class="slide-h1">SVD در پردازش تصویر</h2>
+
+      <img src="images/image-compression-svd.png" alt="Image Compression" class="img-box" onerror="this.style.display='none'">
+
+      <div class="grid-2" style="margin-top: 14px;">
+        <div class="card" style="background: rgba(236, 72, 153, 0.06); border-color: rgba(236, 72, 153, 0.3);">
+          <div class="slide-h3" style="color: var(--image);"><i class="fas fa-image"></i> فشرده‌سازی تصویر</div>
+          <p class="slide-text" style="font-size: 0.82rem;">
+            تصویر $m \times n$ → SVD → نگه‌داشتن $k$ مقدار تکین بزرگ.
+          </p>
+          <div class="math-box pink-math" style="padding: 10px; font-size: 0.82rem;">
+            $$\text{Compression Ratio} = \frac{mn}{k(m+n+1)}$$
+          </div>
+        </div>
+        <div class="card" style="background: rgba(236, 72, 153, 0.06); border-color: rgba(236, 72, 153, 0.3);">
+          <div class="slide-h3" style="color: var(--image);"><i class="fas fa-magic"></i> کاربردها</div>
+          <ul style="list-style: none; padding: 0; font-size: 0.82rem; color: var(--text-dim); line-height: 2;">
+            <li>🔹 کاهش نویز (Denoising)</li>
+            <li>🔹 تشخیص چهره (Eigenfaces)</li>
+            <li>🔹 فشرده‌سازی JPEG</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════ ۱۸ — شبیه‌ساز فشرده‌سازی تصویر ═══════ -->
+  <div class="slide" data-slide="18" data-topic="6">
+    <div class="slide-inner">
+      <span class="slide-num">۶. شبیه‌ساز</span>
+      <h2 class="slide-h1">شبیه‌ساز فشرده‌سازی تصویر</h2>
+      <p class="slide-text">با تغییر k، اثر فشرده‌سازی تصویر را ببینید.</p>
+
+      <div class="simulator">
+        <div class="sim-header">
+          <div class="sim-title"><i class="fas fa-compress"></i> فشرده‌سازی با SVD</div>
+          <div class="sim-controls">
+            <div class="slider-group">
+              <label>k (تعداد مقادیر تکین):</label>
+              <input type="range" id="svdK" min="1" max="40" value="10" step="1">
+              <span class="slider-value" id="svdKValue">۱۰</span>
+            </div>
+          </div>
+        </div>
+        <div class="grid-2">
+          <div>
+            <p class="math-note" style="text-align: center; margin-bottom: 6px;">تصویر اصلی</p>
+            <div class="canvas-wrapper" style="height: 200px;"><canvas id="imageOriginal"></canvas></div>
+          </div>
+          <div>
+            <p class="math-note" style="text-align: center; margin-bottom: 6px;">تصویر فشرده (k=<span id="kDisplay">۱۰</span>)</p>
+            <div class="canvas-wrapper" style="height: 200px;"><canvas id="imageCompressed"></canvas></div>
+          </div>
+        </div>
+        <div class="card" style="margin-top: 12px; text-align: center;">
+          <div style="font-size: 0.8rem; color: var(--text-dim);">نسبت فشرده‌سازی</div>
+          <div id="compressionRatio" style="font-size: 1.3rem; color: var(--gold); font-weight: 800; font-family: 'Courier New', monospace;">—</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════ ۱۹ — کاربرد در ارتعاشات ═══════ -->
+  <div class="slide" data-slide="19" data-topic="6">
+    <div class="slide-inner">
+      <span class="slide-num">۶. کاربرد</span>
+      <h2 class="slide-h1">SVD در ارتعاشات و مودها</h2>
+
+      <p class="slide-text">
+        برای سیستم جرم-فنر با $n$ درجه آزادی، معادله حرکت:
+      </p>
+
+      <div class="math-box green-math" style="background: rgba(34, 197, 94, 0.1); border-color: rgba(34, 197, 94, 0.4);">
+        $$M \ddot{\vec{x}} + K \vec{x} = \vec{0}$$
+      </div>
+
+      <p class="slide-text">
+        با فرض $\vec{x} = \vec{v} e^{i\omega t}$:
+      </p>
+
+      <div class="math-box green-math">
+        $$(K - \omega^2 M) \vec{v} = \vec{0} \Longrightarrow \det(K - \omega^2 M) = 0$$
+      </div>
+
+      <img src="images/vibration-modes.png" alt="Vibration Modes" class="img-box" onerror="this.style.display='none'">
+
+      <div class="card" style="margin-top: 14px; background: rgba(34, 197, 94, 0.06); border-color: rgba(34, 197, 94, 0.3);">
+        <div class="slide-h3" style="color: var(--vib);"><i class="fas fa-lightbulb"></i> مقادیر ویژه = فرکانس‌های طبیعی</div>
+        <p class="slide-text" style="font-size: 0.85rem;">
+          $\omega_i^2$ = مقادیر ویژه، $\vec{v}_i$ = شکل مودها. SVD و eig ابزار اصلی تحلیل ارتعاشات.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════ ۲۰ — کد اصلی ═══════ -->
+  <div class="slide" data-slide="20" data-topic="7">
+    <div class="slide-inner">
+      <span class="slide-num">۷. کد</span>
+      <h2 class="slide-h1">کد MATLAB و Python</h2>
+
+      <div class="code-tabs">
+        <button class="code-tab active" data-code="matlab-main"><i class="fas fa-square"></i> MATLAB</button>
+        <button class="code-tab" data-code="python-main"><i class="fab fa-python"></i> Python</button>
+      </div>
+      <div class="code-content active" id="code-matlab-main">
+<pre><span class="cm">% === مقدار و بردار ویژه ===</span>
+A = [<span class="num">2</span> <span class="num">1</span>; <span class="num">1</span> <span class="num">2</span>];
+[V, D] = <span class="fn">eig</span>(A)
+eigVals = <span class="fn">diag</span>(D)
+
+<span class="cm">% === SVD ===</span>
+[U, S, V] = <span class="fn">svd</span>(A)
+sigma = <span class="fn">diag</span>(S)
+
+<span class="cm">% === رتبه با SVD ===</span>
+tol = <span class="fn">max</span>(<span class="fn">size</span>(A)) * <span class="fn">eps</span>(<span class="fn">max</span>(sigma));
+rank_A = <span class="fn">sum</span>(sigma > tol)
+
+<span class="cm">% === شبه‌معکوس ===</span>
+Ap = <span class="fn">pinv</span>(A)
+
+<span class="cm">% === کاهش رتبه ===</span>
+k = <span class="num">1</span>;
+Ak = U(:, <span class="num">1</span>:k) * S(<span class="num">1</span>:k, <span class="num">1</span>:k) * V(:, <span class="num">1</span>:k)';
+
+<span class="cm">% === شرط ===</span>
+c = <span class="fn">cond</span>(A)
+c_svd = sigma(<span class="num">1</span>) / sigma(<span class="fn">end</span>)</pre>
+      </div>
+      <div class="code-content" id="code-python-main">
+<pre><span class="cm"># === مقدار و بردار ویژه ===</span>
+<span class="kw">import</span> numpy <span class="kw">as</span> np
+A = np.array([[<span class="num">2</span>,<span class="num">1</span>],[<span class="num">1</span>,<span class="num">2</span>]])
+eigVals, eigVecs = np.linalg.eig(A)
+<span class="fn">print</span>(<span class="str">"مقادیر ویژه:"</span>, eigVals)
+<span class="fn">print</span>(<span class="str">"بردارهای ویژه:"</span>, eigVecs)
+
+<span class="cm"># === SVD ===</span>
+U, S, Vt = np.linalg.svd(A)
+<span class="fn">print</span>(<span class="str">"مقادیر تکین:"</span>, S)
+
+<span class="cm"># === رتبه با SVD ===</span>
+tol = max(A.shape) * np.finfo(float).eps * S[<span class="num">0</span>]
+rank_A = np.<span class="fn">sum</span>(S > tol)
+<span class="fn">print</span>(<span class="str">"رتبه:"</span>, rank_A)
+
+<span class="cm"># === شبه‌معکوس ===</span>
+Ap = np.linalg.pinv(A)
+
+<span class="cm"># === کاهش رتبه ===</span>
+k = <span class="num">1</span>
+Ak = U[:, :k] @ np.diag(S[:k]) @ Vt[:k, :]
+
+<span class="cm"># === شرط ===</span>
+c = np.linalg.cond(A)
+c_svd = S[<span class="num">0</span>] / S[-<span class="num">1</span>]</pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════ ۲۱ — مقایسه eig vs svd ═══════ -->
+  <div class="slide" data-slide="21" data-topic="7">
+    <div class="slide-inner">
+      <span class="slide-num">۷. مقایسه</span>
+      <h2 class="slide-h1">مقایسه eig و svd</h2>
+
+      <img src="images/eig-vs-svd-comparison.png" alt="Eig vs SVD" class="img-box" onerror="this.style.display='none'">
+
+      <div style="overflow-x: auto; margin-top: 14px;">
+        <table style="width: 100%; border-collapse: collapse; font-size: 0.83rem; direction: rtl;">
+          <thead>
+            <tr style="background: rgba(0, 212, 170, 0.1);">
+              <th style="padding: 12px; color: var(--primary); border: 1px solid var(--card-border); text-align: right;">ویژگی</th>
+              <th style="padding: 12px; color: var(--gold); border: 1px solid var(--card-border); text-align: center;">eig</th>
+              <th style="padding: 12px; color: var(--tertiary); border: 1px solid var(--card-border); text-align: center;">svd</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td style="padding: 10px; border: 1px solid var(--card-border); color: var(--text-dim);">ماتریس ورودی</td><td style="padding: 10px; border: 1px solid var(--card-border); text-align: center; color: var(--text);">فقط مربعی</td><td style="padding: 10px; border: 1px solid var(--card-border); text-align: center; color: var(--text);">هر ماتریس</td></tr>
+            <tr><td style="padding: 10px; border: 1px solid var(--card-border); color: var(--text-dim);">خروجی</td><td style="padding: 10px; border: 1px solid var(--card-border); text-align: center; color: var(--text);">مقادیر ویژه</td><td style="padding: 10px; border: 1px solid var(--card-border); text-align: center; color: var(--text);">مقادیر تکین ≥ 0</td></tr>
+            <tr><td style="padding: 10px; border: 1px solid var(--card-border); color: var(--text-dim);">مقادیر مختلط</td><td style="padding: 10px; border: 1px solid var(--card-border); text-align: center; color: var(--text);">ممکن</td><td style="padding: 10px; border: 1px solid var(--card-border); text-align: center; color: var(--text);">همیشه حقیقی</td></tr>
+            <tr><td style="padding: 10px; border: 1px solid var(--card-border); color: var(--text-dim);">یکتایی</td><td style="padding: 10px; border: 1px solid var(--card-border); text-align: center; color: var(--text);">غیریکتا</td><td style="padding: 10px; border: 1px solid var(--card-border); text-align: center; color: var(--text);">یکتا (تا ترتیب)</td></tr>
+            <tr><td style="padding: 10px; border: 1px solid var(--card-border); color: var(--text-dim);">پایداری عددی</td><td style="padding: 10px; border: 1px solid var(--card-border); text-align: center; color: var(--text);">کمتر</td><td style="padding: 10px; border: 1px solid var(--card-border); text-align: center; color: var(--text);">بالاتر</td></tr>
+            <tr><td style="padding: 10px; border: 1px solid var(--card-border); color: var(--text-dim);">کاربرد اصلی</td><td style="padding: 10px; border: 1px solid var(--card-border); text-align: center; color: var(--text);">پایداری، ارتعاشات</td><td style="padding: 10px; border: 1px solid var(--card-border); text-align: center; color: var(--text);">فشرده‌سازی، PINN</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════ ۲۲ — تمرین‌ها ═══════ -->
+  <div class="slide" data-slide="22" data-topic="7">
+    <div class="slide-inner">
+      <span class="slide-num">تمرین</span>
+      <h2 class="slide-h1">تمرین‌های جلسه ۴</h2>
+
+      <div class="exercise-block ex-yellow">
+        <div class="ex-header"><div class="ex-num">الف</div><div><div class="ex-title">سؤالات مفهومی</div></div></div>
+        <ol class="ex-list">
+          <li>تفاوت مقدار ویژه و مقدار تکین چیست؟</li>
+          <li>چرا SVD برای هر ماتریسی کار می‌کند اما eig فقط برای مربعی؟</li>
+          <li>معنی هندسی سه مرحله SVD چیست؟</li>
+          <li>چرا مقادیر تکین همیشه نامنفی هستند؟</li>
+        </ol>
+      </div>
+
+      <div class="exercise-block ex-green">
+        <div class="ex-header"><div class="ex-num">ب</div><div><div class="ex-title">تمرین‌های عملی</div></div></div>
+        <ol class="ex-list">
+          <li>ماتریس $A = \begin{pmatrix} 2 & 1 \\ 1 & 2 \end{pmatrix}$ را قطری کنید و $A = PDP^{-1}$ را بسازید.</li>
+          <li>SVD یک ماتریس $3 \times 2$ تصادفی را محاسبه کنید و $U, \Sigma, V$ را بنویسید.</li>
+          <li>با نگه‌داشتن $k=1, 3, 5, 10$ مقدار تکین از یک تصویر، نسبت فشرده‌سازی را محاسبه کنید.</li>
+          <li>سیستم جرم-فنر ۳ درجه آزادی بسازید و فرکانس‌های طبیعی را با eig محاسبه کنید.</li>
+          <li>شبه‌معکوس یک ماتریس مریض را هم با pinv و هم با SVD محاسبه کنید و مقایسه کنید.</li>
+        </ol>
+      </div>
+
+      <div class="exercise-block ex-purple">
+        <div class="ex-header"><div class="ex-num">ج</div><div><div class="ex-title">تمرین‌های نوشتاری</div></div></div>
+        <ol class="ex-list">
+          <li>ثابت کنید مقادیر ویژه ماتریس متقارن حقیقی هستند.</li>
+          <li>ثابت کنید $\text{rank}(A) = \text{rank}(\Sigma)$ در SVD.</li>
+          <li>ثابت کنید $A^+ = V \Sigma^+ U^T$ در چهار شرط Moore-Penrose صدق می‌کند.</li>
+        </ol>
+      </div>
+
+      <div class="exercise-block ex-red">
+        <div class="ex-header"><div class="ex-num">★</div><div><div class="ex-title">چالش خلاقانه</div></div></div>
+        <ol class="ex-list">
+          <li>یک شبکه عصبی کوچک (مثلاً ۱۰۰×۵۰ پارامتر) بسازید و با SVD آن را فشرده کنید. درصد کاهش پارامترها چقدر است؟</li>
+          <li>یک تصویر نمونه را با $k$ متغیر فشرده کنید و منحنی PSNR را رسم کنید.</li>
+          <li>برای پروژه پایانی خود (مثلاً ارتعاش تیر)، فرکانس‌های طبیعی را با eig محاسبه کنید.</li>
+        </ol>
+      </div>
+
+      <div class="email-banner">
+        <p><i class="fas fa-envelope" style="color: var(--primary);"></i> ارسال تمرین‌ها:</p>
+        <code>m.goharimanesh@gmail.com</code>
+        <p style="margin-top: 8px; font-size: 0.78rem;">Subject الزامی:</p>
+        <code>[Advanced Engineering Mathematics] HW04 - نام و نام خانوادگی - شماره دانشجویی</code>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════ ۲۳ — پروژه‌های پیشنهادی ═══════ -->
+  <div class="slide" data-slide="23" data-topic="7">
+    <div class="slide-inner">
+      <span class="slide-num">پروژه</span>
+      <h2 class="slide-h1">اتصال به پروژه پایانی</h2>
+
+      <p class="slide-text">
+        SVD و شبه‌معکوس، ابزار اصلی <strong>فشرده‌سازی پارامترهای PINN</strong> و <strong>تحلیل داده‌های سنسور</strong> هستند.
+      </p>
+
+      <div class="grid-3">
+        <div class="card" style="text-align: center; background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3);">
+          <i class="fas fa-wave-square" style="font-size: 1.8rem; color: var(--eig); display: block; margin-bottom: 10px;"></i>
+          <div class="slide-h3" style="justify-content: center;">پروژه ارتعاش تیر</div>
+          <p class="slide-text" style="font-size: 0.78rem;">فرکانس‌های طبیعی با eig، تحلیل مودها</p>
+        </div>
+        <div class="card" style="text-align: center; background: rgba(255, 183, 0, 0.06); border-color: rgba(255, 183, 0, 0.3);">
+          <i class="fas fa-brain" style="font-size: 1.8rem; color: var(--svd); display: block; margin-bottom: 10px;"></i>
+          <div class="slide-h3" style="justify-content: center;">PINN</div>
+          <p class="slide-text" style="font-size: 0.78rem;">فشرده‌سازی وزن‌ها، کاهش بُعد</p>
+        </div>
+        <div class="card" style="text-align: center; background: rgba(168, 85, 247, 0.06); border-color: rgba(168, 85, 247, 0.3);">
+          <i class="fas fa-flask" style="font-size: 1.8rem; color: var(--pinv); display: block; margin-bottom: 10px;"></i>
+          <div class="slide-h3" style="justify-content: center;">نانو انبرک</div>
+          <p class="slide-text" style="font-size: 0.78rem;">Perturbation + شبه‌معکوس</p>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top: 16px; background: rgba(236, 72, 153, 0.06); border-color: rgba(236, 72, 153, 0.3);">
+        <div class="slide-h3" style="color: var(--image);"><i class="fas fa-star"></i> نکته طلایی برای پروژه</div>
+        <p class="slide-text" style="font-size: 0.85rem;">
+          در گزارش پروژه‌تان، حتماً تحلیل SVD (مقادیر تکین و کاهش بُعد) را برای داده‌های خود گزارش دهید. این کار <strong>ارزش علمی مقاله</strong> شما را به‌شدت بالا می‌برد.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════ ۲۴ — سوالات متداول ═══════ -->
+  <div class="slide" data-slide="24" data-topic="7">
+    <div class="slide-inner">
+      <span class="slide-num">FAQ</span>
+      <h2 class="slide-h1">سوالات متداول</h2>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">۱. چرا SVD کندتر از eig است؟<i class="fas fa-chevron-down"></i></div>
+        <div class="faq-a">SVD از الگوریتم‌های تکراری مانند Golub-Reinsch استفاده می‌کند که برای ماتریس‌های بزرگ کندتر از eig مستقیم است. اما SVD پایدارتر و عمومی‌تر است.</div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">۲. مقادیر ویژه مختلط چه معنایی دارند؟<i class="fas fa-chevron-down"></i></div>
+        <div class="faq-a">مقادیر ویژه مختلط نشان‌دهنده <strong>چرخش</strong> هستند. برای ماتریس چرخش، مقادیر ویژه روی دایره واحد مختلط قرار می‌گیرند.</div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">۳. چه زمانی از pinv و چه زمانی از backslash استفاده کنیم؟<i class="fas fa-chevron-down"></i></div>
+        <div class="faq-a">backslash (\ در MATLAB یا solve در Python) سریع‌تر و دقیق‌تر است. از pinv فقط وقتی استفاده کنید که نیاز به پایداری عددی برای ماتریس مریض دارید یا ماتریس رتبه‌کم است.</div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">۴. چطور بفهمم چه مقدار k برای SVD کافی است؟<i class="fas fa-chevron-down"></i></div>
+        <div class="faq-a">از <strong>منحنی انرژی تجمعی</strong> استفاده کنید: $E_k = \sum_{i=1}^k \sigma_i^2 / \sum_{i=1}^r \sigma_i^2$. وقتی $E_k \geq 0.95$ شود، k کافی است.</div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">۵. SVD در یادگیری ماشین کجا استفاده می‌شود؟<i class="fas fa-chevron-down"></i></div>
+        <div class="faq-a">۱) PCA (کاهش بُعد)، ۲) LSA (پردازش زبان)، ۳) Recommender Systems، ۴) فشرده‌سازی مدل، ۵) PINN (کاهش پارامتر).</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════ ۲۵ — جمع‌بندی ═══════ -->
+  <div class="slide" data-slide="25" data-topic="7">
+    <div class="slide-inner">
+      <span class="slide-num">جمع‌بندی</span>
+      <h2 class="slide-h1">جمع‌بندی جلسه ۴ و فاز ۱</h2>
+
+      <div class="grid-3">
+        <div class="card" style="text-align: center;">
+          <i class="fas fa-star" style="font-size: 1.8rem; color: var(--eig); display: block; margin-bottom: 10px;"></i>
+          <div class="slide-h3" style="justify-content: center;">مقدار ویژه</div>
+          <p class="slide-text" style="font-size: 0.8rem;">$A\vec{v} = \lambda\vec{v}$</p>
+        </div>
+        <div class="card" style="text-align: center;">
+          <i class="fas fa-th" style="font-size: 1.8rem; color: var(--tertiary); display: block; margin-bottom: 10px;"></i>
+          <div class="slide-h3" style="justify-content: center;">قطری‌سازی</div>
+          <p class="slide-text" style="font-size: 0.8rem;">$A = PDP^{-1}$</p>
+        </div>
+        <div class="card" style="text-align: center;">
+          <i class="fas fa-cube" style="font-size: 1.8rem; color: var(--svd); display: block; margin-bottom: 10px;"></i>
+          <div class="slide-h3" style="justify-content: center;">SVD</div>
+          <p class="slide-text" style="font-size: 0.8rem;">$A = U\Sigma V^T$</p>
+        </div>
+        <div class="card" style="text-align: center;">
+          <i class="fas fa-compress" style="font-size: 1.8rem; color: var(--image); display: block; margin-bottom: 10px;"></i>
+          <div class="slide-h3" style="justify-content: center;">فشرده‌سازی</div>
+          <p class="slide-text" style="font-size: 0.8rem;">Low-rank approximation</p>
+        </div>
+        <div class="card" style="text-align: center;">
+          <i class="fas fa-balance-scale" style="font-size: 1.8rem; color: var(--pinv); display: block; margin-bottom: 10px;"></i>
+          <div class="slide-h3" style="justify-content: center;">شبه‌معکوس</div>
+          <p class="slide-text" style="font-size: 0.8rem;">$A^+ = V\Sigma^+ U^T$</p>
+        </div>
+        <div class="card" style="text-align: center;">
+          <i class="fas fa-brain" style="font-size: 1.8rem; color: var(--vib); display: block; margin-bottom: 10px;"></i>
+          <div class="slide-h3" style="justify-content: center;">PINN</div>
+          <p class="slide-text" style="font-size: 0.8rem;">کاهش پارامترها</p>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top: 16px; background: rgba(0, 212, 170, 0.08); border-color: rgba(0, 212, 170, 0.4);">
+        <div class="slide-h3" style="color: var(--primary);"><i class="fas fa-flag-checkered"></i> پایان فاز ۱</div>
+        <p class="slide-text" style="font-size: 0.88rem;">
+          با اتمام جلسه ۴، <strong>فاز ۱ (مبانی ریاضی)</strong> کامل شد. شما اکنون ابزارهای زیر را در اختیار دارید:
+        </p>
+        <ul class="feature-list" style="margin-top: 10px;">
+          <li>فوریه (سری، تبدیل، DFT، FFT)</li>
+          <li>جبر خطی (فضای برداری، تبدیل خطی، SVD)</li>
+          <li>ابزارهای عددی (پایداری، شبه‌معکوس)</li>
+        </ul>
+      </div>
+
+      <div class="card" style="margin-top: 16px;">
+        <div class="slide-h3"><i class="fas fa-arrow-left"></i> جلسه بعد — شروع فاز ۲</div>
+        <p class="slide-text" style="font-size: 0.88rem;">
+          <strong style="color: var(--primary);">جلسه ۵ — دسته‌بندی و آشنایی با PDE</strong>
+        </p>
+        <ul style="list-style: none; padding: 0; font-size: 0.82rem; color: var(--text-dim); line-height: 2; margin-top: 8px;">
+          <li>🔹 PDE چیست؟</li>
+          <li>🔹 دسته‌بندی خطی/غیرخطی</li>
+          <li>🔹 بیضوی، سهموی، هذلولوی</li>
+          <li>🔹 شرایط مرزی و اولیه</li>
+        </ul>
+      </div>
+
+      <div class="math-box gold-math" style="margin-top: 20px; background: rgba(255, 183, 0, 0.08); padding: 22px;">
+        $$e^{i\pi} + 1 = 0$$
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════ ۲۶ — منابع ═══════ -->
+  <div class="slide" data-slide="26" data-topic="7">
+    <div class="slide-inner">
+      <span class="slide-num">منابع</span>
+      <h2 class="slide-h1">منابع و مراجع این جلسه</h2>
+
+      <div class="grid-2">
+        <div class="card" style="background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3);">
+          <div class="slide-h3" style="color: var(--primary);"><i class="fas fa-book"></i> کتاب‌های مرجع</div>
+          <ul style="list-style: none; padding: 0; font-size: 0.82rem; color: var(--text-dim); line-height: 2;">
+            <li>📖 Gilbert Strang — <em>Linear Algebra and Its Applications</em></li>
+            <li>📖 Golub & Van Loan — <em>Matrix Computations</em></li>
+            <li>📖 Trefethen & Bau — <em>Numerical Linear Algebra</em></li>
+            <li>📖 Lay — <em>Linear Algebra and Its Applications</em></li>
+          </ul>
+        </div>
+        <div class="card" style="background: rgba(255, 183, 0, 0.06); border-color: rgba(255, 183, 0, 0.3);">
+          <div class="slide-h3" style="color: var(--gold);"><i class="fas fa-file-alt"></i> مقالات کلیدی</div>
+          <ul style="list-style: none; padding: 0; font-size: 0.82rem; color: var(--text-dim); line-height: 2;">
+            <li>📄 Eckart & Young (1936) — Low-rank approximation</li>
+            <li>📄 Golub & Reinsch (1970) — SVD algorithm</li>
+            <li>📄 Raissi et al. (2019) — PINN</li>
+            <li>📄 Karniadakis et al. (2021) — Physics-Informed ML</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top: 16px; background: rgba(168, 85, 247, 0.06); border-color: rgba(168, 85, 247, 0.3);">
+        <div class="slide-h3" style="color: var(--tertiary);"><i class="fas fa-globe"></i> منابع آنلاین</div>
+        <ul style="list-style: none; padding: 0; font-size: 0.82rem; color: var(--text-dim); line-height: 2;">
+          <li>🔗 MIT OpenCourseWare — 18.06 Linear Algebra (Gilbert Strang)</li>
+          <li>🔗 3Blue1Brown — Essence of Linear Algebra (YouTube)</li>
+          <li>🔗 NumPy Documentation — linalg module</li>
+          <li>🔗 MATLAB Documentation — Matrix Computations</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════ ۲۷ — سوال پایانی ═══════ -->
+  <div class="slide" data-slide="27" data-topic="7">
+    <div class="slide-inner" style="text-align: center; padding-top: 20px;">
+      <div style="font-size: 3rem; color: var(--gold); margin-bottom: 20px;">
+        <i class="fas fa-question-circle"></i>
+      </div>
+      <h2 class="slide-h1">یک پرسش برای تفکر</h2>
+
+      <div class="card" style="background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3); margin-top: 20px;">
+        <p style="font-size: 1rem; color: var(--text); line-height: 2.2; padding: 20px;">
+          اگر تمام مقادیر تکین یک ماتریس را داشته باشید، آیا می‌توانید <strong>مقادیر ویژه</strong> آن را هم استخراج کنید؟
+        </p>
+        <div style="border-top: 1px dashed var(--card-border); padding-top: 16px; margin-top: 16px;">
+          <p style="font-size: 0.85rem; color: var(--text-dim); line-height: 2;">
+            🔹 برای ماتریس‌های <strong>متقارن</strong>: بله — مقادیر ویژه = مقادیر تکین (تا علامت)
+          </p>
+          <p style="font-size: 0.85rem; color: var(--text-dim); line-height: 2;">
+            🔹 برای ماتریس‌های <strong>غیرمتقارن</strong>: خیر — نیاز به محاسبه جداگانه
+          </p>
+        </div>
+      </div>
+
+      <div class="math-box" style="margin-top: 20px; padding: 20px;">
+        $$\sigma_i = \sqrt{\lambda_i(A^T A)}$$
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════ ۲۸ — خداحافظی ═══════ -->
+  <div class="slide" data-slide="28" data-topic="7">
+    <div class="slide-inner title-slide">
+      <div style="font-size: 3.5rem; color: var(--gold); margin-bottom: 18px;">
+        <i class="fas fa-check-circle"></i>
+      </div>
+      <h2 class="slide-h1">تا جلسه بعد</h2>
+      <p class="slide-text" style="font-size: 1rem;">
+        با زیبایی ریاضیات همراه باشید 🌟
+      </p>
+      <div class="math-box gold-math" style="margin-top: 22px; background: rgba(255, 183, 0, 0.08); padding: 22px;">
+        $$\int_{-\infty}^{+\infty} e^{-x^2} dx = \sqrt{\pi}$$
+      </div>
+      <p class="instructor-line" style="margin-top: 22px;">دکتر مسعود گوهری منش</p>
+      <p class="instructor-title-line">دانشیار گروه مهندسی مکانیک — دانشگاه تربت حیدریه</p>
+      <p style="font-size: 0.8rem; color: var(--text-dim); margin-top: 18px;">
+        جلسه بعد: <strong style="color: var(--primary);">دسته‌بندی و آشنایی با PDE</strong> — آغاز فاز ۲
+      </p>
+    </div>
+  </div>
+
+</div>
+
+<div class="bottom-nav">
+  <button class="nav-btn" id="prevBtn" disabled><i class="fas fa-arrow-right"></i><span>قبلی</span></button>
+  <div class="dots-nav" id="dotsNav"></div>
+  <div class="slide-counter"><span id="currentSlide">۱</span> / ۲۸</div>
+  <button class="nav-btn" id="nextBtn"><span>بعدی</span><i class="fas fa-arrow-left"></i></button>
+</div>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+/* ═══════════════════════════════════════════════
+   ناوبری
+   ═══════════════════════════════════════════════ */
+const slides = document.querySelectorAll('.slide');
+const totalSlides = slides.length;
+let currentSlide = 0;
+const topicPills = document.querySelectorAll('.topic-pill');
+
+const dotsNav = document.getElementById('dotsNav');
+for (let i = 0; i < totalSlides; i++) {
+  const dot = document.createElement('button');
+  dot.className = 'dot-nav' + (i === 0 ? ' active' : '');
+  dot.addEventListener('click', () => goToSlide(i));
+  dotsNav.appendChild(dot);
+}
+
+function goToSlide(n) {
+  if (n < 0 || n >= totalSlides) return;
+  slides.forEach((s, i) => {
+    s.classList.remove('active', 'prev');
+    if (i < n) s.classList.add('prev');
+    if (i === n) s.classList.add('active');
+  });
+  currentSlide = n;
+  updateNav();
+  playTransition();
+  setTimeout(() => {
+    initVisibleCharts();
+    if (window.MathJax && window.MathJax.typesetPromise) window.MathJax.typesetPromise();
+  }, 100);
+}
+
+function updateNav() {
+  document.querySelectorAll('.dot-nav').forEach((d, i) => d.classList.toggle('active', i === currentSlide));
+  document.getElementById('currentSlide').textContent = toFa(currentSlide + 1);
+  document.getElementById('prevBtn').disabled = currentSlide === 0;
+  document.getElementById('nextBtn').disabled = currentSlide === totalSlides - 1;
+  document.getElementById('progressFill').style.width = ((currentSlide + 1) / totalSlides * 100) + '%';
+  const currentTopic = slides[currentSlide].dataset.topic;
+  topicPills.forEach(pill => {
+    const t = parseInt(pill.dataset.topic);
+    const ct = parseInt(currentTopic);
+    pill.classList.toggle('active', t === ct);
+    pill.classList.toggle('done', t < ct);
+    if (t === ct) pill.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+  });
+}
+
+document.getElementById('prevBtn').addEventListener('click', () => goToSlide(currentSlide - 1));
+document.getElementById('nextBtn').addEventListener('click', () => goToSlide(currentSlide + 1));
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowLeft') { e.preventDefault(); goToSlide(currentSlide + 1); }
+  else if (e.key === 'ArrowRight') { e.preventDefault(); goToSlide(currentSlide - 1); }
+  else if (e.key === ' ') { e.preventDefault(); goToSlide(currentSlide + 1); }
+  else if (e.key === 'Home') { e.preventDefault(); goToSlide(0); }
+  else if (e.key === 'End') { e.preventDefault(); goToSlide(totalSlides - 1); }
+  else if (e.key === 'Escape' && document.fullscreenElement) document.exitFullscreen();
+});
+
+let touchStartX = 0, touchStartY = 0;
+document.addEventListener('touchstart', e => {
+  touchStartX = e.changedTouches[0].screenX;
+  touchStartY = e.changedTouches[0].screenY;
+}, { passive: true });
+document.addEventListener('touchend', e => {
+  const dx = e.changedTouches[0].screenX - touchStartX;
+  const dy = e.changedTouches[0].screenY - touchStartY;
+  if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy)) {
+    if (dx < 0) goToSlide(currentSlide + 1);
+    else goToSlide(currentSlide - 1);
+  }
+}, { passive: true });
+
+/* ═══ صدا ═══ */
+let audioCtx = null, soundEnabled = true;
+function initAudio() { if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
+function playTransition() {
+  if (!soundEnabled) return;
+  initAudio();
+  [440, 554.37].forEach((freq, i) => {
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.connect(gain); gain.connect(audioCtx.destination);
+    osc.frequency.value = freq; osc.type = 'sine';
+    const t = audioCtx.currentTime + i * 0.06;
+    gain.gain.setValueAtTime(0.04, t);
+    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.18);
+    osc.start(t); osc.stop(t + 0.22);
+  });
+}
+document.getElementById('soundToggle').addEventListener('click', function() {
+  soundEnabled = !soundEnabled;
+  this.classList.toggle('active', soundEnabled);
+  this.innerHTML = soundEnabled ? '<i class="fas fa-volume-up"></i>' : '<i class="fas fa-volume-mute"></i>';
+  showToast(soundEnabled ? 'صدا فعال' : 'صدا غیرفعال');
+});
+document.getElementById('fullscreenToggle').addEventListener('click', function() {
+  if (!document.fullscreenElement) { document.documentElement.requestFullscreen(); this.innerHTML = '<i class="fas fa-compress"></i>'; }
+  else { document.exitFullscreen(); this.innerHTML = '<i class="fas fa-expand"></i>'; }
+});
+function showToast(msg) {
+  const container = document.getElementById('toastContainer');
+  const toast = document.createElement('div');
+  toast.className = 'toast';
+  toast.innerHTML = `<i class="fas fa-info-circle"></i> ${msg}`;
+  container.appendChild(toast);
+  setTimeout(() => { toast.style.opacity = '0'; toast.style.transform = 'translateX(-60px)'; setTimeout(() => toast.remove(), 300); }, 2400);
+}
+function toFa(n) { const fa = ['۰','۱','۲','۳','۴','۵','۶','۷','۸','۹']; return String(n).replace(/\d/g, d => fa[d]); }
+
+/* ═══ پس‌زمینه ═══ */
+const bgCanvas = document.getElementById('bgCanvas');
+const bgCtx = bgCanvas.getContext('2d');
+let particles = [];
+function resizeBg() { bgCanvas.width = window.innerWidth; bgCanvas.height = window.innerHeight; }
+resizeBg();
+window.addEventListener('resize', resizeBg);
+class Particle {
+  constructor() { this.reset(); }
+  reset() {
+    this.x = Math.random() * bgCanvas.width;
+    this.y = Math.random() * bgCanvas.height;
+    this.size = Math.random() * 1.6 + 0.4;
+    this.speedX = (Math.random() - 0.5) * 0.3;
+    this.speedY = (Math.random() - 0.5) * 0.3;
+    this.opacity = Math.random() * 0.5 + 0.15;
+    const colors = ['#00d4aa', '#06b6d4', '#a855f7', '#ffb700'];
+    this.color = colors[Math.floor(Math.random() * colors.length)];
+  }
+  update() { this.x += this.speedX; this.y += this.speedY; if (this.x < 0 || this.x > bgCanvas.width || this.y < 0 || this.y > bgCanvas.height) this.reset(); }
+  draw() { bgCtx.beginPath(); bgCtx.arc(this.x, this.y, this.size, 0, Math.PI*2); bgCtx.fillStyle = this.color; bgCtx.globalAlpha = this.opacity; bgCtx.fill(); bgCtx.globalAlpha = 1; }
+}
+for (let i = 0; i < 50; i++) particles.push(new Particle());
+function animateBg() { bgCtx.clearRect(0, 0, bgCanvas.width, bgCanvas.height); particles.forEach(p => { p.update(); p.draw(); }); requestAnimationFrame(animateBg); }
+animateBg();
+
+/* ═══ ابزار ═══ */
+function setupCanvas(canvasId) {
+  const canvas = document.getElementById(canvasId);
+  if (!canvas) return null;
+  const dpr = window.devicePixelRatio || 1;
+  const rect = canvas.getBoundingClientRect();
+  canvas.width = rect.width * dpr; canvas.height = rect.height * dpr;
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+  return { ctx, w: rect.width, h: rect.height };
+}
+function drawGrid(ctx, w, h, cols = 10, rows = 10) {
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)'; ctx.lineWidth = 1;
+  for (let i = 0; i <= cols; i++) { ctx.beginPath(); ctx.moveTo((w/cols)*i, 0); ctx.lineTo((w/cols)*i, h); ctx.stroke(); }
+  for (let i = 0; i <= rows; i++) { ctx.beginPath(); ctx.moveTo(0, (h/rows)*i); ctx.lineTo(w, (h/rows)*i); ctx.stroke(); }
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)'; ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.moveTo(w/2, 0); ctx.lineTo(w/2, h); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(0, h/2); ctx.lineTo(w, h/2); ctx.stroke();
+}
+
+/* ═══ شبیه‌ساز مقدار ویژه ═══ */
+function drawEigen() {
+  const s = setupCanvas('eigenCanvas'); if (!s) return;
+  const { ctx, w, h } = s; ctx.clearRect(0, 0, w, h);
+  drawGrid(ctx, w, h, 10, 10);
+  const scale = Math.min(w, h) / 6;
+  const cx = w/2, cy = h/2;
+  const a = parseFloat(document.getElementById('eig11').value);
+  const b = parseFloat(document.getElementById('eig12').value);
+  const c = parseFloat(document.getElementById('eig21').value);
+  const d = parseFloat(document.getElementById('eig22').value);
+  
+  // محاسبه مقادیر ویژه
+  const trace = a + d;
+  const det = a*d - b*c;
+  const disc = trace*trace - 4*det;
+  
+  let lambda1, lambda2, isComplex = false;
+  if (disc >= 0) {
+    lambda1 = (trace + Math.sqrt(disc)) / 2;
+    lambda2 = (trace - Math.sqrt(disc)) / 2;
+  } else {
+    lambda1 = trace / 2;
+    lambda2 = trace / 2;
+    isComplex = true;
+  }
+  
+  document.getElementById('lambda1').textContent = isComplex ? `${lambda1.toFixed(2)}+${(Math.sqrt(-disc)/2).toFixed(2)}i` : lambda1.toFixed(2);
+  document.getElementById('lambda2').textContent = isComplex ? `${lambda2.toFixed(2)}-${(Math.sqrt(-disc)/2).toFixed(2)}i` : lambda2.toFixed(2);
+  document.getElementById('eigType').textContent = isComplex ? 'مختلط' : 'حقیقی';
+  document.getElementById('eigType').style.color = isComplex ? 'var(--danger)' : 'var(--primary)';
+  
+  // دایره واحد
+  ctx.beginPath(); ctx.strokeStyle = 'rgba(0, 212, 170, 0.4)'; ctx.lineWidth = 2;
+  for (let t = 0; t <= 2*Math.PI; t += 0.02) {
+    const x = Math.cos(t), y = Math.sin(t);
+    const px = cx + x * scale, py = cy - y * scale;
+    if (t === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+  }
+  ctx.stroke();
+  
+  // بیضی تصویر
+  ctx.beginPath(); ctx.strokeStyle = '#ffb700'; ctx.lineWidth = 2.5; ctx.shadowColor = '#ffb700'; ctx.shadowBlur = 8;
+  for (let t = 0; t <= 2*Math.PI; t += 0.02) {
+    const x = Math.cos(t), y = Math.sin(t);
+    const tx = a*x + b*y, ty = c*x + d*y;
+    const px = cx + tx * scale, py = cy - ty * scale;
+    if (t === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+  }
+  ctx.stroke(); ctx.shadowBlur = 0;
+  
+  // بردارهای ویژه (فقط اگر حقیقی)
+  if (!isComplex) {
+    function computeEigenvector(lambda) {
+      // (A - λI)v = 0
+      if (Math.abs(b) > 0.001) {
+        return { x: b, y: lambda - a };
+      } else if (Math.abs(c) > 0.001) {
+        return { x: lambda - d, y: c };
+      } else {
+        return { x: 1, y: 0 };
+      }
+    }
+    [lambda1, lambda2].forEach((lam, idx) => {
+      const v = computeEigenvector(lam);
+      const norm = Math.sqrt(v.x*v.x + v.y*v.y);
+      v.x /= norm; v.y /= norm;
+      const color = idx === 0 ? '#ec4899' : '#a855f7';
+      ctx.strokeStyle = color; ctx.fillStyle = color; ctx.lineWidth = 3;
+      const ex = cx + v.x*scale*2, ey = cy - v.y*scale*2;
+      ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(ex, ey); ctx.stroke();
+      // پیکان
+      const angle = Math.atan2(-(v.y), v.x);
+      ctx.beginPath(); ctx.moveTo(ex, ey);
+      ctx.lineTo(ex - 14*Math.cos(angle - Math.PI/6), ey + 14*Math.sin(angle - Math.PI/6));
+      ctx.lineTo(ex - 14*Math.cos(angle + Math.PI/6), ey + 14*Math.sin(angle + Math.PI/6));
+      ctx.closePath(); ctx.fill();
+      ctx.font = 'bold 14px Vazirmatn';
+      ctx.fillText(`v${idx+1}`, ex + 8, ey - 8);
+    });
+  }
+}
+['eig11', 'eig12', 'eig21', 'eig22'].forEach(id => {
+  const el = document.getElementById(id);
+  if (el) el.addEventListener('input', drawEigen);
+});
+
+/* ═══ شبیه‌ساز قطری‌سازی ═══ */
+function drawDiagonalization() {
+  const s = setupCanvas('diagCanvas'); if (!s) return;
+  const { ctx, w, h } = s; ctx.clearRect(0, 0, w, h);
+  drawGrid(ctx, w, h, 10, 10);
+  const scale = Math.min(w, h) / 6;
+  const cx = w/2, cy = h/2;
+  const a = parseFloat(document.getElementById('diag11').value);
+  const b = parseFloat(document.getElementById('diag12').value);
+  const c = parseFloat(document.getElementById('diag21').value);
+  const d = parseFloat(document.getElementById('diag22').value);
+  
+  // محاسبه مقادیر ویژه
+  const trace = a + d;
+  const det = a*d - b*c;
+  const disc = trace*trace - 4*det;
+  let lambda1, lambda2;
+  if (disc >= 0) {
+    lambda1 = (trace + Math.sqrt(disc)) / 2;
+    lambda2 = (trace - Math.sqrt(disc)) / 2;
+  } else { lambda1 = lambda2 = trace/2; }
+  
+  document.getElementById('diagFormula').innerHTML = 
+    `<span style="color: var(--gold);">D = diag(${lambda1.toFixed(2)}, ${lambda2.toFixed(2)})</span>`;
+  
+  // نمایش تبدیل
+  ctx.beginPath(); ctx.strokeStyle = 'rgba(0, 212, 170, 0.6)'; ctx.lineWidth = 2;
+  for (let t = 0; t <= 2*Math.PI; t += 0.02) {
+    const x = Math.cos(t), y = Math.sin(t);
+    const px = cx + x*scale, py = cy - y*scale;
+    if (t === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+  }
+  ctx.stroke();
+  
+  ctx.beginPath(); ctx.strokeStyle = '#a855f7'; ctx.lineWidth = 2.5; ctx.shadowColor = '#a855f7'; ctx.shadowBlur = 8;
+  for (let t = 0; t <= 2*Math.PI; t += 0.02) {
+    const x = Math.cos(t), y = Math.sin(t);
+    const tx = a*x + b*y, ty = c*x + d*y;
+    const px = cx + tx*scale, py = cy - ty*scale;
+    if (t === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+  }
+  ctx.stroke(); ctx.shadowBlur = 0;
+}
+['diag11', 'diag12', 'diag21', 'diag22'].forEach(id => {
+  const el = document.getElementById(id);
+  if (el) el.addEventListener('input', drawDiagonalization);
+});
+
+/* ═══ شبیه‌ساز SVD ═══ */
+function drawSVD() {
+  const s = setupCanvas('svdCanvas'); if (!s) return;
+  const { ctx, w, h } = s; ctx.clearRect(0, 0, w, h);
+  drawGrid(ctx, w, h, 10, 10);
+  const scale = Math.min(w, h) / 6;
+  const cx = w/2, cy = h/2;
+  const a = parseFloat(document.getElementById('svd11').value);
+  const b = parseFloat(document.getElementById('svd12').value);
+  const c = parseFloat(document.getElementById('svd21').value);
+  const d = parseFloat(document.getElementById('svd22').value);
+  
+  // محاسبه SVD ماتریس ۲×۲
+  const ATA = [[a*a+c*c, a*b+c*d], [a*b+c*d, b*b+d*d]];
+  const trace = ATA[0][0] + ATA[1][1];
+  const det = ATA[0][0]*ATA[1][1] - ATA[0][1]*ATA[1][0];
+  const disc = Math.sqrt(Math.max(0, trace*trace - 4*det));
+  const sigma1Sq = (trace + disc) / 2;
+  const sigma2Sq = (trace - disc) / 2;
+  const sigma1 = Math.sqrt(sigma1Sq);
+  const sigma2 = Math.sqrt(sigma2Sq);
+  
+  document.getElementById('sigma1').textContent = sigma1.toFixed(3);
+  document.getElementById('sigma2').textContent = sigma2.toFixed(3);
+  document.getElementById('svdCond').textContent = sigma2 > 0.001 ? (sigma1/sigma2).toFixed(2) : '∞';
+  
+  // دایره واحد
+  ctx.beginPath(); ctx.strokeStyle = 'rgba(0, 212, 170, 0.5)'; ctx.lineWidth = 2;
+  for (let t = 0; t <= 2*Math.PI; t += 0.02) {
+    const x = Math.cos(t), y = Math.sin(t);
+    const px = cx + x*scale, py = cy - y*scale;
+    if (t === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+  }
+  ctx.stroke();
+  
+  // بیضی تصویر
+  ctx.beginPath(); ctx.strokeStyle = '#ffb700'; ctx.lineWidth = 2.5; ctx.shadowColor = '#ffb700'; ctx.shadowBlur = 8;
+  for (let t = 0; t <= 2*Math.PI; t += 0.02) {
+    const x = Math.cos(t), y = Math.sin(t);
+    const tx = a*x + b*y, ty = c*x + d*y;
+    const px = cx + tx*scale, py = cy - ty*scale;
+    if (t === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+  }
+  ctx.stroke(); ctx.shadowBlur = 0;
+  
+  // نمایش σ₁ و σ₂
+  ctx.font = 'bold 12px Vazirmatn';
+  ctx.fillStyle = '#ffb700';
+  ctx.fillText(`σ₁ = ${sigma1.toFixed(2)}`, 12, 22);
+  ctx.fillStyle = '#a855f7';
+  ctx.fillText(`σ₂ = ${sigma2.toFixed(2)}`, 12, 42);
+}
+['svd11', 'svd12', 'svd21', 'svd22'].forEach(id => {
+  const el = document.getElementById(id);
+  if (el) el.addEventListener('input', drawSVD);
+});
+
+/* ═══ شبیه‌ساز فشرده‌سازی تصویر ═══ */
+const imgSize = 64;
+let originalImage = [];
+
+function generateOriginalImage() {
+  const size = imgSize;
+  const img = [];
+  for (let i = 0; i < size; i++) {
+    const row = [];
+    for (let j = 0; j < size; j++) {
+      // الگوی چندگانه
+      const pattern1 = Math.sin(i * 0.3) * Math.cos(j * 0.3);
+      const pattern2 = Math.sin((i + j) * 0.15);
+      const pattern3 = i > 20 && i < 44 && j > 20 && j < 44 ? 1 : 0;
+      const val = (pattern1 * 0.3 + pattern2 * 0.3 + pattern3 * 0.6 + 1) / 2;
+      row.push(Math.max(0, Math.min(1, val)));
+    }
+    img.push(row);
+  }
+  return img;
+}
+
+function computeSVD(image) {
+  // محاسبه SVD ساده‌شده برای ماتریس مربعی
+  const n = image.length;
+  // A^T A
+  const ATA = [];
+  for (let i = 0; i < n; i++) {
+    ATA.push(new Array(n).fill(0));
+    for (let j = 0; j < n; j++) {
+      for (let k = 0; k < n; k++) {
+        ATA[i][j] += image[k][i] * image[k][j];
+      }
+    }
+  }
+  // مقادیر ویژه A^T A = σ²
+  const sigmas = [];
+  const temp = ATA.map(r => r.slice());
+  for (let iter = 0; iter < n; iter++) {
+    // Power iteration ساده
+    let v = new Array(n).fill(0);
+    v[iter % n] = 1;
+    for (let step = 0; step < 30; step++) {
+      const newV = new Array(n).fill(0);
+      for (let i = 0; i < n; i++) {
+        for (let j = 0; j < n; j++) {
+          newV[i] += temp[i][j] * v[j];
+        }
+      }
+      const norm = Math.sqrt(newV.reduce((s, x) => s + x*x, 0)) || 1;
+      v = newV.map(x => x / norm);
+    }
+    // مقدار ویژه
+    let lambda = 0;
+    for (let i = 0; i < n; i++) {
+      for (let j = 0; j < n; j++) {
+        lambda += v[i] * temp[i][j] * v[j];
+      }
+    }
+    sigmas.push({ value: Math.sqrt(Math.max(0, lambda)), vec: v.slice() });
+    // کاهش ماتریس
+    for (let i = 0; i < n; i++) {
+      for (let j = 0; j < n; j++) {
+        temp[i][j] -= lambda * v[i] * v[j];
+      }
+    }
+  }
+  sigmas.sort((a, b) => b.value - a.value);
+  return sigmas;
+}
+
+function renderImage(canvas, data, k) {
+  const s = setupCanvas(canvas); if (!s) return;
+  const { ctx, w, h } = s;
+  const cellW = w / imgSize;
+  const cellH = h / imgSize;
+  
+  for (let i = 0; i < imgSize; i++) {
+    for (let j = 0; j < imgSize; j++) {
+      const val = data[i][j];
+      const intensity = Math.round(val * 255);
+      ctx.fillStyle = `rgb(${intensity}, ${intensity}, ${intensity})`;
+      ctx.fillRect(j * cellW, i * cellH, cellW + 1, cellH + 1);
+    }
+  }
+}
+
+function updateImageCompression(k) {
+  const svd = computeSVD(originalImage);
+  const n = imgSize;
+  
+  // بازسازی با k مقدار تکین
+  const compressed = [];
+  for (let i = 0; i < n; i++) {
+    compressed.push(new Array(n).fill(0));
+  }
+  
+  for (let idx = 0; idx < Math.min(k, svd.length); idx++) {
+    const { value, vec } = svd[idx];
+    // محاسبه v^T A (بردار تکین راست)
+    const vTA = new Array(n).fill(0);
+    for (let j = 0; j < n; j++) {
+      for (let i = 0; i < n; i++) {
+        vTA[j] += vec[i] * originalImage[i][j];
+      }
+    }
+    // σ * u * v^T
+    for (let i = 0; i < n; i++) {
+      for (let j = 0; j < n; j++) {
+        compressed[i][j] += vec[i] * vTA[j];
+      }
+    }
+  }
+  
+  renderImage('imageOriginal', originalImage);
+  renderImage('imageCompressed', compressed);
+  
+  document.getElementById('kDisplay').textContent = toFa(k);
+  const ratio = (n * n) / (k * (2 * n + 1));
+  document.getElementById('compressionRatio').textContent = toFa(ratio.toFixed(1)) + '×';
+}
+
+const svdKEl = document.getElementById('svdK');
+if (svdKEl) {
+  svdKEl.addEventListener('input', function() {
+    document.getElementById('svdKValue').textContent = toFa(this.value);
+    updateImageCompression(parseInt(this.value));
+  });
+}
+
+/* ═══ تب‌های کد ═══ */
+document.querySelectorAll('.code-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    const parent = tab.parentElement;
+    parent.querySelectorAll('.code-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    const contentId = 'code-' + tab.dataset.code;
+    const content = document.getElementById(contentId);
+    if (content) {
+      const allContents = parent.parentElement.querySelectorAll('.code-content');
+      allContents.forEach(c => c.classList.remove('active'));
+      content.classList.add('active');
+    }
+  });
+});
+
+/* ═══ رندر بر اساس اسلاید ═══ */
+function initVisibleCharts() {
+  const activeSlide = document.querySelector('.slide.active');
+  if (!activeSlide) return;
+  const num = activeSlide.dataset.slide;
+  if (num === '5') drawEigen();
+  else if (num === '8') drawDiagonalization();
+  else if (num === '11') drawSVD();
+  else if (num === '18') {
+    if (originalImage.length === 0) originalImage = generateOriginalImage();
+    updateImageCompression(parseInt(document.getElementById('svdK').value));
+  }
+}
+
+/* ═══ راه‌اندازی ═══ */
+updateNav();
+setTimeout(() => {
+  initVisibleCharts();
+  if (window.MathJax && window.MathJax.typesetPromise) window.MathJax.typesetPromise();
+}, 400);
+setTimeout(() => showToast('به جلسه ۴ خوش آمدید — پایان فاز ۱ 🎉'), 1000);
+
+window.addEventListener('resize', () => setTimeout(() => {
+  initVisibleCharts();
+  if (window.MathJax && window.MathJax.typesetPromise) window.MathJax.typesetPromise();
+}, 200));
+</script>
+
+</body>
+</html>

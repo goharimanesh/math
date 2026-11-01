@@ -1,0 +1,2344 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>جلسه ۲۱ — بهینه‌سازی بدون قید و Adam | دکتر مسعود گوهری منش</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+<script>
+window.MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']],
+    displayMath: [['$$', '$$'], ['\\[', '\\]']],
+    processEscapes: true
+  },
+  options: { skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'] },
+  svg: { fontCache: 'global' }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" async></script>
+
+<style>
+:root {
+  --primary: #00d4aa;
+  --secondary: #06b6d4;
+  --tertiary: #a855f7;
+  --gold: #ffb700;
+  --success: #22c55e;
+  --danger: #ff4757;
+  --pink: #ec4899;
+  --dark: #050818;
+  --darker: #020410;
+  --card-bg: rgba(255, 255, 255, 0.05);
+  --card-border: rgba(255, 255, 255, 0.1);
+  --text: #e8eef7;
+  --text-dim: #9aa7bd;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { overflow: hidden; height: 100%; }
+body {
+  font-family: 'Vazirmatn', sans-serif;
+  background: var(--dark);
+  color: var(--text);
+  direction: rtl;
+  line-height: 1.8;
+}
+#bgCanvas { position: fixed; inset: 0; z-index: -2; background: radial-gradient(ellipse at top, #0a1230 0%, var(--darker) 50%, #000 100%); }
+.glow-orb { position: fixed; border-radius: 50%; filter: blur(120px); opacity: 0.3; z-index: -1; pointer-events: none; animation: floatOrb 25s ease-in-out infinite; }
+.orb1 { width: 600px; height: 600px; background: var(--primary); top: -200px; right: -200px; }
+.orb2 { width: 500px; height: 500px; background: var(--gold); bottom: -150px; left: -150px; animation-delay: -8s; }
+.orb3 { width: 400px; height: 400px; background: var(--tertiary); top: 30%; left: 25%; animation-delay: -15s; opacity: 0.12; }
+@keyframes floatOrb { 0%, 100% { transform: translate(0, 0) scale(1); } 33% { transform: translate(50px, -40px) scale(1.15); } 66% { transform: translate(-40px, 50px) scale(0.9); } }
+
+.top-header { position: fixed; top: 0; left: 0; right: 0; height: 82px; background: rgba(5, 8, 24, 0.9); backdrop-filter: blur(15px); border-bottom: 1px solid var(--card-border); display: flex; align-items: center; justify-content: space-between; padding: 0 18px; z-index: 100; }
+.header-left { display: flex; align-items: center; gap: 14px; }
+.header-signature { height: 60px; width: auto; max-width: 170px; object-fit: contain; filter: drop-shadow(0 0 10px rgba(0, 212, 170, 0.4)); border-radius: 8px; background: rgba(255, 255, 255, 0.05); padding: 4px; }
+.header-text { display: flex; flex-direction: column; line-height: 1.35; }
+.header-name { font-size: 0.88rem; color: var(--gold); font-weight: 800; white-space: nowrap; }
+.header-univ { font-size: 0.7rem; color: var(--text-dim); font-weight: 500; }
+.header-controls { display: flex; gap: 8px; flex-shrink: 0; align-items: center; }
+.ctrl-btn { width: 38px; height: 38px; border-radius: 10px; border: 1px solid var(--card-border); background: var(--card-bg); backdrop-filter: blur(10px); color: var(--text); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; transition: all 0.3s ease; position: relative; }
+.ctrl-btn:hover { background: var(--primary); color: var(--dark); transform: translateY(-2px); }
+.ctrl-btn.active { background: var(--primary); color: var(--dark); }
+
+.print-menu-wrap { position: relative; }
+.print-menu {
+  position: absolute; top: 46px; left: 0;
+  background: rgba(10, 18, 40, 0.98);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  padding: 6px;
+  min-width: 200px;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6);
+  opacity: 0; pointer-events: none;
+  transform: translateY(-8px);
+  transition: all 0.3s ease;
+  z-index: 200;
+}
+.print-menu.show { opacity: 1; pointer-events: auto; transform: translateY(0); }
+.print-menu button {
+  display: flex; align-items: center; gap: 10px;
+  width: 100%; padding: 10px 14px;
+  background: transparent; border: none;
+  color: var(--text); font-family: inherit;
+  font-size: 0.82rem; font-weight: 600;
+  border-radius: 8px; cursor: pointer;
+  text-align: right;
+  transition: all 0.2s ease;
+}
+.print-menu button:hover { background: rgba(0, 212, 170, 0.15); color: var(--primary); }
+.print-menu button i { color: var(--gold); font-size: 0.9rem; width: 18px; text-align: center; }
+
+@media print {
+  @page { size: A4 landscape; margin: 10mm; }
+  html, body { overflow: visible !important; height: auto !important; background: white !important; }
+  #bgCanvas, .glow-orb, .top-header, .topic-nav, .progress-top, .bottom-nav,
+  .toast-container, .star-container, .ctrl-btn, .print-menu, .lightbox,
+  .modal-overlay, .slide:not(.print-visible) { display: none !important; }
+  .slide-container { position: static !important; inset: auto !important; overflow: visible !important; }
+  .slide {
+    position: relative !important; opacity: 1 !important; transform: none !important;
+    pointer-events: auto !important; page-break-after: always;
+    padding: 15px 25px !important; overflow: visible !important;
+    background: white !important; color: #1a1a1a !important;
+    inset: auto !important; height: auto !important;
+  }
+  .slide::before {
+    content: ''; position: fixed; top: 50%; left: 50%;
+    transform: translate(-50%, -50%) rotate(-30deg);
+    width: 600px; height: 300px;
+    background-image: url('images/signature.png');
+    background-repeat: no-repeat; background-position: center;
+    background-size: contain; opacity: 0.08;
+    pointer-events: none; z-index: 9999; filter: grayscale(100%);
+  }
+  .slide-h1, .slide-h3, .slide-text, .card { color: #1a1a1a !important; }
+  .card { border-color: #ccc !important; background: #f9f9f9 !important; }
+  .math-box { background: #f5f5f5 !important; border-color: #999 !important; }
+  .slide-num { background: #e0e0e0 !important; color: #333 !important; }
+  .code-content { background: #f5f5f5 !important; color: #1a1a1a !important; }
+}
+
+.lightbox {
+  position: fixed; inset: 0; background: rgba(0, 0, 0, 0.92);
+  backdrop-filter: blur(8px); z-index: 10000;
+  display: flex; align-items: center; justify-content: center;
+  padding: 40px; opacity: 0; pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+.lightbox.active { opacity: 1; pointer-events: auto; }
+.lightbox-img {
+  max-width: 90vw; max-height: 85vh; border-radius: 16px;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.8), 0 0 60px rgba(0, 212, 170, 0.3);
+  border: 2px solid var(--primary); transform: scale(0.85);
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.lightbox.active .lightbox-img { transform: scale(1); }
+.lightbox-close {
+  position: absolute; top: 24px; left: 24px;
+  width: 46px; height: 46px; border-radius: 50%;
+  background: rgba(255, 71, 87, 0.9); border: none; color: #fff;
+  font-size: 1.2rem; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.3s ease; z-index: 10001;
+}
+.lightbox-close:hover { background: var(--danger); transform: rotate(90deg); }
+.lightbox-caption {
+  position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%);
+  background: rgba(10, 18, 40, 0.95); border: 1px solid var(--card-border);
+  color: var(--text); padding: 10px 24px; border-radius: 30px;
+  font-size: 0.85rem; font-weight: 600;
+}
+
+.img-box, .hero-img, .star-img { cursor: zoom-in; transition: all 0.3s ease; }
+.img-box:hover { transform: scale(1.02); border-color: var(--primary); }
+
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(10px); z-index: 9500;
+  display: flex; align-items: center; justify-content: center;
+  padding: 30px; opacity: 0; pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+.modal-overlay.active { opacity: 1; pointer-events: auto; }
+.modal-box {
+  background: linear-gradient(145deg, rgba(10, 18, 40, 0.98), rgba(5, 8, 24, 0.98));
+  border: 1px solid var(--gold); border-radius: 22px; padding: 30px;
+  max-width: 720px; width: 100%; max-height: 85vh; overflow-y: auto;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.8), 0 0 50px rgba(255, 183, 0, 0.2);
+  position: relative; transform: scale(0.92);
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.modal-overlay.active .modal-box { transform: scale(1); }
+.modal-close {
+  position: absolute; top: 18px; left: 18px;
+  width: 38px; height: 38px; border-radius: 50%;
+  background: rgba(255, 71, 87, 0.2); border: 1px solid rgba(255, 71, 87, 0.5);
+  color: var(--danger); font-size: 1rem; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.3s ease;
+}
+.modal-close:hover { background: var(--danger); color: #fff; transform: rotate(90deg); }
+.modal-title {
+  font-size: 1.3rem; font-weight: 900; color: var(--gold);
+  margin-bottom: 18px; display: flex; align-items: center; gap: 12px;
+  padding-right: 40px;
+}
+.modal-title i { font-size: 1.5rem; }
+.modal-section { margin-bottom: 18px; }
+.modal-section-title {
+  font-size: 0.95rem; font-weight: 800; color: var(--primary);
+  margin-bottom: 8px; display: flex; align-items: center; gap: 8px;
+}
+.modal-section-title i { color: var(--primary); }
+.modal-section p { font-size: 0.88rem; color: var(--text-dim); line-height: 2; margin-bottom: 8px; }
+.modal-section ul { list-style: none; padding: 0; }
+.modal-section ul li {
+  padding: 6px 24px 6px 10px; position: relative;
+  font-size: 0.85rem; color: var(--text-dim); line-height: 1.9;
+}
+.modal-section ul li::before { content: '◆'; position: absolute; right: 4px; color: var(--gold); font-size: 0.7rem; }
+
+.concept-word {
+  color: var(--gold); font-weight: 900; cursor: pointer;
+  text-decoration: underline dotted var(--gold);
+  text-underline-offset: 5px; transition: all 0.3s ease;
+  padding: 0 2px; border-radius: 4px;
+}
+.concept-word:hover { background: rgba(255, 183, 0, 0.15); text-shadow: 0 0 12px rgba(255, 183, 0, 0.8); }
+
+.topic-nav { position: fixed; top: 82px; left: 0; right: 0; height: 36px; background: rgba(5, 8, 24, 0.9); backdrop-filter: blur(10px); border-bottom: 1px solid var(--card-border); z-index: 99; display: flex; align-items: center; gap: 6px; padding: 0 18px; overflow-x: auto; scrollbar-width: none; }
+.topic-nav::-webkit-scrollbar { display: none; }
+.topic-pill { padding: 4px 11px; border-radius: 20px; font-size: 0.7rem; font-weight: 600; white-space: nowrap; color: var(--text-dim); background: rgba(255, 255, 255, 0.04); border: 1px solid transparent; transition: all 0.3s ease; }
+.topic-pill.active { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: var(--dark); font-weight: 800; box-shadow: 0 3px 10px rgba(0, 212, 170, 0.35); }
+.topic-pill.done { color: var(--primary); border-color: rgba(0, 212, 170, 0.3); }
+
+.progress-top { position: fixed; top: 118px; left: 0; right: 0; height: 3px; background: rgba(255, 255, 255, 0.05); z-index: 98; }
+.progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--primary), var(--secondary), var(--tertiary)); transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 0 12px var(--primary); }
+
+.slide-container { position: fixed; inset: 121px 0 0 0; overflow: hidden; }
+.slide { position: absolute; inset: 0; padding: 24px 50px 90px; opacity: 0; transform: translateX(-40px); pointer-events: none; transition: opacity 0.5s ease, transform 0.5s cubic-bezier(0.4, 0, 0.2, 1); overflow-y: auto; overflow-x: hidden; }
+.slide.active { opacity: 1; transform: translateX(0); pointer-events: auto; }
+.slide.prev { transform: translateX(40px); }
+.slide::-webkit-scrollbar { width: 6px; }
+.slide::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 3px; }
+.slide-inner { max-width: 1200px; margin: 0 auto; animation: contentFade 0.6s ease; }
+@keyframes contentFade { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+.slide-num { display: inline-block; padding: 5px 14px; border-radius: 20px; background: rgba(0, 212, 170, 0.15); color: var(--primary); font-size: 0.72rem; font-weight: 700; margin-bottom: 10px; }
+.slide-h1 { font-size: clamp(1.3rem, 3.2vw, 2rem); font-weight: 900; background: linear-gradient(135deg, var(--primary), var(--secondary), var(--tertiary), var(--gold)); background-size: 300% 300%; -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; animation: gradientShift 6s ease infinite; margin-bottom: 16px; line-height: 1.35; }
+@keyframes gradientShift { 0%, 100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
+.slide-h3 { font-size: 0.98rem; font-weight: 700; color: var(--text); margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+.slide-h3 i { color: var(--gold); font-size: 0.88rem; }
+.slide-text { font-size: 0.9rem; color: var(--text-dim); line-height: 2; margin-bottom: 12px; }
+
+.card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 18px; padding: 18px; backdrop-filter: blur(12px); transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1); }
+.card:hover { transform: translateY(-4px); border-color: rgba(0, 212, 170, 0.4); box-shadow: 0 15px 35px rgba(0, 212, 170, 0.12); }
+.grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+.grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; }
+.grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; }
+
+.title-slide { text-align: center; padding-top: 5px; }
+.title-slide .hero-img { width: 100%; max-width: 520px; height: 170px; object-fit: contain; background: rgba(0, 0, 0, 0.2); padding: 6px; border-radius: 20px; margin: 0 auto 12px; display: block; border: 1px solid var(--card-border); box-shadow: 0 20px 40px rgba(0, 212, 170, 0.15); }
+.title-slide .bismillah { font-size: 1.2rem; font-weight: 500; background: linear-gradient(90deg, var(--gold), var(--primary), var(--secondary)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 4px; }
+.title-slide .hoval { font-size: 0.82rem; color: var(--text-dim); margin-bottom: 16px; letter-spacing: 1px; }
+.title-slide .main-title { font-size: clamp(1.4rem, 3.4vw, 2.1rem); font-weight: 900; background: linear-gradient(135deg, var(--primary), var(--gold), var(--tertiary)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 10px; line-height: 1.3; }
+.title-slide .subtitle { font-size: clamp(0.9rem, 2vw, 1.05rem); color: var(--text-dim); margin-bottom: 18px; }
+.title-slide .euler-box { display: inline-block; padding: 12px 30px; border-radius: 18px; background: var(--card-bg); border: 1px solid var(--card-border); backdrop-filter: blur(15px); margin-bottom: 16px; }
+.title-slide .instructor-line { font-size: 0.92rem; color: var(--gold); font-weight: 700; margin-bottom: 3px; }
+.title-slide .instructor-title-line { font-size: 0.78rem; color: var(--text-dim); margin-bottom: 12px; }
+.title-slide .semester { display: inline-block; padding: 6px 18px; border-radius: 50px; background: var(--card-bg); border: 1px solid var(--card-border); font-size: 0.78rem; color: var(--text-dim); }
+
+.star-container { position: fixed; top: 150px; left: 40px; z-index: 90; cursor: pointer; }
+.star-core {
+  width: 40px; height: 40px; border-radius: 50%;
+  background: radial-gradient(circle at 50% 50%, #fff 0%, var(--gold) 30%, var(--gold) 50%, rgba(255, 183, 0, 0.2) 80%, transparent 100%);
+  box-shadow: 0 0 25px var(--gold), 0 0 50px rgba(255, 183, 0, 0.5), 0 0 80px rgba(255, 183, 0, 0.3);
+  animation: starPulse 3s ease-in-out infinite; position: relative;
+}
+.star-core::before {
+  content: ''; position: absolute; inset: -20px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 183, 0, 0.3) 0%, transparent 70%);
+  animation: starHalo 4s ease-in-out infinite;
+}
+@keyframes starPulse {
+  0%, 100% { transform: scale(1); box-shadow: 0 0 25px var(--gold), 0 0 50px rgba(255, 183, 0, 0.5), 0 0 80px rgba(255, 183, 0, 0.3); }
+  50% { transform: scale(1.15); box-shadow: 0 0 35px var(--gold), 0 0 70px rgba(255, 183, 0, 0.7), 0 0 100px rgba(255, 183, 0, 0.5); }
+}
+@keyframes starHalo {
+  0%, 100% { transform: scale(1); opacity: 0.5; }
+  50% { transform: scale(1.3); opacity: 0.8; }
+}
+.star-tooltip {
+  position: absolute; top: 55px; left: 0; width: 240px;
+  background: linear-gradient(145deg, rgba(10, 18, 40, 0.98), rgba(5, 8, 24, 0.98));
+  border: 1px solid var(--gold); border-radius: 16px; padding: 16px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7), 0 0 30px rgba(255, 183, 0, 0.3);
+  opacity: 0; pointer-events: none; transform: translateY(-10px) scale(0.95);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.star-container:hover .star-tooltip { opacity: 1; transform: translateY(0) scale(1); pointer-events: auto; }
+.star-img { width: 100%; height: 180px; object-fit: contain; border-radius: 12px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 183, 0, 0.3); margin-bottom: 10px; padding: 6px; }
+.star-name { font-size: 0.95rem; font-weight: 800; color: var(--gold); text-align: center; margin-bottom: 4px; }
+.star-title { font-size: 0.75rem; color: var(--text-dim); text-align: center; margin-bottom: 6px; font-style: italic; }
+.star-years { font-size: 0.72rem; color: var(--primary); text-align: center; font-family: 'Courier New', monospace; padding-top: 6px; border-top: 1px solid rgba(255, 183, 0, 0.2); }
+.star-tooltip::before { content: ''; position: absolute; top: -8px; left: 20px; width: 16px; height: 16px; background: rgba(10, 18, 40, 0.98); border-top: 1px solid var(--gold); border-right: 1px solid var(--gold); transform: rotate(-45deg); }
+
+.math-box { background: rgba(0, 212, 170, 0.06); border: 1px solid rgba(0, 212, 170, 0.25); border-radius: 14px; padding: 16px 22px; margin: 12px 0; text-align: center; direction: ltr; position: relative; overflow-x: auto; overflow-y: hidden; }
+.math-box::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--primary), var(--secondary), var(--tertiary)); }
+.math-box .MathJax, .math-box mjx-container { color: var(--primary) !important; font-size: 1em !important; }
+.math-box.gold-math .MathJax, .math-box.gold-math mjx-container { color: var(--gold) !important; }
+.math-box.purple-math .MathJax, .math-box.purple-math mjx-container { color: var(--tertiary) !important; }
+.math-box.pink-math .MathJax, .math-box.pink-math mjx-container { color: var(--pink) !important; }
+.math-box.danger-math .MathJax, .math-box.danger-math mjx-container { color: var(--danger) !important; }
+.math-note { font-family: 'Vazirmatn', sans-serif; font-size: 0.76rem; color: var(--text-dim); direction: rtl; margin-top: 8px; font-style: italic; text-align: center; }
+
+.simulator { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 18px; padding: 16px; margin: 12px 0; backdrop-filter: blur(12px); }
+.sim-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; flex-wrap: wrap; gap: 10px; }
+.sim-title { font-size: 0.9rem; font-weight: 700; color: var(--gold); display: flex; align-items: center; gap: 8px; }
+.sim-controls { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.slider-group { display: flex; align-items: center; gap: 8px; background: rgba(0, 0, 0, 0.3); padding: 6px 12px; border-radius: 10px; border: 1px solid var(--card-border); }
+.slider-group label { font-size: 0.72rem; color: var(--text-dim); white-space: nowrap; }
+.slider-group input[type="range"] { width: 100px; accent-color: var(--primary); cursor: pointer; }
+.slider-value { font-family: 'Courier New', monospace; font-size: 0.78rem; color: var(--primary); font-weight: 700; min-width: 30px; text-align: center; }
+.canvas-wrapper { position: relative; width: 100%; height: 260px; background: rgba(0, 0, 0, 0.4); border-radius: 12px; overflow: hidden; border: 1px solid var(--card-border); }
+.canvas-wrapper canvas { width: 100%; height: 100%; display: block; }
+
+.img-box { width: 100%; max-height: 280px; border-radius: 16px; border: 1px solid var(--card-border); margin: 12px 0; display: block; object-fit: contain; background: rgba(0, 0, 0, 0.3); padding: 8px; }
+
+.step-container { background: rgba(0, 0, 0, 0.2); border-radius: 14px; padding: 16px 20px; margin: 12px 0; border-right: 3px solid var(--gold); }
+.step-title { font-size: 0.88rem; font-weight: 800; color: var(--gold); margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+.step-content { font-size: 0.85rem; color: var(--text-dim); line-height: 2; }
+.step-content .math-box { margin: 8px 0; padding: 12px 16px; }
+
+.exercise-block { border-radius: 16px; padding: 16px; border: 1px solid; position: relative; overflow: hidden; margin-bottom: 12px; }
+.exercise-block::before { content: ''; position: absolute; top: 0; right: 0; width: 4px; height: 100%; }
+.ex-yellow { background: rgba(255, 217, 61, 0.06); border-color: rgba(255, 217, 61, 0.25); }
+.ex-yellow::before { background: #ffd93d; }
+.ex-green { background: rgba(107, 207, 127, 0.06); border-color: rgba(107, 207, 127, 0.25); }
+.ex-green::before { background: #6bcf7f; }
+.ex-purple { background: rgba(168, 85, 247, 0.06); border-color: rgba(168, 85, 247, 0.25); }
+.ex-purple::before { background: var(--tertiary); }
+.ex-red { background: rgba(255, 107, 107, 0.06); border-color: rgba(255, 107, 107, 0.25); }
+.ex-red::before { background: #ff6b6b; }
+.ex-header { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+.ex-num { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 0.8rem; color: var(--dark); flex-shrink: 0; }
+.ex-yellow .ex-num { background: #ffd93d; }
+.ex-green .ex-num { background: #6bcf7f; }
+.ex-purple .ex-num { background: var(--tertiary); color: #fff; }
+.ex-red .ex-num { background: #ff6b6b; color: #fff; }
+.ex-title { font-size: 0.92rem; font-weight: 800; }
+.ex-list { list-style: none; padding: 0; counter-reset: item; }
+.ex-list li { position: relative; padding: 7px 34px 7px 10px; font-size: 0.83rem; color: var(--text-dim); line-height: 1.8; border-bottom: 1px dashed rgba(255, 255, 255, 0.05); }
+.ex-list li:last-child { border-bottom: none; }
+.ex-list li::before { counter-increment: item; content: counter(item); position: absolute; right: 4px; top: 9px; width: 22px; height: 22px; border-radius: 50%; background: rgba(255, 255, 255, 0.08); color: var(--text); font-size: 0.7rem; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+.email-banner { margin-top: 12px; padding: 12px; border-radius: 14px; background: linear-gradient(135deg, rgba(0, 212, 170, 0.1), rgba(168, 85, 247, 0.1)); border: 1px dashed rgba(0, 212, 170, 0.4); text-align: center; }
+.email-banner p { font-size: 0.8rem; color: var(--text); margin-bottom: 5px; }
+.email-banner code { display: inline-block; padding: 5px 12px; border-radius: 8px; background: rgba(0, 0, 0, 0.4); color: var(--primary); font-family: 'Courier New', monospace; font-size: 0.76rem; direction: ltr; margin-top: 3px; }
+
+.code-tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--card-border); }
+.code-tab { padding: 8px 16px; border-radius: 10px 10px 0 0; background: transparent; border: none; color: var(--text-dim); font-family: inherit; font-size: 0.8rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; }
+.code-tab.active { background: rgba(0, 212, 170, 0.1); color: var(--primary); border-bottom: 2px solid var(--primary); }
+.code-content { display: none; background: #0a0f24; border: 1px solid var(--card-border); border-top: none; border-radius: 0 0 12px 12px; padding: 14px; overflow-x: auto; direction: ltr; text-align: left; }
+.code-content.active { display: block; }
+.code-content pre { margin: 0; font-family: 'Courier New', Consolas, monospace; font-size: 0.76rem; line-height: 1.6; color: #e8eef7; white-space: pre; }
+.code-content .kw { color: #ff79c6; }
+.code-content .fn { color: #50fa7b; }
+.code-content .num { color: #bd93f9; }
+.code-content .str { color: #f1fa8c; }
+.code-content .cm { color: #6272a4; font-style: italic; }
+.code-content .cls { color: #8be9fd; }
+
+.bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; height: 58px; background: rgba(5, 8, 24, 0.9); backdrop-filter: blur(15px); border-top: 1px solid var(--card-border); display: flex; align-items: center; justify-content: space-between; padding: 0 20px; z-index: 100; }
+.nav-btn { padding: 8px 18px; border-radius: 12px; border: 1px solid var(--card-border); background: var(--card-bg); color: var(--text); cursor: pointer; font-family: inherit; font-size: 0.82rem; font-weight: 600; display: flex; align-items: center; gap: 7px; transition: all 0.3s ease; }
+.nav-btn:hover:not(:disabled) { background: var(--primary); color: var(--dark); transform: translateY(-2px); }
+.nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+.dots-nav { display: flex; gap: 4px; flex-wrap: wrap; justify-content: center; max-width: 60%; }
+.dot-nav { width: 8px; height: 8px; border-radius: 50%; background: rgba(255, 255, 255, 0.15); cursor: pointer; border: none; padding: 0; transition: all 0.3s ease; }
+.dot-nav.active { background: var(--primary); width: 22px; border-radius: 5px; box-shadow: 0 0 10px var(--primary); }
+.slide-counter { font-size: 0.78rem; color: var(--text-dim); font-family: 'Courier New', monospace; min-width: 60px; text-align: center; }
+.slide-counter span { color: var(--primary); font-weight: 800; }
+
+.toast-container { position: fixed; bottom: 76px; left: 24px; z-index: 9999; display: flex; flex-direction: column; gap: 8px; }
+.toast { background: rgba(10, 18, 40, 0.95); border: 1px solid var(--primary); border-radius: 14px; padding: 11px 16px; color: var(--text); font-size: 0.82rem; backdrop-filter: blur(12px); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); display: flex; align-items: center; gap: 8px; animation: slideIn 0.35s ease; max-width: 320px; }
+.toast i { color: var(--primary); }
+@keyframes slideIn { from { opacity: 0; transform: translateX(-60px); } to { opacity: 1; transform: translateX(0); } }
+
+.lecture-note {
+  background: rgba(0, 212, 170, 0.06); border: 1px solid rgba(0, 212, 170, 0.3);
+  border-radius: 12px; padding: 12px 16px; margin: 10px 0;
+  display: flex; gap: 10px; align-items: flex-start;
+}
+.lecture-note i { color: var(--primary); font-size: 1.1rem; margin-top: 3px; }
+.lecture-note-content { flex: 1; font-size: 0.85rem; color: var(--text-dim); line-height: 1.9; }
+
+.method-badge {
+  display: inline-block; padding: 3px 10px; border-radius: 6px;
+  font-size: 0.7rem; font-weight: 700; margin-bottom: 8px;
+}
+.badge-opt { background: rgba(0, 212, 170, 0.15); color: var(--primary); }
+.badge-math { background: rgba(255, 183, 0, 0.15); color: var(--gold); }
+.badge-adam { background: rgba(168, 85, 247, 0.15); color: var(--tertiary); }
+.badge-code { background: rgba(236, 72, 153, 0.15); color: var(--pink); }
+
+@media (max-width: 768px) {
+  .slide { padding: 16px 14px 90px; }
+  .header-univ { display: none; }
+  .header-name { font-size: 0.75rem; }
+  .header-signature { height: 45px; max-width: 110px; }
+  .nav-btn { padding: 7px 11px; font-size: 0.72rem; }
+  .nav-btn span { display: none; }
+  .dots-nav { max-width: 45%; }
+  .slide-counter { font-size: 0.68rem; min-width: 45px; }
+  .canvas-wrapper { height: 210px; }
+  .topic-pill { font-size: 0.64rem; padding: 3px 8px; }
+  .star-container { top: 130px; left: 20px; }
+  .star-core { width: 32px; height: 32px; }
+  .star-tooltip { width: 200px; }
+  .modal-box { padding: 20px; }
+}
+@media (max-width: 480px) {
+  .ctrl-btn { width: 34px; height: 34px; font-size: 0.8rem; }
+  .header-signature { display: none; }
+  .star-container { top: 120px; left: 12px; }
+  .star-core { width: 28px; height: 28px; }
+  .star-tooltip { width: 180px; padding: 12px; }
+  .star-img { height: 140px; }
+  .lightbox-caption { font-size: 0.75rem; padding: 8px 16px; }
+}
+</style>
+</head>
+<body>
+
+<canvas id="bgCanvas"></canvas>
+<div class="glow-orb orb1"></div>
+<div class="glow-orb orb2"></div>
+<div class="glow-orb orb3"></div>
+
+<!-- ستاره درخشان ابن هیثم -->
+<div class="star-container" id="starContainer">
+  <div class="star-core"></div>
+  <div class="star-tooltip">
+    <img src="images/star.png" alt="ابن هیثم" class="star-img img-clickable" onerror="this.style.background='linear-gradient(135deg, #ffb700, #a855f7)'; this.style.minHeight='140px';" data-caption="ابن هیثم — بنیان‌گذار روش علمی تجربی">
+    <div class="star-name">ابن هیثم</div>
+    <div class="star-title">بنیان‌گذار روش علمی تجربی و اپتیک</div>
+    <div class="star-years">۹۶۵ — ۱۰۴۰ میلادی</div>
+  </div>
+</div>
+
+<div class="top-header">
+  <div class="header-left">
+    <img src="images/signature.png" alt="امضا" class="header-signature" onerror="this.style.display='none'">
+    <div class="header-text">
+      <span class="header-name">دکتر مسعود گوهری منش</span>
+      <span class="header-univ">دانشیار گروه مهندسی مکانیک — دانشگاه تربت حیدریه</span>
+    </div>
+  </div>
+  <div class="header-controls">
+    <button class="ctrl-btn" id="soundToggle" title="صدا"><i class="fas fa-volume-up"></i></button>
+    <button class="ctrl-btn" id="fullscreenToggle" title="تمام‌صفحه"><i class="fas fa-expand"></i></button>
+    <div class="print-menu-wrap">
+      <button class="ctrl-btn" id="printToggle" title="چاپ"><i class="fas fa-print"></i></button>
+      <div class="print-menu" id="printMenu">
+        <button id="printCurrentBtn"><i class="fas fa-file"></i> چاپ این صفحه</button>
+        <button id="printAllBtn"><i class="fas fa-layer-group"></i> چاپ همه صفحات</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="topic-nav" id="topicNav">
+  <span class="topic-pill" data-topic="1">مقدمه</span>
+  <span class="topic-pill" data-topic="2">تعریف و شرایط</span>
+  <span class="topic-pill" data-topic="3">محدب و غیرمحدب</span>
+  <span class="topic-pill" data-topic="4">گرادیان کاهشی</span>
+  <span class="topic-pill" data-topic="5">Momentum</span>
+  <span class="topic-pill" data-topic="6">روش‌های تطبیقی</span>
+  <span class="topic-pill" data-topic="7">Adam</span>
+  <span class="topic-pill" data-topic="8">مقایسه</span>
+  <span class="topic-pill" data-topic="9">کد و تمرین</span>
+  <span class="topic-pill" data-topic="10">جمع‌بندی</span>
+</div>
+
+<div class="progress-top"><div class="progress-fill" id="progressFill"></div></div>
+
+<div class="slide-container" id="slideContainer">
+
+  <!-- ۱ — عنوان -->
+  <div class="slide active" data-slide="1" data-topic="1">
+    <div class="slide-inner title-slide">
+      <div class="bismillah">بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِیم</div>
+      <div class="hoval">هُوَ الخَلّاقُ العَلیم</div>
+      <img src="images/hero-optimization.png" alt="Optimization" class="hero-img img-clickable" onerror="this.style.display='none'" data-caption="بهینه‌سازی">
+      <h1 class="main-title">بهینه‌سازی بدون قید و Adam</h1>
+      <p class="subtitle">(Unconstrained Optimization & Adam) — جلسه ۲۱ | شروع فاز ۶</p>
+      <div class="euler-box"><div style="direction: ltr; font-size: 0.95rem;">$$\theta_{t+1} = \theta_t - \eta \frac{\hat{m}_t}{\sqrt{\hat{v}_t} + \epsilon}$$</div></div>
+      <p class="instructor-line">دکتر مسعود گوهری منش</p>
+      <p class="instructor-title-line">دانشیار گروه مهندسی مکانیک — دانشگاه تربت حیدریه</p>
+      <div class="semester">نیمسال اول ۱۴۰۵–۱۴۰۶</div>
+      <div class="lecture-note" style="margin-top: 20px; max-width: 600px; margin-left: auto; margin-right: auto; text-align: right;">
+        <i class="fas fa-star" style="color: var(--gold);"></i>
+        <div class="lecture-note-content">
+          <strong style="color: var(--gold);">💫 ستاره امروز:</strong> به ستاره درخشان گوشه صفحه هاور کنید تا <strong>ابن هیثم</strong>، بنیان‌گذار روش علمی تجربی را ببینید.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۲ — مرور فاز ۵ -->
+  <div class="slide" data-slide="2" data-topic="1">
+    <div class="slide-inner">
+      <span class="slide-num">شروع فاز ۶</span>
+      <h2 class="slide-h1">از PINN به بهینه‌سازی پیشرفته</h2>
+
+      <div class="grid-2">
+        <div class="card" style="background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3);">
+          <div class="slide-h3" style="color: var(--primary);"><i class="fas fa-check-circle"></i> فاز ۵ (پایان یافت)</div>
+          <ul style="list-style: none; padding: 0; font-size: 0.85rem; color: var(--text-dim); line-height: 2;">
+            <li>✅ مقدمه یادگیری ماشین</li>
+            <li>✅ شبکه عصبی و Backprop</li>
+            <li>✅ تئوری PINN</li>
+            <li>✅ پیاده‌سازی PINN در PyTorch</li>
+          </ul>
+        </div>
+        <div class="card" style="background: rgba(255, 183, 0, 0.06); border-color: rgba(255, 183, 0, 0.3);">
+          <div class="slide-h3" style="color: var(--gold);"><i class="fas fa-rocket"></i> فاز ۶ (شروع)</div>
+          <ul style="list-style: none; padding: 0; font-size: 0.85rem; color: var(--text-dim); line-height: 2;">
+            <li>🔹 جلسه ۲۱: بهینه‌سازی بدون قید ← امروز</li>
+            <li>🔹 جلسه ۲۲: بهینه‌سازی با قید، KKT</li>
+            <li>🔹 جلسه ۲۳: بهینه‌سازی تکاملی (GA، PSO)</li>
+            <li>🔹 جلسه ۲۴: کارگاه مقاله IEEE</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top: 16px; background: rgba(168, 85, 247, 0.06); border-color: rgba(168, 85, 247, 0.3);">
+        <div class="slide-h3" style="color: var(--tertiary);"><i class="fas fa-bullseye"></i> چرا بهینه‌سازی؟</div>
+        <p class="slide-text" style="font-size: 0.9rem;">
+          بهینه‌سازی قلب همه‌ی الگوریتم‌های یادگیری است. از آموزش شبکه عصبی تا طراحی سازه، از کنترل ربات تا تنظیم ابرپارامترها — همه اینها مسائل بهینه‌سازی هستند. امروز پایه‌ی ریاضی این ابزار را می‌آموزیم.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۳ — چرا بهینه‌سازی -->
+  <div class="slide" data-slide="3" data-topic="1">
+    <div class="slide-inner">
+      <span class="slide-num">انگیزه</span>
+      <h2 class="slide-h1">کاربردهای بهینه‌سازی در مهندسی</h2>
+
+      <div class="grid-3">
+        <div class="card" style="background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3); text-align: center; padding: 14px;">
+          <i class="fas fa-brain" style="font-size: 1.6rem; color: var(--primary); display: block; margin-bottom: 8px;"></i>
+          <div class="slide-h3" style="justify-content: center; font-size: 0.85rem;">یادگیری ماشین</div>
+          <p class="slide-text" style="font-size: 0.72rem;">کمینه‌سازی Loss</p>
+        </div>
+        <div class="card" style="background: rgba(255, 183, 0, 0.06); border-color: rgba(255, 183, 0, 0.3); text-align: center; padding: 14px;">
+          <i class="fas fa-cube" style="font-size: 1.6rem; color: var(--gold); display: block; margin-bottom: 8px;"></i>
+          <div class="slide-h3" style="justify-content: center; font-size: 0.85rem;">طراحی سازه</div>
+          <p class="slide-text" style="font-size: 0.72rem;">کمینه‌سازی وزن/هزینه</p>
+        </div>
+        <div class="card" style="background: rgba(168, 85, 247, 0.06); border-color: rgba(168, 85, 247, 0.3); text-align: center; padding: 14px;">
+          <i class="fas fa-robot" style="font-size: 1.6rem; color: var(--tertiary); display: block; margin-bottom: 8px;"></i>
+          <div class="slide-h3" style="justify-content: center; font-size: 0.85rem;">کنترل ربات</div>
+          <p class="slide-text" style="font-size: 0.72rem;">کمینه‌سازی خطا و انرژی</p>
+        </div>
+        <div class="card" style="background: rgba(236, 72, 153, 0.06); border-color: rgba(236, 72, 153, 0.3); text-align: center; padding: 14px;">
+          <i class="fas fa-microchip" style="font-size: 1.6rem; color: var(--pink); display: block; margin-bottom: 8px;"></i>
+          <div class="slide-h3" style="justify-content: center; font-size: 0.85rem;">طراحی NEMS</div>
+          <p class="slide-text" style="font-size: 0.72rem;">بیشینه‌سازی حساسیت</p>
+        </div>
+        <div class="card" style="background: rgba(6, 182, 212, 0.06); border-color: rgba(6, 182, 212, 0.3); text-align: center; padding: 14px;">
+          <i class="fas fa-chart-line" style="font-size: 1.6rem; color: var(--secondary); display: block; margin-bottom: 8px;"></i>
+          <div class="slide-h3" style="justify-content: center; font-size: 0.85rem;">مالی و اقتصاد</div>
+          <p class="slide-text" style="font-size: 0.72rem;">بیشینه‌سازی سود</p>
+        </div>
+        <div class="card" style="background: rgba(34, 197, 94, 0.06); border-color: rgba(34, 197, 94, 0.3); text-align: center; padding: 14px;">
+          <i class="fas fa-flask" style="font-size: 1.6rem; color: var(--success); display: block; margin-bottom: 8px;"></i>
+          <div class="slide-h3" style="justify-content: center; font-size: 0.85rem;">علم مواد</div>
+          <p class="slide-text" style="font-size: 0.72rem;">طراحی ترکیبات</p>
+        </div>
+      </div>
+
+      <div class="lecture-note">
+        <i class="fas fa-lightbulb"></i>
+        <div class="lecture-note-content">
+          <strong>هدف امروز:</strong> یادگیری روش‌های عددی برای یافتن کمینه‌ی یک تابع، بدون هیچ قیدی. سپس این ابزار را به بهینه‌سازی با قید (جلسه ۲۲) گسترش می‌دهیم.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۴ — تعریف مسئله -->
+  <div class="slide" data-slide="4" data-topic="2">
+    <div class="slide-inner">
+      <span class="slide-num">تعریف</span>
+      <span class="method-badge badge-math" style="display: inline-block; margin-right: 8px;">Problem</span>
+      <h2 class="slide-h1">تعریف مسئله بهینه‌سازی بدون قید</h2>
+
+      <img src="images/optimization-definition.png" alt="Optimization" class="img-box img-clickable" onerror="this.style.display='none'" data-caption="تعریف مسئله بهینه‌سازی">
+
+      <div class="math-box gold-math" style="padding: 16px;">
+        <div style="font-size: 1.1rem;">
+          $$\min_{x \in \mathbb{R}^n} f(x)$$
+        </div>
+        <p class="math-note">$f$ = تابع هدف (Objective Function) | $x$ = متغیرهای تصمیم</p>
+      </div>
+
+      <div class="grid-3" style="margin-top: 14px;">
+        <div class="card" style="background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3); text-align: center; padding: 12px;">
+          <div class="slide-h3" style="justify-content: center; font-size: 0.85rem;">$f(x)$</div>
+          <p class="slide-text" style="font-size: 0.72rem;">تابع هدف — می‌خواهیم کمینه کنیم</p>
+        </div>
+        <div class="card" style="background: rgba(255, 183, 0, 0.06); border-color: rgba(255, 183, 0, 0.3); text-align: center; padding: 12px;">
+          <div class="slide-h3" style="justify-content: center; font-size: 0.85rem;">$x^*$</div>
+          <p class="slide-text" style="font-size: 0.72rem;">جواب بهینه — نقطه‌ای که $f$ کمینه است</p>
+        </div>
+        <div class="card" style="background: rgba(168, 85, 247, 0.06); border-color: rgba(168, 85, 247, 0.3); text-align: center; padding: 12px;">
+          <div class="slide-h3" style="justify-content: center; font-size: 0.85rem;">$f(x^*)$</div>
+          <p class="slide-text" style="font-size: 0.72rem;">مقدار بهینه — کمترین مقدار $f$</p>
+        </div>
+      </div>
+
+      <div class="lecture-note">
+        <i class="fas fa-star"></i>
+        <div class="lecture-note-content">
+          <strong>نکته:</strong> در یادگیری ماشین، $f$ همان <b>Loss function</b> است و $x$ همان پارامترهای مدل $\theta$. هدف: پیدا کردن $\theta^*$ که Loss را کمینه کند.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۵ — FOC -->
+  <div class="slide" data-slide="5" data-topic="2">
+    <div class="slide-inner">
+      <span class="slide-num">شرط لازم</span>
+      <span class="method-badge badge-math" style="display: inline-block; margin-right: 8px;">FOC</span>
+      <h2 class="slide-h1">شرط مرتبه اول (FOC)</h2>
+
+      <img src="images/foc-condition.png" alt="FOC" class="img-box img-clickable" style="max-height: 160px;" onerror="this.style.display='none'" data-caption="شرط مرتبه اول">
+
+      <p class="slide-text">
+        اگر $x^*$ یک کمینه‌ی موضعی باشد و $f$ در آن مشتق‌پذیر باشد، آنگاه **گرادیان صفر** است:
+      </p>
+
+      <div class="math-box gold-math" style="padding: 16px;">
+        <div style="font-size: 1.05rem;">
+          $$\nabla f(x^*) = 0$$
+        </div>
+        <p class="math-note">$\nabla f = [\partial f/\partial x_1، \dots، \partial f/\partial x_n]^T$</p>
+      </div>
+
+      <div class="grid-3" style="margin-top: 14px;">
+        <div class="card" style="background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3);">
+          <div class="slide-h3" style="color: var(--primary);"><i class="fas fa-check"></i> نقطه بحرانی</div>
+          <p class="slide-text" style="font-size: 0.8rem;">
+            نقطه‌ای که $\nabla f = 0$. می‌تواند کمینه، بیشینه، یا زینی باشد.
+          </p>
+        </div>
+        <div class="card" style="background: rgba(255, 183, 0, 0.06); border-color: rgba(255, 183, 0, 0.3);">
+          <div class="slide-h3" style="color: var(--gold);"><i class="fas fa-info"></i> شرط لازم</div>
+          <p class="slide-text" style="font-size: 0.8rem;">
+            همه کمینه‌ها FOC را ارضا می‌کنند، اما همه نقاط FOC کمینه نیستند.
+          </p>
+        </div>
+        <div class="card" style="background: rgba(168, 85, 247, 0.06); border-color: rgba(168, 85, 247, 0.3);">
+          <div class="slide-h3" style="color: var(--tertiary);"><i class="fas fa-calculator"></i> حل مستقیم</div>
+          <p class="slide-text" style="font-size: 0.8rem;">
+            برای توابع ساده، $\nabla f = 0$ را حل می‌کنیم. برای پیچیده، روش‌های عددی.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۶ — SOC -->
+  <div class="slide" data-slide="6" data-topic="2">
+    <div class="slide-inner">
+      <span class="slide-num">شرط کافی</span>
+      <span class="method-badge badge-math" style="display: inline-block; margin-right: 8px;">SOC</span>
+      <h2 class="slide-h1">شرط مرتبه دوم (SOC)</h2>
+
+      <img src="images/soc-condition.png" alt="SOC" class="img-box img-clickable" style="max-height: 160px;" onerror="this.style.display='none'" data-caption="شرط مرتبه دوم">
+
+      <p class="slide-text">
+        برای تشخیص نوع نقطه‌ی بحرانی، از **هسیَن** (ماتریس مشتقات دوم) استفاده می‌کنیم:
+      </p>
+
+      <div class="math-box gold-math" style="padding: 14px;">
+        <div style="font-size: 0.9rem;">
+          $$H(x^*) = \begin{bmatrix} \frac{\partial^2 f}{\partial x_1^2} & \cdots & \frac{\partial^2 f}{\partial x_1 \partial x_n} \\ \vdots & \ddots & \vdots \\ \frac{\partial^2 f}{\partial x_n \partial x_1} & \cdots & \frac{\partial^2 f}{\partial x_n^2} \end{bmatrix}$$
+        </div>
+      </div>
+
+      <div class="grid-3" style="margin-top: 14px;">
+        <div class="card" style="background: rgba(34, 197, 94, 0.06); border-color: rgba(34, 197, 94, 0.3);">
+          <div class="slide-h3" style="color: var(--success);"><i class="fas fa-arrow-down"></i> کمینه</div>
+          <div class="math-box" style="padding: 8px; font-size: 0.82rem;">
+            $$H \succ 0 \quad \text{(مثبت معین)}$$
+          </div>
+        </div>
+        <div class="card" style="background: rgba(255, 71, 87, 0.06); border-color: rgba(255, 71, 87, 0.3);">
+          <div class="slide-h3" style="color: var(--danger);"><i class="fas fa-arrow-up"></i> بیشینه</div>
+          <div class="math-box danger-math" style="padding: 8px; font-size: 0.82rem;">
+            $$H \prec 0 \quad \text{(منفی معین)}$$
+          </div>
+        </div>
+        <div class="card" style="background: rgba(255, 183, 0, 0.06); border-color: rgba(255, 183, 0, 0.3);">
+          <div class="slide-h3" style="color: var(--gold);"><i class="fas fa-infinity"></i> زینی</div>
+          <div class="math-box gold-math" style="padding: 8px; font-size: 0.82rem;">
+            $$H \text{ نامعین}$$
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۷ — محدب و غیرمحدب -->
+  <div class="slide" data-slide="7" data-topic="3">
+    <div class="slide-inner">
+      <span class="slide-num">مفهوم</span>
+      <span class="method-badge badge-math" style="display: inline-block; margin-right: 8px;">Convexity</span>
+      <h2 class="slide-h1">محدب و غیرمحدب</h2>
+
+      <img src="images/convex-vs-nonconvex.png" alt="Convex" class="img-box img-clickable" onerror="this.style.display='none'" data-caption="محدب و غیرمحدب">
+
+      <div class="grid-2" style="margin-top: 14px;">
+        <div class="card" style="background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3);">
+          <div class="slide-h3" style="color: var(--primary);"><i class="fas fa-smile"></i> تابع محدب (Convex)</div>
+          <div class="math-box" style="padding: 10px; font-size: 0.82rem;">
+            $$f(\lambda x + (1-\lambda) y) \leq \lambda f(x) + (1-\lambda) f(y)$$
+          </div>
+          <ul style="list-style: none; padding: 0; font-size: 0.8rem; color: var(--text-dim); line-height: 2;">
+            <li>✅ فقط یک کمینه‌ی جهانی</li>
+            <li>✅ هر کمینه‌ی موضعی، جهانی است</li>
+            <li>✅ گرادیان کاهشی همیشه همگرا</li>
+            <li>✅ مثل: $f(x) = x^2$</li>
+          </ul>
+        </div>
+        <div class="card" style="background: rgba(255, 71, 87, 0.06); border-color: rgba(255, 71, 87, 0.3);">
+          <div class="slide-h3" style="color: var(--danger);"><i class="fas fa-frown"></i> غیرمحدب (Non-convex)</div>
+          <div class="math-box danger-math" style="padding: 10px; font-size: 0.82rem;">
+            $$\text{شرط بالا نقض می‌شود}$$
+          </div>
+          <ul style="list-style: none; padding: 0; font-size: 0.8rem; color: var(--text-dim); line-height: 2;">
+            <li>⚠️ ممکن است چند کمینه‌ی موضعی داشته باشد</li>
+            <li>⚠️ خطر گیر افتادن در local min</li>
+            <li>⚠️ نیاز به Adam، Momentum</li>
+            <li>⚠️ مثل: Loss شبکه عصبی</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="lecture-note">
+        <i class="fas fa-star"></i>
+        <div class="lecture-note-content">
+          <strong>واقعیت ML:</strong> Loss شبکه‌های عصبی <strong>غیرمحدب</strong> است. اما در عمل، با Adam و مقداردهی مناسب، به کمینه‌ی خوبی می‌رسیم.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۸ — شبیه‌ساز محدب -->
+  <div class="slide" data-slide="8" data-topic="3">
+    <div class="slide-inner">
+      <span class="slide-num">شبیه‌ساز تعاملی</span>
+      <h2 class="slide-h1">مقایسه محدب و غیرمحدب</h2>
+
+      <div class="simulator">
+        <div class="sim-header">
+          <div class="sim-title"><i class="fas fa-chart-line"></i> مسیر در دو نوع تابع</div>
+          <div class="sim-controls">
+            <div class="slider-group">
+              <label>نوع تابع:</label>
+              <select id="cvxType" style="background: rgba(0,0,0,0.4); border: 1px solid var(--card-border); color: var(--text); padding: 4px 8px; border-radius: 8px; font-family: inherit; font-size: 0.78rem;">
+                <option value="convex">محدب (یک کمینه)</option>
+                <option value="nonconvex">غیرمحدب (چند کمینه)</option>
+              </select>
+            </div>
+            <div class="slider-group">
+              <label>نقطه شروع:</label>
+              <input type="range" id="cvxStart" min="-2.5" max="2.5" value="2" step="0.1">
+              <span class="slider-value" id="cvxStartValue">۲.۰</span>
+            </div>
+          </div>
+        </div>
+        <div class="canvas-wrapper" style="height: 320px;"><canvas id="cvxCanvas"></canvas></div>
+        <div class="grid-2" style="margin-top: 12px;">
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 0.72rem; color: var(--text-dim);">نقطه پایانی</div>
+            <div id="cvxFinal" style="font-size: 1rem; color: var(--primary); font-weight: 800; font-family: 'Courier New', monospace;">—</div>
+          </div>
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 0.72rem; color: var(--text-dim);">وضعیت</div>
+            <div id="cvxStatus" style="font-size: 0.85rem; color: var(--gold); font-weight: 800;">—</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۹ — گرادیان کاهشی -->
+  <div class="slide" data-slide="9" data-topic="4">
+    <div class="slide-inner">
+      <span class="slide-num">روش پایه</span>
+      <span class="method-badge badge-opt" style="display: inline-block; margin-right: 8px;">Gradient Descent</span>
+      <h2 class="slide-h1">گرادیان کاهشی (Gradient Descent)</h2>
+
+      <img src="images/gradient-descent-basic.png" alt="GD" class="img-box img-clickable" onerror="this.style.display='none'" data-caption="گرادیان کاهشی">
+
+      <div class="math-box gold-math" style="padding: 16px;">
+        <div style="font-size: 1.05rem;">
+          $$x_{t+1} = x_t - \eta \nabla f(x_t)$$
+        </div>
+        <p class="math-note">$\eta$ = نرخ یادگیری | $\nabla f$ = گرادیان</p>
+      </div>
+
+      <div class="step-container">
+        <div class="step-title"><i class="fas fa-1"></i> الگوریتم</div>
+        <div class="step-content">
+          <ol style="padding-right: 20px; font-size: 0.85rem; color: var(--text-dim); line-height: 2.2;">
+            <li>مقدار اولیه $x_0$ (تصادفی)</li>
+            <li>محاسبه گرادیان $\nabla f(x_t)$</li>
+            <li>به‌روزرسانی: $x_{t+1} = x_t - \eta \nabla f(x_t)$</li>
+            <li>تکرار تا $|\nabla f| < \epsilon$</li>
+          </ol>
+        </div>
+      </div>
+
+      <div class="grid-3" style="margin-top: 14px;">
+        <div class="card" style="background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3); text-align: center; padding: 12px;">
+          <div class="slide-h3" style="justify-content: center; font-size: 0.82rem;">Batch GD</div>
+          <p class="slide-text" style="font-size: 0.72rem;">همه داده، دقیق، کند</p>
+        </div>
+        <div class="card" style="background: rgba(255, 183, 0, 0.06); border-color: rgba(255, 183, 0, 0.3); text-align: center; padding: 12px;">
+          <div class="slide-h3" style="justify-content: center; font-size: 0.82rem;">Stochastic GD</div>
+          <p class="slide-text" style="font-size: 0.72rem;">یک نمونه، سریع، نویزی</p>
+        </div>
+        <div class="card" style="background: rgba(168, 85, 247, 0.06); border-color: rgba(168, 85, 247, 0.3); text-align: center; padding: 12px;">
+          <div class="slide-h3" style="justify-content: center; font-size: 0.82rem;">Mini-Batch</div>
+          <p class="slide-text" style="font-size: 0.72rem;">استاندارد صنعتی</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۱۰ — نرخ یادگیری -->
+  <div class="slide" data-slide="10" data-topic="4">
+    <div class="slide-inner">
+      <span class="slide-num">Hyperparameter</span>
+      <h2 class="slide-h1">نرخ یادگیری (Learning Rate)</h2>
+
+      <img src="images/learning-rate-comparison.png" alt="Learning Rate" class="img-box img-clickable" onerror="this.style.display='none'" data-caption="نرخ یادگیری">
+
+      <p class="slide-text">
+        <b>Learning rate</b> ($\eta$) تعیین‌کننده‌ی اندازه گام است. انتخاب درست آن، تفاوت بین موفقیت و شکست است:
+      </p>
+
+      <div class="grid-3" style="margin-top: 14px;">
+        <div class="card" style="background: rgba(255, 71, 87, 0.06); border-color: rgba(255, 71, 87, 0.3);">
+          <div class="slide-h3" style="color: var(--danger);"><i class="fas fa-snail"></i> خیلی کوچک</div>
+          <p class="slide-text" style="font-size: 0.8rem;">آموزش بسیار کند، احتمال گیر افتادن در local min</p>
+          <p class="slide-text" style="font-size: 0.72rem; color: var(--danger);">$\eta < 10^{-4}$</p>
+        </div>
+        <div class="card" style="background: rgba(34, 197, 94, 0.06); border-color: rgba(34, 197, 94, 0.3);">
+          <div class="slide-h3" style="color: var(--success);"><i class="fas fa-check-circle"></i> مناسب</div>
+          <p class="slide-text" style="font-size: 0.8rem;">آموزش سریع و پایدار</p>
+          <p class="slide-text" style="font-size: 0.72rem; color: var(--success);">$\eta \in [10^{-3}، 10^{-2}]$</p>
+        </div>
+        <div class="card" style="background: rgba(255, 71, 87, 0.06); border-color: rgba(255, 71, 87, 0.3);">
+          <div class="slide-h3" style="color: var(--danger);"><i class="fas fa-fire"></i> خیلی بزرگ</div>
+          <p class="slide-text" style="font-size: 0.8rem;">نوسان، انفجار گرادیان، عدم همگرایی</p>
+          <p class="slide-text" style="font-size: 0.72rem; color: var(--danger);">$\eta > 0.1$</p>
+        </div>
+      </div>
+
+      <div class="lecture-note">
+        <i class="fas fa-lightbulb"></i>
+        <div class="lecture-note-content">
+          <strong>راهکار پیشرفته:</strong> <b>Learning rate scheduling</b> — کاهش تدریجی $\eta$ در طول آموزش. یا استفاده از بهینه‌سازهای تطبیقی مثل Adam.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۱۱ — شبیه‌ساز GD -->
+  <div class="slide" data-slide="11" data-topic="4">
+    <div class="slide-inner">
+      <span class="slide-num">شبیه‌ساز تعاملی</span>
+      <h2 class="slide-h1">مسیر گرادیان کاهشی</h2>
+
+      <div class="simulator">
+        <div class="sim-header">
+          <div class="sim-title"><i class="fas fa-chart-line"></i> مسیر GD با نرخ‌های مختلف</div>
+          <div class="sim-controls">
+            <div class="slider-group">
+              <label>η:</label>
+              <input type="range" id="gdLR" min="0.01" max="1.5" value="0.2" step="0.01">
+              <span class="slider-value" id="gdLRValue">۰.۲۰</span>
+            </div>
+          </div>
+        </div>
+        <div class="canvas-wrapper" style="height: 320px;"><canvas id="gdCanvas"></canvas></div>
+        <div class="grid-3" style="margin-top: 12px;">
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 0.72rem; color: var(--text-dim);">موقعیت</div>
+            <div id="gdPos" style="font-size: 0.95rem; color: var(--gold); font-weight: 800; font-family: 'Courier New', monospace;">—</div>
+          </div>
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 0.72rem; color: var(--text-dim);">Loss</div>
+            <div id="gdLoss" style="font-size: 0.95rem; color: var(--danger); font-weight: 800; font-family: 'Courier New', monospace;">—</div>
+          </div>
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 0.72rem; color: var(--text-dim);">وضعیت</div>
+            <div id="gdStatus" style="font-size: 0.85rem; color: var(--success); font-weight: 800;">—</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۱۲ — Momentum -->
+  <div class="slide" data-slide="12" data-topic="5">
+    <div class="slide-inner">
+      <span class="slide-num">بهبود ۱</span>
+      <span class="method-badge badge-opt" style="display: inline-block; margin-right: 8px;">Momentum</span>
+      <h2 class="slide-h1">Momentum — تجمع گرادیان</h2>
+
+      <img src="images/momentum-concept.png" alt="Momentum" class="img-box img-clickable" style="max-height: 160px;" onerror="this.style.display='none'" data-caption="Momentum">
+
+      <p class="slide-text">
+        Momentum گرادیان‌های قبلی را جمع می‌کند تا از نوسان و local min جلوگیری کند:
+      </p>
+
+      <div class="math-box gold-math" style="padding: 14px;">
+        <div style="font-size: 0.95rem;">
+          $$v_{t+1} = \beta v_t + \eta \nabla f(x_t)$$
+        </div>
+        <div style="font-size: 0.95rem; margin-top: 8px;">
+          $$x_{t+1} = x_t - v_{t+1}$$
+        </div>
+        <p class="math-note">$\beta \in [0.9، 0.99]$ — ضریب اصطکاک (معمولاً ۰.۹)</p>
+      </div>
+
+      <div class="grid-3" style="margin-top: 14px;">
+        <div class="card" style="background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3); text-align: center; padding: 12px;">
+          <div class="slide-h3" style="justify-content: center; font-size: 0.82rem;">سریع‌تر</div>
+          <p class="slide-text" style="font-size: 0.72rem;">همگرایی سریع‌تر</p>
+        </div>
+        <div class="card" style="background: rgba(255, 183, 0, 0.06); border-color: rgba(255, 183, 0, 0.3); text-align: center; padding: 12px;">
+          <div class="slide-h3" style="justify-content: center; font-size: 0.82rem;">کمتر نوسان</div>
+          <p class="slide-text" style="font-size: 0.72rem;">پایدارتر</p>
+        </div>
+        <div class="card" style="background: rgba(168, 85, 247, 0.06); border-color: rgba(168, 85, 247, 0.3); text-align: center; padding: 12px;">
+          <div class="slide-h3" style="justify-content: center; font-size: 0.82rem;">عبور از local min</div>
+          <p class="slide-text" style="font-size: 0.72rem;">بهتر</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۱۳ — Nesterov -->
+  <div class="slide" data-slide="13" data-topic="5">
+    <div class="slide-inner">
+      <span class="slide-num">بهبود ۲</span>
+      <span class="method-badge badge-opt" style="display: inline-block; margin-right: 8px;">Nesterov</span>
+      <h2 class="slide-h1">Nesterov — نگاه به جلو</h2>
+
+      <img src="images/nesterov-lookahead.png" alt="Nesterov" class="img-box img-clickable" style="max-height: 160px;" onerror="this.style.display='none'" data-caption="Nesterov Momentum">
+
+      <p class="slide-text">
+        در Nesterov، گرادیان در نقطه‌ی **look-ahead** محاسبه می‌شود، نه در نقطه‌ی فعلی:
+      </p>
+
+      <div class="math-box gold-math" style="padding: 14px;">
+        <div style="font-size: 0.95rem;">
+          $$v_{t+1} = \beta v_t + \eta \nabla f(x_t - \beta v_t)$$
+        </div>
+        <div style="font-size: 0.95rem; margin-top: 8px;">
+          $$x_{t+1} = x_t - v_{t+1}$$
+        </div>
+      </div>
+
+      <div class="lecture-note">
+        <i class="fas fa-star"></i>
+        <div class="lecture-note-content">
+          <strong>تفسیر:</strong> Nesterov ابتدا یک گام در جهت momentum می‌رود، سپس گرادیان را در آن نقطه می‌گیرد. این باعث می‌شود اگر momentum بیش از حد بود، سریع‌تر اصلاح شود.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۱۴ — Adagrad و RMSProp -->
+  <div class="slide" data-slide="14" data-topic="6">
+    <div class="slide-inner">
+      <span class="slide-num">بهبود ۳</span>
+      <span class="method-badge badge-opt" style="display: inline-block; margin-right: 8px;">Adaptive</span>
+      <h2 class="slide-h1">Adagrad و RMSProp — نرخ تطبیقی</h2>
+
+      <img src="images/adagrad-rmsprop.png" alt="Adaptive" class="img-box img-clickable" style="max-height: 160px;" onerror="this.style.display='none'" data-caption="روش‌های تطبیقی">
+
+      <div class="grid-2" style="margin-top: 14px;">
+        <div class="card" style="background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3);">
+          <div class="slide-h3" style="color: var(--primary);"><i class="fas fa-history"></i> Adagrad</div>
+          <div class="math-box" style="padding: 10px; font-size: 0.82rem;">
+            $$G_t = G_{t-1} + g_t^2$$
+          </div>
+          <div class="math-box" style="padding: 10px; font-size: 0.82rem;">
+            $$x_{t+1} = x_t - \frac{\eta}{\sqrt{G_t} + \epsilon} g_t$$
+          </div>
+          <p class="slide-text" style="font-size: 0.75rem;">
+            نرخ یادگیری به‌طور خودکار کاهش می‌یابد.
+          </p>
+        </div>
+        <div class="card" style="background: rgba(255, 183, 0, 0.06); border-color: rgba(255, 183, 0, 0.3);">
+          <div class="slide-h3" style="color: var(--gold);"><i class="fas fa-window-maximize"></i> RMSProp</div>
+          <div class="math-box gold-math" style="padding: 10px; font-size: 0.82rem;">
+            $$E[g^2]_t = \beta E[g^2]_{t-1} + (1-\beta) g_t^2$$
+          </div>
+          <div class="math-box gold-math" style="padding: 10px; font-size: 0.82rem;">
+            $$x_{t+1} = x_t - \frac{\eta}{\sqrt{E[g^2]_t} + \epsilon} g_t$$
+          </div>
+          <p class="slide-text" style="font-size: 0.75rem;">
+            از پنجره‌ای متحرک برای گرادیان استفاده می‌کند.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۱۵ — شبیه‌ساز تطبیقی -->
+  <div class="slide" data-slide="15" data-topic="6">
+    <div class="slide-inner">
+      <span class="slide-num">شبیه‌ساز تعاملی</span>
+      <h2 class="slide-h1">مقایسه روش‌های تطبیقی</h2>
+
+      <div class="simulator">
+        <div class="sim-header">
+          <div class="sim-title"><i class="fas fa-chart-line"></i> مسیر بهینه‌سازها</div>
+          <div class="sim-controls">
+            <div class="slider-group">
+              <label>η اولیه:</label>
+              <input type="range" id="adaptLR" min="0.01" max="1" value="0.1" step="0.01">
+              <span class="slider-value" id="adaptLRValue">۰.۱۰</span>
+            </div>
+          </div>
+        </div>
+        <div class="canvas-wrapper" style="height: 320px;"><canvas id="adaptCanvas"></canvas></div>
+        <div class="grid-2" style="margin-top: 12px;">
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 0.72rem; color: var(--text-dim);">وضعیت همگرایی</div>
+            <div id="adaptStatus" style="font-size: 0.9rem; color: var(--gold); font-weight: 800;">—</div>
+          </div>
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 0.72rem; color: var(--text-dim);">بهترین روش</div>
+            <div id="adaptBest" style="font-size: 0.9rem; color: var(--primary); font-weight: 800;">—</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۱۶ — Adam -->
+  <div class="slide" data-slide="16" data-topic="7">
+    <div class="slide-inner">
+      <span class="slide-num">بهبود ۴</span>
+      <span class="method-badge badge-adam" style="display: inline-block; margin-right: 8px;">Adam</span>
+      <h2 class="slide-h1">Adam — استاندارد صنعتی</h2>
+
+      <img src="images/adam-king.png" alt="Adam" class="img-box img-clickable" style="max-height: 160px;" onerror="this.style.display='none'" data-caption="Adam Optimizer">
+
+      <p class="slide-text">
+        <b>Adam</b> (Adaptive Moment Estimation) ترکیبی از <b>Momentum</b> و <b>RMSProp</b> است. امروز <strong>استاندارد صنعتی</strong> برای آموزش شبکه‌های عصبی.
+      </p>
+
+      <div class="grid-3" style="margin-top: 14px;">
+        <div class="card" style="background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3); text-align: center; padding: 12px;">
+          <i class="fas fa-bolt" style="font-size: 1.4rem; color: var(--primary); display: block; margin-bottom: 6px;"></i>
+          <div class="slide-h3" style="justify-content: center; font-size: 0.82rem;">Momentum (m)</div>
+          <p class="slide-text" style="font-size: 0.72rem;">میانگین متحرک گرادیان</p>
+        </div>
+        <div class="card" style="background: rgba(255, 183, 0, 0.06); border-color: rgba(255, 183, 0, 0.3); text-align: center; padding: 12px;">
+          <i class="fas fa-chart-bar" style="font-size: 1.4rem; color: var(--gold); display: block; margin-bottom: 6px;"></i>
+          <div class="slide-h3" style="justify-content: center; font-size: 0.82rem;">Variance (v)</div>
+          <p class="slide-text" style="font-size: 0.72rem;">میانگین متحرک $g^2$</p>
+        </div>
+        <div class="card" style="background: rgba(168, 85, 247, 0.06); border-color: rgba(168, 85, 247, 0.3); text-align: center; padding: 12px;">
+          <i class="fas fa-crown" style="font-size: 1.4rem; color: var(--tertiary); display: block; margin-bottom: 6px;"></i>
+          <div class="slide-h3" style="justify-content: center; font-size: 0.82rem;">Update</div>
+          <p class="slide-text" style="font-size: 0.72rem;">ترکیب هر دو</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۱۷ — فرمول‌های Adam -->
+  <div class="slide" data-slide="17" data-topic="7">
+    <div class="slide-inner">
+      <span class="slide-num">فرمول‌ها</span>
+      <h2 class="slide-h1">فرمول‌های کامل Adam</h2>
+
+      <img src="images/adam-formulas.png" alt="Adam Formulas" class="img-box img-clickable" style="max-height: 160px;" onerror="this.style.display='none'" data-caption="فرمول‌های Adam">
+
+      <div class="step-container">
+        <div class="step-title"><i class="fas fa-1"></i> به‌روزرسانی گرادیان</div>
+        <div class="step-content">
+          <div class="math-box" style="padding: 10px; font-size: 0.85rem;">
+            $$g_t = \nabla_\theta f(\theta_{t-1})$$
+          </div>
+        </div>
+      </div>
+
+      <div class="step-container" style="border-right-color: var(--primary);">
+        <div class="step-title" style="color: var(--primary);"><i class="fas fa-2"></i> Momentum (میانگین متحرک)</div>
+        <div class="step-content">
+          <div class="math-box" style="padding: 10px; font-size: 0.85rem;">
+            $$m_t = \beta_1 m_{t-1} + (1-\beta_1) g_t$$
+          </div>
+          <p style="font-size: 0.8rem;">$\beta_1 = 0.9$ معمولاً</p>
+        </div>
+      </div>
+
+      <div class="step-container" style="border-right-color: var(--gold);">
+        <div class="step-title"><i class="fas fa-3"></i> Variance (میانگین متحرک گسسته)</div>
+        <div class="step-content">
+          <div class="math-box gold-math" style="padding: 10px; font-size: 0.85rem;">
+            $$v_t = \beta_2 v_{t-1} + (1-\beta_2) g_t^2$$
+          </div>
+          <p style="font-size: 0.8rem;">$\beta_2 = 0.999$ معمولاً</p>
+        </div>
+      </div>
+
+      <div class="step-container" style="border-right-color: var(--tertiary);">
+        <div class="step-title" style="color: var(--tertiary);"><i class="fas fa-4"></i> تصحیح سوگیری (Bias Correction)</div>
+        <div class="step-content">
+          <div class="math-box purple-math" style="padding: 10px; font-size: 0.85rem;">
+            $$\hat{m}_t = \frac{m_t}{1 - \beta_1^t}, \quad \hat{v}_t = \frac{v_t}{1 - \beta_2^t}$$
+          </div>
+        </div>
+      </div>
+
+      <div class="step-container" style="border-right-color: var(--pink);">
+        <div class="step-title" style="color: var(--pink);"><i class="fas fa-5"></i> به‌روزرسانی پارامتر</div>
+        <div class="step-content">
+          <div class="math-box pink-math" style="padding: 10px; font-size: 0.9rem;">
+            $$\theta_t = \theta_{t-1} - \eta \frac{\hat{m}_t}{\sqrt{\hat{v}_t} + \epsilon}$$
+          </div>
+          <p style="font-size: 0.8rem;">$\epsilon = 10^{-8}$ برای جلوگیری از تقسیم بر صفر</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۱۸ — شبیه‌ساز Adam -->
+  <div class="slide" data-slide="18" data-topic="7">
+    <div class="slide-inner">
+      <span class="slide-num">شبیه‌ساز تعاملی</span>
+      <h2 class="slide-h1">مسیر Adam در عمل</h2>
+
+      <div class="simulator">
+        <div class="sim-header">
+          <div class="sim-title"><i class="fas fa-crown"></i> مسیر Adam vs SGD vs Momentum</div>
+          <div class="sim-controls">
+            <div class="slider-group">
+              <label>η:</label>
+              <input type="range" id="adamLR" min="0.01" max="0.5" value="0.1" step="0.01">
+              <span class="slider-value" id="adamLRValue">۰.۱۰</span>
+            </div>
+          </div>
+        </div>
+        <div class="canvas-wrapper" style="height: 320px;"><canvas id="adamCanvas"></canvas></div>
+        <div class="grid-3" style="margin-top: 12px;">
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 0.72rem; color: var(--text-dim);">SGD</div>
+            <div id="adamSGD" style="font-size: 0.9rem; color: var(--gold); font-weight: 800; font-family: 'Courier New', monospace;">—</div>
+          </div>
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 0.72rem; color: var(--text-dim);">Momentum</div>
+            <div id="adamMom" style="font-size: 0.9rem; color: var(--tertiary); font-weight: 800; font-family: 'Courier New', monospace;">—</div>
+          </div>
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 0.72rem; color: var(--text-dim);">Adam</div>
+            <div id="adamAdam" style="font-size: 0.9rem; color: var(--primary); font-weight: 800; font-family: 'Courier New', monospace;">—</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۱۹ — مقایسه -->
+  <div class="slide" data-slide="19" data-topic="8">
+    <div class="slide-inner">
+      <span class="slide-num">مقایسه جامع</span>
+      <h2 class="slide-h1">مقایسه بهینه‌سازها</h2>
+
+      <img src="images/optimizers-comparison.png" alt="Comparison" class="img-box img-clickable" style="max-height: 160px;" onerror="this.style.display='none'" data-caption="مقایسه بهینه‌سازها">
+
+      <table style="width: 100%; border-collapse: collapse; font-size: 0.78rem; direction: rtl; margin-top: 14px;">
+        <thead>
+          <tr style="background: rgba(0, 212, 170, 0.15);">
+            <th style="padding: 8px; color: var(--primary); border: 1px solid var(--card-border); text-align: right;">روش</th>
+            <th style="padding: 8px; color: var(--primary); border: 1px solid var(--card-border);">نرخ تطبیقی</th>
+            <th style="padding: 8px; color: var(--primary); border: 1px solid var(--card-border);">Momentum</th>
+            <th style="padding: 8px; color: var(--primary); border: 1px solid var(--card-border);">کاربرد</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="padding: 8px; border: 1px solid var(--card-border); color: var(--gold); font-weight: 700;">SGD</td>
+            <td style="padding: 8px; border: 1px solid var(--card-border); text-align: center; color: var(--danger);">❌</td>
+            <td style="padding: 8px; border: 1px solid var(--card-border); text-align: center; color: var(--danger);">❌</td>
+            <td style="padding: 8px; border: 1px solid var(--card-border); text-align: center; color: var(--text-dim); font-size: 0.72rem;">مسائل ساده</td>
+          </tr>
+          <tr>
+            <td style="padding: 8px; border: 1px solid var(--card-border); color: var(--tertiary); font-weight: 700;">Momentum</td>
+            <td style="padding: 8px; border: 1px solid var(--card-border); text-align: center; color: var(--danger);">❌</td>
+            <td style="padding: 8px; border: 1px solid var(--card-border); text-align: center; color: var(--success);">✅</td>
+            <td style="padding: 8px; border: 1px solid var(--card-border); text-align: center; color: var(--text-dim); font-size: 0.72rem;">غیرمحدب</td>
+          </tr>
+          <tr>
+            <td style="padding: 8px; border: 1px solid var(--card-border); color: var(--gold); font-weight: 700;">Adagrad</td>
+            <td style="padding: 8px; border: 1px solid var(--card-border); text-align: center; color: var(--success);">✅</td>
+            <td style="padding: 8px; border: 1px solid var(--card-border); text-align: center; color: var(--danger);">❌</td>
+            <td style="padding: 8px; border: 1px solid var(--card-border); text-align: center; color: var(--text-dim); font-size: 0.72rem;">Sparse data</td>
+          </tr>
+          <tr>
+            <td style="padding: 8px; border: 1px solid var(--card-border); color: var(--gold); font-weight: 700;">RMSProp</td>
+            <td style="padding: 8px; border: 1px solid var(--card-border); text-align: center; color: var(--success);">✅</td>
+            <td style="padding: 8px; border: 1px solid var(--card-border); text-align: center; color: var(--danger);">❌</td>
+            <td style="padding: 8px; border: 1px solid var(--card-border); text-align: center; color: var(--text-dim); font-size: 0.72rem;">RNN</td>
+          </tr>
+          <tr style="background: rgba(0, 212, 170, 0.08);">
+            <td style="padding: 8px; border: 1px solid var(--card-border); color: var(--primary); font-weight: 700;">Adam</td>
+            <td style="padding: 8px; border: 1px solid var(--card-border); text-align: center; color: var(--success);">✅</td>
+            <td style="padding: 8px; border: 1px solid var(--card-border); text-align: center; color: var(--success);">✅</td>
+            <td style="padding: 8px; border: 1px solid var(--card-border); text-align: center; color: var(--primary); font-size: 0.72rem;">استاندارد صنعتی</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="lecture-note" style="margin-top: 14px;">
+        <i class="fas fa-star"></i>
+        <div class="lecture-note-content">
+          <strong>توصیه:</strong> برای اکثر مسائل، <b>Adam</b> بهترین گزینه است. اگر دقت نهایی مهم است، از <b>Adam + SGD fine-tuning</b> استفاده کنید.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۲۰ — Adam در PINN -->
+  <div class="slide" data-slide="20" data-topic="8">
+    <div class="slide-inner">
+      <span class="slide-num">کاربرد</span>
+      <h2 class="slide-h1">Adam در PINN</h2>
+
+      <img src="images/adam-in-pinn.png" alt="Adam in PINN" class="img-box img-clickable" style="max-height: 160px;" onerror="this.style.display='none'" data-caption="Adam در PINN">
+
+      <p class="slide-text">
+        در PINN، Adam استاندارد است، چون:
+      </p>
+
+      <div class="grid-3" style="margin-top: 14px;">
+        <div class="card" style="background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3); text-align: center; padding: 14px;">
+          <i class="fas fa-layer-group" style="font-size: 1.5rem; color: var(--primary); display: block; margin-bottom: 8px;"></i>
+          <div class="slide-h3" style="justify-content: center; font-size: 0.82rem;">Loss چندگانه</div>
+          <p class="slide-text" style="font-size: 0.72rem;">سه Loss با مقیاس‌های مختلف</p>
+        </div>
+        <div class="card" style="background: rgba(255, 183, 0, 0.06); border-color: rgba(255, 183, 0, 0.3); text-align: center; padding: 14px;">
+          <i class="fas fa-route" style="font-size: 1.5rem; color: var(--gold); display: block; margin-bottom: 8px;"></i>
+          <div class="slide-h3" style="justify-content: center; font-size: 0.82rem;">Landscape پیچیده</div>
+          <p class="slide-text" style="font-size: 0.72rem;">نیاز به نرخ تطبیقی</p>
+        </div>
+        <div class="card" style="background: rgba(168, 85, 247, 0.06); border-color: rgba(168, 85, 247, 0.3); text-align: center; padding: 14px;">
+          <i class="fas fa-rocket" style="font-size: 1.5rem; color: var(--tertiary); display: block; margin-bottom: 8px;"></i>
+          <div class="slide-h3" style="justify-content: center; font-size: 0.82rem;">همگرایی سریع</div>
+          <p class="slide-text" style="font-size: 0.72rem;">زمان آموزش کمتر</p>
+        </div>
+      </div>
+
+      <div class="code-tabs" style="margin-top: 14px;">
+        <button class="code-tab active" data-code="adam-pinn-code"><i class="fas fa-code"></i> کد Adam در PINN</button>
+      </div>
+
+      <div class="code-content active" id="code-adam-pinn-code">
+<pre><span class="cm"># --- Adam در PINN ---</span>
+optimizer = torch.optim.<span class="fn">Adam</span>(
+    model.<span class="fn">parameters</span>(),
+    lr=<span class="num">1e-3</span>,
+    betas=(<span class="num">0.9</span>, <span class="num">0.999</span>),
+    eps=<span class="num">1e-8</span>
+)
+
+<span class="cm"># --- آموزش ---</span>
+<span class="kw">for</span> epoch <span class="kw">in</span> <span class="fn">range</span>(epochs):
+    optimizer.<span class="fn">zero_grad</span>()
+    loss = <span class="fn">compute_loss</span>(model)
+    loss.<span class="fn">backward</span>()
+    optimizer.<span class="fn">step</span>()</pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۲۱ — کد کامل -->
+  <div class="slide" data-slide="21" data-topic="9">
+    <div class="slide-inner">
+      <span class="slide-num">کد</span>
+      <h2 class="slide-h1">پیاده‌سازی Adam در NumPy و PyTorch</h2>
+
+      <div class="code-tabs">
+        <button class="code-tab active" data-code="numpy-adam"><i class="fas fa-square"></i> NumPy (از صفر)</button>
+        <button class="code-tab" data-code="pytorch-adam"><i class="fas fa-fire"></i> PyTorch</button>
+      </div>
+
+      <div class="code-content active" id="code-numpy-adam">
+<pre><span class="cm"># ============================================</span>
+<span class="cm"># Adam from scratch (NumPy)</span>
+<span class="cm"># ============================================</span>
+<span class="kw">import</span> numpy <span class="kw">as</span> np
+
+<span class="kw">def</span> <span class="fn">adam</span>(f, grad, x0, lr=<span class="num">0.01</span>, beta1=<span class="num">0.9</span>, beta2=<span class="num">0.999</span>, 
+         eps=<span class="num">1e-8</span>, n_iter=<span class="num">1000</span>):
+    <span class="str">"""Adam optimizer from scratch"""</span>
+    x = x0.<span class="fn">copy</span>()
+    m = np.<span class="fn">zeros_like</span>(x)
+    v = np.<span class="fn">zeros_like</span>(x)
+    
+    history = [x.<span class="fn">copy</span>()]
+    
+    <span class="kw">for</span> t <span class="kw">in</span> <span class="fn">range</span>(<span class="num">1</span>, n_iter + <span class="num">1</span>):
+        g = <span class="fn">grad</span>(x)
+        
+        <span class="cm"># Momentum</span>
+        m = beta1 * m + (<span class="num">1</span> - beta1) * g
+        
+        <span class="cm"># Variance</span>
+        v = beta2 * v + (<span class="num">1</span> - beta2) * g**<span class="num">2</span>
+        
+        <span class="cm"># Bias correction</span>
+        m_hat = m / (<span class="num">1</span> - beta1**t)
+        v_hat = v / (<span class="num">1</span> - beta2**t)
+        
+        <span class="cm"># Update</span>
+        x = x - lr * m_hat / (np.<span class="fn">sqrt</span>(v_hat) + eps)
+        
+        history.<span class="fn">append</span>(x.<span class="fn">copy</span>())
+    
+    <span class="kw">return</span> x, history
+
+<span class="cm"># --- تست: f(x) = x^2 + 2x + 1 ---</span>
+<span class="kw">def</span> <span class="fn">f</span>(x):
+    <span class="kw">return</span> (x**<span class="num">2</span> + <span class="num">2</span>*x + <span class="num">1</span>).<span class="fn">sum</span>()
+
+<span class="kw">def</span> <span class="fn">grad</span>(x):
+    <span class="kw">return</span> <span class="num">2</span>*x + <span class="num">2</span>
+
+x0 = np.<span class="fn">array</span>([<span class="num">3.0</span>, <span class="num">-2.0</span>, <span class="num">1.5</span>])
+x_opt, history = <span class="fn">adam</span>(f, grad, x0, lr=<span class="num">0.1</span>, n_iter=<span class="num">100</span>)
+
+<span class="fn">print</span>(<span class="str">f'Initial: {x0}'</span>)
+<span class="fn">print</span>(<span class="str">f'Optimum: {x_opt}'</span>)
+<span class="fn">print</span>(<span class="str">f'f(x_opt): {f(x_opt):.6f}'</span>)
+<span class="cm"># جواب: [-1, -1, -1], f = 0</span></pre>
+      </div>
+
+      <div class="code-content" id="code-pytorch-adam">
+<pre><span class="cm"># ============================================</span>
+<span class="cm"># Adam in PyTorch</span>
+<span class="cm"># ============================================</span>
+<span class="kw">import</span> torch
+<span class="kw">import</span> torch.optim <span class="kw">as</span> optim
+
+<span class="cm"># --- پارامترها ---</span>
+theta = torch.<span class="fn">tensor</span>([<span class="num">3.0</span>, <span class="num">-2.0</span>, <span class="num">1.5</span>], requires_grad=<span class="kw">True</span>)
+
+<span class="cm"># --- Adam ---</span>
+optimizer = optim.<span class="fn">Adam</span>([theta], lr=<span class="num">0.1</span>, betas=(<span class="num">0.9</span>, <span class="num">0.999</span>))
+
+<span class="cm"># --- تابع هدف ---</span>
+<span class="kw">def</span> <span class="fn">f</span>(x):
+    <span class="kw">return</span> (x**<span class="num">2</span> + <span class="num">2</span>*x + <span class="num">1</span>).<span class="fn">sum</span>()
+
+<span class="cm"># --- آموزش ---</span>
+<span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="num">100</span>):
+    optimizer.<span class="fn">zero_grad</span>()
+    loss = <span class="fn">f</span>(theta)
+    loss.<span class="fn">backward</span>()
+    optimizer.<span class="fn">step</span>()
+    
+    <span class="kw">if</span> i % <span class="num">20</span> == <span class="num">0</span>:
+        <span class="fn">print</span>(<span class="str">f'Iter {i}: theta={theta.data}, f={loss.item():.6f}'</span>)
+
+<span class="fn">print</span>(<span class="str">f'\nFinal theta: {theta.data}'</span>)
+<span class="fn">print</span>(<span class="str">f'Final f: {f(theta).item():.6f}'</span>)</pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۲۲ — تمرین‌ها -->
+  <div class="slide" data-slide="22" data-topic="9">
+    <div class="slide-inner">
+      <span class="slide-num">تمرین</span>
+      <h2 class="slide-h1">تمرین‌های جلسه ۲۱</h2>
+
+      <div class="exercise-block ex-yellow">
+        <div class="ex-header"><div class="ex-num">الف</div><div><div class="ex-title">سؤالات مفهومی</div></div></div>
+        <ol class="ex-list">
+          <li>تفاوت شرط FOC و SOC چیست؟</li>
+          <li>چرا در توابع غیرمحدب، GD ممکن است در local min گیر کند؟</li>
+          <li>چرا Adam استاندارد صنعتی است؟</li>
+          <li>تفاوت Momentum و Nesterov در چیست؟</li>
+        </ol>
+      </div>
+
+      <div class="exercise-block ex-green">
+        <div class="ex-header"><div class="ex-num">ب</div><div><div class="ex-title">تمرین‌های عملی</div></div></div>
+        <ol class="ex-list">
+          <li>Adam را از صفر پیاده‌سازی کنید و روی $f(x) = x_1^2 + 5x_2^2$ تست کنید.</li>
+          <li>اثر $\beta_1$ و $\beta_2$ را بر سرعت همگرایی بررسی کنید.</li>
+          <li>Adam و SGD را روی یک شبکه عصبی ساده مقایسه کنید.</li>
+          <li>نمودار loss را برای هر بهینه‌ساز رسم و مقایسه کنید.</li>
+        </ol>
+      </div>
+
+      <div class="exercise-block ex-purple">
+        <div class="ex-header"><div class="ex-num">ج</div><div><div class="ex-title">تمرین‌های نوشتاری</div></div></div>
+        <ol class="ex-list">
+          <li>اثبات کنید که Momentum می‌تواند از local minimum عبور کند.</li>
+          <li>فرمول bias correction در Adam را توضیح دهید.</li>
+          <li>مقایسه جامع بین GD، Momentum، Adagrad، RMSProp، و Adam بنویسید.</li>
+        </ol>
+      </div>
+
+      <div class="exercise-block ex-red">
+        <div class="ex-header"><div class="ex-num">★</div><div><div class="ex-title">چالش خلاقانه</div></div></div>
+        <ol class="ex-list">
+          <li>یک بهینه‌ساز سفارشی با ترکیب Adam و Lookahead بنویسید.</li>
+          <li>اثر learning rate scheduling (cosine، step) را بررسی کنید.</li>
+          <li>Adam را برای PINN نانو انبرک پیاده و بهینه کنید.</li>
+        </ol>
+      </div>
+
+      <div class="email-banner">
+        <p><i class="fas fa-envelope" style="color: var(--primary);"></i> ارسال تمرین‌ها:</p>
+        <code>m.goharimanesh@gmail.com</code>
+        <p style="margin-top: 8px; font-size: 0.78rem;">Subject الزامی:</p>
+        <code>[Advanced Engineering Mathematics] HW21 - نام و نام خانوادگی - شماره دانشجویی</code>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۲۳ — نقشه راه پژوهش -->
+  <div class="slide" data-slide="23" data-topic="9">
+    <div class="slide-inner">
+      <span class="slide-num">نقشه راه</span>
+      <h2 class="slide-h1">کاربرد بهینه‌سازی در پژوهش</h2>
+
+      <div class="grid-2">
+        <div class="card" style="background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3);">
+          <div class="slide-h3" style="color: var(--primary);"><i class="fas fa-atom"></i> NEMS و MEMS</div>
+          <ul style="list-style: none; padding: 0; font-size: 0.82rem; color: var(--text-dim); line-height: 2;">
+            <li>🔹 طراحی معکوس نانو انبرک</li>
+            <li>🔹 بهینه‌سازی پارامتر PINN</li>
+            <li>🔹 بیشینه‌سازی حساسیت سنسور</li>
+            <li>🔹 کمینه‌سازی Pull-in</li>
+          </ul>
+        </div>
+        <div class="card" style="background: rgba(255, 183, 0, 0.06); border-color: rgba(255, 183, 0, 0.3);">
+          <div class="slide-h3" style="color: var(--gold);"><i class="fas fa-robot"></i> رباتیک</div>
+          <ul style="list-style: none; padding: 0; font-size: 0.82rem; color: var(--text-dim); line-height: 2;">
+            <li>🔹 کنترل بهینه</li>
+            <li>🔹 مسیریابی</li>
+            <li>🔹 یادگیری تقویتی</li>
+            <li>🔹 طراحی ربات نرم</li>
+          </ul>
+        </div>
+        <div class="card" style="background: rgba(168, 85, 247, 0.06); border-color: rgba(168, 85, 247, 0.3);">
+          <div class="slide-h3" style="color: var(--tertiary);"><i class="fas fa-brain"></i> یادگیری ماشین</div>
+          <ul style="list-style: none; padding: 0; font-size: 0.82rem; color: var(--text-dim); line-height: 2;">
+            <li>🔹 آموزش شبکه‌های عمیق</li>
+            <li>🔹 تنظیم hyperparameter</li>
+            <li>🔹 بهینه‌سازی معماری</li>
+            <li>🔹 PINN و Neural ODE</li>
+          </ul>
+        </div>
+        <div class="card" style="background: rgba(236, 72, 153, 0.06); border-color: rgba(236, 72, 153, 0.3);">
+          <div class="slide-h3" style="color: var(--pink);"><i class="fas fa-file-alt"></i> جهت‌های مقاله</div>
+          <ul style="list-style: none; padding: 0; font-size: 0.82rem; color: var(--text-dim); line-height: 2;">
+            <li>🔹 Adam برای PINN نانو</li>
+            <li>🔹 بهینه‌سازی توپولوژی</li>
+            <li>🔹 GA برای طراحی MEMS</li>
+            <li>🔹 بهینه‌سازی چندهدفه</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="lecture-note" style="margin-top: 14px;">
+        <i class="fas fa-bullseye"></i>
+        <div class="lecture-note-content">
+          <strong>پیشنهاد استاد:</strong> Adam، بهینه‌ساز استاندارد در مقالات Q1 IEEE است. تسلط بر آن، پایه‌ی هر پروژه ML/PINN شماست.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۲۴ — خداحافظی -->
+  <div class="slide" data-slide="24" data-topic="10">
+    <div class="slide-inner title-slide">
+      <div style="font-size: 3.5rem; color: var(--gold); margin-bottom: 18px;">
+        <i class="fas fa-check-circle"></i>
+      </div>
+      <h2 class="slide-h1">پایان جلسه ۲۱ — بهینه‌سازی</h2>
+      <p class="slide-text" style="font-size: 1rem;">
+        امروز قلب همه‌ی الگوریتم‌های یادگیری را شناختید! 🌟
+      </p>
+
+      <div class="grid-4" style="margin-top: 20px; max-width: 900px; margin-left: auto; margin-right: auto;">
+        <div class="card" style="text-align: center; padding: 12px;">
+          <i class="fas fa-arrow-down" style="font-size: 1.4rem; color: var(--gold); display: block; margin-bottom: 6px;"></i>
+          <div style="font-size: 0.78rem; font-weight: 700; color: var(--gold);">SGD</div>
+        </div>
+        <div class="card" style="text-align: center; padding: 12px;">
+          <i class="fas fa-bolt" style="font-size: 1.4rem; color: var(--tertiary); display: block; margin-bottom: 6px;"></i>
+          <div style="font-size: 0.78rem; font-weight: 700; color: var(--tertiary);">Momentum</div>
+        </div>
+        <div class="card" style="text-align: center; padding: 12px;">
+          <i class="fas fa-chart-bar" style="font-size: 1.4rem; color: var(--primary); display: block; margin-bottom: 6px;"></i>
+          <div style="font-size: 0.78rem; font-weight: 700; color: var(--primary);">RMSProp</div>
+        </div>
+        <div class="card" style="text-align: center; padding: 12px;">
+          <i class="fas fa-crown" style="font-size: 1.4rem; color: var(--pink); display: block; margin-bottom: 6px;"></i>
+          <div style="font-size: 0.78rem; font-weight: 700; color: var(--pink);">Adam</div>
+        </div>
+      </div>
+
+      <div class="math-box gold-math" style="margin-top: 22px; background: rgba(255, 183, 0, 0.08); padding: 22px; max-width: 700px; margin-left: auto; margin-right: auto;">
+        <div style="font-size: 1rem;">
+          $$\theta_t = \theta_{t-1} - \eta \frac{\hat{m}_t}{\sqrt{\hat{v}_t} + \epsilon}$$
+        </div>
+        <p class="math-note">قلب Adam — استاندارد صنعتی</p>
+      </div>
+
+      <div class="card" style="margin-top: 20px; max-width: 700px; margin-left: auto; margin-right: auto; background: rgba(168, 85, 247, 0.06); border-color: rgba(168, 85, 247, 0.3);">
+        <div class="slide-h3" style="justify-content: center; color: var(--tertiary);"><i class="fas fa-arrow-left"></i> جلسه ۲۲</div>
+        <p class="slide-text" style="font-size: 0.88rem;">
+          <strong style="color: var(--primary);">بهینه‌سازی با قید، لاگرانژ، KKT</strong>
+        </p>
+        <ul style="list-style: none; padding: 0; font-size: 0.82rem; color: var(--text-dim); line-height: 2; margin-top: 8px;">
+          <li>🔹 مسئله با قیدهای برابری</li>
+          <li>🔹 ضرایب لاگرانژ</li>
+          <li>🔹 شرایط KKT</li>
+          <li>🔹 برنامه‌ریزی محدب</li>
+        </ul>
+      </div>
+
+      <p class="instructor-line" style="margin-top: 22px;">دکتر مسعود گوهری منش</p>
+      <p class="instructor-title-line">دانشیار گروه مهندسی مکانیک — دانشگاه تربیت حیدریه</p>
+
+      <p style="font-size: 0.95rem; color: var(--gold); margin-top: 24px; font-weight: 800;">
+        🇮🇷 با افتخار برای دانشجویان مکاترونیک 🇮🇷
+      </p>
+    </div>
+  </div>
+
+</div>
+
+<div class="bottom-nav">
+  <button class="nav-btn" id="prevBtn" disabled><i class="fas fa-arrow-right"></i><span>قبلی</span></button>
+  <div class="dots-nav" id="dotsNav"></div>
+  <div class="slide-counter"><span id="currentSlide">۱</span> / ۲۴</div>
+  <button class="nav-btn" id="nextBtn"><span>بعدی</span><i class="fas fa-arrow-left"></i></button>
+</div>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- Lightbox -->
+<div class="lightbox" id="lightbox">
+  <button class="lightbox-close" id="lightboxClose"><i class="fas fa-times"></i></button>
+  <img src="" alt="" class="lightbox-img" id="lightboxImg">
+  <div class="lightbox-caption" id="lightboxCaption"></div>
+</div>
+
+<!-- Modal بهینه‌سازی -->
+<div class="modal-overlay" id="conceptModal">
+  <div class="modal-box">
+    <button class="modal-close" id="conceptClose"><i class="fas fa-times"></i></button>
+    <h2 class="modal-title"><i class="fas fa-book-open"></i> بهینه‌سازی و پیوند با ابن هیثم</h2>
+
+    <div class="modal-section">
+      <div class="modal-section-title"><i class="fas fa-history"></i> ابن هیثم — بنیان‌گذار روش علمی</div>
+      <p>
+        <b>ابن هیثم</b> (۹۶۵–۱۰۴۰ م) در کتاب <b>«کتاب المناظر»</b> (Book of Optics) روش علمی تجربی را بنیان گذاشت:
+      </p>
+      <ul>
+        <li><strong>مشاهده دقیق:</strong> اندازه‌گیری پدیده (پیش‌زمینه‌ی gradient computation)</li>
+        <li><strong>فرضیه و آزمایش:</strong> تکرار و اصلاح (پیش‌زمینه‌ی iteration)</li>
+        <li><strong>کاهش خطا:</strong> از فرضیه به نتیجه (پیش‌زمینه‌ی loss minimization)</li>
+        <li><strong>روش گام‌به‌گام:</strong> الگوریتم تجربی (پیش‌زمینه‌ی algorithmic optimization)</li>
+      </ul>
+    </div>
+
+    <div class="modal-section">
+      <div class="modal-section-title"><i class="fas fa-brain"></i> پیوند با بهینه‌سازی</div>
+      <p>
+        در بهینه‌سازی، هر گام گرادیان کاهشی، مانند یک <strong>آزمایش تجربی</strong> است که فرضیه (پارامتر) را اصلاح می‌کند:
+      </p>
+      <ul>
+        <li><strong>فرضیه اولیه</strong> = $x_0$ (مقدار شروع)</li>
+        <li><strong>مشاهده</strong> = محاسبه گرادیان $\nabla f$</li>
+        <li><strong>اصلاح</strong> = به‌روزرسانی $x \leftarrow x - \eta \nabla f$</li>
+        <li><strong>تکرار</strong> = ادامه تا همگرایی</li>
+      </ul>
+    </div>
+
+    <div class="modal-section">
+      <div class="modal-section-title"><i class="fas fa-globe"></i> تقارب معنایی علم و تاریخ</div>
+      <p>
+        ابن هیثم هزار سال پیش، روش <strong>آزمایش و اصلاح</strong> را برای فهم نور بنیان گذاشت. امروز، Adam همان فلسفه را با <strong>میلیون‌ها پارامتر</strong> و <strong>GPU</strong> پیاده می‌کند — اما ایده‌ی اصلی یکسان است: از فرضیه، به مشاهده، به اصلاح، و در نهایت به نتیجه دقیق.
+      </p>
+    </div>
+
+    <div class="lecture-note" style="margin-top: 16px;">
+      <i class="fas fa-star"></i>
+      <div class="lecture-note-content">
+        <strong>درس امروز:</strong> بهینه‌سازی، ادامه‌ی سنت چند هزار ساله‌ی انسان در <strong>آزمایش و اصلاح</strong> است. از ابن هیثم تا Adam، همان تلاش برای رسیدن به بهترین نتیجه.
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ═══ Navigation ═══ */
+const slides = document.querySelectorAll('.slide');
+const totalSlides = slides.length;
+let currentSlide = 0;
+const topicPills = document.querySelectorAll('.topic-pill');
+
+const dotsNav = document.getElementById('dotsNav');
+for (let i = 0; i < totalSlides; i++) {
+  const dot = document.createElement('button');
+  dot.className = 'dot-nav' + (i === 0 ? ' active' : '');
+  dot.addEventListener('click', () => goToSlide(i));
+  dotsNav.appendChild(dot);
+}
+
+function goToSlide(n) {
+  if (n < 0 || n >= totalSlides) return;
+  slides.forEach((s, i) => {
+    s.classList.remove('active', 'prev');
+    if (i < n) s.classList.add('prev');
+    if (i === n) s.classList.add('active');
+  });
+  currentSlide = n;
+  updateNav();
+  playTransition();
+  setTimeout(() => {
+    initVisibleCharts();
+    if (window.MathJax && window.MathJax.typesetPromise) window.MathJax.typesetPromise();
+  }, 100);
+}
+
+function updateNav() {
+  document.querySelectorAll('.dot-nav').forEach((d, i) => d.classList.toggle('active', i === currentSlide));
+  document.getElementById('currentSlide').textContent = toFa(currentSlide + 1);
+  document.getElementById('prevBtn').disabled = currentSlide === 0;
+  document.getElementById('nextBtn').disabled = currentSlide === totalSlides - 1;
+  document.getElementById('progressFill').style.width = ((currentSlide + 1) / totalSlides * 100) + '%';
+  const currentTopic = slides[currentSlide].dataset.topic;
+  topicPills.forEach(pill => {
+    const t = parseInt(pill.dataset.topic);
+    const ct = parseInt(currentTopic);
+    pill.classList.toggle('active', t === ct);
+    pill.classList.toggle('done', t < ct);
+    if (t === ct) pill.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+  });
+}
+
+document.getElementById('prevBtn').addEventListener('click', () => goToSlide(currentSlide - 1));
+document.getElementById('nextBtn').addEventListener('click', () => goToSlide(currentSlide + 1));
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowLeft') { e.preventDefault(); goToSlide(currentSlide + 1); }
+  else if (e.key === 'ArrowRight') { e.preventDefault(); goToSlide(currentSlide - 1); }
+  else if (e.key === ' ') { e.preventDefault(); goToSlide(currentSlide + 1); }
+  else if (e.key === 'Home') { e.preventDefault(); goToSlide(0); }
+  else if (e.key === 'End') { e.preventDefault(); goToSlide(totalSlides - 1); }
+  else if (e.key === 'Escape') {
+    if (document.fullscreenElement) document.exitFullscreen();
+    closeLightbox();
+    closeConceptModal();
+    printMenu.classList.remove('show');
+  }
+});
+
+let touchStartX = 0, touchStartY = 0;
+document.addEventListener('touchstart', e => {
+  touchStartX = e.changedTouches[0].screenX;
+  touchStartY = e.changedTouches[0].screenY;
+}, { passive: true });
+document.addEventListener('touchend', e => {
+  const dx = e.changedTouches[0].screenX - touchStartX;
+  const dy = e.changedTouches[0].screenY - touchStartY;
+  if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy)) {
+    if (dx < 0) goToSlide(currentSlide + 1);
+    else goToSlide(currentSlide - 1);
+  }
+}, { passive: true });
+
+/* ═══ Lightbox ═══ */
+const lightbox = document.getElementById('lightbox');
+const lightboxImg = document.getElementById('lightboxImg');
+const lightboxCaption = document.getElementById('lightboxCaption');
+
+document.querySelectorAll('.img-clickable').forEach(img => {
+  img.addEventListener('click', e => {
+    e.stopPropagation();
+    const src = img.getAttribute('src');
+    const caption = img.getAttribute('data-caption') || img.getAttribute('alt') || '';
+    if (src) {
+      lightboxImg.src = src;
+      lightboxCaption.textContent = caption;
+      lightbox.classList.add('active');
+    }
+  });
+});
+
+document.getElementById('lightboxClose').addEventListener('click', closeLightbox);
+lightbox.addEventListener('click', e => {
+  if (e.target === lightbox) closeLightbox();
+});
+
+function closeLightbox() { lightbox.classList.remove('active'); }
+
+/* ═══ Modal ═══ */
+const conceptModal = document.getElementById('conceptModal');
+document.querySelectorAll('[data-concept]').forEach(el => {
+  el.addEventListener('click', e => {
+    e.stopPropagation();
+    conceptModal.classList.add('active');
+  });
+});
+document.getElementById('conceptClose').addEventListener('click', closeConceptModal);
+conceptModal.addEventListener('click', e => {
+  if (e.target === conceptModal) closeConceptModal();
+});
+function closeConceptModal() { conceptModal.classList.remove('active'); }
+
+/* ═══ Print ═══ */
+const printToggle = document.getElementById('printToggle');
+const printMenu = document.getElementById('printMenu');
+
+printToggle.addEventListener('click', e => {
+  e.stopPropagation();
+  printMenu.classList.toggle('show');
+});
+
+document.addEventListener('click', e => {
+  if (!printMenu.contains(e.target) && e.target !== printToggle) {
+    printMenu.classList.remove('show');
+  }
+});
+
+document.getElementById('printCurrentBtn').addEventListener('click', () => {
+  printMenu.classList.remove('show');
+  slides.forEach(s => s.classList.remove('print-visible'));
+  slides[currentSlide].classList.add('print-visible');
+  showToast('آماده‌سازی چاپ این صفحه...');
+  setTimeout(() => {
+    window.print();
+    setTimeout(() => slides.forEach(s => s.classList.remove('print-visible')), 500);
+  }, 300);
+});
+
+document.getElementById('printAllBtn').addEventListener('click', () => {
+  printMenu.classList.remove('show');
+  slides.forEach(s => s.classList.add('print-visible'));
+  showToast('آماده‌سازی چاپ همه صفحات...');
+  setTimeout(() => {
+    window.print();
+    setTimeout(() => slides.forEach(s => s.classList.remove('print-visible')), 500);
+  }, 300);
+});
+
+/* ═══ Audio ═══ */
+let audioCtx = null, soundEnabled = true;
+function initAudio() { if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
+function playTransition() {
+  if (!soundEnabled) return;
+  initAudio();
+  [440, 554.37].forEach((freq, i) => {
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.connect(gain); gain.connect(audioCtx.destination);
+    osc.frequency.value = freq; osc.type = 'sine';
+    const t = audioCtx.currentTime + i * 0.06;
+    gain.gain.setValueAtTime(0.04, t);
+    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.18);
+    osc.start(t); osc.stop(t + 0.22);
+  });
+}
+document.getElementById('soundToggle').addEventListener('click', function() {
+  soundEnabled = !soundEnabled;
+  this.classList.toggle('active', soundEnabled);
+  this.innerHTML = soundEnabled ? '<i class="fas fa-volume-up"></i>' : '<i class="fas fa-volume-mute"></i>';
+  showToast(soundEnabled ? 'صدا فعال' : 'صدا غیرفعال');
+});
+document.getElementById('fullscreenToggle').addEventListener('click', function() {
+  if (!document.fullscreenElement) { document.documentElement.requestFullscreen(); this.innerHTML = '<i class="fas fa-compress"></i>'; }
+  else { document.exitFullscreen(); this.innerHTML = '<i class="fas fa-expand"></i>'; }
+});
+function showToast(msg) {
+  const container = document.getElementById('toastContainer');
+  const toast = document.createElement('div');
+  toast.className = 'toast';
+  toast.innerHTML = `<i class="fas fa-info-circle"></i> ${msg}`;
+  container.appendChild(toast);
+  setTimeout(() => { toast.style.opacity = '0'; toast.style.transform = 'translateX(-60px)'; setTimeout(() => toast.remove(), 300); }, 2400);
+}
+function toFa(n) { const fa = ['۰','۱','۲','۳','۴','۵','۶','۷','۸','۹']; return String(n).replace(/\d/g, d => fa[d]); }
+
+/* ═══ Background ═══ */
+const bgCanvas = document.getElementById('bgCanvas');
+const bgCtx = bgCanvas.getContext('2d');
+let particles = [];
+function resizeBg() { bgCanvas.width = window.innerWidth; bgCanvas.height = window.innerHeight; }
+resizeBg();
+window.addEventListener('resize', resizeBg);
+class Particle {
+  constructor() { this.reset(); }
+  reset() {
+    this.x = Math.random() * bgCanvas.width;
+    this.y = Math.random() * bgCanvas.height;
+    this.size = Math.random() * 1.6 + 0.4;
+    this.speedX = (Math.random() - 0.5) * 0.3;
+    this.speedY = (Math.random() - 0.5) * 0.3;
+    this.opacity = Math.random() * 0.5 + 0.15;
+    const colors = ['#00d4aa', '#06b6d4', '#a855f7', '#ffb700'];
+    this.color = colors[Math.floor(Math.random() * colors.length)];
+  }
+  update() { this.x += this.speedX; this.y += this.speedY; if (this.x < 0 || this.x > bgCanvas.width || this.y < 0 || this.y > bgCanvas.height) this.reset(); }
+  draw() { bgCtx.beginPath(); bgCtx.arc(this.x, this.y, this.size, 0, Math.PI*2); bgCtx.fillStyle = this.color; bgCtx.globalAlpha = this.opacity; bgCtx.fill(); bgCtx.globalAlpha = 1; }
+}
+for (let i = 0; i < 50; i++) particles.push(new Particle());
+function animateBg() { bgCtx.clearRect(0, 0, bgCanvas.width, bgCanvas.height); particles.forEach(p => { p.update(); p.draw(); }); requestAnimationFrame(animateBg); }
+animateBg();
+
+/* ═══ Helpers ═══ */
+function setupCanvas(canvasId) {
+  const canvas = document.getElementById(canvasId);
+  if (!canvas) return null;
+  const dpr = window.devicePixelRatio || 1;
+  const rect = canvas.getBoundingClientRect();
+  canvas.width = rect.width * dpr; canvas.height = rect.height * dpr;
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+  return { ctx, w: rect.width, h: rect.height };
+}
+
+/* ═══ Convex Simulator ═══ */
+function drawCvx() {
+  const s = setupCanvas('cvxCanvas');
+  if (!s) return;
+  const { ctx, w, h } = s;
+  ctx.clearRect(0, 0, w, h);
+
+  const type = document.getElementById('cvxType').value;
+  const start = parseFloat(document.getElementById('cvxStart').value);
+
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+  ctx.fillRect(0, 0, w, h);
+
+  const padX = 50, padY_top = 30, padY_bot = 50;
+  const plotW = w - 2 * padX;
+  const plotH = h - padY_top - padY_bot;
+
+  const xToPx = (x) => padX + ((x + 3) / 6) * plotW;
+
+  let func, grad, yMin, yMax;
+
+  if (type === 'convex') {
+    func = (x) => (x - 1)**2 + 0.5;
+    grad = (x) => 2 * (x - 1);
+    yMin = 0; yMax = 20;
+  } else {
+    func = (x) => 0.5 * x**2 + 1.5 * Math.sin(3 * x) + 1;
+    grad = (x) => x + 4.5 * Math.cos(3 * x);
+    yMin = -1; yMax = 6;
+  }
+
+  const yToPy = (y) => padY_top + plotH - ((y - yMin) / (yMax - yMin)) * plotH;
+
+  // Axes
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(padX, yToPy(0));
+  ctx.lineTo(padX + plotW, yToPy(0));
+  ctx.stroke();
+
+  // Function curve
+  ctx.beginPath();
+  ctx.strokeStyle = type === 'convex' ? '#00d4aa' : '#ff4757';
+  ctx.lineWidth = 2.5;
+  ctx.shadowColor = ctx.strokeStyle;
+  ctx.shadowBlur = 6;
+  for (let i = 0; i <= 200; i++) {
+    const x = -3 + (i / 200) * 6;
+    const y = func(x);
+    const px = xToPx(x);
+    const py = yToPy(y);
+    if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+  }
+  ctx.stroke();
+  ctx.shadowBlur = 0;
+
+  // GD path
+  let x = start;
+  const path = [{ x, y: func(x) }];
+  for (let i = 0; i < 30; i++) {
+    x = x - 0.1 * grad(x);
+    if (x < -3) x = -3;
+    if (x > 3) x = 3;
+    path.push({ x, y: func(x) });
+  }
+
+  // Draw path
+  ctx.strokeStyle = '#ffb700';
+  ctx.lineWidth = 2;
+  ctx.setLineDash([4, 3]);
+  ctx.beginPath();
+  path.forEach((p, i) => {
+    const px = xToPx(p.x);
+    const py = yToPy(p.y);
+    if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+  });
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Points
+  path.forEach((p, i) => {
+    const px = xToPx(p.x);
+    const py = yToPy(p.y);
+    ctx.fillStyle = i === path.length - 1 ? '#ffb700' : 'rgba(255, 183, 0, 0.6)';
+    ctx.beginPath();
+    ctx.arc(px, py, i === path.length - 1 ? 7 : 4, 0, Math.PI * 2);
+    ctx.fill();
+  });
+
+  const finalPoint = path[path.length - 1];
+  document.getElementById('cvxStartValue').textContent = toFa(start.toFixed(1));
+  document.getElementById('cvxFinal').textContent = toFa(finalPoint.x.toFixed(3));
+
+  const statusEl = document.getElementById('cvxStatus');
+  if (type === 'convex') {
+    statusEl.textContent = '✓ همگرا به کمینه جهانی';
+    statusEl.style.color = 'var(--success)';
+  } else {
+    // Check local min
+    const localMin = Math.abs(finalPoint.x - (-1.5)) < 0.3 || Math.abs(finalPoint.x - 0.5) < 0.3;
+    if (localMin) {
+      statusEl.textContent = '⚠ گیر در local minimum';
+      statusEl.style.color = 'var(--gold)';
+    } else {
+      statusEl.textContent = '✓ رسیده به کمینه خوب';
+      statusEl.style.color = 'var(--success)';
+    }
+  }
+}
+
+/* ═══ GD Simulator ═══ */
+function drawGD() {
+  const s = setupCanvas('gdCanvas');
+  if (!s) return;
+  const { ctx, w, h } = s;
+  ctx.clearRect(0, 0, w, h);
+
+  const lr = parseFloat(document.getElementById('gdLR').value);
+
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+  ctx.fillRect(0, 0, w, h);
+
+  const padX = 50, padY_top = 30, padY_bot = 50;
+  const plotW = w - 2 * padX;
+  const plotH = h - padY_top - padY_bot;
+
+  const xToPx = (x) => padX + ((x + 2) / 4) * plotW;
+  const yToPy = (y) => padY_top + plotH - (y / 5) * plotH;
+
+  // Function: f(x) = x^2
+  const f = (x) => x * x;
+  const grad = (x) => 2 * x;
+
+  // Axes
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(padX, yToPy(0));
+  ctx.lineTo(padX + plotW, yToPy(0));
+  ctx.stroke();
+
+  // Curve
+  ctx.beginPath();
+  ctx.strokeStyle = '#00d4aa';
+  ctx.lineWidth = 2.5;
+  ctx.shadowColor = '#00d4aa';
+  ctx.shadowBlur = 6;
+  for (let i = 0; i <= 200; i++) {
+    const x = -2 + (i / 200) * 4;
+    const y = f(x);
+    const px = xToPx(x);
+    const py = yToPy(y);
+    if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+  }
+  ctx.stroke();
+  ctx.shadowBlur = 0;
+
+  // GD path
+  let x = 1.8;
+  const path = [{ x, y: f(x) }];
+  for (let i = 0; i < 30; i++) {
+    x = x - lr * grad(x);
+    path.push({ x, y: f(x) });
+  }
+
+  ctx.strokeStyle = '#ffb700';
+  ctx.lineWidth = 2;
+  ctx.setLineDash([4, 3]);
+  ctx.beginPath();
+  path.forEach((p, i) => {
+    const px = xToPx(p.x);
+    const py = yToPy(p.y);
+    if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+  });
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  path.forEach((p, i) => {
+    const px = xToPx(p.x);
+    const py = yToPy(p.y);
+    ctx.fillStyle = i === path.length - 1 ? '#ffb700' : 'rgba(255, 183, 0, 0.6)';
+    ctx.beginPath();
+    ctx.arc(px, py, i === path.length - 1 ? 7 : 4, 0, Math.PI * 2);
+    ctx.fill();
+  });
+
+  const finalPoint = path[path.length - 1];
+  document.getElementById('gdLRValue').textContent = toFa(lr.toFixed(2));
+  document.getElementById('gdPos').textContent = toFa(finalPoint.x.toFixed(4));
+  document.getElementById('gdLoss').textContent = toFa(finalPoint.y.toFixed(4));
+
+  const statusEl = document.getElementById('gdStatus');
+  if (lr > 1) {
+    statusEl.textContent = '⚠ ناپایدار';
+    statusEl.style.color = 'var(--danger)';
+  } else if (Math.abs(finalPoint.x) < 0.01) {
+    statusEl.textContent = '✓ همگرا';
+    statusEl.style.color = 'var(--success)';
+  } else {
+    statusEl.textContent = 'در حال حرکت';
+    statusEl.style.color = 'var(--gold)';
+  }
+}
+
+/* ═══ Adaptive Simulator ═══ */
+function drawAdapt() {
+  const s = setupCanvas('adaptCanvas');
+  if (!s) return;
+  const { ctx, w, h } = s;
+  ctx.clearRect(0, 0, w, h);
+
+  const lr = parseFloat(document.getElementById('adaptLR').value);
+
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+  ctx.fillRect(0, 0, w, h);
+
+  const padX = 50, padY_top = 30, padY_bot = 50;
+  const plotW = w - 2 * padX;
+  const plotH = h - padY_top - padY_bot;
+
+  // Complex non-convex function
+  const f = (x) => 0.3 * x**2 + Math.sin(3 * x) * 0.5 + 1;
+  const grad = (x) => 0.6 * x + 1.5 * Math.cos(3 * x);
+
+  const xToPx = (x) => padX + ((x + 3) / 6) * plotW;
+  const yToPy = (y) => padY_top + plotH - (y / 3) * plotH;
+
+  // Axes
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(padX, yToPy(0));
+  ctx.lineTo(padX + plotW, yToPy(0));
+  ctx.stroke();
+
+  // Curve
+  ctx.beginPath();
+  ctx.strokeStyle = 'rgba(0, 212, 170, 0.4)';
+  ctx.lineWidth = 2;
+  for (let i = 0; i <= 200; i++) {
+    const x = -3 + (i / 200) * 6;
+    const y = f(x);
+    const px = xToPx(x);
+    const py = yToPy(y);
+    if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+  }
+  ctx.stroke();
+
+  // SGD path
+  let xSGD = 2.5;
+  const sgdPath = [{ x: xSGD }];
+  for (let i = 0; i < 40; i++) {
+    xSGD = xSGD - lr * grad(xSGD);
+    if (xSGD < -3) xSGD = -3;
+    if (xSGD > 3) xSGD = 3;
+    sgdPath.push({ x: xSGD });
+  }
+
+  // Adagrad path
+  let xAda = 2.5, G = 0;
+  const adaPath = [{ x: xAda }];
+  for (let i = 0; i < 40; i++) {
+    const g = grad(xAda);
+    G += g * g;
+    xAda = xAda - lr * g / (Math.sqrt(G) + 1e-8);
+    if (xAda < -3) xAda = -3;
+    if (xAda > 3) xAda = 3;
+    adaPath.push({ x: xAda });
+  }
+
+  // RMSProp path
+  let xRMS = 2.5, E_g2 = 0;
+  const rmsPath = [{ x: xRMS }];
+  for (let i = 0; i < 40; i++) {
+    const g = grad(xRMS);
+    E_g2 = 0.9 * E_g2 + 0.1 * g * g;
+    xRMS = xRMS - lr * g / (Math.sqrt(E_g2) + 1e-8);
+    if (xRMS < -3) xRMS = -3;
+    if (xRMS > 3) xRMS = 3;
+    rmsPath.push({ x: xRMS });
+  }
+
+  // Adam path
+  let xAdam = 2.5, m = 0, v = 0;
+  const adamPath = [{ x: xAdam }];
+  for (let t = 1; t <= 40; t++) {
+    const g = grad(xAdam);
+    m = 0.9 * m + 0.1 * g;
+    v = 0.999 * v + 0.001 * g * g;
+    const m_hat = m / (1 - Math.pow(0.9, t));
+    const v_hat = v / (1 - Math.pow(0.999, t));
+    xAdam = xAdam - lr * m_hat / (Math.sqrt(v_hat) + 1e-8);
+    if (xAdam < -3) xAdam = -3;
+    if (xAdam > 3) xAdam = 3;
+    adamPath.push({ x: xAdam });
+  }
+
+  // Draw paths
+  const drawPath = (path, color, dash) => {
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 2;
+    ctx.setLineDash(dash);
+    ctx.beginPath();
+    path.forEach((p, i) => {
+      const px = xToPx(p.x);
+      const py = yToPy(f(p.x));
+      if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+    });
+    ctx.stroke();
+    ctx.setLineDash([]);
+  };
+
+  drawPath(sgdPath, '#ffb700', [4, 3]);
+  drawPath(adaPath, '#a855f7', [8, 4]);
+  drawPath(rmsPath, '#06b6d4', [6, 4]);
+  drawPath(adamPath, '#00d4aa', []);
+
+  // Labels
+  ctx.fillStyle = '#9aa7bd';
+  ctx.font = '11px Vazirmatn';
+  ctx.textAlign = 'right';
+  ctx.fillStyle = '#ffb700';
+  ctx.fillText('SGD', w - 20, 22);
+  ctx.fillStyle = '#a855f7';
+  ctx.fillText('Adagrad', w - 70, 22);
+  ctx.fillStyle = '#06b6d4';
+  ctx.fillText('RMSProp', w - 150, 22);
+  ctx.fillStyle = '#00d4aa';
+  ctx.fillText('Adam', w - 250, 22);
+
+  document.getElementById('adaptLRValue').textContent = toFa(lr.toFixed(2));
+
+  // Find best
+  const finals = {
+    'SGD': Math.abs(f(sgdPath[sgdPath.length - 1].x) - 0.5),
+    'Adagrad': Math.abs(f(adaPath[adaPath.length - 1].x) - 0.5),
+    'RMSProp': Math.abs(f(rmsPath[rmsPath.length - 1].x) - 0.5),
+    'Adam': Math.abs(f(adamPath[adamPath.length - 1].x) - 0.5)
+  };
+  const best = Object.keys(finals).reduce((a, b) => finals[a] < finals[b] ? a : b);
+
+  document.getElementById('adaptBest').textContent = best;
+  document.getElementById('adaptStatus').textContent = lr > 0.5 ? '⚠ ناپایدار' : '✓ همگرا';
+}
+
+/* ═══ Adam Simulator ═══ */
+function drawAdam() {
+  const s = setupCanvas('adamCanvas');
+  if (!s) return;
+  const { ctx, w, h } = s;
+  ctx.clearRect(0, 0, w, h);
+
+  const lr = parseFloat(document.getElementById('adamLR').value);
+
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+  ctx.fillRect(0, 0, w, h);
+
+  const padX = 50, padY_top = 30, padY_bot = 50;
+  const plotW = w - 2 * padX;
+  const plotH = h - padY_top - padY_bot;
+
+  const f = (x) => x * x;
+  const grad = (x) => 2 * x;
+
+  const xToPx = (x) => padX + ((x + 2) / 4) * plotW;
+  const yToPy = (y) => padY_top + plotH - (y / 4) * plotH;
+
+  // Axes
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(padX, yToPy(0));
+  ctx.lineTo(padX + plotW, yToPy(0));
+  ctx.stroke();
+
+  // Curve
+  ctx.beginPath();
+  ctx.strokeStyle = 'rgba(0, 212, 170, 0.4)';
+  ctx.lineWidth = 2;
+  for (let i = 0; i <= 200; i++) {
+    const x = -2 + (i / 200) * 4;
+    const y = f(x);
+    const px = xToPx(x);
+    const py = yToPy(y);
+    if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+  }
+  ctx.stroke();
+
+  // SGD
+  let xSGD = 1.8;
+  const sgdPath = [{ x: xSGD }];
+  for (let i = 0; i < 30; i++) {
+    xSGD = xSGD - lr * grad(xSGD);
+    sgdPath.push({ x: xSGD });
+  }
+
+  // Momentum
+  let xMom = 1.8, vMom = 0;
+  const momPath = [{ x: xMom }];
+  for (let i = 0; i < 30; i++) {
+    vMom = 0.9 * vMom + lr * grad(xMom);
+    xMom -= vMom;
+    momPath.push({ x: xMom });
+  }
+
+  // Adam
+  let xAdam = 1.8, m = 0, v = 0;
+  const adamPath = [{ x: xAdam }];
+  for (let t = 1; t <= 30; t++) {
+    const g = grad(xAdam);
+    m = 0.9 * m + 0.1 * g;
+    v = 0.999 * v + 0.001 * g * g;
+    const m_hat = m / (1 - Math.pow(0.9, t));
+    const v_hat = v / (1 - Math.pow(0.999, t));
+    xAdam = xAdam - lr * m_hat / (Math.sqrt(v_hat) + 1e-8);
+    adamPath.push({ x: xAdam });
+  }
+
+  // Draw
+  const drawPath = (path, color, dash) => {
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 2;
+    ctx.setLineDash(dash);
+    ctx.beginPath();
+    path.forEach((p, i) => {
+      const px = xToPx(p.x);
+      const py = yToPy(f(p.x));
+      if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+    });
+    ctx.stroke();
+    ctx.setLineDash([]);
+  };
+
+  drawPath(sgdPath, '#ffb700', [4, 3]);
+  drawPath(momPath, '#a855f7', [8, 4]);
+  drawPath(adamPath, '#00d4aa', []);
+
+  // Labels
+  ctx.font = 'bold 11px Vazirmatn';
+  ctx.textAlign = 'right';
+  ctx.fillStyle = '#ffb700';
+  ctx.fillText('SGD', w - 20, 22);
+  ctx.fillStyle = '#a855f7';
+  ctx.fillText('Momentum', w - 70, 22);
+  ctx.fillStyle = '#00d4aa';
+  ctx.fillText('Adam', w - 180, 22);
+
+  document.getElementById('adamLRValue').textContent = toFa(lr.toFixed(2));
+  document.getElementById('adamSGD').textContent = toFa(sgdPath[sgdPath.length - 1].x.toFixed(3));
+  document.getElementById('adamMom').textContent = toFa(momPath[momPath.length - 1].x.toFixed(3));
+  document.getElementById('adamAdam').textContent = toFa(adamPath[adamPath.length - 1].x.toFixed(3));
+}
+
+/* ═══ Events ═══ */
+document.getElementById('cvxType').addEventListener('change', drawCvx);
+document.getElementById('cvxStart').addEventListener('input', drawCvx);
+document.getElementById('gdLR').addEventListener('input', drawGD);
+document.getElementById('adaptLR').addEventListener('input', drawAdapt);
+document.getElementById('adamLR').addEventListener('input', drawAdam);
+
+/* ═══ Code Tabs ═══ */
+document.querySelectorAll('.code-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    const parent = tab.parentElement;
+    parent.querySelectorAll('.code-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    const contentId = 'code-' + tab.dataset.code;
+    const content = document.getElementById(contentId);
+    if (content) {
+      const allContents = parent.parentElement.querySelectorAll('.code-content');
+      allContents.forEach(c => c.classList.remove('active'));
+      content.classList.add('active');
+    }
+  });
+});
+
+/* ═══ Render ═══ */
+function initVisibleCharts() {
+  const activeSlide = document.querySelector('.slide.active');
+  if (!activeSlide) return;
+  const num = activeSlide.dataset.slide;
+  if (num === '8') drawCvx();
+  else if (num === '11') drawGD();
+  else if (num === '15') drawAdapt();
+  else if (num === '18') drawAdam();
+}
+
+/* ═══ Init ═══ */
+updateNav();
+setTimeout(() => {
+  initVisibleCharts();
+  if (window.MathJax && window.MathJax.typesetPromise) window.MathJax.typesetPromise();
+}, 400);
+setTimeout(() => showToast('به جلسه ۲۱ خوش آمدید — بهینه‌سازی و Adam 🌟'), 1000);
+
+window.addEventListener('resize', () => setTimeout(() => {
+  initVisibleCharts();
+  if (window.MathJax && window.MathJax.typesetPromise) window.MathJax.typesetPromise();
+}, 200));
+</script>
+
+</body>
+</html>

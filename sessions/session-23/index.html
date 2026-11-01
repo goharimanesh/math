@@ -1,0 +1,2597 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>جلسه ۲۳ — بهینه‌سازی تکاملی: GA و PSO | دکتر مسعود گوهری منش</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+<script>
+window.MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']],
+    displayMath: [['$$', '$$'], ['\\[', '\\]']],
+    processEscapes: true
+  },
+  options: { skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'] },
+  svg: { fontCache: 'global' }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" async></script>
+
+<style>
+:root {
+  --primary: #00d4aa;
+  --secondary: #06b6d4;
+  --tertiary: #a855f7;
+  --gold: #ffb700;
+  --success: #22c55e;
+  --danger: #ff4757;
+  --pink: #ec4899;
+  --dark: #050818;
+  --darker: #020410;
+  --card-bg: rgba(255, 255, 255, 0.05);
+  --card-border: rgba(255, 255, 255, 0.1);
+  --text: #e8eef7;
+  --text-dim: #9aa7bd;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { overflow: hidden; height: 100%; }
+body {
+  font-family: 'Vazirmatn', sans-serif;
+  background: var(--dark);
+  color: var(--text);
+  direction: rtl;
+  line-height: 1.8;
+}
+#bgCanvas { position: fixed; inset: 0; z-index: -2; background: radial-gradient(ellipse at top, #0a1230 0%, var(--darker) 50%, #000 100%); }
+.glow-orb { position: fixed; border-radius: 50%; filter: blur(120px); opacity: 0.3; z-index: -1; pointer-events: none; animation: floatOrb 25s ease-in-out infinite; }
+.orb1 { width: 600px; height: 600px; background: var(--primary); top: -200px; right: -200px; }
+.orb2 { width: 500px; height: 500px; background: var(--gold); bottom: -150px; left: -150px; animation-delay: -8s; }
+.orb3 { width: 400px; height: 400px; background: var(--tertiary); top: 30%; left: 25%; animation-delay: -15s; opacity: 0.12; }
+@keyframes floatOrb { 0%, 100% { transform: translate(0, 0) scale(1); } 33% { transform: translate(50px, -40px) scale(1.15); } 66% { transform: translate(-40px, 50px) scale(0.9); } }
+
+.top-header { position: fixed; top: 0; left: 0; right: 0; height: 82px; background: rgba(5, 8, 24, 0.9); backdrop-filter: blur(15px); border-bottom: 1px solid var(--card-border); display: flex; align-items: center; justify-content: space-between; padding: 0 18px; z-index: 100; }
+.header-left { display: flex; align-items: center; gap: 14px; }
+.header-signature { height: 60px; width: auto; max-width: 170px; object-fit: contain; filter: drop-shadow(0 0 10px rgba(0, 212, 170, 0.4)); border-radius: 8px; background: rgba(255, 255, 255, 0.05); padding: 4px; }
+.header-text { display: flex; flex-direction: column; line-height: 1.35; }
+.header-name { font-size: 0.88rem; color: var(--gold); font-weight: 800; white-space: nowrap; }
+.header-univ { font-size: 0.7rem; color: var(--text-dim); font-weight: 500; }
+.header-controls { display: flex; gap: 8px; flex-shrink: 0; align-items: center; }
+.ctrl-btn { width: 38px; height: 38px; border-radius: 10px; border: 1px solid var(--card-border); background: var(--card-bg); backdrop-filter: blur(10px); color: var(--text); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; transition: all 0.3s ease; position: relative; }
+.ctrl-btn:hover { background: var(--primary); color: var(--dark); transform: translateY(-2px); }
+.ctrl-btn.active { background: var(--primary); color: var(--dark); }
+
+.print-menu-wrap { position: relative; }
+.print-menu {
+  position: absolute; top: 46px; left: 0;
+  background: rgba(10, 18, 40, 0.98);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  padding: 6px;
+  min-width: 200px;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6);
+  opacity: 0; pointer-events: none;
+  transform: translateY(-8px);
+  transition: all 0.3s ease;
+  z-index: 200;
+}
+.print-menu.show { opacity: 1; pointer-events: auto; transform: translateY(0); }
+.print-menu button {
+  display: flex; align-items: center; gap: 10px;
+  width: 100%; padding: 10px 14px;
+  background: transparent; border: none;
+  color: var(--text); font-family: inherit;
+  font-size: 0.82rem; font-weight: 600;
+  border-radius: 8px; cursor: pointer;
+  text-align: right;
+  transition: all 0.2s ease;
+}
+.print-menu button:hover { background: rgba(0, 212, 170, 0.15); color: var(--primary); }
+.print-menu button i { color: var(--gold); font-size: 0.9rem; width: 18px; text-align: center; }
+
+@media print {
+  @page { size: A4 landscape; margin: 10mm; }
+  html, body { overflow: visible !important; height: auto !important; background: white !important; }
+  #bgCanvas, .glow-orb, .top-header, .topic-nav, .progress-top, .bottom-nav,
+  .toast-container, .star-container, .ctrl-btn, .print-menu, .lightbox,
+  .modal-overlay, .slide:not(.print-visible) { display: none !important; }
+  .slide-container { position: static !important; inset: auto !important; overflow: visible !important; }
+  .slide {
+    position: relative !important; opacity: 1 !important; transform: none !important;
+    pointer-events: auto !important; page-break-after: always;
+    padding: 15px 25px !important; overflow: visible !important;
+    background: white !important; color: #1a1a1a !important;
+    inset: auto !important; height: auto !important;
+  }
+  .slide::before {
+    content: ''; position: fixed; top: 50%; left: 50%;
+    transform: translate(-50%, -50%) rotate(-30deg);
+    width: 600px; height: 300px;
+    background-image: url('images/signature.png');
+    background-repeat: no-repeat; background-position: center;
+    background-size: contain; opacity: 0.08;
+    pointer-events: none; z-index: 9999; filter: grayscale(100%);
+  }
+  .slide-h1, .slide-h3, .slide-text, .card { color: #1a1a1a !important; }
+  .card { border-color: #ccc !important; background: #f9f9f9 !important; }
+  .math-box { background: #f5f5f5 !important; border-color: #999 !important; }
+  .slide-num { background: #e0e0e0 !important; color: #333 !important; }
+  .code-content { background: #f5f5f5 !important; color: #1a1a1a !important; }
+}
+
+.lightbox {
+  position: fixed; inset: 0; background: rgba(0, 0, 0, 0.92);
+  backdrop-filter: blur(8px); z-index: 10000;
+  display: flex; align-items: center; justify-content: center;
+  padding: 40px; opacity: 0; pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+.lightbox.active { opacity: 1; pointer-events: auto; }
+.lightbox-img {
+  max-width: 90vw; max-height: 85vh; border-radius: 16px;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.8), 0 0 60px rgba(0, 212, 170, 0.3);
+  border: 2px solid var(--primary); transform: scale(0.85);
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.lightbox.active .lightbox-img { transform: scale(1); }
+.lightbox-close {
+  position: absolute; top: 24px; left: 24px;
+  width: 46px; height: 46px; border-radius: 50%;
+  background: rgba(255, 71, 87, 0.9); border: none; color: #fff;
+  font-size: 1.2rem; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.3s ease; z-index: 10001;
+}
+.lightbox-close:hover { background: var(--danger); transform: rotate(90deg); }
+.lightbox-caption {
+  position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%);
+  background: rgba(10, 18, 40, 0.95); border: 1px solid var(--card-border);
+  color: var(--text); padding: 10px 24px; border-radius: 30px;
+  font-size: 0.85rem; font-weight: 600;
+}
+
+.img-box, .hero-img, .star-img { cursor: zoom-in; transition: all 0.3s ease; }
+.img-box:hover { transform: scale(1.02); border-color: var(--primary); }
+
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(10px); z-index: 9500;
+  display: flex; align-items: center; justify-content: center;
+  padding: 30px; opacity: 0; pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+.modal-overlay.active { opacity: 1; pointer-events: auto; }
+.modal-box {
+  background: linear-gradient(145deg, rgba(10, 18, 40, 0.98), rgba(5, 8, 24, 0.98));
+  border: 1px solid var(--gold); border-radius: 22px; padding: 30px;
+  max-width: 720px; width: 100%; max-height: 85vh; overflow-y: auto;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.8), 0 0 50px rgba(255, 183, 0, 0.2);
+  position: relative; transform: scale(0.92);
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.modal-overlay.active .modal-box { transform: scale(1); }
+.modal-close {
+  position: absolute; top: 18px; left: 18px;
+  width: 38px; height: 38px; border-radius: 50%;
+  background: rgba(255, 71, 87, 0.2); border: 1px solid rgba(255, 71, 87, 0.5);
+  color: var(--danger); font-size: 1rem; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.3s ease;
+}
+.modal-close:hover { background: var(--danger); color: #fff; transform: rotate(90deg); }
+.modal-title {
+  font-size: 1.3rem; font-weight: 900; color: var(--gold);
+  margin-bottom: 18px; display: flex; align-items: center; gap: 12px;
+  padding-right: 40px;
+}
+.modal-title i { font-size: 1.5rem; }
+.modal-section { margin-bottom: 18px; }
+.modal-section-title {
+  font-size: 0.95rem; font-weight: 800; color: var(--primary);
+  margin-bottom: 8px; display: flex; align-items: center; gap: 8px;
+}
+.modal-section-title i { color: var(--primary); }
+.modal-section p { font-size: 0.88rem; color: var(--text-dim); line-height: 2; margin-bottom: 8px; }
+.modal-section ul { list-style: none; padding: 0; }
+.modal-section ul li {
+  padding: 6px 24px 6px 10px; position: relative;
+  font-size: 0.85rem; color: var(--text-dim); line-height: 1.9;
+}
+.modal-section ul li::before { content: '◆'; position: absolute; right: 4px; color: var(--gold); font-size: 0.7rem; }
+
+.concept-word {
+  color: var(--gold); font-weight: 900; cursor: pointer;
+  text-decoration: underline dotted var(--gold);
+  text-underline-offset: 5px; transition: all 0.3s ease;
+  padding: 0 2px; border-radius: 4px;
+}
+.concept-word:hover { background: rgba(255, 183, 0, 0.15); text-shadow: 0 0 12px rgba(255, 183, 0, 0.8); }
+
+.topic-nav { position: fixed; top: 82px; left: 0; right: 0; height: 36px; background: rgba(5, 8, 24, 0.9); backdrop-filter: blur(10px); border-bottom: 1px solid var(--card-border); z-index: 99; display: flex; align-items: center; gap: 6px; padding: 0 18px; overflow-x: auto; scrollbar-width: none; }
+.topic-nav::-webkit-scrollbar { display: none; }
+.topic-pill { padding: 4px 11px; border-radius: 20px; font-size: 0.7rem; font-weight: 600; white-space: nowrap; color: var(--text-dim); background: rgba(255, 255, 255, 0.04); border: 1px solid transparent; transition: all 0.3s ease; }
+.topic-pill.active { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: var(--dark); font-weight: 800; box-shadow: 0 3px 10px rgba(0, 212, 170, 0.35); }
+.topic-pill.done { color: var(--primary); border-color: rgba(0, 212, 170, 0.3); }
+
+.progress-top { position: fixed; top: 118px; left: 0; right: 0; height: 3px; background: rgba(255, 255, 255, 0.05); z-index: 98; }
+.progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--primary), var(--secondary), var(--tertiary)); transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 0 12px var(--primary); }
+
+.slide-container { position: fixed; inset: 121px 0 0 0; overflow: hidden; }
+.slide { position: absolute; inset: 0; padding: 24px 50px 90px; opacity: 0; transform: translateX(-40px); pointer-events: none; transition: opacity 0.5s ease, transform 0.5s cubic-bezier(0.4, 0, 0.2, 1); overflow-y: auto; overflow-x: hidden; }
+.slide.active { opacity: 1; transform: translateX(0); pointer-events: auto; }
+.slide.prev { transform: translateX(40px); }
+.slide::-webkit-scrollbar { width: 6px; }
+.slide::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 3px; }
+.slide-inner { max-width: 1200px; margin: 0 auto; animation: contentFade 0.6s ease; }
+@keyframes contentFade { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+.slide-num { display: inline-block; padding: 5px 14px; border-radius: 20px; background: rgba(0, 212, 170, 0.15); color: var(--primary); font-size: 0.72rem; font-weight: 700; margin-bottom: 10px; }
+.slide-h1 { font-size: clamp(1.3rem, 3.2vw, 2rem); font-weight: 900; background: linear-gradient(135deg, var(--primary), var(--secondary), var(--tertiary), var(--gold)); background-size: 300% 300%; -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; animation: gradientShift 6s ease infinite; margin-bottom: 16px; line-height: 1.35; }
+@keyframes gradientShift { 0%, 100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
+.slide-h3 { font-size: 0.98rem; font-weight: 700; color: var(--text); margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+.slide-h3 i { color: var(--gold); font-size: 0.88rem; }
+.slide-text { font-size: 0.9rem; color: var(--text-dim); line-height: 2; margin-bottom: 12px; }
+
+.card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 18px; padding: 18px; backdrop-filter: blur(12px); transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1); }
+.card:hover { transform: translateY(-4px); border-color: rgba(0, 212, 170, 0.4); box-shadow: 0 15px 35px rgba(0, 212, 170, 0.12); }
+.grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+.grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; }
+.grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; }
+
+.title-slide { text-align: center; padding-top: 5px; }
+.title-slide .hero-img { width: 100%; max-width: 520px; height: 170px; object-fit: contain; background: rgba(0, 0, 0, 0.2); padding: 6px; border-radius: 20px; margin: 0 auto 12px; display: block; border: 1px solid var(--card-border); box-shadow: 0 20px 40px rgba(0, 212, 170, 0.15); }
+.title-slide .bismillah { font-size: 1.2rem; font-weight: 500; background: linear-gradient(90deg, var(--gold), var(--primary), var(--secondary)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 4px; }
+.title-slide .hoval { font-size: 0.82rem; color: var(--text-dim); margin-bottom: 16px; letter-spacing: 1px; }
+.title-slide .main-title { font-size: clamp(1.3rem, 3.2vw, 2rem); font-weight: 900; background: linear-gradient(135deg, var(--primary), var(--gold), var(--tertiary)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 10px; line-height: 1.3; }
+.title-slide .subtitle { font-size: clamp(0.9rem, 2vw, 1.05rem); color: var(--text-dim); margin-bottom: 18px; }
+.title-slide .euler-box { display: inline-block; padding: 12px 30px; border-radius: 18px; background: var(--card-bg); border: 1px solid var(--card-border); backdrop-filter: blur(15px); margin-bottom: 16px; }
+.title-slide .instructor-line { font-size: 0.92rem; color: var(--gold); font-weight: 700; margin-bottom: 3px; }
+.title-slide .instructor-title-line { font-size: 0.78rem; color: var(--text-dim); margin-bottom: 12px; }
+.title-slide .semester { display: inline-block; padding: 6px 18px; border-radius: 50px; background: var(--card-bg); border: 1px solid var(--card-border); font-size: 0.78rem; color: var(--text-dim); }
+
+.star-container { position: fixed; top: 150px; left: 40px; z-index: 90; cursor: pointer; }
+.star-core {
+  width: 40px; height: 40px; border-radius: 50%;
+  background: radial-gradient(circle at 50% 50%, #fff 0%, var(--gold) 30%, var(--gold) 50%, rgba(255, 183, 0, 0.2) 80%, transparent 100%);
+  box-shadow: 0 0 25px var(--gold), 0 0 50px rgba(255, 183, 0, 0.5), 0 0 80px rgba(255, 183, 0, 0.3);
+  animation: starPulse 3s ease-in-out infinite; position: relative;
+}
+.star-core::before {
+  content: ''; position: absolute; inset: -20px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 183, 0, 0.3) 0%, transparent 70%);
+  animation: starHalo 4s ease-in-out infinite;
+}
+@keyframes starPulse {
+  0%, 100% { transform: scale(1); box-shadow: 0 0 25px var(--gold), 0 0 50px rgba(255, 183, 0, 0.5), 0 0 80px rgba(255, 183, 0, 0.3); }
+  50% { transform: scale(1.15); box-shadow: 0 0 35px var(--gold), 0 0 70px rgba(255, 183, 0, 0.7), 0 0 100px rgba(255, 183, 0, 0.5); }
+}
+@keyframes starHalo {
+  0%, 100% { transform: scale(1); opacity: 0.5; }
+  50% { transform: scale(1.3); opacity: 0.8; }
+}
+.star-tooltip {
+  position: absolute; top: 55px; left: 0; width: 240px;
+  background: linear-gradient(145deg, rgba(10, 18, 40, 0.98), rgba(5, 8, 24, 0.98));
+  border: 1px solid var(--gold); border-radius: 16px; padding: 16px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7), 0 0 30px rgba(255, 183, 0, 0.3);
+  opacity: 0; pointer-events: none; transform: translateY(-10px) scale(0.95);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.star-container:hover .star-tooltip { opacity: 1; transform: translateY(0) scale(1); pointer-events: auto; }
+.star-img { width: 100%; height: 180px; object-fit: contain; border-radius: 12px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 183, 0, 0.3); margin-bottom: 10px; padding: 6px; }
+.star-name { font-size: 0.95rem; font-weight: 800; color: var(--gold); text-align: center; margin-bottom: 4px; }
+.star-title { font-size: 0.75rem; color: var(--text-dim); text-align: center; margin-bottom: 6px; font-style: italic; }
+.star-years { font-size: 0.72rem; color: var(--primary); text-align: center; font-family: 'Courier New', monospace; padding-top: 6px; border-top: 1px solid rgba(255, 183, 0, 0.2); }
+.star-tooltip::before { content: ''; position: absolute; top: -8px; left: 20px; width: 16px; height: 16px; background: rgba(10, 18, 40, 0.98); border-top: 1px solid var(--gold); border-right: 1px solid var(--gold); transform: rotate(-45deg); }
+
+.math-box { background: rgba(0, 212, 170, 0.06); border: 1px solid rgba(0, 212, 170, 0.25); border-radius: 14px; padding: 16px 22px; margin: 12px 0; text-align: center; direction: ltr; position: relative; overflow-x: auto; overflow-y: hidden; }
+.math-box::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--primary), var(--secondary), var(--tertiary)); }
+.math-box .MathJax, .math-box mjx-container { color: var(--primary) !important; font-size: 1em !important; }
+.math-box.gold-math .MathJax, .math-box.gold-math mjx-container { color: var(--gold) !important; }
+.math-box.purple-math .MathJax, .math-box.purple-math mjx-container { color: var(--tertiary) !important; }
+.math-box.pink-math .MathJax, .math-box.pink-math mjx-container { color: var(--pink) !important; }
+.math-box.danger-math .MathJax, .math-box.danger-math mjx-container { color: var(--danger) !important; }
+.math-note { font-family: 'Vazirmatn', sans-serif; font-size: 0.76rem; color: var(--text-dim); direction: rtl; margin-top: 8px; font-style: italic; text-align: center; }
+
+.simulator { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 18px; padding: 16px; margin: 12px 0; backdrop-filter: blur(12px); }
+.sim-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; flex-wrap: wrap; gap: 10px; }
+.sim-title { font-size: 0.9rem; font-weight: 700; color: var(--gold); display: flex; align-items: center; gap: 8px; }
+.sim-controls { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.slider-group { display: flex; align-items: center; gap: 8px; background: rgba(0, 0, 0, 0.3); padding: 6px 12px; border-radius: 10px; border: 1px solid var(--card-border); }
+.slider-group label { font-size: 0.72rem; color: var(--text-dim); white-space: nowrap; }
+.slider-group input[type="range"] { width: 100px; accent-color: var(--primary); cursor: pointer; }
+.slider-value { font-family: 'Courier New', monospace; font-size: 0.78rem; color: var(--primary); font-weight: 700; min-width: 30px; text-align: center; }
+.canvas-wrapper { position: relative; width: 100%; height: 260px; background: rgba(0, 0, 0, 0.4); border-radius: 12px; overflow: hidden; border: 1px solid var(--card-border); }
+.canvas-wrapper canvas { width: 100%; height: 100%; display: block; }
+
+.img-box { width: 100%; max-height: 280px; border-radius: 16px; border: 1px solid var(--card-border); margin: 12px 0; display: block; object-fit: contain; background: rgba(0, 0, 0, 0.3); padding: 8px; }
+
+.step-container { background: rgba(0, 0, 0, 0.2); border-radius: 14px; padding: 16px 20px; margin: 12px 0; border-right: 3px solid var(--gold); }
+.step-title { font-size: 0.88rem; font-weight: 800; color: var(--gold); margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+.step-content { font-size: 0.85rem; color: var(--text-dim); line-height: 2; }
+.step-content .math-box { margin: 8px 0; padding: 12px 16px; }
+
+.exercise-block { border-radius: 16px; padding: 16px; border: 1px solid; position: relative; overflow: hidden; margin-bottom: 12px; }
+.exercise-block::before { content: ''; position: absolute; top: 0; right: 0; width: 4px; height: 100%; }
+.ex-yellow { background: rgba(255, 217, 61, 0.06); border-color: rgba(255, 217, 61, 0.25); }
+.ex-yellow::before { background: #ffd93d; }
+.ex-green { background: rgba(107, 207, 127, 0.06); border-color: rgba(107, 207, 127, 0.25); }
+.ex-green::before { background: #6bcf7f; }
+.ex-purple { background: rgba(168, 85, 247, 0.06); border-color: rgba(168, 85, 247, 0.25); }
+.ex-purple::before { background: var(--tertiary); }
+.ex-red { background: rgba(255, 107, 107, 0.06); border-color: rgba(255, 107, 107, 0.25); }
+.ex-red::before { background: #ff6b6b; }
+.ex-header { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+.ex-num { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 0.8rem; color: var(--dark); flex-shrink: 0; }
+.ex-yellow .ex-num { background: #ffd93d; }
+.ex-green .ex-num { background: #6bcf7f; }
+.ex-purple .ex-num { background: var(--tertiary); color: #fff; }
+.ex-red .ex-num { background: #ff6b6b; color: #fff; }
+.ex-title { font-size: 0.92rem; font-weight: 800; }
+.ex-list { list-style: none; padding: 0; counter-reset: item; }
+.ex-list li { position: relative; padding: 7px 34px 7px 10px; font-size: 0.83rem; color: var(--text-dim); line-height: 1.8; border-bottom: 1px dashed rgba(255, 255, 255, 0.05); }
+.ex-list li:last-child { border-bottom: none; }
+.ex-list li::before { counter-increment: item; content: counter(item); position: absolute; right: 4px; top: 9px; width: 22px; height: 22px; border-radius: 50%; background: rgba(255, 255, 255, 0.08); color: var(--text); font-size: 0.7rem; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+.email-banner { margin-top: 12px; padding: 12px; border-radius: 14px; background: linear-gradient(135deg, rgba(0, 212, 170, 0.1), rgba(168, 85, 247, 0.1)); border: 1px dashed rgba(0, 212, 170, 0.4); text-align: center; }
+.email-banner p { font-size: 0.8rem; color: var(--text); margin-bottom: 5px; }
+.email-banner code { display: inline-block; padding: 5px 12px; border-radius: 8px; background: rgba(0, 0, 0, 0.4); color: var(--primary); font-family: 'Courier New', monospace; font-size: 0.76rem; direction: ltr; margin-top: 3px; }
+
+.code-tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--card-border); }
+.code-tab { padding: 8px 16px; border-radius: 10px 10px 0 0; background: transparent; border: none; color: var(--text-dim); font-family: inherit; font-size: 0.8rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; }
+.code-tab.active { background: rgba(0, 212, 170, 0.1); color: var(--primary); border-bottom: 2px solid var(--primary); }
+.code-content { display: none; background: #0a0f24; border: 1px solid var(--card-border); border-top: none; border-radius: 0 0 12px 12px; padding: 14px; overflow-x: auto; direction: ltr; text-align: left; }
+.code-content.active { display: block; }
+.code-content pre { margin: 0; font-family: 'Courier New', Consolas, monospace; font-size: 0.76rem; line-height: 1.6; color: #e8eef7; white-space: pre; }
+.code-content .kw { color: #ff79c6; }
+.code-content .fn { color: #50fa7b; }
+.code-content .num { color: #bd93f9; }
+.code-content .str { color: #f1fa8c; }
+.code-content .cm { color: #6272a4; font-style: italic; }
+.code-content .cls { color: #8be9fd; }
+
+.bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; height: 58px; background: rgba(5, 8, 24, 0.9); backdrop-filter: blur(15px); border-top: 1px solid var(--card-border); display: flex; align-items: center; justify-content: space-between; padding: 0 20px; z-index: 100; }
+.nav-btn { padding: 8px 18px; border-radius: 12px; border: 1px solid var(--card-border); background: var(--card-bg); color: var(--text); cursor: pointer; font-family: inherit; font-size: 0.82rem; font-weight: 600; display: flex; align-items: center; gap: 7px; transition: all 0.3s ease; }
+.nav-btn:hover:not(:disabled) { background: var(--primary); color: var(--dark); transform: translateY(-2px); }
+.nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+.dots-nav { display: flex; gap: 4px; flex-wrap: wrap; justify-content: center; max-width: 60%; }
+.dot-nav { width: 8px; height: 8px; border-radius: 50%; background: rgba(255, 255, 255, 0.15); cursor: pointer; border: none; padding: 0; transition: all 0.3s ease; }
+.dot-nav.active { background: var(--primary); width: 22px; border-radius: 5px; box-shadow: 0 0 10px var(--primary); }
+.slide-counter { font-size: 0.78rem; color: var(--text-dim); font-family: 'Courier New', monospace; min-width: 60px; text-align: center; }
+.slide-counter span { color: var(--primary); font-weight: 800; }
+
+.toast-container { position: fixed; bottom: 76px; left: 24px; z-index: 9999; display: flex; flex-direction: column; gap: 8px; }
+.toast { background: rgba(10, 18, 40, 0.95); border: 1px solid var(--primary); border-radius: 14px; padding: 11px 16px; color: var(--text); font-size: 0.82rem; backdrop-filter: blur(12px); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); display: flex; align-items: center; gap: 8px; animation: slideIn 0.35s ease; max-width: 320px; }
+.toast i { color: var(--primary); }
+@keyframes slideIn { from { opacity: 0; transform: translateX(-60px); } to { opacity: 1; transform: translateX(0); } }
+
+.lecture-note {
+  background: rgba(0, 212, 170, 0.06); border: 1px solid rgba(0, 212, 170, 0.3);
+  border-radius: 12px; padding: 12px 16px; margin: 10px 0;
+  display: flex; gap: 10px; align-items: flex-start;
+}
+.lecture-note i { color: var(--primary); font-size: 1.1rem; margin-top: 3px; }
+.lecture-note-content { flex: 1; font-size: 0.85rem; color: var(--text-dim); line-height: 1.9; }
+
+.method-badge {
+  display: inline-block; padding: 3px 10px; border-radius: 6px;
+  font-size: 0.7rem; font-weight: 700; margin-bottom: 8px;
+}
+.badge-ga { background: rgba(0, 212, 170, 0.15); color: var(--primary); }
+.badge-pso { background: rgba(255, 183, 0, 0.15); color: var(--gold); }
+.badge-mo { background: rgba(168, 85, 247, 0.15); color: var(--tertiary); }
+.badge-app { background: rgba(236, 72, 153, 0.15); color: var(--pink); }
+
+@media (max-width: 768px) {
+  .slide { padding: 16px 14px 90px; }
+  .header-univ { display: none; }
+  .header-name { font-size: 0.75rem; }
+  .header-signature { height: 45px; max-width: 110px; }
+  .nav-btn { padding: 7px 11px; font-size: 0.72rem; }
+  .nav-btn span { display: none; }
+  .dots-nav { max-width: 45%; }
+  .slide-counter { font-size: 0.68rem; min-width: 45px; }
+  .canvas-wrapper { height: 210px; }
+  .topic-pill { font-size: 0.64rem; padding: 3px 8px; }
+  .star-container { top: 130px; left: 20px; }
+  .star-core { width: 32px; height: 32px; }
+  .star-tooltip { width: 200px; }
+  .modal-box { padding: 20px; }
+}
+@media (max-width: 480px) {
+  .ctrl-btn { width: 34px; height: 34px; font-size: 0.8rem; }
+  .header-signature { display: none; }
+  .star-container { top: 120px; left: 12px; }
+  .star-core { width: 28px; height: 28px; }
+  .star-tooltip { width: 180px; padding: 12px; }
+  .star-img { height: 140px; }
+  .lightbox-caption { font-size: 0.75rem; padding: 8px 16px; }
+}
+</style>
+</head>
+<body>
+
+<canvas id="bgCanvas"></canvas>
+<div class="glow-orb orb1"></div>
+<div class="glow-orb orb2"></div>
+<div class="glow-orb orb3"></div>
+
+<!-- ستاره درخشان خواجه نصیرالدین طوسی -->
+<div class="star-container" id="starContainer">
+  <div class="star-core"></div>
+  <div class="star-tooltip">
+    <img src="images/star.png" alt="خواجه نصیرالدین طوسی" class="star-img img-clickable" onerror="this.style.background='linear-gradient(135deg, #ffb700, #a855f7)'; this.style.minHeight='140px';" data-caption="خواجه نصیرالدین طوسی — پیشگام نظام انتخاب و تکامل">
+    <div class="star-name">خواجه نصیرالدین طوسی</div>
+    <div class="star-title">پیشگام نظام انتخاب و تکامل اجتماعی</div>
+    <div class="star-years">۱۲۰۱ — ۱۲۷۴ میلادی</div>
+  </div>
+</div>
+
+<div class="top-header">
+  <div class="header-left">
+    <img src="images/signature.png" alt="امضا" class="header-signature" onerror="this.style.display='none'">
+    <div class="header-text">
+      <span class="header-name">دکتر مسعود گوهری منش</span>
+      <span class="header-univ">دانشیار گروه مهندسی مکانیک — دانشگاه تربت حیدریه</span>
+    </div>
+  </div>
+  <div class="header-controls">
+    <button class="ctrl-btn" id="soundToggle" title="صدا"><i class="fas fa-volume-up"></i></button>
+    <button class="ctrl-btn" id="fullscreenToggle" title="تمام‌صفحه"><i class="fas fa-expand"></i></button>
+    <div class="print-menu-wrap">
+      <button class="ctrl-btn" id="printToggle" title="چاپ"><i class="fas fa-print"></i></button>
+      <div class="print-menu" id="printMenu">
+        <button id="printCurrentBtn"><i class="fas fa-file"></i> چاپ این صفحه</button>
+        <button id="printAllBtn"><i class="fas fa-layer-group"></i> چاپ همه صفحات</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="topic-nav" id="topicNav">
+  <span class="topic-pill" data-topic="1">مقدمه</span>
+  <span class="topic-pill" data-topic="2">ایده GA</span>
+  <span class="topic-pill" data-topic="3">اجزا و عملگرهای GA</span>
+  <span class="topic-pill" data-topic="4">PSO</span>
+  <span class="topic-pill" data-topic="5">مقایسه</span>
+  <span class="topic-pill" data-topic="6">چندهدفه</span>
+  <span class="topic-pill" data-topic="7">کاربرد NEMS</span>
+  <span class="topic-pill" data-topic="8">کد</span>
+  <span class="topic-pill" data-topic="9">جمع‌بندی</span>
+</div>
+
+<div class="progress-top"><div class="progress-fill" id="progressFill"></div></div>
+
+<div class="slide-container" id="slideContainer">
+
+  <!-- ۱ — عنوان -->
+  <div class="slide active" data-slide="1" data-topic="1">
+    <div class="slide-inner title-slide">
+      <div class="bismillah">بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِیم</div>
+      <div class="hoval">هُوَ الخَلّاقُ العَلیم</div>
+      <img src="images/hero-evolutionary.png" alt="Evolutionary" class="hero-img img-clickable" onerror="this.style.display='none'" data-caption="بهینه‌سازی تکاملی">
+      <h1 class="main-title">بهینه‌سازی تکاملی: GA و PSO</h1>
+      <p class="subtitle">(Evolutionary Optimization: GA & PSO) — جلسه ۲۳</p>
+      <div class="euler-box"><div style="direction: ltr; font-size: 0.9rem;">$$v_i^{t+1} = w v_i^t + c_1 r_1 (p_i - x_i^t) + c_2 r_2 (g - x_i^t)$$</div></div>
+      <p class="instructor-line">دکتر مسعود گوهری منش</p>
+      <p class="instructor-title-line">دانشیار گروه مهندسی مکانیک — دانشگاه تربت حیدریه</p>
+      <div class="semester">نیمسال اول ۱۴۰۵–۱۴۰۶</div>
+      <div class="lecture-note" style="margin-top: 20px; max-width: 600px; margin-left: auto; margin-right: auto; text-align: right;">
+        <i class="fas fa-star" style="color: var(--gold);"></i>
+        <div class="lecture-note-content">
+          <strong style="color: var(--gold);">💫 ستاره امروز:</strong> به ستاره درخشان گوشه صفحه هاور کنید تا <strong>خواجه نصیرالدین طوسی</strong>، پیشگام نظام انتخاب و تکامل را ببینید.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۲ — مرور جلسه ۲۲ -->
+  <div class="slide" data-slide="2" data-topic="1">
+    <div class="slide-inner">
+      <span class="slide-num">مرور</span>
+      <h2 class="slide-h1">از بهینه‌سازی گرادیانی به تکاملی</h2>
+
+      <div class="grid-2">
+        <div class="card" style="background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3);">
+          <div class="slide-h3" style="color: var(--primary);"><i class="fas fa-check-circle"></i> دستاوردهای جلسه ۲۲</div>
+          <ul style="list-style: none; padding: 0; font-size: 0.85rem; color: var(--text-dim); line-height: 2;">
+            <li>✅ روش لاگرانژ برای قید برابری</li>
+            <li>✅ شرایط KKT برای قید نامساوی</li>
+            <li>✅ دوگانگی و برنامه‌ریزی محدب</li>
+            <li>✅ کاربرد در طراحی NEMS</li>
+          </ul>
+        </div>
+        <div class="card" style="background: rgba(255, 183, 0, 0.06); border-color: rgba(255, 183, 0, 0.3);">
+          <div class="slide-h3" style="color: var(--gold);"><i class="fas fa-rocket"></i> امروز — جلسه ۲۳</div>
+          <ul style="list-style: none; padding: 0; font-size: 0.85rem; color: var(--text-dim); line-height: 2;">
+            <li>🔹 الگوریتم ژنتیک (GA)</li>
+            <li>🔹 ازدحام ذرات (PSO)</li>
+            <li>🔹 بهینه‌سازی چندهدفه (NSGA-II)</li>
+            <li>🔹 کاربرد در طراحی NEMS و ML</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top: 16px; background: rgba(168, 85, 247, 0.06); border-color: rgba(168, 85, 247, 0.3);">
+        <div class="slide-h3" style="color: var(--tertiary);"><i class="fas fa-bullseye"></i> چرا الگوریتم‌های تکاملی؟</div>
+        <p class="slide-text" style="font-size: 0.9rem;">
+          تا امروز با روش‌های <strong>گرادیانی</strong> (GD، Adam، KKT) کار کردیم. اما این روش‌ها محدودیت‌هایی دارند: نیاز به مشتق، گرفتار شدن در local minimum، و حساسیت به مقدار اولیه. <strong>الگوریتم‌های تکاملی</strong> از طبیعت الهام می‌گیرند و این محدودیت‌ها را دور می‌زنند.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۳ — چرا الگوریتم تکاملی -->
+  <div class="slide" data-slide="3" data-topic="1">
+    <div class="slide-inner">
+      <span class="slide-num">انگیزه</span>
+      <h2 class="slide-h1">محدودیت‌های روش گرادیانی</h2>
+
+      <img src="images/why-evolutionary.png" alt="Why Evolutionary" class="img-box img-clickable" onerror="this.style.display='none'" data-caption="چرا الگوریتم تکاملی">
+
+      <div class="grid-3" style="margin-top: 14px;">
+        <div class="card" style="background: rgba(255, 71, 87, 0.06); border-color: rgba(255, 71, 87, 0.3);">
+          <div class="slide-h3" style="color: var(--danger);"><i class="fas fa-snowflake"></i> Local Minimum</div>
+          <p class="slide-text" style="font-size: 0.82rem;">
+            GD در تابع غیرمحدب، ممکن است در local min گیر کند.
+          </p>
+        </div>
+        <div class="card" style="background: rgba(255, 71, 87, 0.06); border-color: rgba(255, 71, 87, 0.3);">
+          <div class="slide-h3" style="color: var(--danger);"><i class="fas fa-function"></i> نیاز به مشتق</div>
+          <p class="slide-text" style="font-size: 0.82rem;">
+            برای توابع ناپیوسته یا non-smooth، GD کار نمی‌کند.
+          </p>
+        </div>
+        <div class="card" style="background: rgba(255, 71, 87, 0.06); border-color: rgba(255, 71, 87, 0.3);">
+          <div class="slide-h3" style="color: var(--danger);"><i class="fas fa-dice"></i> حساسیت اولیه</div>
+          <p class="slide-text" style="font-size: 0.82rem;">
+            نتیجه به مقدار اولیه و نرخ یادگیری حساس است.
+          </p>
+        </div>
+      </div>
+
+      <div class="lecture-note">
+        <i class="fas fa-lightbulb"></i>
+        <div class="lecture-note-content">
+          <strong>راه‌حل:</strong> الگوریتم‌های تکاملی با <strong>جمعیت</strong> از راه‌حل‌ها و <strong>اکتشاف تصادفی</strong>، این محدودیت‌ها را دور می‌زنند. از طبیعت الهام می‌گیرند:
+          <br>• <b>GA</b>: از تکامل زیستی (انتخاب، جهش)
+          <br>• <b>PSO</b>: از رفتار گروهی پرندگان
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۴ — ایده GA -->
+  <div class="slide" data-slide="4" data-topic="2">
+    <div class="slide-inner">
+      <span class="slide-num">ایده</span>
+      <span class="method-badge badge-ga" style="display: inline-block; margin-right: 8px;">Genetic Algorithm</span>
+      <h2 class="slide-h1">ایده <span class="concept-word" data-concept>الگوریتم ژنتیک</span></h2>
+
+      <img src="images/ga-idea.png" alt="GA Idea" class="img-box img-clickable" onerror="this.style.display='none'" data-caption="ایده الگوریتم ژنتیک">
+
+      <p class="slide-text">
+        <b>GA</b> از <strong>تکامل زیستی داروین</strong> الهام گرفته:
+      </p>
+
+      <div class="grid-4" style="margin-top: 14px;">
+        <div class="card" style="background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3); text-align: center; padding: 12px;">
+          <i class="fas fa-dna" style="font-size: 1.4rem; color: var(--primary); display: block; margin-bottom: 6px;"></i>
+          <div class="slide-h3" style="justify-content: center; font-size: 0.82rem;">Chromosome</div>
+          <p class="slide-text" style="font-size: 0.7rem;">راه‌حل = کروموزوم</p>
+        </div>
+        <div class="card" style="background: rgba(255, 183, 0, 0.06); border-color: rgba(255, 183, 0, 0.3); text-align: center; padding: 12px;">
+          <i class="fas fa-users" style="font-size: 1.4rem; color: var(--gold); display: block; margin-bottom: 6px;"></i>
+          <div class="slide-h3" style="justify-content: center; font-size: 0.82rem;">Population</div>
+          <p class="slide-text" style="font-size: 0.7rem;">جمعیت از کروموزوم‌ها</p>
+        </div>
+        <div class="card" style="background: rgba(168, 85, 247, 0.06); border-color: rgba(168, 85, 247, 0.3); text-align: center; padding: 12px;">
+          <i class="fas fa-star" style="font-size: 1.4rem; color: var(--tertiary); display: block; margin-bottom: 6px;"></i>
+          <div class="slide-h3" style="justify-content: center; font-size: 0.82rem;">Fitness</div>
+          <p class="slide-text" style="font-size: 0.7rem;">برازش = کیفیت راه‌حل</p>
+        </div>
+        <div class="card" style="background: rgba(236, 72, 153, 0.06); border-color: rgba(236, 72, 153, 0.3); text-align: center; padding: 12px;">
+          <i class="fas fa-sync" style="font-size: 1.4rem; color: var(--pink); display: block; margin-bottom: 6px;"></i>
+          <div class="slide-h3" style="justify-content: center; font-size: 0.82rem;">Generation</div>
+          <p class="slide-text" style="font-size: 0.7rem;">نسل‌های تکامل</p>
+        </div>
+      </div>
+
+      <div class="lecture-note">
+        <i class="fas fa-info-circle"></i>
+        <div class="lecture-note-content">
+          <strong>ایده اصلی:</strong> بهترین افراد انتخاب می‌شوند، با هم ترکیب می‌شوند و جهش می‌کنند تا نسل بعدی به وجود بیاید. با هر نسل، جمعیت به سمت جواب بهتر حرکت می‌کند.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۵ — اجزای GA -->
+  <div class="slide" data-slide="5" data-topic="3">
+    <div class="slide-inner">
+      <span class="slide-num">اجزا</span>
+      <span class="method-badge badge-ga" style="display: inline-block; margin-right: 8px;">Components</span>
+      <h2 class="slide-h1">اجزای GA</h2>
+
+      <img src="images/ga-components.png" alt="GA Components" class="img-box img-clickable" style="max-height: 160px;" onerror="this.style.display='none'" data-caption="اجزای GA">
+
+      <div class="grid-2" style="margin-top: 14px;">
+        <div class="card" style="background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3);">
+          <div class="slide-h3" style="color: var(--primary);"><i class="fas fa-dna"></i> کروموزوم (Chromosome)</div>
+          <p class="slide-text" style="font-size: 0.82rem;">
+            یک راه‌حل کاندید — معمولاً به‌صورت بردار باینری یا حقیقی.
+          </p>
+          <div class="math-box" style="padding: 10px; font-size: 0.8rem;">
+            $$x = [x_1، x_2، \dots، x_n]$$
+          </div>
+        </div>
+        <div class="card" style="background: rgba(255, 183, 0, 0.06); border-color: rgba(255, 183, 0, 0.3);">
+          <div class="slide-h3" style="color: var(--gold);"><i class="fas fa-users"></i> جمعیت (Population)</div>
+          <p class="slide-text" style="font-size: 0.82rem;">
+            مجموعه‌ای از کروموزوم‌ها (معمولاً ۲۰–۱۰۰).
+          </p>
+          <div class="math-box gold-math" style="padding: 10px; font-size: 0.8rem;">
+            $$P = \{x^{(1)}، x^{(2)}، \dots، x^{(N)}\}$$
+          </div>
+        </div>
+        <div class="card" style="background: rgba(168, 85, 247, 0.06); border-color: rgba(168, 85, 247, 0.3);">
+          <div class="slide-h3" style="color: var(--tertiary);"><i class="fas fa-star"></i> تابع برازش (Fitness)</div>
+          <p class="slide-text" style="font-size: 0.82rem;">
+            کیفیت هر راه‌حل. در مینیمم‌سازی:
+          </p>
+          <div class="math-box purple-math" style="padding: 10px; font-size: 0.8rem;">
+            $$fitness = -f(x) \quad \text{یا} \quad \frac{1}{1 + f(x)}$$
+          </div>
+        </div>
+        <div class="card" style="background: rgba(236, 72, 153, 0.06); border-color: rgba(236, 72, 153, 0.3);">
+          <div class="slide-h3" style="color: var(--pink);"><i class="fas fa-sync"></i> نسل (Generation)</div>
+          <p class="slide-text" style="font-size: 0.82rem;">
+            یک چرخه‌ی کامل: انتخاب، ترکیب، جهش.
+          </p>
+          <p class="slide-text" style="font-size: 0.75rem;">
+            معمولاً ۵۰–۲۰۰ نسل.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۶ — عملگرهای GA -->
+  <div class="slide" data-slide="6" data-topic="3">
+    <div class="slide-inner">
+      <span class="slide-num">عملگرها</span>
+      <span class="method-badge badge-ga" style="display: inline-block; margin-right: 8px;">Operators</span>
+      <h2 class="slide-h1">عملگرهای GA</h2>
+
+      <img src="images/ga-operators.png" alt="GA Operators" class="img-box img-clickable" onerror="this.style.display='none'" data-caption="عملگرهای GA">
+
+      <div class="step-container">
+        <div class="step-title"><i class="fas fa-1"></i> انتخاب (Selection)</div>
+        <div class="step-content">
+          <p style="font-size: 0.85rem;">افراد با برازش بالاتر، شانس بیشتری برای انتخاب دارند (Roulette Wheel، Tournament).</p>
+        </div>
+      </div>
+
+      <div class="step-container" style="border-right-color: var(--primary);">
+        <div class="step-title" style="color: var(--primary);"><i class="fas fa-2"></i> ترکیب (Crossover)</div>
+        <div class="step-content">
+          <p style="font-size: 0.85rem;">دو والد بخش‌هایی از کروموزوم خود را با هم عوض می‌کنند:</p>
+          <div class="math-box" style="padding: 10px; font-size: 0.85rem;">
+            $$child = [parent_1[:k]، parent_2[k:]]$$
+          </div>
+        </div>
+      </div>
+
+      <div class="step-container" style="border-right-color: var(--gold);">
+        <div class="step-title"><i class="fas fa-3"></i> جهش (Mutation)</div>
+        <div class="step-content">
+          <p style="font-size: 0.85rem;">یک یا چند ژن به‌صورت تصادفی تغییر می‌کنند تا تنوع حفظ شود.</p>
+          <div class="math-box gold-math" style="padding: 10px; font-size: 0.85rem;">
+            $$x_i \leftarrow x_i + \epsilon \quad (\epsilon \sim \mathcal{N}(0، \sigma^2))$$
+          </div>
+        </div>
+      </div>
+
+      <div class="lecture-note">
+        <i class="fas fa-star"></i>
+        <div class="lecture-note-content">
+          <strong>نرخ‌های معمول:</strong> Crossover = ۰.۸، Mutation = ۰.۰۱–۰.۱، Population = ۵۰–۱۰۰، Generations = ۵۰–۲۰۰.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۷ — شبیه‌ساز GA -->
+  <div class="slide" data-slide="7" data-topic="3">
+    <div class="slide-inner">
+      <span class="slide-num">شبیه‌ساز تعاملی</span>
+      <h2 class="slide-h1">تکامل جمعیت در GA</h2>
+
+      <div class="simulator">
+        <div class="sim-header">
+          <div class="sim-title"><i class="fas fa-dna"></i> تکامل جمعیت</div>
+          <div class="sim-controls">
+            <div class="slider-group">
+              <label>نرخ جهش:</label>
+              <input type="range" id="gaMut" min="0.01" max="0.3" value="0.1" step="0.01">
+              <span class="slider-value" id="gaMutValue">۰.۱۰</span>
+            </div>
+            <div class="slider-group">
+              <label>اندازه جمعیت:</label>
+              <input type="range" id="gaPop" min="10" max="80" value="30" step="5">
+              <span class="slider-value" id="gaPopValue">۳۰</span>
+            </div>
+          </div>
+        </div>
+        <div class="canvas-wrapper" style="height: 320px;"><canvas id="gaCanvas"></canvas></div>
+        <div class="grid-3" style="margin-top: 12px;">
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 0.72rem; color: var(--text-dim);">بهترین fitness</div>
+            <div id="gaBest" style="font-size: 0.95rem; color: var(--primary); font-weight: 800; font-family: 'Courier New', monospace;">—</div>
+          </div>
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 0.72rem; color: var(--text-dim);">تولید فعلی</div>
+            <div id="gaGen" style="font-size: 0.95rem; color: var(--gold); font-weight: 800; font-family: 'Courier New', monospace;">—</div>
+          </div>
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 0.72rem; color: var(--text-dim);">میانگین fitness</div>
+            <div id="gaAvg" style="font-size: 0.95rem; color: var(--tertiary); font-weight: 800; font-family: 'Courier New', monospace;">—</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۸ — شبه‌کد GA -->
+  <div class="slide" data-slide="8" data-topic="3">
+    <div class="slide-inner">
+      <span class="slide-num">الگوریتم</span>
+      <h2 class="slide-h1">شبه‌کد GA</h2>
+
+      <img src="images/ga-pseudocode.png" alt="GA Pseudocode" class="img-box img-clickable" style="max-height: 160px;" onerror="this.style.display='none'" data-caption="شبه‌کد GA">
+
+      <div class="code-tabs">
+        <button class="code-tab active" data-code="ga-pseudo"><i class="fas fa-code"></i> Pseudocode</button>
+      </div>
+
+      <div class="code-content active" id="code-ga-pseudo">
+<pre><span class="cm"># === GA Pseudocode ===</span>
+<span class="fn">initialize</span> population P (size N)
+<span class="fn">evaluate</span> fitness for each x in P
+
+<span class="kw">for</span> gen <span class="kw">in</span> <span class="fn">range</span>(max_gen):
+    <span class="cm"># 1) Selection</span>
+    parents = <span class="fn">select</span>(P, fitness)
+    
+    <span class="cm"># 2) Crossover</span>
+    offspring = <span class="fn">crossover</span>(parents, p_c)
+    
+    <span class="cm"># 3) Mutation</span>
+    offspring = <span class="fn">mutate</span>(offspring, p_m)
+    
+    <span class="cm"># 4) Evaluate</span>
+    <span class="fn">evaluate</span> fitness for each new x
+    
+    <span class="cm"># 5) Replacement (Elitism)</span>
+    P = best_from(P + offspring, N)
+    
+    <span class="cm"># 6) Check convergence</span>
+    <span class="kw">if</span> <span class="fn">converged</span>(P):
+        <span class="kw">break</span>
+
+<span class="kw">return</span> best_x</pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۹ — ایده PSO -->
+  <div class="slide" data-slide="9" data-topic="4">
+    <div class="slide-inner">
+      <span class="slide-num">ایده</span>
+      <span class="method-badge badge-pso" style="display: inline-block; margin-right: 8px;">PSO</span>
+      <h2 class="slide-h1">ایده <span class="concept-word" data-concept>ازدحام ذرات</span> (PSO)</h2>
+
+      <img src="images/pso-idea.png" alt="PSO Idea" class="img-box img-clickable" onerror="this.style.display='none'" data-caption="ایده PSO">
+
+      <p class="slide-text">
+        <b>PSO</b> از <strong>رفتار گروهی پرندگان</strong> در جستجوی غذا الهام گرفته:
+      </p>
+
+      <div class="grid-4" style="margin-top: 14px;">
+        <div class="card" style="background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3); text-align: center; padding: 12px;">
+          <i class="fas fa-dot-circle" style="font-size: 1.4rem; color: var(--primary); display: block; margin-bottom: 6px;"></i>
+          <div class="slide-h3" style="justify-content: center; font-size: 0.82rem;">Position</div>
+          <p class="slide-text" style="font-size: 0.7rem;">موقعیت ذره</p>
+        </div>
+        <div class="card" style="background: rgba(255, 183, 0, 0.06); border-color: rgba(255, 183, 0, 0.3); text-align: center; padding: 12px;">
+          <i class="fas fa-arrow-right" style="font-size: 1.4rem; color: var(--gold); display: block; margin-bottom: 6px;"></i>
+          <div class="slide-h3" style="justify-content: center; font-size: 0.82rem;">Velocity</div>
+          <p class="slide-text" style="font-size: 0.7rem;">سرعت حرکت</p>
+        </div>
+        <div class="card" style="background: rgba(168, 85, 247, 0.06); border-color: rgba(168, 85, 247, 0.3); text-align: center; padding: 12px;">
+          <i class="fas fa-map-marker-alt" style="font-size: 1.4rem; color: var(--tertiary); display: block; margin-bottom: 6px;"></i>
+          <div class="slide-h3" style="justify-content: center; font-size: 0.82rem;">pBest</div>
+          <p class="slide-text" style="font-size: 0.7rem;">بهترین موقعیت شخصی</p>
+        </div>
+        <div class="card" style="background: rgba(236, 72, 153, 0.06); border-color: rgba(236, 72, 153, 0.3); text-align: center; padding: 12px;">
+          <i class="fas fa-crown" style="font-size: 1.4rem; color: var(--pink); display: block; margin-bottom: 6px;"></i>
+          <div class="slide-h3" style="justify-content: center; font-size: 0.82rem;">gBest</div>
+          <p class="slide-text" style="font-size: 0.7rem;">بهترین موقعیت گروه</p>
+        </div>
+      </div>
+
+      <div class="lecture-note">
+        <i class="fas fa-star"></i>
+        <div class="lecture-note-content">
+          <strong>ایده اصلی:</strong> هر ذره به سمت ترکیبی از <strong>بهترین موقعیت شخصی</strong> و <strong>بهترین موقعیت گروه</strong> حرکت می‌کند. با هر گام، گروه به سمت غذا (جواب بهینه) نزدیک‌تر می‌شود.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۱۰ — فرمول‌های PSO -->
+  <div class="slide" data-slide="10" data-topic="4">
+    <div class="slide-inner">
+      <span class="slide-num">فرمول‌ها</span>
+      <h2 class="slide-h1">فرمول‌های PSO</h2>
+
+      <img src="images/pso-formulas.png" alt="PSO Formulas" class="img-box img-clickable" style="max-height: 160px;" onerror="this.style.display='none'" data-caption="فرمول‌های PSO">
+
+      <div class="step-container">
+        <div class="step-title"><i class="fas fa-1"></i> به‌روزرسانی سرعت</div>
+        <div class="step-content">
+          <div class="math-box gold-math" style="padding: 14px; font-size: 0.85rem;">
+            $$v_i^{t+1} = w v_i^t + c_1 r_1 (p_i - x_i^t) + c_2 r_2 (g - x_i^t)$$
+          </div>
+        </div>
+      </div>
+
+      <div class="step-container" style="border-right-color: var(--primary);">
+        <div class="step-title" style="color: var(--primary);"><i class="fas fa-2"></i> به‌روزرسانی موقعیت</div>
+        <div class="step-content">
+          <div class="math-box" style="padding: 14px; font-size: 0.85rem;">
+            $$x_i^{t+1} = x_i^t + v_i^{t+1}$$
+          </div>
+        </div>
+      </div>
+
+      <div class="grid-3" style="margin-top: 14px;">
+        <div class="card" style="background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3); text-align: center; padding: 12px;">
+          <div class="slide-h3" style="justify-content: center; font-size: 0.82rem;">w (inertia)</div>
+          <p class="slide-text" style="font-size: 0.72rem;">۰.۴–۰.۹</p>
+        </div>
+        <div class="card" style="background: rgba(255, 183, 0, 0.06); border-color: rgba(255, 183, 0, 0.3); text-align: center; padding: 12px;">
+          <div class="slide-h3" style="justify-content: center; font-size: 0.82rem;">c₁ (cognitive)</div>
+          <p class="slide-text" style="font-size: 0.72rem;">~۲.۰</p>
+        </div>
+        <div class="card" style="background: rgba(168, 85, 247, 0.06); border-color: rgba(168, 85, 247, 0.3); text-align: center; padding: 12px;">
+          <div class="slide-h3" style="justify-content: center; font-size: 0.82rem;">c₂ (social)</div>
+          <p class="slide-text" style="font-size: 0.72rem;">~۲.۰</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۱۱ — شبیه‌ساز PSO -->
+  <div class="slide" data-slide="11" data-topic="4">
+    <div class="slide-inner">
+      <span class="slide-num">شبیه‌ساز تعاملی</span>
+      <h2 class="slide-h1">حرکت ذرات در PSO</h2>
+
+      <div class="simulator">
+        <div class="sim-header">
+          <div class="sim-title"><i class="fas fa-crow"></i> ازدحام ذرات</div>
+          <div class="sim-controls">
+            <div class="slider-group">
+              <label>w (inertia):</label>
+              <input type="range" id="psoW" min="0.1" max="0.99" value="0.7" step="0.05">
+              <span class="slider-value" id="psoWValue">۰.۷۰</span>
+            </div>
+            <div class="slider-group">
+              <label>c₁:</label>
+              <input type="range" id="psoC1" min="0.1" max="3" value="2" step="0.1">
+              <span class="slider-value" id="psoC1Value">۲.۰</span>
+            </div>
+            <div class="slider-group">
+              <label>c₂:</label>
+              <input type="range" id="psoC2" min="0.1" max="3" value="2" step="0.1">
+              <span class="slider-value" id="psoC2Value">۲.۰</span>
+            </div>
+          </div>
+        </div>
+        <div class="canvas-wrapper" style="height: 320px;"><canvas id="psoCanvas"></canvas></div>
+        <div class="grid-3" style="margin-top: 12px;">
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 0.72rem; color: var(--text-dim);">gBest</div>
+            <div id="psoGBest" style="font-size: 0.9rem; color: var(--primary); font-weight: 800; font-family: 'Courier New', monospace;">—</div>
+          </div>
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 0.72rem; color: var(--text-dim);">تکرار</div>
+            <div id="psoIter" style="font-size: 0.9rem; color: var(--gold); font-weight: 800; font-family: 'Courier New', monospace;">—</div>
+          </div>
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 0.72rem; color: var(--text-dim);">وضعیت</div>
+            <div id="psoStatus" style="font-size: 0.85rem; color: var(--success); font-weight: 800;">—</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۱۲ — مقایسه GA و PSO -->
+  <div class="slide" data-slide="12" data-topic="5">
+    <div class="slide-inner">
+      <span class="slide-num">مقایسه</span>
+      <h2 class="slide-h1">مقایسه GA و PSO</h2>
+
+      <img src="images/ga-vs-pso.png" alt="GA vs PSO" class="img-box img-clickable" style="max-height: 160px;" onerror="this.style.display='none'" data-caption="مقایسه GA و PSO">
+
+      <table style="width: 100%; border-collapse: collapse; font-size: 0.78rem; direction: rtl; margin-top: 14px;">
+        <thead>
+          <tr style="background: rgba(0, 212, 170, 0.15);">
+            <th style="padding: 8px; color: var(--primary); border: 1px solid var(--card-border); text-align: right;">ویژگی</th>
+            <th style="padding: 8px; color: var(--primary); border: 1px solid var(--card-border);">GA</th>
+            <th style="padding: 8px; color: var(--primary); border: 1px solid var(--card-border);">PSO</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="padding: 8px; border: 1px solid var(--card-border); color: var(--text); font-weight: 700;">الهام</td>
+            <td style="padding: 8px; border: 1px solid var(--card-border); text-align: center; color: var(--text-dim);">تکامل زیستی</td>
+            <td style="padding: 8px; border: 1px solid var(--card-border); text-align: center; color: var(--text-dim);">رفتار پرندگان</td>
+          </tr>
+          <tr>
+            <td style="padding: 8px; border: 1px solid var(--card-border); color: var(--text); font-weight: 700;">جمعیت</td>
+            <td style="padding: 8px; border: 1px solid var(--card-border); text-align: center; color: var(--text-dim);">کروموزوم</td>
+            <td style="padding: 8px; border: 1px solid var(--card-border); text-align: center; color: var(--text-dim);">ذره</td>
+          </tr>
+          <tr>
+            <td style="padding: 8px; border: 1px solid var(--card-border); color: var(--text); font-weight: 700;">عملگرها</td>
+            <td style="padding: 8px; border: 1px solid var(--card-border); text-align: center; color: var(--text-dim);">Selection، Crossover، Mutation</td>
+            <td style="padding: 8px; border: 1px solid var(--card-border); text-align: center; color: var(--text-dim);">Velocity update</td>
+          </tr>
+          <tr>
+            <td style="padding: 8px; border: 1px solid var(--card-border); color: var(--text); font-weight: 700;">حافظه</td>
+            <td style="padding: 8px; border: 1px solid var(--card-border); text-align: center; color: var(--danger);">❌ ندارد</td>
+            <td style="padding: 8px; border: 1px solid var(--card-border); text-align: center; color: var(--success);">✅ دارد</td>
+          </tr>
+          <tr>
+            <td style="padding: 8px; border: 1px solid var(--card-border); color: var(--text); font-weight: 700;">پیاده‌سازی</td>
+            <td style="padding: 8px; border: 1px solid var(--card-border); text-align: center; color: var(--text-dim);">پیچیده‌تر</td>
+            <td style="padding: 8px; border: 1px solid var(--card-border); text-align: center; color: var(--text-dim);">ساده‌تر</td>
+          </tr>
+          <tr>
+            <td style="padding: 8px; border: 1px solid var(--card-border); color: var(--text); font-weight: 700;">تنوع</td>
+            <td style="padding: 8px; border: 1px solid var(--card-border); text-align: center; color: var(--text-dim);">بالا</td>
+            <td style="padding: 8px; border: 1px solid var(--card-border); text-align: center; color: var(--text-dim);">پایین‌تر</td>
+          </tr>
+          <tr>
+            <td style="padding: 8px; border: 1px solid var(--card-border); color: var(--text); font-weight: 700;">سرعت</td>
+            <td style="padding: 8px; border: 1px solid var(--card-border); text-align: center; color: var(--text-dim);">متوسط</td>
+            <td style="padding: 8px; border: 1px solid var(--card-border); text-align: center; color: var(--text-dim);">سریع‌تر</td>
+          </tr>
+          <tr>
+            <td style="padding: 8px; border: 1px solid var(--card-border); color: var(--text); font-weight: 700;">بهترین برای</td>
+            <td style="padding: 8px; border: 1px solid var(--card-border); text-align: center; color: var(--text-dim); font-size: 0.72rem;">مسائل گسسته و پیچیده</td>
+            <td style="padding: 8px; border: 1px solid var(--card-border); text-align: center; color: var(--text-dim); font-size: 0.72rem;">مسائل پیوسته و بهینه‌سازی سریع</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="lecture-note" style="margin-top: 14px;">
+        <i class="fas fa-star"></i>
+        <div class="lecture-note-content">
+          <strong>توصیه:</strong> برای مسائل پیوسته و بهینه‌سازی سریع، <b>PSO</b>. برای مسائل گسسته، طراحی ترکیبیاتی، یا وقتی تنوع اهمیت دارد، <b>GA</b>.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۱۳ — شبیه‌ساز مقایسه -->
+  <div class="slide" data-slide="13" data-topic="5">
+    <div class="slide-inner">
+      <span class="slide-num">شبیه‌ساز تعاملی</span>
+      <h2 class="slide-h1">مقایسه زنده GA و PSO</h2>
+
+      <div class="simulator">
+        <div class="sim-header">
+          <div class="sim-title"><i class="fas fa-chart-line"></i> GA vs PSO روی یک مسئله</div>
+          <div class="sim-controls">
+            <div class="slider-group">
+              <label>تعداد کل:</label>
+              <input type="range" id="cmpIter" min="10" max="100" value="50" step="10">
+              <span class="slider-value" id="cmpIterValue">۵۰</span>
+            </div>
+          </div>
+        </div>
+        <div class="canvas-wrapper" style="height: 320px;"><canvas id="cmpCanvas"></canvas></div>
+        <div class="grid-2" style="margin-top: 12px;">
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 0.72rem; color: var(--text-dim);">بهترین GA</div>
+            <div id="cmpGABest" style="font-size: 0.9rem; color: var(--primary); font-weight: 800; font-family: 'Courier New', monospace;">—</div>
+          </div>
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 0.72rem; color: var(--text-dim);">بهترین PSO</div>
+            <div id="cmpPSOBest" style="font-size: 0.9rem; color: var(--gold); font-weight: 800; font-family: 'Courier New', monospace;">—</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۱۴ — بهینه‌سازی چندهدفه -->
+  <div class="slide" data-slide="14" data-topic="6">
+    <div class="slide-inner">
+      <span class="slide-num">چندهدفه</span>
+      <span class="method-badge badge-mo" style="display: inline-block; margin-right: 8px;">Multi-Objective</span>
+      <h2 class="slide-h1">بهینه‌سازی چندهدفه و NSGA-II</h2>
+
+      <img src="images/pareto-front.png" alt="Pareto Front" class="img-box img-clickable" style="max-height: 160px;" onerror="this.style.display='none'" data-caption="جبهه پارتو">
+
+      <p class="slide-text">
+        در مسائل واقعی، معمولاً <strong>چند هدف متضاد</strong> داریم:
+      </p>
+
+      <div class="math-box gold-math" style="padding: 12px; font-size: 0.9rem;">
+        $$\min \quad (f_1(x)، f_2(x)، \dots، f_k(x))$$
+      </div>
+
+      <div class="grid-3" style="margin-top: 14px;">
+        <div class="card" style="background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3);">
+          <div class="slide-h3" style="color: var(--primary);"><i class="fas fa-trophy"></i> Pareto Dominance</div>
+          <p class="slide-text" style="font-size: 0.78rem;">
+            $x_a$ بر $x_b$ غالب است اگر در همه اهداف بهتر باشد.
+          </p>
+        </div>
+        <div class="card" style="background: rgba(255, 183, 0, 0.06); border-color: rgba(255, 183, 0, 0.3);">
+          <div class="slide-h3" style="color: var(--gold);"><i class="fas fa-chart-area"></i> Pareto Front</div>
+          <p class="slide-text" style="font-size: 0.78rem;">
+            مجموعه همه نقاط غیرغالب.
+          </p>
+        </div>
+        <div class="card" style="background: rgba(168, 85, 247, 0.06); border-color: rgba(168, 85, 247, 0.3);">
+          <div class="slide-h3" style="color: var(--tertiary);"><i class="fas fa-cog"></i> NSGA-II</div>
+          <p class="slide-text" style="font-size: 0.78rem;">
+            محبوب‌ترین الگوریتم چندهدفه.
+          </p>
+        </div>
+      </div>
+
+      <img src="images/nsga-ii.png" alt="NSGA-II" class="img-box img-clickable" style="max-height: 140px; margin-top: 12px;" onerror="this.style.display='none'" data-caption="NSGA-II">
+
+      <div class="lecture-note">
+        <i class="fas fa-star"></i>
+        <div class="lecture-note-content">
+          <strong>کاربرد:</strong> طراحی NEMS با دو هدف متضاد: کمینه‌سازی حجم + بیشینه‌سازی حساسیت. NSGA-II مجموعه‌ای از راه‌حل‌های بهینه (Pareto front) می‌دهد، نه یک راه‌حل.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۱۵ — شبیه‌ساز Pareto -->
+  <div class="slide" data-slide="15" data-topic="6">
+    <div class="slide-inner">
+      <span class="slide-num">شبیه‌ساز تعاملی</span>
+      <h2 class="slide-h1">جبهه پارتو</h2>
+
+      <div class="simulator">
+        <div class="sim-header">
+          <div class="sim-title"><i class="fas fa-chart-area"></i> Pareto Front</div>
+          <div class="sim-controls">
+            <div class="slider-group">
+              <label>تعداد نقاط:</label>
+              <input type="range" id="paretoN" min="20" max="100" value="50" step="10">
+              <span class="slider-value" id="paretoNValue">۵۰</span>
+            </div>
+          </div>
+        </div>
+        <div class="canvas-wrapper" style="height: 320px;"><canvas id="paretoCanvas"></canvas></div>
+        <div class="grid-3" style="margin-top: 12px;">
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 0.72rem; color: var(--text-dim);">نقاط روی جبهه</div>
+            <div id="paretoCount" style="font-size: 0.95rem; color: var(--gold); font-weight: 800; font-family: 'Courier New', monospace;">—</div>
+          </div>
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 0.72rem; color: var(--text-dim);">بهترین f1</div>
+            <div id="paretoBest1" style="font-size: 0.95rem; color: var(--primary); font-weight: 800; font-family: 'Courier New', monospace;">—</div>
+          </div>
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 0.72rem; color: var(--text-dim);">بهترین f2</div>
+            <div id="paretoBest2" style="font-size: 0.95rem; color: var(--tertiary); font-weight: 800; font-family: 'Courier New', monospace;">—</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۱۶ — کاربرد در NEMS -->
+  <div class="slide" data-slide="16" data-topic="7">
+    <div class="slide-inner">
+      <span class="slide-num">کاربرد</span>
+      <span class="method-badge badge-app" style="display: inline-block; margin-right: 8px;">NEMS Design</span>
+      <h2 class="slide-h1">کاربرد در طراحی NEMS</h2>
+
+      <img src="images/nems-ga-design.png" alt="NEMS GA Design" class="img-box img-clickable" onerror="this.style.display='none'" data-caption="طراحی NEMS با GA">
+
+      <p class="slide-text">
+        مسئله: طراحی نانو انبرک با **کمینه‌سازی حجم** و **بیشینه‌سازی فرکانس**، با قید Pull-in.
+      </p>
+
+      <div class="math-box gold-math" style="padding: 14px;">
+        <div style="font-size: 0.9rem;">
+          $$\begin{aligned} \min \quad & V(L، b، h) = L \cdot b \cdot h \\ \max \quad & f_0(L، b، h) \\ \text{s.t.} \quad & V_{pull-in} \geq V_{min} \\ & L، b، h > 0 \end{aligned}$$
+        </div>
+      </div>
+
+      <div class="grid-3" style="margin-top: 14px;">
+        <div class="card" style="background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3); text-align: center; padding: 12px;">
+          <div class="slide-h3" style="justify-content: center; font-size: 0.82rem;">متغیرها</div>
+          <p class="slide-text" style="font-size: 0.72rem;">L، b، h (ابعاد تیر)</p>
+        </div>
+        <div class="card" style="background: rgba(255, 183, 0, 0.06); border-color: rgba(255, 183, 0, 0.3); text-align: center; padding: 12px;">
+          <div class="slide-h3" style="justify-content: center; font-size: 0.82rem;">اهداف</div>
+          <p class="slide-text" style="font-size: 0.72rem;">حجم، فرکانس</p>
+        </div>
+        <div class="card" style="background: rgba(168, 85, 247, 0.06); border-color: rgba(168, 85, 247, 0.3); text-align: center; padding: 12px;">
+          <div class="slide-h3" style="justify-content: center; font-size: 0.82rem;">قید</div>
+          <p class="slide-text" style="font-size: 0.72rem;">$V_{pull-in} \geq V_{min}$</p>
+        </div>
+      </div>
+
+      <div class="lecture-note">
+        <i class="fas fa-star"></i>
+        <div class="lecture-note-content">
+          <strong>مزیت NSGA-II:</strong> به‌جای یک راه‌حل، مجموعه‌ای از راه‌حل‌های بهینه (Pareto front) می‌دهد. مهندس می‌تواند بر اساس نیاز، یکی را انتخاب کند.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۱۷ — شبیه‌ساز طراحی NEMS -->
+  <div class="slide" data-slide="17" data-topic="7">
+    <div class="slide-inner">
+      <span class="slide-num">شبیه‌ساز تعاملی</span>
+      <h2 class="slide-h1">GA برای طراحی NEMS</h2>
+
+      <div class="simulator">
+        <div class="sim-header">
+          <div class="sim-title"><i class="fas fa-microchip"></i> طراحی بهینه نانو انبرک</div>
+          <div class="sim-controls">
+            <div class="slider-group">
+              <label>وزن هدف ۱ (حجم):</label>
+              <input type="range" id="nemsW1" min="0" max="1" value="0.5" step="0.05">
+              <span class="slider-value" id="nemsW1Value">۰.۵۰</span>
+            </div>
+          </div>
+        </div>
+        <div class="canvas-wrapper" style="height: 320px;"><canvas id="nemsCanvas"></canvas></div>
+        <div class="grid-3" style="margin-top: 12px;">
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 0.72rem; color: var(--text-dim);">بهترین طرح</div>
+            <div id="nemsDesign" style="font-size: 0.85rem; color: var(--primary); font-weight: 800; font-family: 'Courier New', monospace;">—</div>
+          </div>
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 0.72rem; color: var(--text-dim);">f₁ (حجم)</div>
+            <div id="nemsF1" style="font-size: 0.85rem; color: var(--gold); font-weight: 800; font-family: 'Courier New', monospace;">—</div>
+          </div>
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 0.72rem; color: var(--text-dim);">f₂ (فرکانس)</div>
+            <div id="nemsF2" style="font-size: 0.85rem; color: var(--tertiary); font-weight: 800; font-family: 'Courier New', monospace;">—</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۱۸ — ترکیب با ML -->
+  <div class="slide" data-slide="18" data-topic="7">
+    <div class="slide-inner">
+      <span class="slide-num">ترکیب</span>
+      <h2 class="slide-h1">GA برای Hyperparameter Tuning</h2>
+
+      <img src="images/hyperparameter-ga.png" alt="Hyperparameter GA" class="img-box img-clickable" onerror="this.style.display='none'" data-caption="GA برای Hyperparameter">
+
+      <p class="slide-text">
+        یکی از مهم‌ترین کاربردهای GA در ML: <strong>بهینه‌سازی hyperparameterها</strong> برای شبکه‌های عصبی (از جمله PINN).
+      </p>
+
+      <div class="grid-3" style="margin-top: 14px;">
+        <div class="card" style="background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3); text-align: center; padding: 12px;">
+          <div class="slide-h3" style="justify-content: center; font-size: 0.82rem;">تعداد لایه/نرون</div>
+          <p class="slide-text" style="font-size: 0.72rem;">$n_{layers}، n_{hidden}$</p>
+        </div>
+        <div class="card" style="background: rgba(255, 183, 0, 0.06); border-color: rgba(255, 183, 0, 0.3); text-align: center; padding: 12px;">
+          <div class="slide-h3" style="justify-content: center; font-size: 0.82rem;">نرخ یادگیری</div>
+          <p class="slide-text" style="font-size: 0.72rem;">$\eta$ (log scale)</p>
+        </div>
+        <div class="card" style="background: rgba(168, 85, 247, 0.06); border-color: rgba(168, 85, 247, 0.3); text-align: center; padding: 12px;">
+          <div class="slide-h3" style="justify-content: center; font-size: 0.82rem;">وزن Lossها</div>
+          <p class="slide-text" style="font-size: 0.72rem;">$\lambda_{pde}، \lambda_{data}$</p>
+        </div>
+      </div>
+
+      <div class="lecture-note">
+        <i class="fas fa-star"></i>
+        <div class="lecture-note-content">
+          <strong>روش:</strong> هر کروموزوم یک ترکیب از hyperparameterها است. Fitness = دقت مدل روی validation set. GA بهترین ترکیب را پیدا می‌کند.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۱۹ — شبیه‌ساز Hyperparameter -->
+  <div class="slide" data-slide="19" data-topic="7">
+    <div class="slide-inner">
+      <span class="slide-num">شبیه‌ساز تعاملی</span>
+      <h2 class="slide-h1">GA برای Hyperparameter</h2>
+
+      <div class="simulator">
+        <div class="sim-header">
+          <div class="sim-title"><i class="fas fa-brain"></i> بهینه‌سازی hyperparameter PINN</div>
+          <div class="sim-controls">
+            <div class="slider-group">
+              <label>تعداد نسل:</label>
+              <input type="range" id="hpIter" min="5" max="30" value="15" step="1">
+              <span class="slider-value" id="hpIterValue">۱۵</span>
+            </div>
+          </div>
+        </div>
+        <div class="canvas-wrapper" style="height: 320px;"><canvas id="hpCanvas"></canvas></div>
+        <div class="grid-2" style="margin-top: 12px;">
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 0.72rem; color: var(--text-dim);">بهترین hyperparameter</div>
+            <div id="hpBest" style="font-size: 0.9rem; color: var(--primary); font-weight: 800; font-family: 'Courier New', monospace;">—</div>
+          </div>
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 0.72rem; color: var(--text-dim);">بهترین fitness</div>
+            <div id="hpFitness" style="font-size: 0.9rem; color: var(--gold); font-weight: 800; font-family: 'Courier New', monospace;">—</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۲۰ — کد GA -->
+  <div class="slide" data-slide="20" data-topic="8">
+    <div class="slide-inner">
+      <span class="slide-num">کد</span>
+      <h2 class="slide-h1">پیاده‌سازی GA در NumPy</h2>
+
+      <div class="code-tabs">
+        <button class="code-tab active" data-code="numpy-ga"><i class="fas fa-square"></i> NumPy (از صفر)</button>
+      </div>
+
+      <div class="code-content active" id="code-numpy-ga">
+<pre><span class="cm"># ============================================</span>
+<span class="cm"># Genetic Algorithm from scratch (NumPy)</span>
+<span class="cm"># ============================================</span>
+<span class="kw">import</span> numpy <span class="kw">as</span> np
+
+<span class="cm"># --- تابع هدف: f(x) = x^2 + y^2 ---</span>
+<span class="kw">def</span> <span class="fn">f</span>(x):
+    <span class="kw">return</span> (x[:, <span class="num">0</span>] - <span class="num">1</span>)**<span class="num">2</span> + (x[:, <span class="num">1</span>] + <span class="num">2</span>)**<span class="num">2</span>
+
+<span class="cm"># --- پارامترها ---</span>
+pop_size = <span class="num">50</span>
+n_genes = <span class="num">2</span>          <span class="cm"># بعد مسئله</span>
+n_gen = <span class="num">100</span>
+p_crossover = <span class="num">0.8</span>
+p_mutation = <span class="num">0.1</span>
+bounds = (-<span class="num">5</span>، <span class="num">5</span>)
+
+<span class="cm"># --- مقداردهی اولیه ---</span>
+population = np.random.<span class="fn">uniform</span>(bounds[<span class="num">0</span>]، bounds[<span class="num">1</span>]، (pop_size، n_genes))
+
+<span class="kw">def</span> <span class="fn">fitness</span>(x):
+    <span class="kw">return</span> -<span class="fn">f</span>(x)  <span class="cm"># منفی چون مینیمم می‌خواهیم</span>
+
+<span class="kw">for</span> gen <span class="kw">in</span> <span class="fn">range</span>(n_gen):
+    <span class="cm"># 1) Fitness</span>
+    fit = <span class="fn">fitness</span>(population)
+    
+    <span class="cm"># 2) Selection (tournament)</span>
+    parents = np.<span class="fn">zeros_like</span>(population)
+    <span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(pop_size):
+        idx = np.random.<span class="fn">choice</span>(pop_size، <span class="num">3</span>، replace=<span class="kw">False</span>)
+        best_idx = idx[np.<span class="fn">argmax</span>(fit[idx])]
+        parents[i] = population[best_idx]
+    
+    <span class="cm"># 3) Crossover</span>
+    offspring = parents.<span class="fn">copy</span>()
+    <span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="num">0</span>، pop_size - <span class="num">1</span>، <span class="num">2</span>):
+        <span class="kw">if</span> np.random.<span class="fn">rand</span>() < p_crossover:
+            alpha = np.random.<span class="fn">rand</span>(n_genes)
+            offspring[i] = alpha * parents[i] + (<span class="num">1</span> - alpha) * parents[i+<span class="num">1</span>]
+            offspring[i+<span class="num">1</span>] = alpha * parents[i+<span class="num">1</span>] + (<span class="num">1</span> - alpha) * parents[i]
+    
+    <span class="cm"># 4) Mutation</span>
+    mask = np.random.<span class="fn">rand</span>(pop_size، n_genes) < p_mutation
+    mutation = np.random.<span class="fn">normal</span>(<span class="num">0</span>، <span class="num">0.5</span>، (pop_size، n_genes))
+    offspring = np.<span class="fn">where</span>(mask، offspring + mutation، offspring)
+    offspring = np.<span class="fn">clip</span>(offspring، bounds[<span class="num">0</span>]، bounds[<span class="num">1</span>])
+    
+    <span class="cm"># 5) Replacement (elitism)</span>
+    combined = np.<span class="fn">vstack</span>([population، offspring])
+    combined_fit = <span class="fn">fitness</span>(combined)
+    top_idx = np.<span class="fn">argsort</span>(combined_fit)[-pop_size:]
+    population = combined[top_idx]
+    
+    <span class="kw">if</span> gen % <span class="num">20</span> == <span class="num">0</span>:
+        best_f = <span class="fn">f</span>(population).<span class="fn">min</span>()
+        <span class="fn">print</span>(<span class="str">f'Gen {gen}: best f = {best_f:.6f}'</span>)
+
+<span class="cm"># --- نتیجه ---</span>
+best_idx = np.<span class="fn">argmin</span>(<span class="fn">f</span>(population))
+best_x = population[best_idx]
+<span class="fn">print</span>(<span class="str">f'\nBest x: {best_x}'</span>)
+<span class="fn">print</span>(<span class="str">f'Best f: {f(best_x.reshape(1, -1))[0]:.6f}'</span>)
+<span class="cm"># جواب دقیق: (1، -2)، f = 0</span></pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۲۱ — کد PSO -->
+  <div class="slide" data-slide="21" data-topic="8">
+    <div class="slide-inner">
+      <span class="slide-num">کد</span>
+      <h2 class="slide-h1">پیاده‌سازی PSO در PyTorch</h2>
+
+      <div class="code-tabs">
+        <button class="code-tab active" data-code="pytorch-pso"><i class="fas fa-fire"></i> PyTorch — PSO</button>
+      </div>
+
+      <div class="code-content active" id="code-pytorch-pso">
+<pre><span class="cm"># ============================================</span>
+<span class="cm"># PSO from scratch (PyTorch)</span>
+<span class="cm"># ============================================</span>
+<span class="kw">import</span> torch
+
+<span class="cm"># --- تابع هدف: f(x) = (x-1)^2 + (y+2)^2 ---</span>
+<span class="kw">def</span> <span class="fn">f</span>(x):
+    <span class="kw">return</span> (x[:, <span class="num">0</span>] - <span class="num">1</span>)**<span class="num">2</span> + (x[:, <span class="num">1</span>] + <span class="num">2</span>)**<span class="num">2</span>
+
+<span class="cm"># --- پارامترها ---</span>
+n_particles = <span class="num">30</span>
+n_dims = <span class="num">2</span>
+n_iter = <span class="num">200</span>
+w = <span class="num">0.7</span>    <span class="cm"># inertia</span>
+c1 = <span class="num">2.0</span>   <span class="cm"># cognitive</span>
+c2 = <span class="num">2.0</span>   <span class="cm"># social</span>
+bounds = (-<span class="num">5</span>، <span class="num">5</span>)
+
+<span class="cm"># --- مقداردهی اولیه ---</span>
+positions = torch.<span class="fn">rand</span>(n_particles، n_dims) * (bounds[<span class="num">1</span>] - bounds[<span class="num">0</span>]) + bounds[<span class="num">0</span>]
+velocities = torch.<span class="fn">randn</span>(n_particles، n_dims) * <span class="num">0.1</span>
+
+pbest = positions.<span class="fn">clone</span>()
+pbest_val = <span class="fn">f</span>(pbest)
+
+gbest = pbest[<span class="fn">argmin</span>(pbest_val)]
+gbest_val = pbest_val.<span class="fn">min</span>()
+
+<span class="cm"># --- PSO Loop ---</span>
+<span class="kw">for</span> it <span class="kw">in</span> <span class="fn">range</span>(n_iter):
+    <span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(n_particles):
+        r1 = torch.<span class="fn">rand</span>(n_dims)
+        r2 = torch.<span class="fn">rand</span>(n_dims)
+        
+        <span class="cm"># Update velocity</span>
+        cognitive = c1 * r1 * (pbest[i] - positions[i])
+        social = c2 * r2 * (gbest - positions[i])
+        velocities[i] = w * velocities[i] + cognitive + social
+        
+        <span class="cm"># Update position</span>
+        positions[i] = positions[i] + velocities[i]
+        positions[i] = torch.<span class="fn">clamp</span>(positions[i]، bounds[<span class="num">0</span>]، bounds[<span class="num">1</span>])
+        
+        <span class="cm"># Update pbest</span>
+        val = <span class="fn">f</span>(positions[i:i+<span class="num">1</span>])
+        <span class="kw">if</span> val < pbest_val[i]:
+            pbest[i] = positions[i].<span class="fn">clone</span>()
+            pbest_val[i] = val
+    
+    <span class="cm"># Update gbest</span>
+    <span class="kw">if</span> pbest_val.<span class="fn">min</span>() < gbest_val:
+        gbest_val = pbest_val.<span class="fn">min</span>()
+        gbest = pbest[torch.<span class="fn">argmin</span>(pbest_val)].<span class="fn">clone</span>()
+    
+    <span class="kw">if</span> it % <span class="num">50</span> == <span class="num">0</span>:
+        <span class="fn">print</span>(<span class="str">f'Iter {it}: gbest = {gbest.numpy()}، f = {gbest_val.item():.6f}'</span>)
+
+<span class="fn">print</span>(<span class="str">f'\nFinal: gbest = {gbest.numpy()}'</span>)
+<span class="fn">print</span>(<span class="str">f'f(gbest) = {gbest_val.item():.6f}'</span>)
+<span class="cm"># جواب دقیق: (1، -2)، f = 0</span>
+
+<span class="cm"># --- پیاده‌سازی با PyTorch Optimizer ---</span>
+<span class="cm"># (روش جایگزین: استفاده از torch.optim برای PSO)</span>
+<span class="kw">import</span> torch.optim <span class="kw">as</span> optim
+
+positions = torch.<span class="fn">randn</span>(n_particles، n_dims، requires_grad=<span class="kw">True</span>)
+optimizer = optim.<span class="fn">SGD</span>([positions]، lr=<span class="num">0.01</span>)
+
+pbest = positions.<span class="fn">detach</span>().<span class="fn">clone</span>()
+pbest_val = <span class="fn">f</span>(pbest)
+gbest = pbest[<span class="fn">argmin</span>(pbest_val)]
+
+<span class="kw">for</span> it <span class="kw">in</span> <span class="fn">range</span>(<span class="num">100</span>):
+    optimizer.<span class="fn">zero_grad</span>()
+    loss = <span class="fn">f</span>(positions).<span class="fn">sum</span>()
+    loss.<span class="fn">backward</span>()
+    <span class="cm"># Replace gradient with PSO-inspired update</span>
+    <span class="kw">with</span> torch.<span class="fn">no_grad</span>():
+        r1 = torch.<span class="fn">rand</span>(n_particles، n_dims)
+        r2 = torch.<span class="fn">rand</span>(n_particles، n_dims)
+        v = w * positions.grad + c1 * r1 * (pbest - positions) + c2 * r2 * (gbest - positions)
+        positions -= <span class="num">0.01</span> * v
+    <span class="cm"># Update bests</span>
+    current_val = <span class="fn">f</span>(positions.<span class="fn">detach</span>())
+    mask = current_val < pbest_val
+    pbest[mask] = positions.<span class="fn">detach</span>()[mask].<span class="fn">clone</span>()
+    pbest_val[mask] = current_val[mask]
+    <span class="kw">if</span> pbest_val.<span class="fn">min</span>() < gbest_val:
+        gbest_val = pbest_val.<span class="fn">min</span>()
+        gbest = pbest[<span class="fn">argmin</span>(pbest_val)].<span class="fn">clone</span>()
+
+<span class="fn">print</span>(<span class="str">f'Final gbest: {gbest.numpy()}'</span>)</pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۲۲ — تمرین‌ها -->
+  <div class="slide" data-slide="22" data-topic="9">
+    <div class="slide-inner">
+      <span class="slide-num">تمرین</span>
+      <h2 class="slide-h1">تمرین‌های جلسه ۲۳</h2>
+
+      <div class="exercise-block ex-yellow">
+        <div class="ex-header"><div class="ex-num">الف</div><div><div class="ex-title">سؤالات مفهومی</div></div></div>
+        <ol class="ex-list">
+          <li>تفاوت اصلی GA و PSO چیست؟</li>
+          <li>چرا الگوریتم‌های تکاملی برای توابع غیرمحدب بهترند؟</li>
+          <li>مفهوم Pareto Dominance را توضیح دهید.</li>
+          <li>نقش Elitism در GA چیست؟</li>
+        </ol>
+      </div>
+
+      <div class="exercise-block ex-green">
+        <div class="ex-header"><div class="ex-num">ب</div><div><div class="ex-title">تمرین‌های عملی</div></div></div>
+        <ol class="ex-list">
+          <li>GA را برای تابع Rastrigin ($f(x) = 10n + \sum[x_i^2 - 10\cos(2\pi x_i)]$) پیاده کنید.</li>
+          <li>PSO را برای تابع Ackley تست کنید و پارامترها را بهینه کنید.</li>
+          <li>GA و PSO را روی یک مسئله واقعی (مثل طراحی تیر) مقایسه کنید.</li>
+          <li>NSGA-II را با library <code>pymoo</code> برای طراحی NEMS پیاده کنید.</li>
+        </ol>
+      </div>
+
+      <div class="exercise-block ex-purple">
+        <div class="ex-header"><div class="ex-num">ج</div><div><div class="ex-title">تمرین‌های نوشتاری</div></div></div>
+        <ol class="ex-list">
+          <li>اثبات کنید که PSO با $c_1 = c_2 = 0$ به جستجوی تصادفی تبدیل می‌شود.</li>
+          <li>مقایسه جامع GA، PSO، GD، Adam، و CMA-ES بنویسید.</li>
+          <li>رابطه بین GA و نظریه تکامل داروین را تحلیل کنید.</li>
+        </ol>
+      </div>
+
+      <div class="exercise-block ex-red">
+        <div class="ex-header"><div class="ex-num">★</div><div><div class="ex-title">چالش خلاقانه</div></div></div>
+        <ol class="ex-list">
+          <li>یک الگوریتم ترکیبی GA + PSO (hybrid) بنویسید.</li>
+          <li>GA را برای hyperparameter tuning یک PINN نانو انبرک پیاده کنید.</li>
+          <li>یک مسئله NSGA-II برای طراحی سه‌هدفه NEMS بنویسید.</li>
+        </ol>
+      </div>
+
+      <div class="email-banner">
+        <p><i class="fas fa-envelope" style="color: var(--primary);"></i> ارسال تمرین‌ها:</p>
+        <code>m.goharimanesh@gmail.com</code>
+        <p style="margin-top: 8px; font-size: 0.78rem;">Subject الزامی:</p>
+        <code>[Advanced Engineering Mathematics] HW23 - نام و نام خانوادگی - شماره دانشجویی</code>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۲۳ — نقشه راه پژوهش -->
+  <div class="slide" data-slide="23" data-topic="9">
+    <div class="slide-inner">
+      <span class="slide-num">نقشه راه</span>
+      <h2 class="slide-h1">کاربرد الگوریتم‌های تکاملی در پژوهش</h2>
+
+      <img src="images/research-roadmap-ga.png" alt="Research Roadmap" class="img-box img-clickable" onerror="this.style.display='none'" data-caption="نقشه راه">
+
+      <div class="grid-2" style="margin-top: 14px;">
+        <div class="card" style="background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3);">
+          <div class="slide-h3" style="color: var(--primary);"><i class="fas fa-microchip"></i> NEMS و MEMS</div>
+          <ul style="list-style: none; padding: 0; font-size: 0.82rem; color: var(--text-dim); line-height: 2;">
+            <li>🔹 طراحی معکوس با NSGA-II</li>
+            <li>🔹 بهینه‌سازی چندهدفه حجم-فرکانس</li>
+            <li>🔹 Topology Optimization</li>
+            <li>🔹 Robust Design</li>
+          </ul>
+        </div>
+        <div class="card" style="background: rgba(255, 183, 0, 0.06); border-color: rgba(255, 183, 0, 0.3);">
+          <div class="slide-h3" style="color: var(--gold);"><i class="fas fa-robot"></i> رباتیک</div>
+          <ul style="list-style: none; padding: 0; font-size: 0.82rem; color: var(--text-dim); line-height: 2;">
+            <li>🔹 Trajectory Optimization</li>
+            <li>🔹 کنترل با GA</li>
+            <li>🔹 Inverse Kinematics</li>
+            <li>🔹 رباتیک نرم</li>
+          </ul>
+        </div>
+        <div class="card" style="background: rgba(168, 85, 247, 0.06); border-color: rgba(168, 85, 247, 0.3);">
+          <div class="slide-h3" style="color: var(--tertiary);"><i class="fas fa-brain"></i> یادگیری ماشین</div>
+          <ul style="list-style: none; padding: 0; font-size: 0.82rem; color: var(--text-dim); line-height: 2;">
+            <li>🔹 Hyperparameter tuning</li>
+            <li>🔹 Neural Architecture Search</li>
+            <li>🔹 Feature Selection</li>
+            <li>🔹 Ensemble Learning</li>
+          </ul>
+        </div>
+        <div class="card" style="background: rgba(236, 72, 153, 0.06); border-color: rgba(236, 72, 153, 0.3);">
+          <div class="slide-h3" style="color: var(--pink);"><i class="fas fa-file-alt"></i> جهت‌های مقاله</div>
+          <ul style="list-style: none; padding: 0; font-size: 0.82rem; color: var(--text-dim); line-height: 2;">
+            <li>🔹 GA + PINN برای NEMS</li>
+            <li>🔹 Multi-objective topology optimization</li>
+            <li>🔹 Hybrid GA-PSO</li>
+            <li>🔹 NAS برای PINN</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="lecture-note" style="margin-top: 14px;">
+        <i class="fas fa-bullseye"></i>
+        <div class="lecture-note-content">
+          <strong>پیشنهاد استاد:</strong> الگوریتم‌های تکاملی ابزار قدرتمندی برای مسائل طراحی مهندسی هستند. ترکیب GA/PSO با PINN و ML می‌تواند به مقالات Q1 منجر شود.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۲۴ — خداحافظی -->
+  <div class="slide" data-slide="24" data-topic="9">
+    <div class="slide-inner title-slide">
+      <div style="font-size: 3.5rem; color: var(--gold); margin-bottom: 18px;">
+        <i class="fas fa-check-circle"></i>
+      </div>
+      <h2 class="slide-h1">پایان جلسه ۲۳ — الگوریتم‌های تکاملی</h2>
+      <p class="slide-text" style="font-size: 1rem;">
+        امروز یاد گرفتید چگونه از طبیعت الهام بگیرید! 🌟
+      </p>
+
+      <div class="grid-4" style="margin-top: 20px; max-width: 900px; margin-left: auto; margin-right: auto;">
+        <div class="card" style="text-align: center; padding: 12px;">
+          <i class="fas fa-dna" style="font-size: 1.4rem; color: var(--primary); display: block; margin-bottom: 6px;"></i>
+          <div style="font-size: 0.78rem; font-weight: 700; color: var(--primary);">GA</div>
+        </div>
+        <div class="card" style="text-align: center; padding: 12px;">
+          <i class="fas fa-crow" style="font-size: 1.4rem; color: var(--gold); display: block; margin-bottom: 6px;"></i>
+          <div style="font-size: 0.78rem; font-weight: 700; color: var(--gold);">PSO</div>
+        </div>
+        <div class="card" style="text-align: center; padding: 12px;">
+          <i class="fas fa-chart-area" style="font-size: 1.4rem; color: var(--tertiary); display: block; margin-bottom: 6px;"></i>
+          <div style="font-size: 0.78rem; font-weight: 700; color: var(--tertiary);">Pareto</div>
+        </div>
+        <div class="card" style="text-align: center; padding: 12px;">
+          <i class="fas fa-microchip" style="font-size: 1.4rem; color: var(--pink); display: block; margin-bottom: 6px;"></i>
+          <div style="font-size: 0.78rem; font-weight: 700; color: var(--pink);">NEMS</div>
+        </div>
+      </div>
+
+      <div class="math-box gold-math" style="margin-top: 22px; background: rgba(255, 183, 0, 0.08); padding: 22px; max-width: 700px; margin-left: auto; margin-right: auto;">
+        <div style="font-size: 0.95rem;">
+          $$v_i^{t+1} = w v_i^t + c_1 r_1 (p_i - x_i) + c_2 r_2 (g - x_i)$$
+        </div>
+        <p class="math-note">قلب PSO — ترکیب حافظه شخصی و گروهی</p>
+      </div>
+
+      <div class="card" style="margin-top: 20px; max-width: 700px; margin-left: auto; margin-right: auto; background: rgba(168, 85, 247, 0.06); border-color: rgba(168, 85, 247, 0.3);">
+        <div class="slide-h3" style="justify-content: center; color: var(--tertiary);"><i class="fas fa-arrow-left"></i> جلسه ۲۴ — پایانی</div>
+        <p class="slide-text" style="font-size: 0.88rem;">
+          <strong style="color: var(--primary);">کارگاه مقاله IEEE و جمع‌بندی</strong>
+        </p>
+        <ul style="list-style: none; padding: 0; font-size: 0.82rem; color: var(--text-dim); line-height: 2; margin-top: 8px;">
+          <li>🔹 ساختار مقاله IEEE</li>
+          <li>🔹 نگارش روش کار</li>
+          <li>🔹 استخراج نتایج</li>
+          <li>🔹 نتیجه‌گیری نهایی</li>
+          <li>🔹 نکات ارسال</li>
+        </ul>
+      </div>
+
+      <p class="instructor-line" style="margin-top: 22px;">دکتر مسعود گوهری منش</p>
+      <p class="instructor-title-line">دانشیار گروه مهندسی مکانیک — دانشگاه تربت حیدریه</p>
+
+      <p style="font-size: 0.95rem; color: var(--gold); margin-top: 24px; font-weight: 800;">
+        🇮🇷 با افتخار برای دانشجویان مکاترونیک 🇮🇷
+      </p>
+    </div>
+  </div>
+
+</div>
+
+<div class="bottom-nav">
+  <button class="nav-btn" id="prevBtn" disabled><i class="fas fa-arrow-right"></i><span>قبلی</span></button>
+  <div class="dots-nav" id="dotsNav"></div>
+  <div class="slide-counter"><span id="currentSlide">۱</span> / ۲۴</div>
+  <button class="nav-btn" id="nextBtn"><span>بعدی</span><i class="fas fa-arrow-left"></i></button>
+</div>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- Lightbox -->
+<div class="lightbox" id="lightbox">
+  <button class="lightbox-close" id="lightboxClose"><i class="fas fa-times"></i></button>
+  <img src="" alt="" class="lightbox-img" id="lightboxImg">
+  <div class="lightbox-caption" id="lightboxCaption"></div>
+</div>
+
+<!-- Modal -->
+<div class="modal-overlay" id="conceptModal">
+  <div class="modal-box">
+    <button class="modal-close" id="conceptClose"><i class="fas fa-times"></i></button>
+    <h2 class="modal-title"><i class="fas fa-book-open"></i> الگوریتم‌های تکاملی و پیوند با خواجه نصیرالدین طوسی</h2>
+
+    <div class="modal-section">
+      <div class="modal-section-title"><i class="fas fa-history"></i> خواجه نصیرالدین طوسی — پیشگام نظام انتخاب</div>
+      <p>
+        <b>خواجه نصیرالدین طوسی</b> (۱۲۰۱–۱۲۷۴ م) در کتاب <b>«اخلاق ناصری»</b> نظامی از انتخاب و تکامل اجتماعی تدوین کرد که در آن:
+      </p>
+      <ul>
+        <li><strong>بهترین افراد</strong> برای نقش‌های اجتماعی انتخاب می‌شوند</li>
+        <li><strong>ترکیب دیدگاه‌ها</strong> به راه‌حل‌های بهتر منجر می‌شود</li>
+        <li><strong>تنوع و انتخاب طبیعی</strong> در نظام‌های اجتماعی ضروری است</li>
+        <li><strong>تکامل تدریجی</strong> بهتر از تغییر ناگهانی است</li>
+      </ul>
+    </div>
+
+    <div class="modal-section">
+      <div class="modal-section-title"><i class="fas fa-brain"></i> پیوند GA با خواجه نصیرالدین طوسی</div>
+      <p>
+        همان‌طور که خواجه نصیرالدین طوسی برای طراحی نظام اجتماعی بهینه، از مفاهیم تکامل و انتخاب استفاده کرد، GA نیز از همین اصول برای یافتن جواب بهینه بهره می‌برد:
+      </p>
+      <ul>
+        <li><strong>انتخاب بهترین</strong> = Selection</li>
+        <li><strong>ترکیب دیدگاه‌ها</strong> = Crossover</li>
+        <li><strong>تنوع در جامعه</strong> = Mutation</li>
+        <li><strong>تکامل نسل‌ها</strong> = Generation</li>
+      </ul>
+    </div>
+
+    <div class="modal-section">
+      <div class="modal-section-title"><i class="fas fa-crow"></i> پیوند PSO با خواجه نصیرالدین طوسی</div>
+      <p>
+        در PSO، هر ذره از <strong>حافظه شخصی</strong> و <strong>تجربه گروه</strong> استفاده می‌کند. این همان ایده‌ای است که خواجه نصیرالدین طوسی در نظام <strong>شورا</strong> و <strong>همکاری جمعی</strong> توصیف کرد: هر فرد از تجربه خود و دیگران یاد می‌گیرد.
+      </p>
+    </div>
+
+    <div class="lecture-note" style="margin-top: 16px;">
+      <i class="fas fa-star"></i>
+      <div class="lecture-note-content">
+        <strong>درس امروز:</strong> الگوریتم‌های تکاملی، ادامه‌ی سنت هزار ساله‌ی بشر در <strong>الهام از طبیعت و نظام‌های اجتماعی</strong> است. از خواجه نصیرالدین طوسی تا GA و PSO، همان تلاش برای یافتن بهترین راه‌حل با استفاده از تجربه و انتخاب.
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ═══ Navigation ═══ */
+const slides = document.querySelectorAll('.slide');
+const totalSlides = slides.length;
+let currentSlide = 0;
+const topicPills = document.querySelectorAll('.topic-pill');
+
+const dotsNav = document.getElementById('dotsNav');
+for (let i = 0; i < totalSlides; i++) {
+  const dot = document.createElement('button');
+  dot.className = 'dot-nav' + (i === 0 ? ' active' : '');
+  dot.addEventListener('click', () => goToSlide(i));
+  dotsNav.appendChild(dot);
+}
+
+function goToSlide(n) {
+  if (n < 0 || n >= totalSlides) return;
+  slides.forEach((s, i) => {
+    s.classList.remove('active', 'prev');
+    if (i < n) s.classList.add('prev');
+    if (i === n) s.classList.add('active');
+  });
+  currentSlide = n;
+  updateNav();
+  playTransition();
+  setTimeout(() => {
+    initVisibleCharts();
+    if (window.MathJax && window.MathJax.typesetPromise) window.MathJax.typesetPromise();
+  }, 100);
+}
+
+function updateNav() {
+  document.querySelectorAll('.dot-nav').forEach((d, i) => d.classList.toggle('active', i === currentSlide));
+  document.getElementById('currentSlide').textContent = toFa(currentSlide + 1);
+  document.getElementById('prevBtn').disabled = currentSlide === 0;
+  document.getElementById('nextBtn').disabled = currentSlide === totalSlides - 1;
+  document.getElementById('progressFill').style.width = ((currentSlide + 1) / totalSlides * 100) + '%';
+  const currentTopic = slides[currentSlide].dataset.topic;
+  topicPills.forEach(pill => {
+    const t = parseInt(pill.dataset.topic);
+    const ct = parseInt(currentTopic);
+    pill.classList.toggle('active', t === ct);
+    pill.classList.toggle('done', t < ct);
+    if (t === ct) pill.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+  });
+}
+
+document.getElementById('prevBtn').addEventListener('click', () => goToSlide(currentSlide - 1));
+document.getElementById('nextBtn').addEventListener('click', () => goToSlide(currentSlide + 1));
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowLeft') { e.preventDefault(); goToSlide(currentSlide + 1); }
+  else if (e.key === 'ArrowRight') { e.preventDefault(); goToSlide(currentSlide - 1); }
+  else if (e.key === ' ') { e.preventDefault(); goToSlide(currentSlide + 1); }
+  else if (e.key === 'Home') { e.preventDefault(); goToSlide(0); }
+  else if (e.key === 'End') { e.preventDefault(); goToSlide(totalSlides - 1); }
+  else if (e.key === 'Escape') {
+    if (document.fullscreenElement) document.exitFullscreen();
+    closeLightbox();
+    closeConceptModal();
+    printMenu.classList.remove('show');
+  }
+});
+
+let touchStartX = 0, touchStartY = 0;
+document.addEventListener('touchstart', e => {
+  touchStartX = e.changedTouches[0].screenX;
+  touchStartY = e.changedTouches[0].screenY;
+}, { passive: true });
+document.addEventListener('touchend', e => {
+  const dx = e.changedTouches[0].screenX - touchStartX;
+  const dy = e.changedTouches[0].screenY - touchStartY;
+  if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy)) {
+    if (dx < 0) goToSlide(currentSlide + 1);
+    else goToSlide(currentSlide - 1);
+  }
+}, { passive: true });
+
+/* ═══ Lightbox ═══ */
+const lightbox = document.getElementById('lightbox');
+const lightboxImg = document.getElementById('lightboxImg');
+const lightboxCaption = document.getElementById('lightboxCaption');
+
+document.querySelectorAll('.img-clickable').forEach(img => {
+  img.addEventListener('click', e => {
+    e.stopPropagation();
+    const src = img.getAttribute('src');
+    const caption = img.getAttribute('data-caption') || img.getAttribute('alt') || '';
+    if (src) {
+      lightboxImg.src = src;
+      lightboxCaption.textContent = caption;
+      lightbox.classList.add('active');
+    }
+  });
+});
+
+document.getElementById('lightboxClose').addEventListener('click', closeLightbox);
+lightbox.addEventListener('click', e => {
+  if (e.target === lightbox) closeLightbox();
+});
+
+function closeLightbox() { lightbox.classList.remove('active'); }
+
+/* ═══ Modal ═══ */
+const conceptModal = document.getElementById('conceptModal');
+document.querySelectorAll('[data-concept]').forEach(el => {
+  el.addEventListener('click', e => {
+    e.stopPropagation();
+    conceptModal.classList.add('active');
+  });
+});
+document.getElementById('conceptClose').addEventListener('click', closeConceptModal);
+conceptModal.addEventListener('click', e => {
+  if (e.target === conceptModal) closeConceptModal();
+});
+function closeConceptModal() { conceptModal.classList.remove('active'); }
+
+/* ═══ Print ═══ */
+const printToggle = document.getElementById('printToggle');
+const printMenu = document.getElementById('printMenu');
+
+printToggle.addEventListener('click', e => {
+  e.stopPropagation();
+  printMenu.classList.toggle('show');
+});
+
+document.addEventListener('click', e => {
+  if (!printMenu.contains(e.target) && e.target !== printToggle) {
+    printMenu.classList.remove('show');
+  }
+});
+
+document.getElementById('printCurrentBtn').addEventListener('click', () => {
+  printMenu.classList.remove('show');
+  slides.forEach(s => s.classList.remove('print-visible'));
+  slides[currentSlide].classList.add('print-visible');
+  showToast('آماده‌سازی چاپ این صفحه...');
+  setTimeout(() => {
+    window.print();
+    setTimeout(() => slides.forEach(s => s.classList.remove('print-visible')), 500);
+  }, 300);
+});
+
+document.getElementById('printAllBtn').addEventListener('click', () => {
+  printMenu.classList.remove('show');
+  slides.forEach(s => s.classList.add('print-visible'));
+  showToast('آماده‌سازی چاپ همه صفحات...');
+  setTimeout(() => {
+    window.print();
+    setTimeout(() => slides.forEach(s => s.classList.remove('print-visible')), 500);
+  }, 300);
+});
+
+/* ═══ Audio ═══ */
+let audioCtx = null, soundEnabled = true;
+function initAudio() { if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
+function playTransition() {
+  if (!soundEnabled) return;
+  initAudio();
+  [440, 554.37].forEach((freq, i) => {
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.connect(gain); gain.connect(audioCtx.destination);
+    osc.frequency.value = freq; osc.type = 'sine';
+    const t = audioCtx.currentTime + i * 0.06;
+    gain.gain.setValueAtTime(0.04, t);
+    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.18);
+    osc.start(t); osc.stop(t + 0.22);
+  });
+}
+document.getElementById('soundToggle').addEventListener('click', function() {
+  soundEnabled = !soundEnabled;
+  this.classList.toggle('active', soundEnabled);
+  this.innerHTML = soundEnabled ? '<i class="fas fa-volume-up"></i>' : '<i class="fas fa-volume-mute"></i>';
+  showToast(soundEnabled ? 'صدا فعال' : 'صدا غیرفعال');
+});
+document.getElementById('fullscreenToggle').addEventListener('click', function() {
+  if (!document.fullscreenElement) { document.documentElement.requestFullscreen(); this.innerHTML = '<i class="fas fa-compress"></i>'; }
+  else { document.exitFullscreen(); this.innerHTML = '<i class="fas fa-expand"></i>'; }
+});
+function showToast(msg) {
+  const container = document.getElementById('toastContainer');
+  const toast = document.createElement('div');
+  toast.className = 'toast';
+  toast.innerHTML = `<i class="fas fa-info-circle"></i> ${msg}`;
+  container.appendChild(toast);
+  setTimeout(() => { toast.style.opacity = '0'; toast.style.transform = 'translateX(-60px)'; setTimeout(() => toast.remove(), 300); }, 2400);
+}
+function toFa(n) { const fa = ['۰','۱','۲','۳','۴','۵','۶','۷','۸','۹']; return String(n).replace(/\d/g, d => fa[d]); }
+
+/* ═══ Background ═══ */
+const bgCanvas = document.getElementById('bgCanvas');
+const bgCtx = bgCanvas.getContext('2d');
+let particles = [];
+function resizeBg() { bgCanvas.width = window.innerWidth; bgCanvas.height = window.innerHeight; }
+resizeBg();
+window.addEventListener('resize', resizeBg);
+class Particle {
+  constructor() { this.reset(); }
+  reset() {
+    this.x = Math.random() * bgCanvas.width;
+    this.y = Math.random() * bgCanvas.height;
+    this.size = Math.random() * 1.6 + 0.4;
+    this.speedX = (Math.random() - 0.5) * 0.3;
+    this.speedY = (Math.random() - 0.5) * 0.3;
+    this.opacity = Math.random() * 0.5 + 0.15;
+    const colors = ['#00d4aa', '#06b6d4', '#a855f7', '#ffb700'];
+    this.color = colors[Math.floor(Math.random() * colors.length)];
+  }
+  update() { this.x += this.speedX; this.y += this.speedY; if (this.x < 0 || this.x > bgCanvas.width || this.y < 0 || this.y > bgCanvas.height) this.reset(); }
+  draw() { bgCtx.beginPath(); bgCtx.arc(this.x, this.y, this.size, 0, Math.PI*2); bgCtx.fillStyle = this.color; bgCtx.globalAlpha = this.opacity; bgCtx.fill(); bgCtx.globalAlpha = 1; }
+}
+for (let i = 0; i < 50; i++) particles.push(new Particle());
+function animateBg() { bgCtx.clearRect(0, 0, bgCanvas.width, bgCanvas.height); particles.forEach(p => { p.update(); p.draw(); }); requestAnimationFrame(animateBg); }
+animateBg();
+
+/* ═══ Helpers ═══ */
+function setupCanvas(canvasId) {
+  const canvas = document.getElementById(canvasId);
+  if (!canvas) return null;
+  const dpr = window.devicePixelRatio || 1;
+  const rect = canvas.getBoundingClientRect();
+  canvas.width = rect.width * dpr; canvas.height = rect.height * dpr;
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+  return { ctx, w: rect.width, h: rect.height };
+}
+
+/* ═══ GA Simulator ═══ */
+let gaPopulation = [];
+let gaGeneration = 0;
+let gaAnimating = false;
+
+function drawGA() {
+  const s = setupCanvas('gaCanvas');
+  if (!s) return;
+  const { ctx, w, h } = s;
+  ctx.clearRect(0, 0, w, h);
+
+  const popSize = parseInt(document.getElementById('gaPop').value);
+  const mutRate = parseFloat(document.getElementById('gaMut').value);
+
+  // Initialize if needed
+  if (gaPopulation.length !== popSize || gaGeneration === 0) {
+    gaPopulation = [];
+    for (let i = 0; i < popSize; i++) {
+      gaPopulation.push({
+        x: Math.random() * 4 - 2,
+        y: Math.random() * 4 - 2,
+        fit: 0
+      });
+    }
+    gaGeneration = 0;
+  }
+
+  // Fitness: f(x,y) = (x-1)^2 + (y+1)^2, minimize → fitness = -f
+  gaPopulation.forEach(p => {
+    p.fit = -((p.x - 1)**2 + (p.y + 1)**2);
+  });
+
+  // Draw background
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+  ctx.fillRect(0, 0, w, h);
+
+  // Axes
+  const cx = w / 2, cy = h / 2;
+  const scale = Math.min(w, h) * 0.35;
+
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+  ctx.lineWidth = 1;
+  for (let i = 0; i <= 10; i++) {
+    ctx.beginPath();
+    ctx.moveTo((w / 10) * i, 0);
+    ctx.lineTo((w / 10) * i, h);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(0, (h / 10) * i);
+    ctx.lineTo(w, (h / 10) * i);
+    ctx.stroke();
+  }
+
+  // Contours of f
+  ctx.strokeStyle = 'rgba(0, 212, 170, 0.2)';
+  for (let r = 0.5; r <= 4; r += 0.5) {
+    ctx.beginPath();
+    ctx.arc(cx + scale * 0.5, cy - scale * 0.5, r * scale * 0.4, 0, Math.PI * 2);
+    ctx.stroke();
+  }
+
+  // Optimum
+  ctx.fillStyle = '#ffb700';
+  ctx.shadowColor = '#ffb700';
+  ctx.shadowBlur = 15;
+  ctx.beginPath();
+  ctx.arc(cx + scale * 0.5, cy - scale * 0.5, 8, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.shadowBlur = 0;
+
+  // Draw population
+  gaPopulation.forEach(p => {
+    const px = cx + p.x * scale * 0.25;
+    const py = cy - p.y * scale * 0.25;
+    const opacity = 0.3 + (p.fit + 8) / 8 * 0.7;
+    ctx.fillStyle = `rgba(0, 212, 170, ${opacity})`;
+    ctx.beginPath();
+    ctx.arc(px, py, 6, 0, Math.PI * 2);
+    ctx.fill();
+  });
+
+  // Best individual
+  const best = gaPopulation.reduce((a, b) => a.fit > b.fit ? a : b);
+  const bestPx = cx + best.x * scale * 0.25;
+  const bestPy = cy - best.y * scale * 0.25;
+  ctx.fillStyle = '#ffb700';
+  ctx.shadowColor = '#ffb700';
+  ctx.shadowBlur = 20;
+  ctx.beginPath();
+  ctx.arc(bestPx, bestPy, 10, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.shadowBlur = 0;
+
+  // Stats
+  const avgFit = gaPopulation.reduce((a, b) => a + b.fit, 0) / popSize;
+
+  document.getElementById('gaMutValue').textContent = toFa(mutRate.toFixed(2));
+  document.getElementById('gaPopValue').textContent = toFa(popSize);
+  document.getElementById('gaBest').textContent = toFa(best.fit.toFixed(3));
+  document.getElementById('gaGen').textContent = toFa(gaGeneration);
+  document.getElementById('gaAvg').textContent = toFa(avgFit.toFixed(3));
+
+  // Evolution step (every frame)
+  if (!gaAnimating && gaGeneration < 100) {
+    gaAnimating = true;
+    setTimeout(() => {
+      evolveGA(mutRate);
+      gaAnimating = false;
+      drawGA();
+    }, 500);
+  }
+}
+
+function evolveGA(mutRate) {
+  const popSize = gaPopulation.length;
+  
+  // Selection (tournament)
+  const newPop = [];
+  for (let i = 0; i < popSize; i++) {
+    const a = gaPopulation[Math.floor(Math.random() * popSize)];
+    const b = gaPopulation[Math.floor(Math.random() * popSize)];
+    newPop.push(a.fit > b.fit ? { ...a } : { ...b });
+  }
+  
+  // Crossover
+  for (let i = 0; i < popSize - 1; i += 2) {
+    if (Math.random() < 0.8) {
+      const alpha = Math.random();
+      const x1 = alpha * newPop[i].x + (1 - alpha) * newPop[i+1].x;
+      const x2 = alpha * newPop[i+1].x + (1 - alpha) * newPop[i].x;
+      const y1 = alpha * newPop[i].y + (1 - alpha) * newPop[i+1].y;
+      const y2 = alpha * newPop[i+1].y + (1 - alpha) * newPop[i].y;
+      newPop[i].x = x1; newPop[i].y = y1;
+      newPop[i+1].x = x2; newPop[i+1].y = y2;
+    }
+  }
+  
+  // Mutation
+  newPop.forEach(p => {
+    if (Math.random() < mutRate) {
+      p.x += (Math.random() - 0.5) * 0.5;
+      p.y += (Math.random() - 0.5) * 0.5;
+      p.x = Math.max(-2, Math.min(2, p.x));
+      p.y = Math.max(-2, Math.min(2, p.y));
+    }
+  });
+  
+  gaPopulation = newPop;
+  gaGeneration++;
+}
+
+/* ═══ PSO Simulator ═══ */
+let psoParticles = [];
+let psoGbest = { x: 0, y: 0, val: Infinity };
+let psoIter = 0;
+
+function drawPSO() {
+  const s = setupCanvas('psoCanvas');
+  if (!s) return;
+  const { ctx, w, h } = s;
+  ctx.clearRect(0, 0, w, h);
+
+  const wInertia = parseFloat(document.getElementById('psoW').value);
+  const c1 = parseFloat(document.getElementById('psoC1').value);
+  const c2 = parseFloat(document.getElementById('psoC2').value);
+
+  // Initialize particles if needed
+  if (psoParticles.length === 0) {
+    for (let i = 0; i < 30; i++) {
+      psoParticles.push({
+        x: Math.random() * 4 - 2,
+        y: Math.random() * 4 - 2,
+        vx: (Math.random() - 0.5) * 0.2,
+        vy: (Math.random() - 0.5) * 0.2,
+        pbestX: 0, pbestY: 0, pbestVal: Infinity
+      });
+    }
+    psoGbest = { x: 0, y: 0, val: Infinity };
+    psoIter = 0;
+  }
+
+  // Target: (1, -1)
+  const targetX = 1, targetY = -1;
+
+  // PSO step
+  if (psoIter < 200) {
+    psoParticles.forEach(p => {
+      // Evaluate
+      const val = (p.x - targetX)**2 + (p.y - targetY)**2;
+      if (val < p.pbestVal) {
+        p.pbestVal = val;
+        p.pbestX = p.x;
+        p.pbestY = p.y;
+      }
+      if (val < psoGbest.val) {
+        psoGbest = { x: p.x, y: p.y, val: val };
+      }
+    });
+
+    // Update velocities and positions
+    psoParticles.forEach(p => {
+      const r1 = Math.random(), r2 = Math.random();
+      p.vx = wInertia * p.vx + c1 * r1 * (p.pbestX - p.x) + c2 * r2 * (psoGbest.x - p.x);
+      p.vy = wInertia * p.vy + c1 * r1 * (p.pbestY - p.y) + c2 * r2 * (psoGbest.y - p.y);
+      p.x += p.vx * 0.1;
+      p.y += p.vy * 0.1;
+      p.x = Math.max(-2.5, Math.min(2.5, p.x));
+      p.y = Math.max(-2.5, Math.min(2.5, p.y));
+    });
+
+    psoIter++;
+  }
+
+  // Draw
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+  ctx.fillRect(0, 0, w, h);
+
+  const cx = w / 2, cy = h / 2;
+  const scale = Math.min(w, h) * 0.35;
+
+  // Grid
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
+  ctx.lineWidth = 1;
+  for (let i = 0; i <= 10; i++) {
+    ctx.beginPath();
+    ctx.moveTo((w / 10) * i, 0);
+    ctx.lineTo((w / 10) * i, h);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(0, (h / 10) * i);
+    ctx.lineTo(w, (h / 10) * i);
+    ctx.stroke();
+  }
+
+  // Contours
+  ctx.strokeStyle = 'rgba(0, 212, 170, 0.15)';
+  for (let r = 0.3; r <= 3; r += 0.4) {
+    ctx.beginPath();
+    ctx.arc(cx + targetX * scale * 0.3, cy - targetY * scale * 0.3, r * scale * 0.3, 0, Math.PI * 2);
+    ctx.stroke();
+  }
+
+  // Target
+  ctx.fillStyle = '#ffb700';
+  ctx.shadowColor = '#ffb700';
+  ctx.shadowBlur = 15;
+  ctx.beginPath();
+  ctx.arc(cx + targetX * scale * 0.3, cy - targetY * scale * 0.3, 8, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.shadowBlur = 0;
+
+  // Particles
+  psoParticles.forEach(p => {
+    const px = cx + p.x * scale * 0.3;
+    const py = cy - p.y * scale * 0.3;
+    ctx.fillStyle = 'rgba(0, 212, 170, 0.7)';
+    ctx.beginPath();
+    ctx.arc(px, py, 4, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Velocity vector
+    ctx.strokeStyle = 'rgba(168, 85, 247, 0.4)';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(px, py);
+    ctx.lineTo(px + p.vx * scale * 0.2, py - p.vy * scale * 0.2);
+    ctx.stroke();
+  });
+
+  // gBest
+  if (psoGbest.val < Infinity) {
+    const gbPx = cx + psoGbest.x * scale * 0.3;
+    const gbPy = cy - psoGbest.y * scale * 0.3;
+    ctx.fillStyle = '#ec4899';
+    ctx.shadowColor = '#ec4899';
+    ctx.shadowBlur = 20;
+    ctx.beginPath();
+    ctx.arc(gbPx, gbPy, 10, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.shadowBlur = 0;
+  }
+
+  // Update displays
+  document.getElementById('psoWValue').textContent = toFa(wInertia.toFixed(2));
+  document.getElementById('psoC1Value').textContent = toFa(c1.toFixed(1));
+  document.getElementById('psoC2Value').textContent = toFa(c2.toFixed(1));
+  document.getElementById('psoGBest').textContent = toFa(psoGbest.val.toFixed(4));
+  document.getElementById('psoIter').textContent = toFa(psoIter);
+  const statusEl = document.getElementById('psoStatus');
+  if (psoIter >= 200) {
+    statusEl.textContent = 'همگرا';
+    statusEl.style.color = 'var(--success)';
+  } else {
+    statusEl.textContent = 'در حال حرکت';
+    statusEl.style.color = 'var(--gold)';
+  }
+
+  // Animation
+  if (psoIter < 200) {
+    setTimeout(drawPSO, 100);
+  }
+}
+
+/* ═══ Comparison Simulator ═══ */
+function drawCmp() {
+  const s = setupCanvas('cmpCanvas');
+  if (!s) return;
+  const { ctx, w, h } = s;
+  ctx.clearRect(0, 0, w, h);
+
+  const nIter = parseInt(document.getElementById('cmpIter').value);
+
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+  ctx.fillRect(0, 0, w, h);
+
+  // Axes
+  const padX = 60, padY_top = 40, padY_bot = 60;
+  const plotW = w - 2 * padX;
+  const plotH = h - padY_top - padY_bot;
+
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.moveTo(padX, padY_top);
+  ctx.lineTo(padX, padY_top + plotH);
+  ctx.lineTo(padX + plotW, padY_top + plotH);
+  ctx.stroke();
+
+  const itToPx = (it) => padX + (it / nIter) * plotW;
+  const fitToPy = (fit) => padY_top + plotH - fit * plotH;
+
+  // GA curve
+  ctx.beginPath();
+  ctx.strokeStyle = '#00d4aa';
+  ctx.lineWidth = 2.5;
+  ctx.shadowColor = '#00d4aa';
+  ctx.shadowBlur = 6;
+  for (let i = 0; i <= nIter; i++) {
+    const fit = 1 - Math.exp(-i / 15);
+    const px = itToPx(i);
+    const py = fitToPy(fit);
+    if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+  }
+  ctx.stroke();
+  ctx.shadowBlur = 0;
+
+  // PSO curve
+  ctx.beginPath();
+  ctx.strokeStyle = '#ffb700';
+  ctx.lineWidth = 2.5;
+  ctx.shadowColor = '#ffb700';
+  ctx.shadowBlur = 6;
+  for (let i = 0; i <= nIter; i++) {
+    const fit = 1 - Math.exp(-i / 10);
+    const px = itToPx(i);
+    const py = fitToPy(fit);
+    if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+  }
+  ctx.stroke();
+  ctx.shadowBlur = 0;
+
+  // Labels
+  ctx.fillStyle = '#9aa7bd';
+  ctx.font = '11px Vazirmatn';
+  ctx.textAlign = 'right';
+  ctx.fillText('fitness', padX - 8, padY_top + 15);
+  ctx.textAlign = 'center';
+  ctx.fillText('تکرار', padX + plotW / 2, padY_top + plotH + 25);
+
+  ctx.font = 'bold 11px Vazirmatn';
+  ctx.textAlign = 'right';
+  ctx.fillStyle = '#00d4aa';
+  ctx.fillText('GA', w - 20, 22);
+  ctx.fillStyle = '#ffb700';
+  ctx.fillText('PSO', w - 70, 22);
+
+  document.getElementById('cmpIterValue').textContent = toFa(nIter);
+  const gaBest = 1 - Math.exp(-nIter / 15);
+  const psoBest = 1 - Math.exp(-nIter / 10);
+  document.getElementById('cmpGABest').textContent = toFa(gaBest.toFixed(4));
+  document.getElementById('cmpPSOBest').textContent = toFa(psoBest.toFixed(4));
+}
+
+/* ═══ Pareto Simulator ═══ */
+function drawPareto() {
+  const s = setupCanvas('paretoCanvas');
+  if (!s) return;
+  const { ctx, w, h } = s;
+  ctx.clearRect(0, 0, w, h);
+
+  const nPoints = parseInt(document.getElementById('paretoN').value);
+
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+  ctx.fillRect(0, 0, w, h);
+
+  const padX = 60, padY_top = 40, padY_bot = 60;
+  const plotW = w - 2 * padX;
+  const plotH = h - padY_top - padY_bot;
+
+  // Axes
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.moveTo(padX, padY_top);
+  ctx.lineTo(padX, padY_top + plotH);
+  ctx.lineTo(padX + plotW, padY_top + plotH);
+  ctx.stroke();
+
+  // Generate Pareto front points
+  const pareto = [];
+  for (let i = 0; i < nPoints; i++) {
+    const f1 = i / nPoints;
+    const f2 = Math.sqrt(1 - f1 * f1); // Quarter circle
+    pareto.push({ f1, f2 });
+  }
+
+  // Generate dominated points
+  const dominated = [];
+  for (let i = 0; i < nPoints * 2; i++) {
+    const f1 = Math.random();
+    const f2 = Math.random();
+    // Check if dominated
+    const isDominated = pareto.some(p => p.f1 <= f1 && p.f2 <= f2 && (p.f1 < f1 || p.f2 < f2));
+    if (isDominated) {
+      dominated.push({ f1, f2 });
+    }
+  }
+
+  // Draw dominated
+  ctx.fillStyle = 'rgba(168, 85, 247, 0.4)';
+  dominated.forEach(p => {
+    const px = padX + p.f1 * plotW;
+    const py = padY_top + plotH - p.f2 * plotH;
+    ctx.beginPath();
+    ctx.arc(px, py, 3, 0, Math.PI * 2);
+    ctx.fill();
+  });
+
+  // Draw Pareto front
+  ctx.strokeStyle = '#ffb700';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  pareto.forEach((p, i) => {
+    const px = padX + p.f1 * plotW;
+    const py = padY_top + plotH - p.f2 * plotH;
+    if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+  });
+  ctx.stroke();
+
+  // Points
+  pareto.forEach(p => {
+    const px = padX + p.f1 * plotW;
+    const py = padY_top + plotH - p.f2 * plotH;
+    ctx.fillStyle = '#ffb700';
+    ctx.beginPath();
+    ctx.arc(px, py, 4, 0, Math.PI * 2);
+    ctx.fill();
+  });
+
+  // Utopia
+  const utPx = padX + 0.1 * plotW;
+  const utPy = padY_top + plotH - 0.1 * plotH;
+  ctx.fillStyle = '#ec4899';
+  ctx.shadowColor = '#ec4899';
+  ctx.shadowBlur = 15;
+  ctx.beginPath();
+  ctx.arc(utPx, utPy, 6, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.shadowBlur = 0;
+
+  // Labels
+  ctx.fillStyle = '#9aa7bd';
+  ctx.font = '11px Vazirmatn';
+  ctx.textAlign = 'right';
+  ctx.fillText('f₂', padX - 8, padY_top + 15);
+  ctx.textAlign = 'center';
+  ctx.fillText('f₁', padX + plotW / 2, padY_top + plotH + 25);
+
+  ctx.font = 'bold 11px Vazirmatn';
+  ctx.textAlign = 'right';
+  ctx.fillStyle = '#ffb700';
+  ctx.fillText('Pareto Front', w - 20, 22);
+  ctx.fillStyle = 'rgba(168, 85, 247, 0.6)';
+  ctx.fillText('Dominated', w - 150, 22);
+
+  document.getElementById('paretoNValue').textContent = toFa(nPoints);
+  document.getElementById('paretoCount').textContent = toFa(nPoints);
+  document.getElementById('paretoBest1').textContent = toFa('0.00');
+  document.getElementById('paretoBest2').textContent = toFa('1.00');
+}
+
+/* ═══ NEMS Simulator ═══ */
+function drawNems() {
+  const s = setupCanvas('nemsCanvas');
+  if (!s) return;
+  const { ctx, w, h } = s;
+  ctx.clearRect(0, 0, w, h);
+
+  const w1 = parseFloat(document.getElementById('nemsW1').value);
+  const w2 = 1 - w1;
+
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+  ctx.fillRect(0, 0, w, h);
+
+  // Generate Pareto front
+  const pareto = [];
+  for (let i = 0; i <= 50; i++) {
+    const f1 = i / 50;
+    const f2 = Math.sqrt(1 - f1 * f1);
+    pareto.push({ f1, f2 });
+  }
+
+  // Find best based on weights
+  let best = pareto[0];
+  let bestScore = -Infinity;
+  pareto.forEach(p => {
+    const score = w1 * (1 - p.f1) + w2 * p.f2;
+    if (score > bestScore) {
+      bestScore = score;
+      best = p;
+    }
+  });
+
+  // Axes
+  const padX = 60, padY_top = 40, padY_bot = 60;
+  const plotW = w - 2 * padX;
+  const plotH = h - padY_top - padY_bot;
+
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.moveTo(padX, padY_top);
+  ctx.lineTo(padX, padY_top + plotH);
+  ctx.lineTo(padX + plotW, padY_top + plotH);
+  ctx.stroke();
+
+  // Pareto front
+  ctx.strokeStyle = '#ffb700';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  pareto.forEach((p, i) => {
+    const px = padX + p.f1 * plotW;
+    const py = padY_top + plotH - p.f2 * plotH;
+    if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+  });
+  ctx.stroke();
+
+  // Points
+  pareto.forEach(p => {
+    const px = padX + p.f1 * plotW;
+    const py = padY_top + plotH - p.f2 * plotH;
+    ctx.fillStyle = 'rgba(255, 183, 0, 0.6)';
+    ctx.beginPath();
+    ctx.arc(px, py, 3, 0, Math.PI * 2);
+    ctx.fill();
+  });
+
+  // Best point
+  const bestPx = padX + best.f1 * plotW;
+  const bestPy = padY_top + plotH - best.f2 * plotH;
+  ctx.fillStyle = '#00d4aa';
+  ctx.shadowColor = '#00d4aa';
+  ctx.shadowBlur = 20;
+  ctx.beginPath();
+  ctx.arc(bestPx, bestPy, 10, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.shadowBlur = 0;
+
+  // Labels
+  ctx.fillStyle = '#9aa7bd';
+  ctx.font = '11px Vazirmatn';
+  ctx.textAlign = 'right';
+  ctx.fillText('حساسیت', padX - 8, padY_top + 15);
+  ctx.textAlign = 'center';
+  ctx.fillText('حجم', padX + plotW / 2, padY_top + plotH + 25);
+
+  document.getElementById('nemsW1Value').textContent = toFa(w1.toFixed(2));
+  document.getElementById('nemsDesign').textContent = `(${toFa(best.f1.toFixed(2))}، ${toFa(best.f2.toFixed(2))})`;
+  document.getElementById('nemsF1').textContent = toFa(best.f1.toFixed(3));
+  document.getElementById('nemsF2').textContent = toFa(best.f2.toFixed(3));
+}
+
+/* ═══ Hyperparameter Simulator ═══ */
+function drawHP() {
+  const s = setupCanvas('hpCanvas');
+  if (!s) return;
+  const { ctx, w, h } = s;
+  ctx.clearRect(0, 0, w, h);
+
+  const nIter = parseInt(document.getElementById('hpIter').value);
+
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+  ctx.fillRect(0, 0, w, h);
+
+  const padX = 60, padY_top = 40, padY_bot = 60;
+  const plotW = w - 2 * padX;
+  const plotH = h - padY_top - padY_bot;
+
+  // Axes
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.moveTo(padX, padY_top);
+  ctx.lineTo(padX, padY_top + plotH);
+  ctx.lineTo(padX + plotW, padY_top + plotH);
+  ctx.stroke();
+
+  // Fitness over generations
+  ctx.beginPath();
+  ctx.strokeStyle = '#00d4aa';
+  ctx.lineWidth = 2.5;
+  ctx.shadowColor = '#00d4aa';
+  ctx.shadowBlur = 6;
+  for (let i = 0; i <= nIter; i++) {
+    const fit = 1 - Math.exp(-i / 3);
+    const px = padX + (i / nIter) * plotW;
+    const py = padY_top + plotH - fit * plotH;
+    if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+  }
+  ctx.stroke();
+  ctx.shadowBlur = 0;
+
+  // Labels
+  ctx.fillStyle = '#9aa7bd';
+  ctx.font = '11px Vazirmatn';
+  ctx.textAlign = 'right';
+  ctx.fillText('fitness', padX - 8, padY_top + 15);
+  ctx.textAlign = 'center';
+  ctx.fillText('نسل', padX + plotW / 2, padY_top + plotH + 25);
+
+  const bestFit = 1 - Math.exp(-nIter / 3);
+  document.getElementById('hpIterValue').textContent = toFa(nIter);
+  document.getElementById('hpBest').textContent = `η=${toFa((0.001 * (1 + nIter/10)).toFixed(4))}`;
+  document.getElementById('hpFitness').textContent = toFa(bestFit.toFixed(4));
+}
+
+/* ═══ Events ═══ */
+document.getElementById('gaMut').addEventListener('input', () => { gaGeneration = 0; drawGA(); });
+document.getElementById('gaPop').addEventListener('input', () => { gaGeneration = 0; gaPopulation = []; drawGA(); });
+document.getElementById('psoW').addEventListener('input', drawPSO);
+document.getElementById('psoC1').addEventListener('input', drawPSO);
+document.getElementById('psoC2').addEventListener('input', drawPSO);
+document.getElementById('cmpIter').addEventListener('input', drawCmp);
+document.getElementById('paretoN').addEventListener('input', drawPareto);
+document.getElementById('nemsW1').addEventListener('input', drawNems);
+document.getElementById('hpIter').addEventListener('input', drawHP);
+
+/* ═══ Code Tabs ═══ */
+document.querySelectorAll('.code-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    const parent = tab.parentElement;
+    parent.querySelectorAll('.code-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    const contentId = 'code-' + tab.dataset.code;
+    const content = document.getElementById(contentId);
+    if (content) {
+      const allContents = parent.parentElement.querySelectorAll('.code-content');
+      allContents.forEach(c => c.classList.remove('active'));
+      content.classList.add('active');
+    }
+  });
+});
+
+/* ═══ Render ═══ */
+function initVisibleCharts() {
+  const activeSlide = document.querySelector('.slide.active');
+  if (!activeSlide) return;
+  const num = activeSlide.dataset.slide;
+  if (num === '7') drawGA();
+  else if (num === '11') { psoParticles = []; psoIter = 0; drawPSO(); }
+  else if (num === '13') drawCmp();
+  else if (num === '15') drawPareto();
+  else if (num === '17') drawNems();
+  else if (num === '19') drawHP();
+}
+
+/* ═══ Init ═══ */
+updateNav();
+setTimeout(() => {
+  initVisibleCharts();
+  if (window.MathJax && window.MathJax.typesetPromise) window.MathJax.typesetPromise();
+}, 400);
+setTimeout(() => showToast('به جلسه ۲۳ خوش آمدید — GA و PSO 🌟'), 1000);
+
+window.addEventListener('resize', () => setTimeout(() => {
+  initVisibleCharts();
+  if (window.MathJax && window.MathJax.typesetPromise) window.MathJax.typesetPromise();
+}, 200));
+</script>
+
+</body>
+</html>

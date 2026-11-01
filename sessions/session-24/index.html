@@ -1,0 +1,2291 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>جلسه ۲۴ — کارگاه مقاله IEEE، مهارت‌های فنی و جمع‌بندی | دکتر مسعود گوهری منش</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+<script>
+window.MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']],
+    displayMath: [['$$', '$$'], ['\\[', '\\]']],
+    processEscapes: true
+  },
+  options: { skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'] },
+  svg: { fontCache: 'global' }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" async></script>
+
+<style>
+:root {
+  --primary: #00d4aa;
+  --secondary: #06b6d4;
+  --tertiary: #a855f7;
+  --gold: #ffb700;
+  --success: #22c55e;
+  --danger: #ff4757;
+  --pink: #ec4899;
+  --dark: #050818;
+  --darker: #020410;
+  --card-bg: rgba(255, 255, 255, 0.05);
+  --card-border: rgba(255, 255, 255, 0.1);
+  --text: #e8eef7;
+  --text-dim: #9aa7bd;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { overflow: hidden; height: 100%; }
+body {
+  font-family: 'Vazirmatn', sans-serif;
+  background: var(--dark);
+  color: var(--text);
+  direction: rtl;
+  line-height: 1.8;
+}
+#bgCanvas { position: fixed; inset: 0; z-index: -2; background: radial-gradient(ellipse at top, #0a1230 0%, var(--darker) 50%, #000 100%); }
+.glow-orb { position: fixed; border-radius: 50%; filter: blur(120px); opacity: 0.3; z-index: -1; pointer-events: none; animation: floatOrb 25s ease-in-out infinite; }
+.orb1 { width: 600px; height: 600px; background: var(--primary); top: -200px; right: -200px; }
+.orb2 { width: 500px; height: 500px; background: var(--gold); bottom: -150px; left: -150px; animation-delay: -8s; }
+.orb3 { width: 400px; height: 400px; background: var(--tertiary); top: 30%; left: 25%; animation-delay: -15s; opacity: 0.12; }
+@keyframes floatOrb { 0%, 100% { transform: translate(0, 0) scale(1); } 33% { transform: translate(50px, -40px) scale(1.15); } 66% { transform: translate(-40px, 50px) scale(0.9); } }
+
+.top-header { position: fixed; top: 0; left: 0; right: 0; height: 82px; background: rgba(5, 8, 24, 0.9); backdrop-filter: blur(15px); border-bottom: 1px solid var(--card-border); display: flex; align-items: center; justify-content: space-between; padding: 0 18px; z-index: 100; }
+.header-left { display: flex; align-items: center; gap: 14px; }
+.header-signature { height: 60px; width: auto; max-width: 170px; object-fit: contain; filter: drop-shadow(0 0 10px rgba(0, 212, 170, 0.4)); border-radius: 8px; background: rgba(255, 255, 255, 0.05); padding: 4px; }
+.header-text { display: flex; flex-direction: column; line-height: 1.35; }
+.header-name { font-size: 0.88rem; color: var(--gold); font-weight: 800; white-space: nowrap; }
+.header-univ { font-size: 0.7rem; color: var(--text-dim); font-weight: 500; }
+.header-controls { display: flex; gap: 8px; flex-shrink: 0; align-items: center; }
+.ctrl-btn { width: 38px; height: 38px; border-radius: 10px; border: 1px solid var(--card-border); background: var(--card-bg); backdrop-filter: blur(10px); color: var(--text); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; transition: all 0.3s ease; position: relative; }
+.ctrl-btn:hover { background: var(--primary); color: var(--dark); transform: translateY(-2px); }
+.ctrl-btn.active { background: var(--primary); color: var(--dark); }
+
+.print-menu-wrap { position: relative; }
+.print-menu {
+  position: absolute; top: 46px; left: 0;
+  background: rgba(10, 18, 40, 0.98);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  padding: 6px;
+  min-width: 200px;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6);
+  opacity: 0; pointer-events: none;
+  transform: translateY(-8px);
+  transition: all 0.3s ease;
+  z-index: 200;
+}
+.print-menu.show { opacity: 1; pointer-events: auto; transform: translateY(0); }
+.print-menu button {
+  display: flex; align-items: center; gap: 10px;
+  width: 100%; padding: 10px 14px;
+  background: transparent; border: none;
+  color: var(--text); font-family: inherit;
+  font-size: 0.82rem; font-weight: 600;
+  border-radius: 8px; cursor: pointer;
+  text-align: right;
+  transition: all 0.2s ease;
+}
+.print-menu button:hover { background: rgba(0, 212, 170, 0.15); color: var(--primary); }
+.print-menu button i { color: var(--gold); font-size: 0.9rem; width: 18px; text-align: center; }
+
+@media print {
+  @page { size: A4 landscape; margin: 10mm; }
+  html, body { overflow: visible !important; height: auto !important; background: white !important; }
+  #bgCanvas, .glow-orb, .top-header, .topic-nav, .progress-top, .bottom-nav,
+  .toast-container, .star-container, .ctrl-btn, .print-menu, .lightbox,
+  .modal-overlay, .slide:not(.print-visible) { display: none !important; }
+  .slide-container { position: static !important; inset: auto !important; overflow: visible !important; }
+  .slide {
+    position: relative !important; opacity: 1 !important; transform: none !important;
+    pointer-events: auto !important; page-break-after: always;
+    padding: 15px 25px !important; overflow: visible !important;
+    background: white !important; color: #1a1a1a !important;
+    inset: auto !important; height: auto !important;
+  }
+  .slide::before {
+    content: ''; position: fixed; top: 50%; left: 50%;
+    transform: translate(-50%, -50%) rotate(-30deg);
+    width: 600px; height: 300px;
+    background-image: url('images/signature.png');
+    background-repeat: no-repeat; background-position: center;
+    background-size: contain; opacity: 0.08;
+    pointer-events: none; z-index: 9999; filter: grayscale(100%);
+  }
+  .slide-h1, .slide-h3, .slide-text, .card { color: #1a1a1a !important; }
+  .card { border-color: #ccc !important; background: #f9f9f9 !important; }
+  .math-box { background: #f5f5f5 !important; border-color: #999 !important; }
+  .slide-num { background: #e0e0e0 !important; color: #333 !important; }
+  .code-content { background: #f5f5f5 !important; color: #1a1a1a !important; }
+}
+
+.lightbox {
+  position: fixed; inset: 0; background: rgba(0, 0, 0, 0.92);
+  backdrop-filter: blur(8px); z-index: 10000;
+  display: flex; align-items: center; justify-content: center;
+  padding: 40px; opacity: 0; pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+.lightbox.active { opacity: 1; pointer-events: auto; }
+.lightbox-img {
+  max-width: 90vw; max-height: 85vh; border-radius: 16px;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.8), 0 0 60px rgba(0, 212, 170, 0.3);
+  border: 2px solid var(--primary); transform: scale(0.85);
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.lightbox.active .lightbox-img { transform: scale(1); }
+.lightbox-close {
+  position: absolute; top: 24px; left: 24px;
+  width: 46px; height: 46px; border-radius: 50%;
+  background: rgba(255, 71, 87, 0.9); border: none; color: #fff;
+  font-size: 1.2rem; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.3s ease; z-index: 10001;
+}
+.lightbox-close:hover { background: var(--danger); transform: rotate(90deg); }
+.lightbox-caption {
+  position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%);
+  background: rgba(10, 18, 40, 0.95); border: 1px solid var(--card-border);
+  color: var(--text); padding: 10px 24px; border-radius: 30px;
+  font-size: 0.85rem; font-weight: 600;
+}
+
+.img-box, .hero-img, .star-img { cursor: zoom-in; transition: all 0.3s ease; }
+.img-box:hover { transform: scale(1.02); border-color: var(--primary); }
+
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(10px); z-index: 9500;
+  display: flex; align-items: center; justify-content: center;
+  padding: 30px; opacity: 0; pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+.modal-overlay.active { opacity: 1; pointer-events: auto; }
+.modal-box {
+  background: linear-gradient(145deg, rgba(10, 18, 40, 0.98), rgba(5, 8, 24, 0.98));
+  border: 1px solid var(--gold); border-radius: 22px; padding: 30px;
+  max-width: 720px; width: 100%; max-height: 85vh; overflow-y: auto;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.8), 0 0 50px rgba(255, 183, 0, 0.2);
+  position: relative; transform: scale(0.92);
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.modal-overlay.active .modal-box { transform: scale(1); }
+.modal-close {
+  position: absolute; top: 18px; left: 18px;
+  width: 38px; height: 38px; border-radius: 50%;
+  background: rgba(255, 71, 87, 0.2); border: 1px solid rgba(255, 71, 87, 0.5);
+  color: var(--danger); font-size: 1rem; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.3s ease;
+}
+.modal-close:hover { background: var(--danger); color: #fff; transform: rotate(90deg); }
+.modal-title {
+  font-size: 1.3rem; font-weight: 900; color: var(--gold);
+  margin-bottom: 18px; display: flex; align-items: center; gap: 12px;
+  padding-right: 40px;
+}
+.modal-title i { font-size: 1.5rem; }
+.modal-section { margin-bottom: 18px; }
+.modal-section-title {
+  font-size: 0.95rem; font-weight: 800; color: var(--primary);
+  margin-bottom: 8px; display: flex; align-items: center; gap: 8px;
+}
+.modal-section-title i { color: var(--primary); }
+.modal-section p { font-size: 0.88rem; color: var(--text-dim); line-height: 2; margin-bottom: 8px; }
+.modal-section ul { list-style: none; padding: 0; }
+.modal-section ul li {
+  padding: 6px 24px 6px 10px; position: relative;
+  font-size: 0.85rem; color: var(--text-dim); line-height: 1.9;
+}
+.modal-section ul li::before { content: '◆'; position: absolute; right: 4px; color: var(--gold); font-size: 0.7rem; }
+
+.concept-word {
+  color: var(--gold); font-weight: 900; cursor: pointer;
+  text-decoration: underline dotted var(--gold);
+  text-underline-offset: 5px; transition: all 0.3s ease;
+  padding: 0 2px; border-radius: 4px;
+}
+.concept-word:hover { background: rgba(255, 183, 0, 0.15); text-shadow: 0 0 12px rgba(255, 183, 0, 0.8); }
+
+.topic-nav { position: fixed; top: 82px; left: 0; right: 0; height: 36px; background: rgba(5, 8, 24, 0.9); backdrop-filter: blur(10px); border-bottom: 1px solid var(--card-border); z-index: 99; display: flex; align-items: center; gap: 6px; padding: 0 18px; overflow-x: auto; scrollbar-width: none; }
+.topic-nav::-webkit-scrollbar { display: none; }
+.topic-pill { padding: 4px 11px; border-radius: 20px; font-size: 0.7rem; font-weight: 600; white-space: nowrap; color: var(--text-dim); background: rgba(255, 255, 255, 0.04); border: 1px solid transparent; transition: all 0.3s ease; }
+.topic-pill.active { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: var(--dark); font-weight: 800; box-shadow: 0 3px 10px rgba(0, 212, 170, 0.35); }
+.topic-pill.done { color: var(--primary); border-color: rgba(0, 212, 170, 0.3); }
+
+.progress-top { position: fixed; top: 118px; left: 0; right: 0; height: 3px; background: rgba(255, 255, 255, 0.05); z-index: 98; }
+.progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--primary), var(--secondary), var(--tertiary)); transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 0 12px var(--primary); }
+
+.slide-container { position: fixed; inset: 121px 0 0 0; overflow: hidden; }
+.slide { position: absolute; inset: 0; padding: 24px 50px 90px; opacity: 0; transform: translateX(-40px); pointer-events: none; transition: opacity 0.5s ease, transform 0.5s cubic-bezier(0.4, 0, 0.2, 1); overflow-y: auto; overflow-x: hidden; }
+.slide.active { opacity: 1; transform: translateX(0); pointer-events: auto; }
+.slide.prev { transform: translateX(40px); }
+.slide::-webkit-scrollbar { width: 6px; }
+.slide::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 3px; }
+.slide-inner { max-width: 1200px; margin: 0 auto; animation: contentFade 0.6s ease; }
+@keyframes contentFade { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+.slide-num { display: inline-block; padding: 5px 14px; border-radius: 20px; background: rgba(0, 212, 170, 0.15); color: var(--primary); font-size: 0.72rem; font-weight: 700; margin-bottom: 10px; }
+.slide-h1 { font-size: clamp(1.3rem, 3.2vw, 2rem); font-weight: 900; background: linear-gradient(135deg, var(--primary), var(--secondary), var(--tertiary), var(--gold)); background-size: 300% 300%; -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; animation: gradientShift 6s ease infinite; margin-bottom: 16px; line-height: 1.35; }
+@keyframes gradientShift { 0%, 100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
+.slide-h3 { font-size: 0.98rem; font-weight: 700; color: var(--text); margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+.slide-h3 i { color: var(--gold); font-size: 0.88rem; }
+.slide-text { font-size: 0.9rem; color: var(--text-dim); line-height: 2; margin-bottom: 12px; }
+
+.card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 18px; padding: 18px; backdrop-filter: blur(12px); transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1); }
+.card:hover { transform: translateY(-4px); border-color: rgba(0, 212, 170, 0.4); box-shadow: 0 15px 35px rgba(0, 212, 170, 0.12); }
+.grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+.grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; }
+.grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; }
+
+.title-slide { text-align: center; padding-top: 5px; }
+.title-slide .hero-img { width: 100%; max-width: 520px; height: 170px; object-fit: contain; background: rgba(0, 0, 0, 0.2); padding: 6px; border-radius: 20px; margin: 0 auto 12px; display: block; border: 1px solid var(--card-border); box-shadow: 0 20px 40px rgba(0, 212, 170, 0.15); }
+.title-slide .bismillah { font-size: 1.2rem; font-weight: 500; background: linear-gradient(90deg, var(--gold), var(--primary), var(--secondary)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 4px; }
+.title-slide .hoval { font-size: 0.82rem; color: var(--text-dim); margin-bottom: 16px; letter-spacing: 1px; }
+.title-slide .main-title { font-size: clamp(1.3rem, 3.2vw, 2rem); font-weight: 900; background: linear-gradient(135deg, var(--primary), var(--gold), var(--tertiary)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 10px; line-height: 1.3; }
+.title-slide .subtitle { font-size: clamp(0.9rem, 2vw, 1.05rem); color: var(--text-dim); margin-bottom: 18px; }
+.title-slide .euler-box { display: inline-block; padding: 12px 30px; border-radius: 18px; background: var(--card-bg); border: 1px solid var(--card-border); backdrop-filter: blur(15px); margin-bottom: 16px; }
+.title-slide .instructor-line { font-size: 0.92rem; color: var(--gold); font-weight: 700; margin-bottom: 3px; }
+.title-slide .instructor-title-line { font-size: 0.78rem; color: var(--text-dim); margin-bottom: 12px; }
+.title-slide .semester { display: inline-block; padding: 6px 18px; border-radius: 50px; background: var(--card-bg); border: 1px solid var(--card-border); font-size: 0.78rem; color: var(--text-dim); }
+
+.star-container { position: fixed; top: 150px; left: 40px; z-index: 90; cursor: pointer; }
+.star-core {
+  width: 40px; height: 40px; border-radius: 50%;
+  background: radial-gradient(circle at 50% 50%, #fff 0%, var(--gold) 30%, var(--gold) 50%, rgba(255, 183, 0, 0.2) 80%, transparent 100%);
+  box-shadow: 0 0 25px var(--gold), 0 0 50px rgba(255, 183, 0, 0.5), 0 0 80px rgba(255, 183, 0, 0.3);
+  animation: starPulse 3s ease-in-out infinite; position: relative;
+}
+.star-core::before {
+  content: ''; position: absolute; inset: -20px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 183, 0, 0.3) 0%, transparent 70%);
+  animation: starHalo 4s ease-in-out infinite;
+}
+@keyframes starPulse {
+  0%, 100% { transform: scale(1); box-shadow: 0 0 25px var(--gold), 0 0 50px rgba(255, 183, 0, 0.5), 0 0 80px rgba(255, 183, 0, 0.3); }
+  50% { transform: scale(1.15); box-shadow: 0 0 35px var(--gold), 0 0 70px rgba(255, 183, 0, 0.7), 0 0 100px rgba(255, 183, 0, 0.5); }
+}
+@keyframes starHalo {
+  0%, 100% { transform: scale(1); opacity: 0.5; }
+  50% { transform: scale(1.3); opacity: 0.8; }
+}
+.star-tooltip {
+  position: absolute; top: 55px; left: 0; width: 240px;
+  background: linear-gradient(145deg, rgba(10, 18, 40, 0.98), rgba(5, 8, 24, 0.98));
+  border: 1px solid var(--gold); border-radius: 16px; padding: 16px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7), 0 0 30px rgba(255, 183, 0, 0.3);
+  opacity: 0; pointer-events: none; transform: translateY(-10px) scale(0.95);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.star-container:hover .star-tooltip { opacity: 1; transform: translateY(0) scale(1); pointer-events: auto; }
+.star-img { width: 100%; height: 180px; object-fit: contain; border-radius: 12px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 183, 0, 0.3); margin-bottom: 10px; padding: 6px; }
+.star-name { font-size: 0.95rem; font-weight: 800; color: var(--gold); text-align: center; margin-bottom: 4px; }
+.star-title { font-size: 0.75rem; color: var(--text-dim); text-align: center; margin-bottom: 6px; font-style: italic; }
+.star-years { font-size: 0.72rem; color: var(--primary); text-align: center; font-family: 'Courier New', monospace; padding-top: 6px; border-top: 1px solid rgba(255, 183, 0, 0.2); }
+.star-tooltip::before { content: ''; position: absolute; top: -8px; left: 20px; width: 16px; height: 16px; background: rgba(10, 18, 40, 0.98); border-top: 1px solid var(--gold); border-right: 1px solid var(--gold); transform: rotate(-45deg); }
+
+.math-box { background: rgba(0, 212, 170, 0.06); border: 1px solid rgba(0, 212, 170, 0.25); border-radius: 14px; padding: 16px 22px; margin: 12px 0; text-align: center; direction: ltr; position: relative; overflow-x: auto; overflow-y: hidden; }
+.math-box::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--primary), var(--secondary), var(--tertiary)); }
+.math-box .MathJax, .math-box mjx-container { color: var(--primary) !important; font-size: 1em !important; }
+.math-box.gold-math .MathJax, .math-box.gold-math mjx-container { color: var(--gold) !important; }
+.math-box.purple-math .MathJax, .math-box.purple-math mjx-container { color: var(--tertiary) !important; }
+.math-box.pink-math .MathJax, .math-box.pink-math mjx-container { color: var(--pink) !important; }
+.math-box.danger-math .MathJax, .math-box.danger-math mjx-container { color: var(--danger) !important; }
+.math-note { font-family: 'Vazirmatn', sans-serif; font-size: 0.76rem; color: var(--text-dim); direction: rtl; margin-top: 8px; font-style: italic; text-align: center; }
+
+.simulator { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 18px; padding: 16px; margin: 12px 0; backdrop-filter: blur(12px); }
+.sim-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; flex-wrap: wrap; gap: 10px; }
+.sim-title { font-size: 0.9rem; font-weight: 700; color: var(--gold); display: flex; align-items: center; gap: 8px; }
+.sim-controls { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.slider-group { display: flex; align-items: center; gap: 8px; background: rgba(0, 0, 0, 0.3); padding: 6px 12px; border-radius: 10px; border: 1px solid var(--card-border); }
+.slider-group label { font-size: 0.72rem; color: var(--text-dim); white-space: nowrap; }
+.slider-group input[type="range"] { width: 100px; accent-color: var(--primary); cursor: pointer; }
+.slider-value { font-family: 'Courier New', monospace; font-size: 0.78rem; color: var(--primary); font-weight: 700; min-width: 30px; text-align: center; }
+.canvas-wrapper { position: relative; width: 100%; height: 260px; background: rgba(0, 0, 0, 0.4); border-radius: 12px; overflow: hidden; border: 1px solid var(--card-border); }
+.canvas-wrapper canvas { width: 100%; height: 100%; display: block; }
+
+.img-box { width: 100%; max-height: 280px; border-radius: 16px; border: 1px solid var(--card-border); margin: 12px 0; display: block; object-fit: contain; background: rgba(0, 0, 0, 0.3); padding: 8px; }
+
+.step-container { background: rgba(0, 0, 0, 0.2); border-radius: 14px; padding: 16px 20px; margin: 12px 0; border-right: 3px solid var(--gold); }
+.step-title { font-size: 0.88rem; font-weight: 800; color: var(--gold); margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+.step-content { font-size: 0.85rem; color: var(--text-dim); line-height: 2; }
+.step-content .math-box { margin: 8px 0; padding: 12px 16px; }
+
+.exercise-block { border-radius: 16px; padding: 16px; border: 1px solid; position: relative; overflow: hidden; margin-bottom: 12px; }
+.exercise-block::before { content: ''; position: absolute; top: 0; right: 0; width: 4px; height: 100%; }
+.ex-yellow { background: rgba(255, 217, 61, 0.06); border-color: rgba(255, 217, 61, 0.25); }
+.ex-yellow::before { background: #ffd93d; }
+.ex-green { background: rgba(107, 207, 127, 0.06); border-color: rgba(107, 207, 127, 0.25); }
+.ex-green::before { background: #6bcf7f; }
+.ex-purple { background: rgba(168, 85, 247, 0.06); border-color: rgba(168, 85, 247, 0.25); }
+.ex-purple::before { background: var(--tertiary); }
+.ex-red { background: rgba(255, 107, 107, 0.06); border-color: rgba(255, 107, 107, 0.25); }
+.ex-red::before { background: #ff6b6b; }
+.ex-header { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+.ex-num { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 0.8rem; color: var(--dark); flex-shrink: 0; }
+.ex-yellow .ex-num { background: #ffd93d; }
+.ex-green .ex-num { background: #6bcf7f; }
+.ex-purple .ex-num { background: var(--tertiary); color: #fff; }
+.ex-red .ex-num { background: #ff6b6b; color: #fff; }
+.ex-title { font-size: 0.92rem; font-weight: 800; }
+.ex-list { list-style: none; padding: 0; counter-reset: item; }
+.ex-list li { position: relative; padding: 7px 34px 7px 10px; font-size: 0.83rem; color: var(--text-dim); line-height: 1.8; border-bottom: 1px dashed rgba(255, 255, 255, 0.05); }
+.ex-list li:last-child { border-bottom: none; }
+.ex-list li::before { counter-increment: item; content: counter(item); position: absolute; right: 4px; top: 9px; width: 22px; height: 22px; border-radius: 50%; background: rgba(255, 255, 255, 0.08); color: var(--text); font-size: 0.7rem; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+.email-banner { margin-top: 12px; padding: 12px; border-radius: 14px; background: linear-gradient(135deg, rgba(0, 212, 170, 0.1), rgba(168, 85, 247, 0.1)); border: 1px dashed rgba(0, 212, 170, 0.4); text-align: center; }
+.email-banner p { font-size: 0.8rem; color: var(--text); margin-bottom: 5px; }
+.email-banner code { display: inline-block; padding: 5px 12px; border-radius: 8px; background: rgba(0, 0, 0, 0.4); color: var(--primary); font-family: 'Courier New', monospace; font-size: 0.76rem; direction: ltr; margin-top: 3px; }
+
+.code-tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--card-border); }
+.code-tab { padding: 8px 16px; border-radius: 10px 10px 0 0; background: transparent; border: none; color: var(--text-dim); font-family: inherit; font-size: 0.8rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; }
+.code-tab.active { background: rgba(0, 212, 170, 0.1); color: var(--primary); border-bottom: 2px solid var(--primary); }
+.code-content { display: none; background: #0a0f24; border: 1px solid var(--card-border); border-top: none; border-radius: 0 0 12px 12px; padding: 14px; overflow-x: auto; direction: ltr; text-align: left; }
+.code-content.active { display: block; }
+.code-content pre { margin: 0; font-family: 'Courier New', Consolas, monospace; font-size: 0.76rem; line-height: 1.6; color: #e8eef7; white-space: pre; }
+.code-content .kw { color: #ff79c6; }
+.code-content .fn { color: #50fa7b; }
+.code-content .num { color: #bd93f9; }
+.code-content .str { color: #f1fa8c; }
+.code-content .cm { color: #6272a4; font-style: italic; }
+.code-content .cls { color: #8be9fd; }
+
+.bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; height: 58px; background: rgba(5, 8, 24, 0.9); backdrop-filter: blur(15px); border-top: 1px solid var(--card-border); display: flex; align-items: center; justify-content: space-between; padding: 0 20px; z-index: 100; }
+.nav-btn { padding: 8px 18px; border-radius: 12px; border: 1px solid var(--card-border); background: var(--card-bg); color: var(--text); cursor: pointer; font-family: inherit; font-size: 0.82rem; font-weight: 600; display: flex; align-items: center; gap: 7px; transition: all 0.3s ease; }
+.nav-btn:hover:not(:disabled) { background: var(--primary); color: var(--dark); transform: translateY(-2px); }
+.nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+.dots-nav { display: flex; gap: 4px; flex-wrap: wrap; justify-content: center; max-width: 60%; }
+.dot-nav { width: 8px; height: 8px; border-radius: 50%; background: rgba(255, 255, 255, 0.15); cursor: pointer; border: none; padding: 0; transition: all 0.3s ease; }
+.dot-nav.active { background: var(--primary); width: 22px; border-radius: 5px; box-shadow: 0 0 10px var(--primary); }
+.slide-counter { font-size: 0.78rem; color: var(--text-dim); font-family: 'Courier New', monospace; min-width: 60px; text-align: center; }
+.slide-counter span { color: var(--primary); font-weight: 800; }
+
+.toast-container { position: fixed; bottom: 76px; left: 24px; z-index: 9999; display: flex; flex-direction: column; gap: 8px; }
+.toast { background: rgba(10, 18, 40, 0.95); border: 1px solid var(--primary); border-radius: 14px; padding: 11px 16px; color: var(--text); font-size: 0.82rem; backdrop-filter: blur(12px); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); display: flex; align-items: center; gap: 8px; animation: slideIn 0.35s ease; max-width: 320px; }
+.toast i { color: var(--primary); }
+@keyframes slideIn { from { opacity: 0; transform: translateX(-60px); } to { opacity: 1; transform: translateX(0); } }
+
+.lecture-note {
+  background: rgba(0, 212, 170, 0.06); border: 1px solid rgba(0, 212, 170, 0.3);
+  border-radius: 12px; padding: 12px 16px; margin: 10px 0;
+  display: flex; gap: 10px; align-items: flex-start;
+}
+.lecture-note i { color: var(--primary); font-size: 1.1rem; margin-top: 3px; }
+.lecture-note-content { flex: 1; font-size: 0.85rem; color: var(--text-dim); line-height: 1.9; }
+
+.method-badge {
+  display: inline-block; padding: 3px 10px; border-radius: 6px;
+  font-size: 0.7rem; font-weight: 700; margin-bottom: 8px;
+}
+.badge-ieee { background: rgba(0, 212, 170, 0.15); color: var(--primary); }
+.badge-skill { background: rgba(255, 183, 0, 0.15); color: var(--gold); }
+.badge-tool { background: rgba(168, 85, 247, 0.15); color: var(--tertiary); }
+.badge-final { background: rgba(236, 72, 153, 0.15); color: var(--pink); }
+
+.skill-card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 14px;
+  padding: 16px;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+.skill-card::before {
+  content: '';
+  position: absolute;
+  top: 0; right: 0;
+  width: 4px; height: 100%;
+  background: var(--skill-color);
+}
+.skill-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--skill-color);
+  box-shadow: 0 15px 35px color-mix(in srgb, var(--skill-color) 20%, transparent);
+}
+.skill-icon {
+  width: 44px; height: 44px;
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--skill-color) 20%, transparent);
+  color: var(--skill-color);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.3rem;
+  margin-bottom: 10px;
+}
+.skill-title {
+  font-size: 0.92rem;
+  font-weight: 800;
+  color: var(--text);
+  margin-bottom: 6px;
+}
+.skill-desc {
+  font-size: 0.8rem;
+  color: var(--text-dim);
+  line-height: 1.7;
+}
+.skill-list {
+  list-style: none;
+  padding: 0;
+  margin-top: 8px;
+  font-size: 0.78rem;
+  color: var(--text-dim);
+  line-height: 1.9;
+}
+.skill-list li {
+  padding-right: 18px;
+  position: relative;
+}
+.skill-list li::before {
+  content: '▸';
+  position: absolute;
+  right: 0;
+  color: var(--skill-color);
+}
+
+.celebrate-card {
+  background: linear-gradient(135deg, rgba(255, 183, 0, 0.15), rgba(0, 212, 170, 0.1), rgba(168, 85, 247, 0.1));
+  border: 2px solid var(--gold);
+  border-radius: 22px;
+  padding: 30px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.celebrate-card::before {
+  content: '🎉';
+  position: absolute;
+  top: 15px; right: 20px;
+  font-size: 2rem;
+  animation: bounce 2s ease-in-out infinite;
+}
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+.certificate {
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.03));
+  border: 3px solid var(--gold);
+  border-radius: 22px;
+  padding: 40px 30px;
+  text-align: center;
+  position: relative;
+  box-shadow: 0 20px 60px rgba(255, 183, 0, 0.2);
+}
+.certificate::before {
+  content: '';
+  position: absolute;
+  inset: 10px;
+  border: 1px solid rgba(255, 183, 0, 0.3);
+  border-radius: 16px;
+  pointer-events: none;
+}
+
+@media (max-width: 768px) {
+  .slide { padding: 16px 14px 90px; }
+  .header-univ { display: none; }
+  .header-name { font-size: 0.75rem; }
+  .header-signature { height: 45px; max-width: 110px; }
+  .nav-btn { padding: 7px 11px; font-size: 0.72rem; }
+  .nav-btn span { display: none; }
+  .dots-nav { max-width: 45%; }
+  .slide-counter { font-size: 0.68rem; min-width: 45px; }
+  .canvas-wrapper { height: 210px; }
+  .topic-pill { font-size: 0.64rem; padding: 3px 8px; }
+  .star-container { top: 130px; left: 20px; }
+  .star-core { width: 32px; height: 32px; }
+  .star-tooltip { width: 200px; }
+  .modal-box { padding: 20px; }
+}
+@media (max-width: 480px) {
+  .ctrl-btn { width: 34px; height: 34px; font-size: 0.8rem; }
+  .header-signature { display: none; }
+  .star-container { top: 120px; left: 12px; }
+  .star-core { width: 28px; height: 28px; }
+  .star-tooltip { width: 180px; padding: 12px; }
+  .star-img { height: 140px; }
+  .lightbox-caption { font-size: 0.75rem; padding: 8px 16px; }
+}
+</style>
+</head>
+<body>
+
+<canvas id="bgCanvas"></canvas>
+<div class="glow-orb orb1"></div>
+<div class="glow-orb orb2"></div>
+<div class="glow-orb orb3"></div>
+
+<!-- ستاره درخشان آیت‌الله حسن‌زاده آملی -->
+<div class="star-container" id="starContainer">
+  <div class="star-core"></div>
+  <div class="star-tooltip">
+    <img src="images/star.png" alt="آیت‌الله حسن‌زاده آملی" class="star-img img-clickable" onerror="this.style.background='linear-gradient(135deg, #ffb700, #a855f7)'; this.style.minHeight='140px';" data-caption="آیت‌الله حسن‌زاده آملی — علامه ذوفنون">
+    <div class="star-name">آیت‌الله حسن‌زاده آملی</div>
+    <div class="star-title">علامه ذوفنون — فقیه، فیلسوف، عارف و ریاضیدان</div>
+    <div class="star-years">۱۳۰۷ — ۱۴۰۰ شمسی</div>
+  </div>
+</div>
+
+<div class="top-header">
+  <div class="header-left">
+    <img src="images/signature.png" alt="امضا" class="header-signature" onerror="this.style.display='none'">
+    <div class="header-text">
+      <span class="header-name">دکتر مسعود گوهری منش</span>
+      <span class="header-univ">دانشیار گروه مهندسی مکانیک — دانشگاه تربت حیدریه</span>
+    </div>
+  </div>
+  <div class="header-controls">
+    <button class="ctrl-btn" id="soundToggle" title="صدا"><i class="fas fa-volume-up"></i></button>
+    <button class="ctrl-btn" id="fullscreenToggle" title="تمام‌صفحه"><i class="fas fa-expand"></i></button>
+    <div class="print-menu-wrap">
+      <button class="ctrl-btn" id="printToggle" title="چاپ"><i class="fas fa-print"></i></button>
+      <div class="print-menu" id="printMenu">
+        <button id="printCurrentBtn"><i class="fas fa-file"></i> چاپ این صفحه</button>
+        <button id="printAllBtn"><i class="fas fa-layer-group"></i> چاپ همه صفحات</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="topic-nav" id="topicNav">
+  <span class="topic-pill" data-topic="1">جشن پایانی</span>
+  <span class="topic-pill" data-topic="2">مرور دوره</span>
+  <span class="topic-pill" data-topic="3">مهارت‌های فنی</span>
+  <span class="topic-pill" data-topic="4">LaTeX و ابزار</span>
+  <span class="topic-pill" data-topic="5">تصاویر و نمودار</span>
+  <span class="topic-pill" data-topic="6">ساختار مقاله</span>
+  <span class="topic-pill" data-topic="7">نوشتن بخش‌ها</span>
+  <span class="topic-pill" data-topic="8">داوری و ارسال</span>
+  <span class="topic-pill" data-topic="9">پروژه نهایی</span>
+  <span class="topic-pill" data-topic="10">جمع‌بندی</span>
+</div>
+
+<div class="progress-top"><div class="progress-fill" id="progressFill"></div></div>
+
+<div class="slide-container" id="slideContainer">
+
+  <!-- ۱ — جشن پایانی -->
+  <div class="slide active" data-slide="1" data-topic="1">
+    <div class="slide-inner title-slide">
+      <div class="bismillah">بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِیم</div>
+      <div class="hoval">هُوَ الخَلّاقُ العَلیم</div>
+      <div style="font-size: 3.5rem; margin: 15px 0; animation: floatIcon 3s ease-in-out infinite;">🎓</div>
+      <h1 class="main-title">جلسه ۲۴ — پایانی</h1>
+      <p class="subtitle">کارگاه مقاله IEEE، مهارت‌های فنی و جمع‌بندی نهایی</p>
+      <div class="euler-box"><div style="direction: ltr; font-size: 0.95rem;">$$\mathcal{L} = \mathcal{L}_{data} + \lambda_{pde} \mathcal{L}_{pde} \to \text{IEEE Paper}$$</div></div>
+      <p class="instructor-line">دکتر مسعود گوهری منش</p>
+      <p class="instructor-title-line">دانشیار گروه مهندسی مکانیک — دانشگاه تربت حیدریه</p>
+      <div class="semester">نیمسال اول ۱۴۰۵–۱۴۰۶</div>
+      <div class="lecture-note" style="margin-top: 20px; max-width: 600px; margin-left: auto; margin-right: auto; text-align: right;">
+        <i class="fas fa-star" style="color: var(--gold);"></i>
+        <div class="lecture-note-content">
+          <strong style="color: var(--gold);">💫 ستاره امروز:</strong> به ستاره درخشان گوشه صفحه هاور کنید تا <strong>آیت‌الله حسن‌زاده آملی</strong>، علامه ذوفنون را ببینید.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۲ — مرور کل دوره -->
+  <div class="slide" data-slide="2" data-topic="2">
+    <div class="slide-inner">
+      <span class="slide-num">۲۴ جلسه در یک نگاه</span>
+      <h2 class="slide-h1">سفر ۲۴ جلسه‌ای شما</h2>
+
+      <div class="grid-4" style="margin-top: 14px;">
+        <div class="card" style="background: rgba(30, 60, 114, 0.3); border-color: rgba(0, 212, 170, 0.4); text-align: center; padding: 14px;">
+          <i class="fas fa-wave-square" style="font-size: 1.6rem; color: var(--primary); display: block; margin-bottom: 8px;"></i>
+          <div class="slide-h3" style="justify-content: center; font-size: 0.85rem;">فاز ۱</div>
+          <p class="slide-text" style="font-size: 0.72rem;">فوریه و مبانی</p>
+        </div>
+        <div class="card" style="background: rgba(30, 111, 92, 0.3); border-color: rgba(0, 212, 170, 0.4); text-align: center; padding: 14px;">
+          <i class="fas fa-fire" style="font-size: 1.6rem; color: var(--gold); display: block; margin-bottom: 8px;"></i>
+          <div class="slide-h3" style="justify-content: center; font-size: 0.85rem;">فاز ۲</div>
+          <p class="slide-text" style="font-size: 0.72rem;">PDEهای کلاسیک</p>
+        </div>
+        <div class="card" style="background: rgba(184, 107, 30, 0.3); border-color: rgba(0, 212, 170, 0.4); text-align: center; padding: 14px;">
+          <i class="fas fa-ruler" style="font-size: 1.6rem; color: var(--tertiary); display: block; margin-bottom: 8px;"></i>
+          <div class="slide-h3" style="justify-content: center; font-size: 0.85rem;">فاز ۳</div>
+          <p class="slide-text" style="font-size: 0.72rem;">نانو انبرک</p>
+        </div>
+        <div class="card" style="background: rgba(106, 44, 112, 0.3); border-color: rgba(0, 212, 170, 0.4); text-align: center; padding: 14px;">
+          <i class="fas fa-calculator" style="font-size: 1.6rem; color: var(--pink); display: block; margin-bottom: 8px;"></i>
+          <div class="slide-h3" style="justify-content: center; font-size: 0.85rem;">فاز ۴</div>
+          <p class="slide-text" style="font-size: 0.72rem;">Perturbation و عددی</p>
+        </div>
+        <div class="card" style="background: rgba(179, 57, 57, 0.3); border-color: rgba(0, 212, 170, 0.4); text-align: center; padding: 14px;">
+          <i class="fas fa-brain" style="font-size: 1.6rem; color: var(--primary); display: block; margin-bottom: 8px;"></i>
+          <div class="slide-h3" style="justify-content: center; font-size: 0.85rem;">فاز ۵</div>
+          <p class="slide-text" style="font-size: 0.72rem;">ML و PINN</p>
+        </div>
+        <div class="card" style="background: rgba(42, 82, 152, 0.3); border-color: rgba(0, 212, 170, 0.4); text-align: center; padding: 14px;">
+          <i class="fas fa-chart-line" style="font-size: 1.6rem; color: var(--gold); display: block; margin-bottom: 8px;"></i>
+          <div class="slide-h3" style="justify-content: center; font-size: 0.85rem;">فاز ۶</div>
+          <p class="slide-text" style="font-size: 0.72rem;">بهینه‌سازی و مقاله</p>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top: 16px; background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3);">
+        <div class="slide-h3" style="color: var(--primary);"><i class="fas fa-trophy"></i> دستاوردهای شما</div>
+        <div class="grid-2">
+          <ul style="list-style: none; padding: 0; font-size: 0.85rem; color: var(--text-dim); line-height: 2;">
+            <li>✅ حل PDE با سری فوریه</li>
+            <li>✅ حل عددی با FD، RK4، FEM</li>
+            <li>✅ پیاده‌سازی PINN در PyTorch</li>
+          </ul>
+          <ul style="list-style: none; padding: 0; font-size: 0.85rem; color: var(--text-dim); line-height: 2;">
+            <li>✅ بهینه‌سازی با Adam، KKT، GA، PSO</li>
+            <li>✅ تحلیل نانو انبرک و Pull-in</li>
+            <li>✅ آماده‌سازی مقاله IEEE</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۳ — چرا مهارت فنی -->
+  <div class="slide" data-slide="3" data-topic="3">
+    <div class="slide-inner">
+      <span class="slide-num">مقدمه</span>
+      <h2 class="slide-h1">چرا مهارت‌های فنی برای مقاله؟</h2>
+
+      <p class="slide-text">
+        یک مقاله علمی ریاضی‌محور، فقط **نوشتن** نیست — یک **مجموعه مهارت فنی** است. بدون این مهارت‌ها، حتی بهترین نتایج هم در قالب قابل قبولی ارائه نمی‌شوند.
+      </p>
+
+      <div class="grid-2" style="margin-top: 14px;">
+        <div class="card" style="background: rgba(255, 71, 87, 0.06); border-color: rgba(255, 71, 87, 0.3);">
+          <div class="slide-h3" style="color: var(--danger);"><i class="fas fa-exclamation-triangle"></i> اشتباهات رایج</div>
+          <ul style="list-style: none; padding: 0; font-size: 0.82rem; color: var(--text-dim); line-height: 2;">
+            <li>❌ فرمول‌های ناخوانا و بدون LaTeX</li>
+            <li>❌ تصاویر کم‌کیفیت (کمتر از ۶۰۰ DPI)</li>
+            <li>❌ نمودارهای بدون برچسب و راهنما</li>
+            <li>❌ ارجاع نادرست به منابع</li>
+            <li>❌ کدهای تکراری و ناخوانا</li>
+          </ul>
+        </div>
+        <div class="card" style="background: rgba(34, 197, 94, 0.06); border-color: rgba(34, 197, 94, 0.3);">
+          <div class="slide-h3" style="color: var(--success);"><i class="fas fa-check-circle"></i> مهارت‌های موفق</div>
+          <ul style="list-style: none; padding: 0; font-size: 0.82rem; color: var(--text-dim); line-height: 2;">
+            <li>✅ LaTeX برای فرمول‌های حرفه‌ای</li>
+            <li>✅ Python + Matplotlib برای تصاویر</li>
+            <li>✅ Git برای کنترل نسخه</li>
+            <li>✅ Zotero/Mendeley برای مراجع</li>
+            <li>✅ Overleaf برای همکاری</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="lecture-note">
+        <i class="fas fa-lightbulb"></i>
+        <div class="lecture-note-content">
+          <strong>پیام اصلی:</strong> ۷۰٪ از مقالات رد‌شده، به‌دلیل <strong>مشکلات فنی</strong> (نه محتوایی) رد می‌شوند. مهارت‌های فنی، تفاوت بین <strong>پذیرش</strong> و <strong>رد</strong> است.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۴ — LaTeX -->
+  <div class="slide" data-slide="4" data-topic="4">
+    <div class="slide-inner">
+      <span class="slide-num">مهارت ۱</span>
+      <span class="method-badge badge-skill" style="display: inline-block; margin-right: 8px;">LaTeX</span>
+      <h2 class="slide-h1">LaTeX — زبان فرمول‌های علمی</h2>
+
+      <div class="grid-2">
+        <div class="card" style="background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3);">
+          <div class="skill-icon" style="--skill-color: #00d4aa;"><i class="fas fa-square-root-variable"></i></div>
+          <div class="skill-title">چرا LaTeX؟</div>
+          <ul class="skill-list" style="--skill-color: #00d4aa;">
+            <li>فرمول‌های حرفه‌ای و خوانا</li>
+            <li>استاندارد IEEE و Elsevier</li>
+            <li>مدیریت خودکار شماره‌گذاری</li>
+            <li>همکاری آسان با Overleaf</li>
+          </ul>
+        </div>
+        <div class="card" style="background: rgba(255, 183, 0, 0.06); border-color: rgba(255, 183, 0, 0.3);">
+          <div class="skill-icon" style="--skill-color: #ffb700;"><i class="fas fa-code"></i></div>
+          <div class="skill-title">نمونه فرمول</div>
+          <div class="math-box gold-math" style="padding: 10px; font-size: 0.85rem; margin-top: 8px;">
+            $$\frac{\partial u}{\partial t} = \alpha \nabla^2 u$$
+          </div>
+          <p class="slide-text" style="font-size: 0.75rem; margin-top: 8px;">
+            <code style="background: rgba(0,0,0,0.4); padding: 2px 6px; border-radius: 4px; font-size: 0.7rem;">\frac{\partial u}{\partial t} = \alpha \nabla^2 u</code>
+          </p>
+        </div>
+      </div>
+
+      <div class="lecture-note" style="margin-top: 14px;">
+        <i class="fas fa-star"></i>
+        <div class="lecture-note-content">
+          <strong>ابزارها:</strong>
+          <br>🔹 <b>Overleaf</b> — آنلاین، بدون نصب، همکاری
+          <br>🔹 <b>TeX Live</b> — نصب محلی
+          <br>🔹 <b>VS Code + LaTeX Workshop</b> — پیشنهاد برای حرفه‌ای‌ها
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۵ — Python و کتابخانه‌ها -->
+  <div class="slide" data-slide="5" data-topic="4">
+    <div class="slide-inner">
+      <span class="slide-num">مهارت ۲</span>
+      <span class="method-badge badge-skill" style="display: inline-block; margin-right: 8px;">Python Ecosystem</span>
+      <h2 class="slide-h1">Python — ستون فقرات پژوهش</h2>
+
+      <div class="grid-3" style="margin-top: 14px;">
+        <div class="skill-card" style="--skill-color: #00d4aa;">
+          <div class="skill-icon"><i class="fas fa-calculator"></i></div>
+          <div class="skill-title">NumPy + SciPy</div>
+          <ul class="skill-list">
+            <li>عملیات برداری</li>
+            <li>حل معادلات دیفرانسیل</li>
+            <li>بهینه‌سازی عددی</li>
+            <li>جبر خطی</li>
+          </ul>
+        </div>
+        <div class="skill-card" style="--skill-color: #ffb700;">
+          <div class="skill-icon"><i class="fas fa-chart-line"></i></div>
+          <div class="skill-title">Matplotlib</div>
+          <ul class="skill-list">
+            <li>نمودارهای ۲D و ۳D</li>
+            <li>ذخیره با DPI بالا</li>
+            <li>فرمت PNG/PDF</li>
+            <li>سفارشی‌سازی کامل</li>
+          </ul>
+        </div>
+        <div class="skill-card" style="--skill-color: #a855f7;">
+          <div class="skill-icon"><i class="fas fa-fire"></i></div>
+          <div class="skill-title">PyTorch</div>
+          <ul class="skill-list">
+            <li>شبکه‌های عصبی</li>
+            <li>AutoDiff خودکار</li>
+            <li>PINN و Physics-Informed</li>
+            <li>GPU acceleration</li>
+          </ul>
+        </div>
+        <div class="skill-card" style="--skill-color: #ec4899;">
+          <div class="skill-icon"><i class="fas fa-book"></i></div>
+          <div class="skill-title">SymPy</div>
+          <ul class="skill-list">
+            <li>محاسبات نمادین</li>
+            <li>مشتق و انتگرال دقیق</li>
+            <li>ساده‌سازی فرمول</li>
+            <li>تولید LaTeX</li>
+          </ul>
+        </div>
+        <div class="skill-card" style="--skill-color: #06b6d4;">
+          <div class="skill-icon"><i class="fas fa-chart-bar"></i></div>
+          <div class="skill-title">Pandas</div>
+          <ul class="skill-list">
+            <li>تحلیل داده</li>
+            <li>خواندن CSV/Excel</li>
+            <li>آمار توصیفی</li>
+            <li>خروجی LaTeX</li>
+          </ul>
+        </div>
+        <div class="skill-card" style="--skill-color: #22c55e;">
+          <div class="skill-icon"><i class="fas fa-flask"></i></div>
+          <div class="skill-title">Jupyter/Colab</div>
+          <ul class="skill-list">
+            <li>محیط تعاملی</li>
+            <li>ترکیب کد و متن</li>
+            <li>ذخیره نتایج</li>
+            <li>همکاری آنلاین</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="lecture-note">
+        <i class="fas fa-star"></i>
+        <div class="lecture-note-content">
+          <strong>نکته:</strong> برای پروژه پایانی، کد باید در <strong>Google Colab</strong> باشد، ولی برای توسعه اولیه، از <strong>VS Code + Jupyter</strong> استفاده کنید.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۶ — Git و کنترل نسخه -->
+  <div class="slide" data-slide="6" data-topic="4">
+    <div class="slide-inner">
+      <span class="slide-num">مهارت ۳</span>
+      <span class="method-badge badge-skill" style="display: inline-block; margin-right: 8px;">Git & GitHub</span>
+      <h2 class="slide-h1">Git — مدیریت کد و همکاری</h2>
+
+      <div class="grid-2">
+        <div class="card" style="background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3);">
+          <div class="skill-icon" style="--skill-color: #00d4aa;"><i class="fab fa-git-alt"></i></div>
+          <div class="skill-title">چرا Git؟</div>
+          <ul class="skill-list" style="--skill-color: #00d4aa;">
+            <li>ذخیره تاریخچه تغییرات</li>
+            <li>بازگشت به نسخه قبلی</li>
+            <li>همکاری تیمی</li>
+            <li>استاندارد صنعت</li>
+          </ul>
+        </div>
+        <div class="card" style="background: rgba(255, 183, 0, 0.06); border-color: rgba(255, 183, 0, 0.3);">
+          <div class="skill-icon" style="--skill-color: #ffb700;"><i class="fab fa-github"></i></div>
+          <div class="skill-title">GitHub برای پژوهش</div>
+          <ul class="skill-list" style="--skill-color: #ffb700;">
+            <li>میزبانی کد پروژه</li>
+            <li>لینک مقاله به کد</li>
+            <li>همکاری بین‌المللی</li>
+            <li>GitHub Pages برای ارائه</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="code-tabs" style="margin-top: 14px;">
+        <button class="code-tab active" data-code="git-code"><i class="fab fa-git-alt"></i> دستورات ضروری Git</button>
+      </div>
+
+      <div class="code-content active" id="code-git-code">
+<pre><span class="cm"># ============================================</span>
+<span class="cm"># Essential Git commands for research</span>
+<span class="cm"># ============================================</span>
+
+<span class="cm"># 1) مقداردهی اولیه</span>
+git init
+git remote add origin https://github.com/username/paper-pinn.git
+
+<span class="cm"># 2) افزودن و commit</span>
+git add .
+git commit -m <span class="str">"Add PINN implementation for nano-cantilever"</span>
+
+<span class="cm"># 3) ارسال به GitHub</span>
+git push -u origin main
+
+<span class="cm"># 4) گرفتن تغییرات جدید</span>
+git pull origin main
+
+<span class="cm"># 5) برنچ جدید برای feature</span>
+git checkout -b feature/improve-loss
+<span class="cm"># ... تغییرات ...</span>
+git add .
+git commit -m <span class="str">"Improve loss function with adaptive weights"</span>
+git push origin feature/improve-loss
+
+<span class="cm"># 6) مرج کردن</span>
+git checkout main
+git merge feature/improve-loss
+
+<span class="cm"># 7) مشاهده تاریخچه</span>
+git log --oneline --graph
+
+<span class="cm"># 8) بازگشت به commit قبلی</span>
+git revert HEAD
+<span class="cm"># یا</span>
+git reset --hard &lt;commit-hash&gt;
+
+<span class="cm"># 9) ذخیره تغییرات موقت</span>
+git stash
+git stash pop</pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۷ — تصاویر ۶۰۰ DPI -->
+  <div class="slide" data-slide="7" data-topic="5">
+    <div class="slide-inner">
+      <span class="slide-num">مهارت ۴</span>
+      <span class="method-badge badge-skill" style="display: inline-block; margin-right: 8px;">Figures & Plots</span>
+      <h2 class="slide-h1">تصاویر با کیفیت ۶۰۰ DPI</h2>
+
+      <div class="grid-2">
+        <div class="card" style="background: rgba(255, 71, 87, 0.06); border-color: rgba(255, 71, 87, 0.3);">
+          <div class="skill-icon" style="--skill-color: #ff4757;"><i class="fas fa-times"></i></div>
+          <div class="skill-title">اشتباهات</div>
+          <ul class="skill-list" style="--skill-color: #ff4757;">
+            <li>اسکرین‌شات از MATLAB</li>
+            <li>کیفیت ۷۲ DPI (وب)</li>
+            <li>فرمت JPG (فشرده‌شده)</li>
+            <li>بدون برچسب محور</li>
+            <li>فونت ناخوانا</li>
+          </ul>
+        </div>
+        <div class="card" style="background: rgba(34, 197, 94, 0.06); border-color: rgba(34, 197, 94, 0.3);">
+          <div class="skill-icon" style="--skill-color: #22c55e;"><i class="fas fa-check"></i></div>
+          <div class="skill-title">استاندارد IEEE</div>
+          <ul class="skill-list" style="--skill-color: #22c55e;">
+            <li>حداقل <b>۶۰۰ DPI</b></li>
+            <li>فرمت <b>PNG</b> یا PDF</li>
+            <li>فونت <b>Times New Roman 8-10pt</b></li>
+            <li>برچسب کامل محورها</li>
+            <li>راهنما (Legend) شفاف</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="code-tabs" style="margin-top: 14px;">
+        <button class="code-tab active" data-code="matplotlib-code"><i class="fab fa-python"></i> کد Matplotlib با ۶۰۰ DPI</button>
+      </div>
+
+      <div class="code-content active" id="code-matplotlib-code">
+<pre><span class="cm"># ============================================</span>
+<span class="cm"># Publication-quality figure with 600 DPI</span>
+<span class="cm"># ============================================</span>
+<span class="kw">import</span> matplotlib.pyplot <span class="kw">as</span> plt
+<span class="kw">import</span> matplotlib <span class="kw">as</span> mpl
+
+<span class="cm"># --- تنظیمات استاندارد IEEE ---</span>
+mpl.rcParams.<span class="fn">update</span>({
+    <span class="str">'font.family'</span>: <span class="str">'serif'</span>,
+    <span class="str">'font.serif'</span>: [<span class="str">'Times New Roman'</span>],
+    <span class="str">'font.size'</span>: <span class="num">10</span>,
+    <span class="str">'axes.labelsize'</span>: <span class="num">10</span>,
+    <span class="str">'axes.titlesize'</span>: <span class="num">11</span>,
+    <span class="str">'legend.fontsize'</span>: <span class="num">9</span>,
+    <span class="str">'figure.dpi'</span>: <span class="num">600</span>,
+    <span class="str">'savefig.dpi'</span>: <span class="num">600</span>,
+    <span class="str">'savefig.bbox'</span>: <span class="str">'tight'</span>,
+    <span class="str">'savefig.format'</span>: <span class="str">'png'</span>,
+    <span class="str">'axes.grid'</span>: <span class="kw">True</span>,
+    <span class="str">'grid.alpha'</span>: <span class="num">0.3</span>,
+})
+
+<span class="cm"># --- داده ---</span>
+<span class="kw">import</span> numpy <span class="kw">as</span> np
+x = np.linspace(<span class="num">0</span>، <span class="num">1</span>، <span class="num">100</span>)
+u_exact = np.sin(np.pi * x)
+u_pinn = u_exact + <span class="num">0.01</span> * np.random.randn(<span class="num">100</span>)
+
+<span class="cm"># --- نمودار ---</span>
+fig، ax = plt.subplots(figsize=(<span class="num">3.5</span>، <span class="num">2.5</span>))  <span class="cm"># single column</span>
+ax.plot(x، u_exact، <span class="str">'k-'</span>، lw=<span class="num">1.5</span>، label=<span class="str">'Exact'</span>)
+ax.plot(x، u_pinn، <span class="str">'r--'</span>، lw=<span class="num">1.5</span>، label=<span class="str">'PINN'</span>)
+ax.set_xlabel(<span class="str">'Position x'</span>)
+ax.set_ylabel(<span class="str">'Temperature u'</span>)
+ax.set_title(<span class="str">'Heat Equation Solution'</span>)
+ax.legend(loc=<span class="str">'best'</span>)
+
+<span class="cm"># --- ذخیره با کیفیت ۶۰۰ DPI ---</span>
+plt.savefig(<span class="str">'figure1.png'</span>، dpi=<span class="num">600</span>، bbox_inches=<span class="str">'tight'</span>)
+plt.savefig(<span class="str">'figure1.pdf'</span>، bbox_inches=<span class="str">'tight'</span>)  <span class="cm"># vector format</span>
+plt.show()
+
+<span class="cm"># --- نتیجه: تصویر آماده برای IEEE ---</span>
+<span class="fn">print</span>(<span class="str">'✅ Figure saved at 600 DPI'</span>)</pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۸ — ساختار مقاله IEEE -->
+  <div class="slide" data-slide="8" data-topic="6">
+    <div class="slide-inner">
+      <span class="slide-num">ساختار</span>
+      <span class="method-badge badge-ieee" style="display: inline-block; margin-right: 8px;">IEEE Structure</span>
+      <h2 class="slide-h1">ساختار استاندارد مقاله IEEE</h2>
+
+      <div class="grid-2" style="margin-top: 14px;">
+        <div class="card">
+          <div class="slide-h3" style="color: var(--primary);"><i class="fas fa-list-ol"></i> بخش‌های اصلی</div>
+          <ol style="padding-right: 20px; font-size: 0.85rem; color: var(--text-dim); line-height: 2.2;">
+            <li><strong>Title + Abstract + Keywords</strong></li>
+            <li><strong>I. Introduction</strong> (بیان مسئله + انگیزه)</li>
+            <li><strong>II. Methodology</strong> (روش کار)</li>
+            <li><strong>III. Results</strong> (نتایج)</li>
+            <li><strong>IV. Comparison</strong> (مقایسه با سایر روش‌ها)</li>
+            <li><strong>V. Conclusion</strong> (نتیجه‌گیری)</li>
+            <li><strong>References</strong> (منابع)</li>
+          </ol>
+        </div>
+        <div class="card" style="background: rgba(255, 183, 0, 0.06); border-color: rgba(255, 183, 0, 0.3);">
+          <div class="slide-h3" style="color: var(--gold);"><i class="fas fa-info-circle"></i> نکات مهم</div>
+          <ul style="list-style: none; padding: 0; font-size: 0.82rem; color: var(--text-dim); line-height: 2;">
+            <li>🔹 <b>دو ستونه</b> (برای مجلات)</li>
+            <li>🔹 <b>۶-۸ صفحه</b> استاندارد</li>
+            <li>🔹 <b>فونت Times New Roman 10pt</b></li>
+            <li>🔹 <b>حاشیه ۰.۷۵ اینچ</b></li>
+            <li>🔹 <b>شماره‌گذاری بخش‌ها</b> (I، II، III، ...)</li>
+            <li>🔹 <b>مراجع</b> به‌صورت [1]، [2]، ...</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="lecture-note">
+        <i class="fas fa-star"></i>
+        <div class="lecture-note-content">
+          <strong>ساختار پیشنهادی برای پروژه شما:</strong>
+          <br>I. Introduction
+          <br>II. Problem Formulation (PDE + شرایط مرزی)
+          <br>III. Classical Solution (تحلیلی/نیمه‌تحلیلی)
+          <br>IV. PINN Methodology (معماری + Loss + آموزش)
+          <br>V. Results & Comparison (PINN vs FD vs Exact)
+          <br>VI. Conclusion
+          <br>References
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۹ — نوشتن Methodology -->
+  <div class="slide" data-slide="9" data-topic="7">
+    <div class="slide-inner">
+      <span class="slide-num">نوشتن</span>
+      <span class="method-badge badge-ieee" style="display: inline-block; margin-right: 8px;">Methodology</span>
+      <h2 class="slide-h1">نوشتن بخش Methodology</h2>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="slide-h3" style="color: var(--primary);"><i class="fas fa-list"></i> اجزای Methodology</div>
+          <ol style="padding-right: 20px; font-size: 0.85rem; color: var(--text-dim); line-height: 2.2;">
+            <li>بیان مسئله (PDE)</li>
+            <li>معماری شبکه (تعداد لایه/نرون)</li>
+            <li>تابع Loss (PDE + Data + BC)</li>
+            <li>الگوریتم بهینه‌سازی (Adam + hyperparameters)</li>
+            <li>شرایط آموزش (epochs، batch، learning rate)</li>
+          </ol>
+        </div>
+        <div class="card" style="background: rgba(168, 85, 247, 0.06); border-color: rgba(168, 85, 247, 0.3);">
+          <div class="slide-h3" style="color: var(--tertiary);"><i class="fas fa-exclamation-triangle"></i> نکات کلیدی</div>
+          <ul style="list-style: none; padding: 0; font-size: 0.82rem; color: var(--text-dim); line-height: 2;">
+            <li>🔹 <b>تکرارپذیر</b> بودن (seed مشخص)</li>
+            <li>🔹 <b>پارامترها</b> دقیقاً ذکر شوند</li>
+            <li>🔹 <b>معادلات</b> با LaTeX</li>
+            <li>🔹 <b>شکل شبکه</b> در یک جدول</li>
+            <li>🔹 <b>زمان آموزش</b> ذکر شود</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="math-box gold-math" style="margin-top: 14px; padding: 14px; font-size: 0.9rem;">
+        $$\mathcal{L} = \lambda_d \mathcal{L}_d + \lambda_p \mathcal{L}_p + \lambda_b \mathcal{L}_b$$
+      </div>
+
+      <div class="lecture-note">
+        <i class="fas fa-star"></i>
+        <div class="lecture-note-content">
+          <strong>مثال جمله‌بندی:</strong> «The PINN was trained for 10,000 epochs using Adam optimizer with learning rate $\eta = 10^{-3}$، $\beta_1 = 0.9$، $\beta_2 = 0.999$. Network architecture: 4 hidden layers × 64 neurons with Tanh activation.»
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۱۰ — نوشتن Results -->
+  <div class="slide" data-slide="10" data-topic="7">
+    <div class="slide-inner">
+      <span class="slide-num">نوشتن</span>
+      <span class="method-badge badge-ieee" style="display: inline-block; margin-right: 8px;">Results & Comparison</span>
+      <h2 class="slide-h1">نوشتن بخش Results و Comparison</h2>
+
+      <div class="grid-2">
+        <div class="card" style="background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3);">
+          <div class="slide-h3" style="color: var(--primary);"><i class="fas fa-chart-line"></i> Results</div>
+          <ul style="list-style: none; padding: 0; font-size: 0.82rem; color: var(--text-dim); line-height: 2;">
+            <li>✅ <b>Loss curve</b> در طول آموزش</li>
+            <li>✅ <b>پیش‌بینی</b> در نقاط مختلف</li>
+            <li>✅ <b>خطا</b> نسبت به حل دقیق</li>
+            <li>✅ <b>نمودارها</b> با ۶۰۰ DPI</li>
+            <li>✅ <b>جدول</b> مقادیر عددی</li>
+          </ul>
+        </div>
+        <div class="card" style="background: rgba(255, 183, 0, 0.06); border-color: rgba(255, 183, 0, 0.3);">
+          <div class="slide-h3" style="color: var(--gold);"><i class="fas fa-balance-scale"></i> Comparison</div>
+          <ul style="list-style: none; padding: 0; font-size: 0.82rem; color: var(--text-dim); line-height: 2;">
+            <li>✅ <b>PINN</b> vs <b>FD</b> vs <b>Exact</b></li>
+            <li>✅ <b>زمان</b> محاسبه</li>
+            <li>✅ <b>دقت</b> (MSE، RMSE)</li>
+            <li>✅ <b>مقایسه</b> با مقالات قبلی</li>
+            <li>✅ <b>مزایا و معایب</b></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="lecture-note" style="margin-top: 14px;">
+        <i class="fas fa-star"></i>
+        <div class="lecture-note-content">
+          <strong>نکته حیاتی:</strong> هیچ نتیجه‌ای بدون <strong>مقایسه</strong> ارزش ندارد. حتماً PINN را با حداقل دو روش دیگر (FD، FEM، تحلیلی) مقایسه کنید.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۱۱ — References -->
+  <div class="slide" data-slide="11" data-topic="7">
+    <div class="slide-inner">
+      <span class="slide-num">نوشتن</span>
+      <span class="method-badge badge-ieee" style="display: inline-block; margin-right: 8px;">References</span>
+      <h2 class="slide-h1">References — فرمت IEEE</h2>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="slide-h3" style="color: var(--primary);"><i class="fas fa-book"></i> کتاب</div>
+          <div class="math-box" style="padding: 10px; font-size: 0.75rem; text-align: left; direction: ltr;">
+            [1] E. Kreyszig، Advanced Engineering Mathematics، 10th ed. Wiley، 2011.
+          </div>
+        </div>
+        <div class="card">
+          <div class="slide-h3" style="color: var(--gold);"><i class="fas fa-file-alt"></i> مقاله ژورنال</div>
+          <div class="math-box gold-math" style="padding: 10px; font-size: 0.75rem; text-align: left; direction: ltr;">
+            [2] M. Raissi et al.، "Physics-informed neural networks،" J. Comput. Phys.، vol. 378، pp. 686-707، 2019.
+          </div>
+        </div>
+        <div class="card">
+          <div class="slide-h3" style="color: var(--tertiary);"><i class="fas fa-globe"></i> کنفرانس</div>
+          <div class="math-box purple-math" style="padding: 10px; font-size: 0.75rem; text-align: left; direction: ltr;">
+            [3] A. Author، "Title،" in Proc. IEEE Conf.، 2023، pp. 1-6.
+          </div>
+        </div>
+        <div class="card">
+          <div class="slide-h3" style="color: var(--pink);"><i class="fas fa-link"></i> وب‌سایت</div>
+          <div class="math-box pink-math" style="padding: 10px; font-size: 0.75rem; text-align: left; direction: ltr;">
+            [4] PyTorch. "Documentation." https://pytorch.org/docs (accessed 2025).
+          </div>
+        </div>
+      </div>
+
+      <div class="lecture-note">
+        <i class="fas fa-star"></i>
+        <div class="lecture-note-content">
+          <strong>ابزار مدیریت مراجع:</strong>
+          <br>🔹 <b>Zotero</b> — رایگان، open-source
+          <br>🔹 <b>Mendeley</b> — محبوب
+          <br>🔹 <b>EndNote</b> — پرداختی
+          <br>🔹 <b>BibTeX + Overleaf</b> — خودکار
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۱۲ — شبیه‌ساز ساختار مقاله -->
+  <div class="slide" data-slide="12" data-topic="6">
+    <div class="slide-inner">
+      <span class="slide-num">شبیه‌ساز تعاملی</span>
+      <h2 class="slide-h1">بررسی ساختار مقاله</h2>
+
+      <div class="simulator">
+        <div class="sim-header">
+          <div class="sim-title"><i class="fas fa-file-alt"></i> ساختار مقاله IEEE</div>
+          <div class="sim-controls">
+            <div class="slider-group">
+              <label>بخش:</label>
+              <select id="paperSection" style="background: rgba(0,0,0,0.4); border: 1px solid var(--card-border); color: var(--text); padding: 4px 8px; border-radius: 8px; font-family: inherit; font-size: 0.78rem;">
+                <option value="1">Title + Abstract</option>
+                <option value="2">Introduction</option>
+                <option value="3">Methodology</option>
+                <option value="4">Results</option>
+                <option value="5">Comparison</option>
+                <option value="6">Conclusion</option>
+                <option value="7">References</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="canvas-wrapper" style="height: 320px;"><canvas id="paperCanvas"></canvas></div>
+        <div class="grid-2" style="margin-top: 12px;">
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 0.72rem; color: var(--text-dim);">بخش</div>
+            <div id="paperSectionName" style="font-size: 1rem; color: var(--primary); font-weight: 800;">—</div>
+          </div>
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 0.72rem; color: var(--text-dim);">توصیه</div>
+            <div id="paperAdvice" style="font-size: 0.85rem; color: var(--gold); font-weight: 700;">—</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۱۳ — شبیه‌ساز تولید نمودار -->
+  <div class="slide" data-slide="13" data-topic="5">
+    <div class="slide-inner">
+      <span class="slide-num">شبیه‌ساز تعاملی</span>
+      <h2 class="slide-h1">تولید نمودار استاندارد</h2>
+
+      <div class="simulator">
+        <div class="sim-header">
+          <div class="sim-title"><i class="fas fa-chart-line"></i> نمودار با کیفیت IEEE</div>
+          <div class="sim-controls">
+            <div class="slider-group">
+              <label>DPI:</label>
+              <input type="range" id="figDPI" min="72" max="1200" value="600" step="72">
+              <span class="slider-value" id="figDPIValue">۶۰۰</span>
+            </div>
+            <div class="slider-group">
+              <label>عرض (اینچ):</label>
+              <input type="range" id="figWidth" min="3" max="7" value="3.5" step="0.5">
+              <span class="slider-value" id="figWidthValue">۳.۵</span>
+            </div>
+          </div>
+        </div>
+        <div class="canvas-wrapper" style="height: 320px;"><canvas id="figCanvas"></canvas></div>
+        <div class="grid-3" style="margin-top: 12px;">
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 0.72rem; color: var(--text-dim);">حجم تصویر</div>
+            <div id="figSize" style="font-size: 0.9rem; color: var(--primary); font-weight: 800; font-family: 'Courier New', monospace;">—</div>
+          </div>
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 0.72rem; color: var(--text-dim);">ابعاد پیکسل</div>
+            <div id="figPixels" style="font-size: 0.9rem; color: var(--gold); font-weight: 800; font-family: 'Courier New', monospace;">—</div>
+          </div>
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 0.72rem; color: var(--text-dim);">وضعیت</div>
+            <div id="figStatus" style="font-size: 0.85rem; color: var(--success); font-weight: 800;">—</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۱۴ — شبیه‌ساز داوری -->
+  <div class="slide" data-slide="14" data-topic="8">
+    <div class="slide-inner">
+      <span class="slide-num">شبیه‌ساز تعاملی</span>
+      <h2 class="slide-h1">پاسخ به داوران</h2>
+
+      <div class="simulator">
+        <div class="sim-header">
+          <div class="sim-title"><i class="fas fa-comments"></i> انواع نظرات داوران</div>
+          <div class="sim-controls">
+            <div class="slider-group">
+              <label>نوع نقد:</label>
+              <select id="reviewType" style="background: rgba(0,0,0,0.4); border: 1px solid var(--card-border); color: var(--text); padding: 4px 8px; border-radius: 8px; font-family: inherit; font-size: 0.78rem;">
+                <option value="minor">Minor Revision</option>
+                <option value="major">Major Revision</option>
+                <option value="reject">Reject & Resubmit</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="canvas-wrapper" style="height: 300px;"><canvas id="reviewCanvas"></canvas></div>
+        <div class="grid-2" style="margin-top: 12px;">
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 0.72rem; color: var(--text-dim);">استراتژی</div>
+            <div id="reviewStrategy" style="font-size: 0.85rem; color: var(--gold); font-weight: 700;">—</div>
+          </div>
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 0.72rem; color: var(--text-dim);">زمان پاسخ</div>
+            <div id="reviewTime" style="font-size: 0.85rem; color: var(--primary); font-weight: 700;">—</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۱۵ — نکات داوری -->
+  <div class="slide" data-slide="15" data-topic="8">
+    <div class="slide-inner">
+      <span class="slide-num">نکات داوری</span>
+      <span class="method-badge badge-ieee" style="display: inline-block; margin-right: 8px;">Peer Review</span>
+      <h2 class="slide-h1">نکات مهم درباره داوری</h2>
+
+      <div class="grid-2" style="margin-top: 14px;">
+        <div class="card" style="background: rgba(34, 197, 94, 0.06); border-color: rgba(34, 197, 94, 0.3);">
+          <div class="slide-h3" style="color: var(--success);"><i class="fas fa-check"></i> کارهایی که باید بکنید</div>
+          <ul style="list-style: none; padding: 0; font-size: 0.82rem; color: var(--text-dim); line-height: 2;">
+            <li>✅ صبور باشید (۲-۶ ماه انتظار)</li>
+            <li>✅ تمام نظرات را با دقت بخوانید</li>
+            <li>✅ نقطه‌به‌نقطه پاسخ دهید</li>
+            <li>✅ در صورت لزوم، مقاله را اصلاح کنید</li>
+            <li>✅ مودب و حرفه‌ای باشید</li>
+            <li>✅ از تجربه‌ی داوران استفاده کنید</li>
+          </ul>
+        </div>
+        <div class="card" style="background: rgba(255, 71, 87, 0.06); border-color: rgba(255, 71, 87, 0.3);">
+          <div class="slide-h3" style="color: var(--danger);"><i class="fas fa-times"></i> کارهایی که نباید بکنید</div>
+          <ul style="list-style: none; padding: 0; font-size: 0.82rem; color: var(--text-dim); line-height: 2;">
+            <li>❌ بحث با داور (که نتیجه ندارد)</li>
+            <li>❌ نادیده گرفتن نظرات</li>
+            <li>❌ ارسال فوری بدون اصلاح</li>
+            <li>❌ ارسال همزمان به چند ژورنال</li>
+            <li>❌ سرقت ادبی (Plagiarism)</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="lecture-note" style="margin-top: 14px;">
+        <i class="fas fa-star"></i>
+        <div class="lecture-note-content">
+          <strong>نکته طلایی:</strong> نظرات داوران، <strong>فرصت طلایی</strong> برای بهبود مقاله هستند، نه مانع. بهترین مقالات از دل بازخوردهای داوران بیرون می‌آیند.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۱۶ — ارسال به IEEE -->
+  <div class="slide" data-slide="16" data-topic="8">
+    <div class="slide-inner">
+      <span class="slide-num">ارسال</span>
+      <h2 class="slide-h1">فرآیند ارسال به IEEE</h2>
+
+      <div class="step-container">
+        <div class="step-title"><i class="fas fa-1"></i> انتخاب مجله</div>
+        <div class="step-content">
+          <p style="font-size: 0.85rem;">مجلات مرتبط: <b>IEEE Trans. on Neural Networks</b>، <b>IEEE Trans. on Magnetics</b>، <b>IEEE Access</b>، <b>IEEE Sensors</b></p>
+        </div>
+      </div>
+
+      <div class="step-container" style="border-right-color: var(--primary);">
+        <div class="step-title" style="color: var(--primary);"><i class="fas fa-2"></i> آماده‌سازی فرمت</div>
+        <div class="step-content">
+          <p style="font-size: 0.85rem;">قالب IEEE را از سایت دانلود و مقاله را در آن بنویسید.</p>
+        </div>
+      </div>
+
+      <div class="step-container" style="border-right-color: var(--gold);">
+        <div class="step-title"><i class="fas fa-3"></i> ثبت‌نام در سیستم</div>
+        <div class="step-content">
+          <p style="font-size: 0.85rem;">سایت <b>ManuscriptCentral</b> یا <b>ScholarOne</b> — ساخت حساب نویسنده.</p>
+        </div>
+      </div>
+
+      <div class="step-container" style="border-right-color: var(--tertiary);">
+        <div class="step-title" style="color: var(--tertiary);"><i class="fas fa-4"></i> ارسال فایل‌ها</div>
+        <div class="step-content">
+          <p style="font-size: 0.85rem;">PDF مقاله + Cover Letter + فایل‌های تکمیلی (کد، تصاویر).</p>
+        </div>
+      </div>
+
+      <div class="step-container" style="border-right-color: var(--pink);">
+        <div class="step-title" style="color: var(--pink);"><i class="fas fa-5"></i> پیگیری</div>
+        <div class="step-content">
+          <p style="font-size: 0.85rem;">وضعیت را در پنل پیگیری کنید. پاسخ اولیه معمولاً ۲-۶ ماه.</p>
+        </div>
+      </div>
+
+      <div class="lecture-note">
+        <i class="fas fa-star"></i>
+        <div class="lecture-note-content">
+          <strong>Cover Letter مهم است:</strong> یک صفحه توضیح بدهید چرا مقاله برای مجله مناسب است، نوآوری چیست، و چرا باید چاپ شود.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۱۷ — ارائه و دفاع -->
+  <div class="slide" data-slide="17" data-topic="8">
+    <div class="slide-inner">
+      <span class="slide-num">دفاع</span>
+      <h2 class="slide-h1">ارائه و دفاع از پروژه</h2>
+
+      <div class="grid-2">
+        <div class="card" style="background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3);">
+          <div class="slide-h3" style="color: var(--primary);"><i class="fas fa-list-ol"></i> ساختار ارائه (۱۵ دقیقه)</div>
+          <ol style="padding-right: 20px; font-size: 0.82rem; color: var(--text-dim); line-height: 2.2;">
+            <li>معرفی و انگیزه (۲ دقیقه)</li>
+            <li>بیان مسئله (۲ دقیقه)</li>
+            <li>روش کار (۴ دقیقه)</li>
+            <li>نتایج (۳ دقیقه)</li>
+            <li>مقایسه (۲ دقیقه)</li>
+            <li>نتیجه‌گیری (۲ دقیقه)</li>
+          </ol>
+        </div>
+        <div class="card" style="background: rgba(255, 183, 0, 0.06); border-color: rgba(255, 183, 0, 0.3);">
+          <div class="slide-h3" style="color: var(--gold);"><i class="fas fa-lightbulb"></i> نکات طلایی</div>
+          <ul style="list-style: none; padding: 0; font-size: 0.82rem; color: var(--text-dim); line-height: 2;">
+            <li>🔹 اسلایدها <b>ساده و خوانا</b></li>
+            <li>🔹 تمرین <b>۳ بار</b> قبل از دفاع</li>
+            <li>🔹 آماده <b>سوالات سخت</b> باشید</li>
+            <li>🔹 <b>زمان‌بندی</b> را رعایت کنید</li>
+            <li>🔹 <b>کدهای اصلی</b> را بلد باشید</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="lecture-note" style="margin-top: 14px;">
+        <i class="fas fa-star"></i>
+        <div class="lecture-note-content">
+          <strong>سوالات رایج دفاع:</strong>
+          <br>• چرا PINN بهتر از FD است؟
+          <br>• چرا این معماری شبکه را انتخاب کردید؟
+          <br>• چطور hyperparameterها را تنظیم کردید؟
+          <br>• چه محدودیت‌هایی وجود دارد؟
+          <br>• ایده‌های آینده چیست؟
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۱۸ — پروژه‌های پیشنهادی -->
+  <div class="slide" data-slide="18" data-topic="9">
+    <div class="slide-inner">
+      <span class="slide-num">پروژه‌ها</span>
+      <h2 class="slide-h1">۶ پروژه پیشنهادی پایانی</h2>
+
+      <div class="grid-3" style="margin-top: 14px;">
+        <div class="card" style="background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3);">
+          <div class="slide-h3" style="color: var(--primary); font-size: 0.88rem;"><i class="fas fa-ruler"></i> پروژه ۱</div>
+          <p class="slide-text" style="font-size: 0.78rem;"><b>ارتعاش تیر اویلر-برنولی تحت بار متحرک</b></p>
+          <p class="slide-text" style="font-size: 0.72rem;">PDE مرتبه ۴ + PINN</p>
+        </div>
+        <div class="card" style="background: rgba(255, 183, 0, 0.06); border-color: rgba(255, 183, 0, 0.3);">
+          <div class="slide-h3" style="color: var(--gold); font-size: 0.88rem;"><i class="fas fa-microchip"></i> پروژه ۲</div>
+          <p class="slide-text" style="font-size: 0.78rem;"><b>نانو انبرک با نیروی واندروالس</b></p>
+          <p class="slide-text" style="font-size: 0.72rem;">غیرخطی + Perturbation + PINN</p>
+        </div>
+        <div class="card" style="background: rgba(168, 85, 247, 0.06); border-color: rgba(168, 85, 247, 0.3);">
+          <div class="slide-h3" style="color: var(--tertiary); font-size: 0.88rem;"><i class="fas fa-atom"></i> پروژه ۳</div>
+          <p class="slide-text" style="font-size: 0.78rem;"><b>نانو انبرک با نیروی کازیمیر</b></p>
+          <p class="slide-text" style="font-size: 0.72rem;">کوانتومی + PINN</p>
+        </div>
+        <div class="card" style="background: rgba(236, 72, 153, 0.06); border-color: rgba(236, 72, 153, 0.3);">
+          <div class="slide-h3" style="color: var(--pink); font-size: 0.88rem;"><i class="fas fa-robot"></i> پروژه ۴</div>
+          <p class="slide-text" style="font-size: 0.78rem;"><b>بازوی ربات انعطاف‌پذیر</b></p>
+          <p class="slide-text" style="font-size: 0.72rem;">PDE کوپل + PINN</p>
+        </div>
+        <div class="card" style="background: rgba(6, 182, 212, 0.06); border-color: rgba(6, 182, 212, 0.3);">
+          <div class="slide-h3" style="color: var(--secondary); font-size: 0.88rem;"><i class="fas fa-fire"></i> پروژه ۵</div>
+          <p class="slide-text" style="font-size: 0.78rem;"><b>انتقال حرارت در پیزوالکتریک</b></p>
+          <p class="slide-text" style="font-size: 0.72rem;">گرما + PINN</p>
+        </div>
+        <div class="card" style="background: rgba(34, 197, 94, 0.06); border-color: rgba(34, 197, 94, 0.3);">
+          <div class="slide-h3" style="color: var(--success); font-size: 0.88rem;"><i class="fas fa-wave-square"></i> پروژه ۶</div>
+          <p class="slide-text" style="font-size: 0.78rem;"><b>معادله برگرز در میکروسیال</b></p>
+          <p class="slide-text" style="font-size: 0.72rem;">غیرخطی + شوک + PINN</p>
+        </div>
+      </div>
+
+      <div class="lecture-note">
+        <i class="fas fa-exclamation-triangle"></i>
+        <div class="lecture-note-content">
+          <strong>الزامات:</strong> کد فقط Python + Colab | تصاویر ۶۰۰ DPI PNG | گزارش IEEE | انفرادی | مهلت: پیش از پایان‌ترم
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۱۹ — قالب پروژه -->
+  <div class="slide" data-slide="19" data-topic="9">
+    <div class="slide-inner">
+      <span class="slide-num">قالب</span>
+      <h2 class="slide-h1">قالب آماده برای پروژه</h2>
+
+      <div class="code-tabs">
+        <button class="code-tab active" data-code="project-template"><i class="fas fa-file-code"></i> ساختار پروژه</button>
+      </div>
+
+      <div class="code-content active" id="code-project-template">
+<pre><span class="cm"># ============================================</span>
+<span class="cm"># Final Project Template</span>
+<span class="cm"># ============================================</span>
+
+<span class="cm"># 📁 project-pinn/</span>
+<span class="cm"># ├── 01_problem_definition.ipynb</span>
+<span class="cm"># ├── 02_classical_solution.ipynb</span>
+<span class="cm"># ├── 03_numerical_solution.ipynb</span>
+<span class="cm"># ├── 04_pinn_implementation.ipynb</span>
+<span class="cm"># ├── 05_results_and_comparison.ipynb</span>
+<span class="cm"># ├── 06_ieee_paper.tex</span>
+<span class="cm"># ├── figures/</span>
+<span class="cm"># │   ├── fig1_schematic.png</span>
+<span class="cm"># │   ├── fig2_loss.png</span>
+<span class="cm"># │   ├── fig3_prediction.png</span>
+<span class="cm"># │   └── fig4_comparison.png</span>
+<span class="cm"># └── README.md</span>
+
+<span class="cm"># ============================================</span>
+<span class="cm"># Notebook 1: Problem Definition</span>
+<span class="cm"># ============================================</span>
+<span class="cm"># - PDE + boundary conditions</span>
+<span class="cm"># - Parameters (α، E، L، etc.)</span>
+<span class="cm"># - Physical interpretation</span>
+
+<span class="cm"># ============================================</span>
+<span class="cm"># Notebook 2: Classical Solution</span>
+<span class="cm"># ============================================</span>
+<span class="cm"># - Analytical/numerical solution</span>
+<span class="cm"># - Reference solution for comparison</span>
+
+<span class="cm"># ============================================</span>
+<span class="cm"># Notebook 3: Numerical Solution (FD/FEM)</span>
+<span class="cm"># ============================================</span>
+<span class="cm"># - Finite difference implementation</span>
+<span class="cm"># - Convergence study</span>
+
+<span class="cm"># ============================================</span>
+<span class="cm"># Notebook 4: PINN Implementation</span>
+<span class="cm"># ============================================</span>
+<span class="cm"># - Network architecture</span>
+<span class="cm"># - Loss function</span>
+<span class="cm"># - Training loop</span>
+<span class="cm"># - Save results</span>
+
+<span class="cm"># ============================================</span>
+<span class="cm"># Notebook 5: Results</span>
+<span class="cm"># ============================================</span>
+<span class="cm"># - Generate all figures (600 DPI)</span>
+<span class="cm"># - Create comparison tables</span>
+<span class="cm"># - Export to LaTeX</span>
+
+<span class="cm"># ============================================</span>
+<span class="cm"># Notebook 6: IEEE Paper (LaTeX)</span>
+<span class="cm"># ============================================</span>
+<span class="cm"># - Use IEEEtran.cls template</span>
+<span class="cm"># - Structure: Intro، Method، Results، Comparison، Conclusion</span>
+<span class="cm"># - Compile on Overleaf</span></pre>
+      </div>
+
+      <div class="lecture-note" style="margin-top: 14px;">
+        <i class="fas fa-star"></i>
+        <div class="lecture-note-content">
+          <strong>نکته:</strong> هر ژوپیتر نوت‌بوک را در <b>Google Colab</b> اجرا کنید و لینک آن را در GitHub ذخیره کنید. این کار برای داوران قابل بررسی خواهد بود.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۲۰ — چک‌لیست نهایی -->
+  <div class="slide" data-slide="20" data-topic="9">
+    <div class="slide-inner">
+      <span class="slide-num">چک‌لیست</span>
+      <h2 class="slide-h1">چک‌لیست نهایی پروژه</h2>
+
+      <div class="grid-2" style="margin-top: 14px;">
+        <div class="card" style="background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3);">
+          <div class="slide-h3" style="color: var(--primary);"><i class="fas fa-code"></i> کد</div>
+          <ul style="list-style: none; padding: 0; font-size: 0.82rem; color: var(--text-dim); line-height: 2;">
+            <li>☐ Python + Google Colab</li>
+            <li>☐ کد خوانا با کامنت</li>
+            <li>☐ Reproducible (seed مشخص)</li>
+            <li>☐ ذخیره مدل و نتایج</li>
+            <li>☐ لینک GitHub</li>
+          </ul>
+        </div>
+        <div class="card" style="background: rgba(255, 183, 0, 0.06); border-color: rgba(255, 183, 0, 0.3);">
+          <div class="slide-h3" style="color: var(--gold);"><i class="fas fa-image"></i> تصاویر</div>
+          <ul style="list-style: none; padding: 0; font-size: 0.82rem; color: var(--text-dim); line-height: 2;">
+            <li>☐ حداقل ۶۰۰ DPI</li>
+            <li>☐ فرمت PNG</li>
+            <li>☐ برچسب محورها</li>
+            <li>☐ Legend شفاف</li>
+            <li>☐ فونت Times New Roman</li>
+          </ul>
+        </div>
+        <div class="card" style="background: rgba(168, 85, 247, 0.06); border-color: rgba(168, 85, 247, 0.3);">
+          <div class="slide-h3" style="color: var(--tertiary);"><i class="fas fa-file-alt"></i> مقاله</div>
+          <ul style="list-style: none; padding: 0; font-size: 0.82rem; color: var(--text-dim); line-height: 2;">
+            <li>☐ قالب IEEE (IEEEtran)</li>
+            <li>☐ ۶-۸ صفحه دو ستونه</li>
+            <li>☐ بخش‌های کامل</li>
+            <li>☐ References به فرمت IEEE</li>
+            <li>☐ بدون Literature Review</li>
+          </ul>
+        </div>
+        <div class="card" style="background: rgba(236, 72, 153, 0.06); border-color: rgba(236, 72, 153, 0.3);">
+          <div class="slide-h3" style="color: var(--pink);"><i class="fas fa-clock"></i> زمان‌بندی</div>
+          <ul style="list-style: none; padding: 0; font-size: 0.82rem; color: var(--text-dim); line-height: 2;">
+            <li>☐ هفته ۱-۲: بیان مسئله</li>
+            <li>☐ هفته ۳-۶: حل کلاسیک</li>
+            <li>☐ هفته ۷-۱۰: PINN</li>
+            <li>☐ هفته ۱۱-۱۴: مقایسه + مقاله</li>
+            <li>☐ پیش از پایان‌ترم: ارسال</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="lecture-note">
+        <i class="fas fa-exclamation-triangle"></i>
+        <div class="lecture-note-content">
+          <strong>هشدار نهایی:</strong> پروژه <strong>انفرادی</strong> است. مهلت گزارش <strong>پیش از پایان‌ترم</strong> است. در صورت عدم ارسال، نمره‌ای تعلق نمی‌گیرد.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۲۱ — جشن پایانی -->
+  <div class="slide" data-slide="21" data-topic="10">
+    <div class="slide-inner">
+      <div class="celebrate-card">
+        <h2 class="slide-h1" style="margin-bottom: 20px;">🎉 تبریک! 🎉</h2>
+        <p class="slide-text" style="font-size: 1.1rem; color: var(--gold); font-weight: 700; margin-bottom: 20px;">
+          شما ۲۴ جلسه درس ریاضیات مهندسی پیشرفته را با موفقیت به پایان رساندید!
+        </p>
+
+        <div class="grid-4" style="margin-top: 20px;">
+          <div style="text-align: center; padding: 12px;">
+            <div style="font-size: 2.5rem; margin-bottom: 8px;">📚</div>
+            <div style="font-size: 0.85rem; color: var(--text); font-weight: 700;">۲۴ جلسه</div>
+          </div>
+          <div style="text-align: center; padding: 12px;">
+            <div style="font-size: 2.5rem; margin-bottom: 8px;">🎯</div>
+            <div style="font-size: 0.85rem; color: var(--text); font-weight: 700;">۶ فاز</div>
+          </div>
+          <div style="text-align: center; padding: 12px;">
+            <div style="font-size: 2.5rem; margin-bottom: 8px;">💻</div>
+            <div style="font-size: 0.85rem; color: var(--text); font-weight: 700;">۱۰۰+ شبیه‌ساز</div>
+          </div>
+          <div style="text-align: center; padding: 12px;">
+            <div style="font-size: 2.5rem; margin-bottom: 8px;">📝</div>
+            <div style="font-size: 0.85rem; color: var(--text); font-weight: 700;">۸ تمرین + پروژه</div>
+          </div>
+        </div>
+
+        <p class="slide-text" style="margin-top: 25px; font-size: 0.95rem;">
+          از سفر فوریه تا PINN، از نانو انبرک تا Adam، از جبر تا KKT — شما با تمام ابزارهای ریاضیات مهندسی مدرن آشنا شدید. حالا نوبت شماست که این ابزارها را در پروژه پایانی و پژوهش‌های آینده به‌کار ببرید.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۲۲ — تقدیرنامه دیجیتال -->
+  <div class="slide" data-slide="22" data-topic="10">
+    <div class="slide-inner">
+      <div class="certificate">
+        <div style="font-size: 3rem; color: var(--gold); margin-bottom: 15px;">🏆</div>
+        <h2 style="font-size: 1.5rem; font-weight: 900; color: var(--gold); margin-bottom: 8px;">
+          تقدیرنامه دیجیتال
+        </h2>
+        <p style="font-size: 0.85rem; color: var(--text-dim); margin-bottom: 25px;">
+          این تقدیرنامه به پاس تلاش و پشتکار شما در دوره ۲۴ جلسه‌ای ریاضیات مهندسی پیشرفته اعطا می‌شود.
+        </p>
+
+        <div style="padding: 20px; border-radius: 14px; background: rgba(255, 255, 255, 0.03); margin-bottom: 20px;">
+          <p style="font-size: 1.1rem; color: var(--primary); font-weight: 700; margin-bottom: 10px;">
+            دانشجوی گرامی
+          </p>
+          <p style="font-size: 0.9rem; color: var(--text-dim); line-height: 2;">
+            شما با موفقیت دوره <strong>ریاضیات مهندسی پیشرفته</strong> را به پایان رساندید و اکنون آماده‌اید تا با ابزارهای <strong>PINN، Adam، KKT، GA، PSO</strong> و روش‌های عددی مدرن، در پروژه پایانی و پژوهش‌های آینده بدرخشید.
+          </p>
+        </div>
+
+        <div style="display: flex; justify-content: space-around; flex-wrap: wrap; gap: 15px; margin-top: 25px; padding-top: 20px; border-top: 1px solid rgba(255, 183, 0, 0.3);">
+          <div style="text-align: center;">
+            <div style="font-size: 0.75rem; color: var(--text-dim);">مدرس</div>
+            <div style="font-size: 0.9rem; color: var(--gold); font-weight: 800;">دکتر مسعود گوهری منش</div>
+          </div>
+          <div style="text-align: center;">
+            <div style="font-size: 0.75rem; color: var(--text-dim);">دانشگاه</div>
+            <div style="font-size: 0.9rem; color: var(--primary); font-weight: 800;">دانشگاه تربت حیدریه</div>
+          </div>
+          <div style="text-align: center;">
+            <div style="font-size: 0.75rem; color: var(--text-dim);">سال</div>
+            <div style="font-size: 0.9rem; color: var(--tertiary); font-weight: 800;">۱۴۰۵–۱۴۰۶</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۲۳ — جمع‌بندی نهایی -->
+  <div class="slide" data-slide="23" data-topic="10">
+    <div class="slide-inner">
+      <h2 class="slide-h1">جمع‌بندی نهایی دوره</h2>
+
+      <div class="grid-2" style="margin-top: 14px;">
+        <div class="card" style="background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3);">
+          <div class="slide-h3" style="color: var(--primary);"><i class="fas fa-brain"></i> چه یاد گرفتید؟</div>
+          <ul style="list-style: none; padding: 0; font-size: 0.82rem; color: var(--text-dim); line-height: 2;">
+            <li>✅ آنالیز فوریه و کاربردهای آن</li>
+            <li>✅ حل PDE با روش‌های کلاسیک</li>
+            <li>✅ تحلیل نانو انبرک و پدیده Pull-in</li>
+            <li>✅ روش‌های عددی (FD، FEM، RK4)</li>
+            <li>✅ Perturbation و LP/MS</li>
+            <li>✅ یادگیری ماشین و PINN</li>
+            <li>✅ بهینه‌سازی (Adam، KKT، GA، PSO)</li>
+            <li>✅ نگارش مقاله IEEE</li>
+          </ul>
+        </div>
+        <div class="card" style="background: rgba(255, 183, 0, 0.06); border-color: rgba(255, 183, 0, 0.3);">
+          <div class="slide-h3" style="color: var(--gold);"><i class="fas fa-rocket"></i> گام بعدی</div>
+          <ul style="list-style: none; padding: 0; font-size: 0.82rem; color: var(--text-dim); line-height: 2;">
+            <li>🔹 تکمیل پروژه پایانی</li>
+            <li>🔹 ارسال مقاله IEEE</li>
+            <li>🔹 ادامه در مقطع دکتری</li>
+            <li>🔹 پژوهش در NEMS، رباتیک، ML</li>
+            <li>🔹 یادگیری PINN پیشرفته</li>
+            <li>🔹 توسعه کدهای متن‌باز</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="lecture-note" style="margin-top: 14px;">
+        <i class="fas fa-star"></i>
+        <div class="lecture-note-content">
+          <strong>پیام پایانی:</strong> ریاضیات، زبان طبیعت است. شما اکنون به این زبان مسلط شده‌اید. از این پس، هر مسئله‌ای را می‌توانید با ابزارهای مناسب حل کنید.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۲۴ — خداحافظی -->
+  <div class="slide" data-slide="24" data-topic="10">
+    <div class="slide-inner title-slide">
+      <div class="bismillah">بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِیم</div>
+      <div class="hoval">هُوَ الخَلّاقُ العَلیم</div>
+
+      <div style="font-size: 4rem; color: var(--gold); margin: 20px 0; animation: floatIcon 3s ease-in-out infinite;">
+        <i class="fas fa-graduation-cap"></i>
+      </div>
+
+      <h2 class="slide-h1">خداحافظ و موفق باشید</h2>
+
+      <p class="slide-text" style="font-size: 1.05rem; max-width: 700px; margin: 20px auto;">
+        از اینکه در این ۲۴ جلسه همراه بودید، صمیمانه سپاسگزارم. امیدوارم این دوره، شروعی برای پژوهش‌های بزرگ شما باشد.
+      </p>
+
+      <div class="math-box gold-math" style="margin-top: 22px; background: rgba(255, 183, 0, 0.08); padding: 22px; max-width: 700px; margin-left: auto; margin-right: auto;">
+        <div style="font-size: 1.2rem;">
+          $$\int_{-\infty}^{+\infty} e^{-x^2} dx = \sqrt{\pi}$$
+        </div>
+        <p class="math-note">زیبایی ریاضیات — تا همیشه همراه شما</p>
+      </div>
+
+      <p class="instructor-line" style="margin-top: 30px;">دکتر مسعود گوهری منش</p>
+      <p class="instructor-title-line">دانشیار گروه مهندسی مکانیک — دانشگاه تربت حیدریه</p>
+
+      <p style="font-size: 0.95rem; color: var(--gold); margin-top: 30px; font-weight: 800;">
+        🇮🇷 با افتخار برای دانشجویان مکاترونیک 🇮🇷
+      </p>
+
+      <p style="font-size: 0.85rem; color: var(--text-dim); margin-top: 20px;">
+        «ریاضیات، زبان طبیعت است — و شما اکنون به این زبان مسلط شده‌اید.»
+      </p>
+    </div>
+  </div>
+
+</div>
+
+<div class="bottom-nav">
+  <button class="nav-btn" id="prevBtn" disabled><i class="fas fa-arrow-right"></i><span>قبلی</span></button>
+  <div class="dots-nav" id="dotsNav"></div>
+  <div class="slide-counter"><span id="currentSlide">۱</span> / ۲۴</div>
+  <button class="nav-btn" id="nextBtn"><span>بعدی</span><i class="fas fa-arrow-left"></i></button>
+</div>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- Lightbox -->
+<div class="lightbox" id="lightbox">
+  <button class="lightbox-close" id="lightboxClose"><i class="fas fa-times"></i></button>
+  <img src="" alt="" class="lightbox-img" id="lightboxImg">
+  <div class="lightbox-caption" id="lightboxCaption"></div>
+</div>
+
+<!-- Modal -->
+<div class="modal-overlay" id="conceptModal">
+  <div class="modal-box">
+    <button class="modal-close" id="conceptClose"><i class="fas fa-times"></i></button>
+    <h2 class="modal-title"><i class="fas fa-book-open"></i> آیت‌الله حسن‌زاده آملی — علامه ذوفنون</h2>
+
+    <div class="modal-section">
+      <div class="modal-section-title"><i class="fas fa-history"></i> زندگی و مقام علمی</div>
+      <p>
+        <b>آیت‌الله حسن حسن‌زاده آملی</b> (۱۳۰۷–۱۴۰۰ ش) از برجسته‌ترین دانشمندان معاصر ایران بود که در علوم مختلف تبحر داشتند:
+      </p>
+      <ul>
+        <li><strong>فقه و اصول</strong> — از شاگردان برجسته علامه طباطبایی</li>
+        <li><strong>فلسفه</strong> — حکمت متعالیه و فلسفه اسلامی</li>
+        <li><strong>عرفان نظری و عملی</strong> — از عرفای بزرگ معاصر</li>
+        <li><strong>ریاضیات و نجوم</strong> — حدود ۱۷ سال تدریس هیئت و ریاضیات</li>
+        <li><strong>ادبیات</strong> — عربی و فارسی</li>
+      </ul>
+    </div>
+
+    <div class="modal-section">
+      <div class="modal-section-title"><i class="fas fa-book"></i> تألیفات</div>
+      <p>
+        ایشان حدود <b>۱۹۰ اثر</b> در موضوعات مختلف تألیف کردند، از جمله:
+      </p>
+      <ul>
+        <li><strong>«معرفة الوقت و القبلة»</strong> — درس‌های ریاضیات و نجوم</li>
+        <li><strong>«شرح اشارات»</strong> — فلسفه ابن سینا</li>
+        <li><strong>«اتحاد عاقل و معقول»</strong> — فلسفه و معرفت‌شناسی</li>
+        <li><strong>«الهی‌نامه»</strong> — عرفان</li>
+      </ul>
+    </div>
+
+    <div class="modal-section">
+      <div class="modal-section-title"><i class="fas fa-star"></i> پیوند با جلسه ۲۴</div>
+      <p>
+        آیت‌الله حسن‌زاده آملی نماد <strong>ترکیب علم و معنویت</strong> و <strong>ذوفنون بودن</strong> هستند. در جلسه پایانی دوره، از ایشان درس می‌گیریم که:
+      </p>
+      <ul>
+        <li>علم، محدود به یک رشته نیست</li>
+        <li>دقت علمی و اخلاق پژوهش، همراه هم هستند</li>
+        <li>ریاضیات، زبان فهم جهان است</li>
+        <li>پژوهش، عبادتی علمی است</li>
+      </ul>
+    </div>
+
+    <div class="lecture-note" style="margin-top: 16px;">
+      <i class="fas fa-star"></i>
+      <div class="lecture-note-content">
+        <strong>درس امروز:</strong> همان‌طور که آیت‌الله حسن‌زاده آملی در علوم مختلف تبحر داشتند، شما نیز در این دوره از ریاضیات تا ML سفر کردید. علم، یک کل به‌هم‌پیوسته است.
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ═══ Navigation ═══ */
+const slides = document.querySelectorAll('.slide');
+const totalSlides = slides.length;
+let currentSlide = 0;
+const topicPills = document.querySelectorAll('.topic-pill');
+
+const dotsNav = document.getElementById('dotsNav');
+for (let i = 0; i < totalSlides; i++) {
+  const dot = document.createElement('button');
+  dot.className = 'dot-nav' + (i === 0 ? ' active' : '');
+  dot.addEventListener('click', () => goToSlide(i));
+  dotsNav.appendChild(dot);
+}
+
+function goToSlide(n) {
+  if (n < 0 || n >= totalSlides) return;
+  slides.forEach((s, i) => {
+    s.classList.remove('active', 'prev');
+    if (i < n) s.classList.add('prev');
+    if (i === n) s.classList.add('active');
+  });
+  currentSlide = n;
+  updateNav();
+  playTransition();
+  setTimeout(() => {
+    initVisibleCharts();
+    if (window.MathJax && window.MathJax.typesetPromise) window.MathJax.typesetPromise();
+  }, 100);
+}
+
+function updateNav() {
+  document.querySelectorAll('.dot-nav').forEach((d, i) => d.classList.toggle('active', i === currentSlide));
+  document.getElementById('currentSlide').textContent = toFa(currentSlide + 1);
+  document.getElementById('prevBtn').disabled = currentSlide === 0;
+  document.getElementById('nextBtn').disabled = currentSlide === totalSlides - 1;
+  document.getElementById('progressFill').style.width = ((currentSlide + 1) / totalSlides * 100) + '%';
+  const currentTopic = slides[currentSlide].dataset.topic;
+  topicPills.forEach(pill => {
+    const t = parseInt(pill.dataset.topic);
+    const ct = parseInt(currentTopic);
+    pill.classList.toggle('active', t === ct);
+    pill.classList.toggle('done', t < ct);
+    if (t === ct) pill.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+  });
+}
+
+document.getElementById('prevBtn').addEventListener('click', () => goToSlide(currentSlide - 1));
+document.getElementById('nextBtn').addEventListener('click', () => goToSlide(currentSlide + 1));
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowLeft') { e.preventDefault(); goToSlide(currentSlide + 1); }
+  else if (e.key === 'ArrowRight') { e.preventDefault(); goToSlide(currentSlide - 1); }
+  else if (e.key === ' ') { e.preventDefault(); goToSlide(currentSlide + 1); }
+  else if (e.key === 'Home') { e.preventDefault(); goToSlide(0); }
+  else if (e.key === 'End') { e.preventDefault(); goToSlide(totalSlides - 1); }
+  else if (e.key === 'Escape') {
+    if (document.fullscreenElement) document.exitFullscreen();
+    closeLightbox();
+    closeConceptModal();
+    printMenu.classList.remove('show');
+  }
+});
+
+let touchStartX = 0, touchStartY = 0;
+document.addEventListener('touchstart', e => {
+  touchStartX = e.changedTouches[0].screenX;
+  touchStartY = e.changedTouches[0].screenY;
+}, { passive: true });
+document.addEventListener('touchend', e => {
+  const dx = e.changedTouches[0].screenX - touchStartX;
+  const dy = e.changedTouches[0].screenY - touchStartY;
+  if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy)) {
+    if (dx < 0) goToSlide(currentSlide + 1);
+    else goToSlide(currentSlide - 1);
+  }
+}, { passive: true });
+
+/* ═══ Lightbox ═══ */
+const lightbox = document.getElementById('lightbox');
+const lightboxImg = document.getElementById('lightboxImg');
+const lightboxCaption = document.getElementById('lightboxCaption');
+
+document.querySelectorAll('.img-clickable').forEach(img => {
+  img.addEventListener('click', e => {
+    e.stopPropagation();
+    const src = img.getAttribute('src');
+    const caption = img.getAttribute('data-caption') || img.getAttribute('alt') || '';
+    if (src) {
+      lightboxImg.src = src;
+      lightboxCaption.textContent = caption;
+      lightbox.classList.add('active');
+    }
+  });
+});
+
+document.getElementById('lightboxClose').addEventListener('click', closeLightbox);
+lightbox.addEventListener('click', e => {
+  if (e.target === lightbox) closeLightbox();
+});
+
+function closeLightbox() { lightbox.classList.remove('active'); }
+
+/* ═══ Modal ═══ */
+const conceptModal = document.getElementById('conceptModal');
+document.querySelectorAll('[data-concept]').forEach(el => {
+  el.addEventListener('click', e => {
+    e.stopPropagation();
+    conceptModal.classList.add('active');
+  });
+});
+document.getElementById('conceptClose').addEventListener('click', closeConceptModal);
+conceptModal.addEventListener('click', e => {
+  if (e.target === conceptModal) closeConceptModal();
+});
+function closeConceptModal() { conceptModal.classList.remove('active'); }
+
+/* ═══ Print ═══ */
+const printToggle = document.getElementById('printToggle');
+const printMenu = document.getElementById('printMenu');
+
+printToggle.addEventListener('click', e => {
+  e.stopPropagation();
+  printMenu.classList.toggle('show');
+});
+
+document.addEventListener('click', e => {
+  if (!printMenu.contains(e.target) && e.target !== printToggle) {
+    printMenu.classList.remove('show');
+  }
+});
+
+document.getElementById('printCurrentBtn').addEventListener('click', () => {
+  printMenu.classList.remove('show');
+  slides.forEach(s => s.classList.remove('print-visible'));
+  slides[currentSlide].classList.add('print-visible');
+  showToast('آماده‌سازی چاپ این صفحه...');
+  setTimeout(() => {
+    window.print();
+    setTimeout(() => slides.forEach(s => s.classList.remove('print-visible')), 500);
+  }, 300);
+});
+
+document.getElementById('printAllBtn').addEventListener('click', () => {
+  printMenu.classList.remove('show');
+  slides.forEach(s => s.classList.add('print-visible'));
+  showToast('آماده‌سازی چاپ همه صفحات...');
+  setTimeout(() => {
+    window.print();
+    setTimeout(() => slides.forEach(s => s.classList.remove('print-visible')), 500);
+  }, 300);
+});
+
+/* ═══ Audio ═══ */
+let audioCtx = null, soundEnabled = true;
+function initAudio() { if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
+function playTransition() {
+  if (!soundEnabled) return;
+  initAudio();
+  [440, 554.37].forEach((freq, i) => {
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.connect(gain); gain.connect(audioCtx.destination);
+    osc.frequency.value = freq; osc.type = 'sine';
+    const t = audioCtx.currentTime + i * 0.06;
+    gain.gain.setValueAtTime(0.04, t);
+    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.18);
+    osc.start(t); osc.stop(t + 0.22);
+  });
+}
+document.getElementById('soundToggle').addEventListener('click', function() {
+  soundEnabled = !soundEnabled;
+  this.classList.toggle('active', soundEnabled);
+  this.innerHTML = soundEnabled ? '<i class="fas fa-volume-up"></i>' : '<i class="fas fa-volume-mute"></i>';
+  showToast(soundEnabled ? 'صدا فعال' : 'صدا غیرفعال');
+});
+document.getElementById('fullscreenToggle').addEventListener('click', function() {
+  if (!document.fullscreenElement) { document.documentElement.requestFullscreen(); this.innerHTML = '<i class="fas fa-compress"></i>'; }
+  else { document.exitFullscreen(); this.innerHTML = '<i class="fas fa-expand"></i>'; }
+});
+function showToast(msg) {
+  const container = document.getElementById('toastContainer');
+  const toast = document.createElement('div');
+  toast.className = 'toast';
+  toast.innerHTML = `<i class="fas fa-info-circle"></i> ${msg}`;
+  container.appendChild(toast);
+  setTimeout(() => { toast.style.opacity = '0'; toast.style.transform = 'translateX(-60px)'; setTimeout(() => toast.remove(), 300); }, 2400);
+}
+function toFa(n) { const fa = ['۰','۱','۲','۳','۴','۵','۶','۷','۸','۹']; return String(n).replace(/\d/g, d => fa[d]); }
+
+/* ═══ Background ═══ */
+const bgCanvas = document.getElementById('bgCanvas');
+const bgCtx = bgCanvas.getContext('2d');
+let particles = [];
+function resizeBg() { bgCanvas.width = window.innerWidth; bgCanvas.height = window.innerHeight; }
+resizeBg();
+window.addEventListener('resize', resizeBg);
+class Particle {
+  constructor() { this.reset(); }
+  reset() {
+    this.x = Math.random() * bgCanvas.width;
+    this.y = Math.random() * bgCanvas.height;
+    this.size = Math.random() * 1.6 + 0.4;
+    this.speedX = (Math.random() - 0.5) * 0.3;
+    this.speedY = (Math.random() - 0.5) * 0.3;
+    this.opacity = Math.random() * 0.5 + 0.15;
+    const colors = ['#00d4aa', '#06b6d4', '#a855f7', '#ffb700'];
+    this.color = colors[Math.floor(Math.random() * colors.length)];
+  }
+  update() { this.x += this.speedX; this.y += this.speedY; if (this.x < 0 || this.x > bgCanvas.width || this.y < 0 || this.y > bgCanvas.height) this.reset(); }
+  draw() { bgCtx.beginPath(); bgCtx.arc(this.x, this.y, this.size, 0, Math.PI*2); bgCtx.fillStyle = this.color; bgCtx.globalAlpha = this.opacity; bgCtx.fill(); bgCtx.globalAlpha = 1; }
+}
+for (let i = 0; i < 50; i++) particles.push(new Particle());
+function animateBg() { bgCtx.clearRect(0, 0, bgCanvas.width, bgCanvas.height); particles.forEach(p => { p.update(); p.draw(); }); requestAnimationFrame(animateBg); }
+animateBg();
+
+/* ═══ Helpers ═══ */
+function setupCanvas(canvasId) {
+  const canvas = document.getElementById(canvasId);
+  if (!canvas) return null;
+  const dpr = window.devicePixelRatio || 1;
+  const rect = canvas.getBoundingClientRect();
+  canvas.width = rect.width * dpr; canvas.height = rect.height * dpr;
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+  return { ctx, w: rect.width, h: rect.height };
+}
+
+/* ═══ Paper Structure Simulator ═══ */
+function drawPaper() {
+  const s = setupCanvas('paperCanvas');
+  if (!s) return;
+  const { ctx, w, h } = s;
+  ctx.clearRect(0, 0, w, h);
+
+  const section = parseInt(document.getElementById('paperSection').value);
+
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+  ctx.fillRect(0, 0, w, h);
+
+  const padX = 60, padY = 40;
+  const plotW = w - 2 * padX;
+  const sectionNames = ['Title', 'Intro', 'Method', 'Results', 'Comparison', 'Conclusion', 'Refs'];
+  const colors = ['#00d4aa', '#ffb700', '#a855f7', '#ec4899', '#06b6d4', '#22c55e', '#ff4757'];
+
+  // Draw sections as stacked bars
+  const barH = (h - 2 * padY) / 7;
+  sectionNames.forEach((name, i) => {
+    const y = padY + i * barH + 5;
+    const barHeight = barH - 10;
+    
+    // Background
+    ctx.fillStyle = i === section - 1 ? colors[i] + '40' : 'rgba(255, 255, 255, 0.05)';
+    ctx.fillRect(padX, y, plotW, barHeight);
+    
+    // Border
+    ctx.strokeStyle = i === section - 1 ? colors[i] : 'rgba(255, 255, 255, 0.1)';
+    ctx.lineWidth = i === section - 1 ? 2 : 1;
+    ctx.strokeRect(padX, y, plotW, barHeight);
+    
+    // Text
+    ctx.fillStyle = i === section - 1 ? colors[i] : '#9aa7bd';
+    ctx.font = i === section - 1 ? 'bold 14px Vazirmatn' : '12px Vazirmatn';
+    ctx.textAlign = 'center';
+    ctx.fillText(name, padX + plotW / 2, y + barHeight / 2 + 5);
+  });
+
+  // Update
+  const sectionData = {
+    1: { name: 'Title + Abstract', advice: 'حداکثر ۲۵۰ کلمه، شامل هدف، روش، نتایج' },
+    2: { name: 'Introduction', advice: 'بیان مسئله + انگیزه + سهم علمی' },
+    3: { name: 'Methodology', advice: 'PDE + معماری + Loss + الگوریتم' },
+    4: { name: 'Results', advice: 'Loss curve + پیش‌بینی + خطا' },
+    5: { name: 'Comparison', advice: 'PINN vs FD vs Exact' },
+    6: { name: 'Conclusion', advice: 'یافته‌های اصلی + کارهای آینده' },
+    7: { name: 'References', advice: 'فرمت IEEE + ۱۵-۳۰ مرجع' }
+  };
+
+  document.getElementById('paperSectionName').textContent = sectionData[section].name;
+  document.getElementById('paperAdvice').textContent = sectionData[section].advice;
+}
+
+/* ═══ Figure DPI Simulator ═══ */
+function drawFig() {
+  const s = setupCanvas('figCanvas');
+  if (!s) return;
+  const { ctx, w, h } = s;
+  ctx.clearRect(0, 0, w, h);
+
+  const dpi = parseInt(document.getElementById('figDPI').value);
+  const width = parseFloat(document.getElementById('figWidth').value);
+
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+  ctx.fillRect(0, 0, w, h);
+
+  // Draw grid
+  const padX = 60, padY_top = 40, padY_bot = 60;
+  const plotW = w - 2 * padX;
+  const plotH = h - padY_top - padY_bot;
+
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+  for (let i = 0; i <= 10; i++) {
+    ctx.beginPath();
+    ctx.moveTo(padX + (plotW / 10) * i, padY_top);
+    ctx.lineTo(padX + (plotW / 10) * i, padY_top + plotH);
+    ctx.stroke();
+  }
+  for (let i = 0; i <= 6; i++) {
+    ctx.beginPath();
+    ctx.moveTo(padX, padY_top + (plotH / 6) * i);
+    ctx.lineTo(padX + plotW, padY_top + (plotH / 6) * i);
+    ctx.stroke();
+  }
+
+  // Draw curves
+  ctx.beginPath();
+  ctx.strokeStyle = '#00d4aa';
+  ctx.lineWidth = 2.5;
+  ctx.shadowColor = '#00d4aa';
+  ctx.shadowBlur = 6;
+  for (let i = 0; i <= 100; i++) {
+    const x = i / 100;
+    const y = Math.sin(x * Math.PI) * 0.5 + 0.5;
+    const px = padX + x * plotW;
+    const py = padY_top + plotH - y * plotH;
+    if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+  }
+  ctx.stroke();
+  ctx.shadowBlur = 0;
+
+  ctx.beginPath();
+  ctx.strokeStyle = '#ffb700';
+  ctx.lineWidth = 2.5;
+  ctx.shadowColor = '#ffb700';
+  ctx.shadowBlur = 6;
+  for (let i = 0; i <= 100; i++) {
+    const x = i / 100;
+    const y = Math.sin(x * Math.PI) * 0.5 + 0.5 + (Math.random() - 0.5) * 0.05;
+    const px = padX + x * plotW;
+    const py = padY_top + plotH - y * plotH;
+    if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+  }
+  ctx.stroke();
+  ctx.shadowBlur = 0;
+
+  // Labels
+  ctx.fillStyle = '#9aa7bd';
+  ctx.font = '10px Times New Roman';
+  ctx.textAlign = 'center';
+  ctx.fillText('Position x', padX + plotW / 2, padY_top + plotH + 25);
+  ctx.textAlign = 'right';
+  ctx.save();
+  ctx.translate(padX - 20, padY_top + plotH / 2);
+  ctx.rotate(-Math.PI / 2);
+  ctx.fillText('Temperature u', 0, 0);
+  ctx.restore();
+
+  // Legend
+  ctx.fillStyle = '#00d4aa';
+  ctx.fillRect(w - 150, 10, 12, 12);
+  ctx.fillStyle = '#9aa7bd';
+  ctx.textAlign = 'left';
+  ctx.fillText('Exact', w - 130, 22);
+
+  ctx.fillStyle = '#ffb700';
+  ctx.fillRect(w - 80, 10, 12, 12);
+  ctx.fillStyle = '#9aa7bd';
+  ctx.fillText('PINN', w - 60, 22);
+
+  // Update
+  const pixels = Math.round(width * dpi);
+  const sizeMB = (pixels * pixels * 3) / (1024 * 1024) / 10; // rough estimate
+
+  document.getElementById('figDPIValue').textContent = toFa(dpi);
+  document.getElementById('figWidthValue').textContent = toFa(width.toFixed(1));
+  document.getElementById('figSize').textContent = toFa(sizeMB.toFixed(2)) + ' MB';
+  document.getElementById('figPixels').textContent = toFa(pixels) + ' px';
+
+  const statusEl = document.getElementById('figStatus');
+  if (dpi >= 600) {
+    statusEl.textContent = '✓ آماده IEEE';
+    statusEl.style.color = 'var(--success)';
+  } else if (dpi >= 300) {
+    statusEl.textContent = 'قابل قبول (حداقل)';
+    statusEl.style.color = 'var(--gold)';
+  } else {
+    statusEl.textContent = '⚠ کیفیت پایین';
+    statusEl.style.color = 'var(--danger)';
+  }
+}
+
+/* ═══ Review Simulator ═══ */
+function drawReview() {
+  const s = setupCanvas('reviewCanvas');
+  if (!s) return;
+  const { ctx, w, h } = s;
+  ctx.clearRect(0, 0, w, h);
+
+  const type = document.getElementById('reviewType').value;
+
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+  ctx.fillRect(0, 0, w, h);
+
+  const data = {
+    minor: { strategy: 'اصلاحات جزئی + پاسخ سریع', time: '۲-۴ هفته', color: '#22c55e' },
+    major: { strategy: 'اصلاحات اساسی + بازبینی کامل', time: '۲-۳ ماه', color: '#ffb700' },
+    reject: { strategy: 'بازنگری کامل + ارسال به مجله دیگر', time: '۲-۴ ماه', color: '#ff4757' }
+  };
+
+  const d = data[type];
+
+  // Draw central message
+  ctx.fillStyle = d.color;
+  ctx.font = 'bold 24px Vazirmatn';
+  ctx.textAlign = 'center';
+  ctx.fillText(type === 'minor' ? 'Minor' : type === 'major' ? 'Major' : 'Reject', w / 2, h / 2 - 20);
+
+  ctx.fillStyle = '#9aa7bd';
+  ctx.font = '14px Vazirmatn';
+  ctx.fillText('Revision', w / 2, h / 2 + 10);
+
+  // Stats
+  ctx.fillStyle = d.color;
+  ctx.font = 'bold 12px Vazirmatn';
+  ctx.textAlign = 'center';
+  ctx.fillText(d.strategy, w / 2, h / 2 + 50);
+  ctx.fillText('زمان: ' + d.time, w / 2, h / 2 + 70);
+
+  document.getElementById('reviewStrategy').textContent = d.strategy;
+  document.getElementById('reviewTime').textContent = d.time;
+}
+
+/* ═══ Events ═══ */
+document.getElementById('paperSection').addEventListener('change', drawPaper);
+document.getElementById('figDPI').addEventListener('input', drawFig);
+document.getElementById('figWidth').addEventListener('input', drawFig);
+document.getElementById('reviewType').addEventListener('change', drawReview);
+
+/* ═══ Code Tabs ═══ */
+document.querySelectorAll('.code-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    const parent = tab.parentElement;
+    parent.querySelectorAll('.code-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    const contentId = 'code-' + tab.dataset.code;
+    const content = document.getElementById(contentId);
+    if (content) {
+      const allContents = parent.parentElement.querySelectorAll('.code-content');
+      allContents.forEach(c => c.classList.remove('active'));
+      content.classList.add('active');
+    }
+  });
+});
+
+/* ═══ Render ═══ */
+function initVisibleCharts() {
+  const activeSlide = document.querySelector('.slide.active');
+  if (!activeSlide) return;
+  const num = activeSlide.dataset.slide;
+  if (num === '12') drawPaper();
+  else if (num === '13') drawFig();
+  else if (num === '14') drawReview();
+}
+
+/* ═══ Init ═══ */
+updateNav();
+setTimeout(() => {
+  initVisibleCharts();
+  if (window.MathJax && window.MathJax.typesetPromise) window.MathJax.typesetPromise();
+}, 400);
+setTimeout(() => showToast('🎓 به جلسه پایانی خوش آمدید — ۲۴ جلسه کامل!'), 1000);
+
+window.addEventListener('resize', () => setTimeout(() => {
+  initVisibleCharts();
+  if (window.MathJax && window.MathJax.typesetPromise) window.MathJax.typesetPromise();
+}, 200));
+</script>
+
+</body>
+</html>

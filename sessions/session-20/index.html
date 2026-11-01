@@ -1,0 +1,2739 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>جلسه ۲۰ — پیاده‌سازی PINN در PyTorch | دکتر مسعود گوهری منش</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+<script>
+window.MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']],
+    displayMath: [['$$', '$$'], ['\\[', '\\]']],
+    processEscapes: true
+  },
+  options: { skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'] },
+  svg: { fontCache: 'global' }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" async></script>
+
+<style>
+:root {
+  --primary: #00d4aa;
+  --secondary: #06b6d4;
+  --tertiary: #a855f7;
+  --gold: #ffb700;
+  --success: #22c55e;
+  --danger: #ff4757;
+  --pink: #ec4899;
+  --dark: #050818;
+  --darker: #020410;
+  --card-bg: rgba(255, 255, 255, 0.05);
+  --card-border: rgba(255, 255, 255, 0.1);
+  --text: #e8eef7;
+  --text-dim: #9aa7bd;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { overflow: hidden; height: 100%; }
+body {
+  font-family: 'Vazirmatn', sans-serif;
+  background: var(--dark);
+  color: var(--text);
+  direction: rtl;
+  line-height: 1.8;
+}
+#bgCanvas { position: fixed; inset: 0; z-index: -2; background: radial-gradient(ellipse at top, #0a1230 0%, var(--darker) 50%, #000 100%); }
+.glow-orb { position: fixed; border-radius: 50%; filter: blur(120px); opacity: 0.3; z-index: -1; pointer-events: none; animation: floatOrb 25s ease-in-out infinite; }
+.orb1 { width: 600px; height: 600px; background: var(--primary); top: -200px; right: -200px; }
+.orb2 { width: 500px; height: 500px; background: var(--gold); bottom: -150px; left: -150px; animation-delay: -8s; }
+.orb3 { width: 400px; height: 400px; background: var(--tertiary); top: 30%; left: 25%; animation-delay: -15s; opacity: 0.12; }
+@keyframes floatOrb { 0%, 100% { transform: translate(0, 0) scale(1); } 33% { transform: translate(50px, -40px) scale(1.15); } 66% { transform: translate(-40px, 50px) scale(0.9); } }
+
+.top-header { position: fixed; top: 0; left: 0; right: 0; height: 82px; background: rgba(5, 8, 24, 0.9); backdrop-filter: blur(15px); border-bottom: 1px solid var(--card-border); display: flex; align-items: center; justify-content: space-between; padding: 0 18px; z-index: 100; }
+.header-left { display: flex; align-items: center; gap: 14px; }
+.header-signature { height: 60px; width: auto; max-width: 170px; object-fit: contain; filter: drop-shadow(0 0 10px rgba(0, 212, 170, 0.4)); border-radius: 8px; background: rgba(255, 255, 255, 0.05); padding: 4px; }
+.header-text { display: flex; flex-direction: column; line-height: 1.35; }
+.header-name { font-size: 0.88rem; color: var(--gold); font-weight: 800; white-space: nowrap; }
+.header-univ { font-size: 0.7rem; color: var(--text-dim); font-weight: 500; }
+.header-controls { display: flex; gap: 8px; flex-shrink: 0; align-items: center; }
+.ctrl-btn { width: 38px; height: 38px; border-radius: 10px; border: 1px solid var(--card-border); background: var(--card-bg); backdrop-filter: blur(10px); color: var(--text); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; transition: all 0.3s ease; position: relative; }
+.ctrl-btn:hover { background: var(--primary); color: var(--dark); transform: translateY(-2px); }
+.ctrl-btn.active { background: var(--primary); color: var(--dark); }
+
+.print-menu-wrap { position: relative; }
+.print-menu {
+  position: absolute; top: 46px; left: 0;
+  background: rgba(10, 18, 40, 0.98);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  padding: 6px;
+  min-width: 200px;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6);
+  opacity: 0; pointer-events: none;
+  transform: translateY(-8px);
+  transition: all 0.3s ease;
+  z-index: 200;
+}
+.print-menu.show { opacity: 1; pointer-events: auto; transform: translateY(0); }
+.print-menu button {
+  display: flex; align-items: center; gap: 10px;
+  width: 100%; padding: 10px 14px;
+  background: transparent; border: none;
+  color: var(--text); font-family: inherit;
+  font-size: 0.82rem; font-weight: 600;
+  border-radius: 8px; cursor: pointer;
+  text-align: right;
+  transition: all 0.2s ease;
+}
+.print-menu button:hover { background: rgba(0, 212, 170, 0.15); color: var(--primary); }
+.print-menu button i { color: var(--gold); font-size: 0.9rem; width: 18px; text-align: center; }
+
+@media print {
+  @page { size: A4 landscape; margin: 10mm; }
+  html, body { overflow: visible !important; height: auto !important; background: white !important; }
+  #bgCanvas, .glow-orb, .top-header, .topic-nav, .progress-top, .bottom-nav,
+  .toast-container, .star-container, .ctrl-btn, .print-menu, .lightbox,
+  .modal-overlay, .slide:not(.print-visible) { display: none !important; }
+  .slide-container { position: static !important; inset: auto !important; overflow: visible !important; }
+  .slide {
+    position: relative !important;
+    opacity: 1 !important;
+    transform: none !important;
+    pointer-events: auto !important;
+    page-break-after: always;
+    padding: 15px 25px !important;
+    overflow: visible !important;
+    background: white !important;
+    color: #1a1a1a !important;
+    inset: auto !important;
+    height: auto !important;
+  }
+  .slide::before {
+    content: '';
+    position: fixed;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%) rotate(-30deg);
+    width: 600px; height: 300px;
+    background-image: url('images/signature.png');
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+    opacity: 0.08;
+    pointer-events: none;
+    z-index: 9999;
+    filter: grayscale(100%);
+  }
+  .slide-h1, .slide-h3, .slide-text, .card { color: #1a1a1a !important; }
+  .card { border-color: #ccc !important; background: #f9f9f9 !important; }
+  .math-box { background: #f5f5f5 !important; border-color: #999 !important; }
+  .slide-num { background: #e0e0e0 !important; color: #333 !important; }
+  .code-content { background: #f5f5f5 !important; color: #1a1a1a !important; }
+}
+
+.lightbox {
+  position: fixed; inset: 0;
+  background: rgba(0, 0, 0, 0.92);
+  backdrop-filter: blur(8px);
+  z-index: 10000;
+  display: flex; align-items: center; justify-content: center;
+  padding: 40px;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+.lightbox.active { opacity: 1; pointer-events: auto; }
+.lightbox-img {
+  max-width: 90vw; max-height: 85vh;
+  border-radius: 16px;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.8), 0 0 60px rgba(0, 212, 170, 0.3);
+  border: 2px solid var(--primary);
+  transform: scale(0.85);
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.lightbox.active .lightbox-img { transform: scale(1); }
+.lightbox-close {
+  position: absolute; top: 24px; left: 24px;
+  width: 46px; height: 46px;
+  border-radius: 50%;
+  background: rgba(255, 71, 87, 0.9);
+  border: none; color: #fff;
+  font-size: 1.2rem; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.3s ease;
+  z-index: 10001;
+}
+.lightbox-close:hover { background: var(--danger); transform: rotate(90deg); }
+.lightbox-caption {
+  position: absolute; bottom: 30px; left: 50%;
+  transform: translateX(-50%);
+  background: rgba(10, 18, 40, 0.95);
+  border: 1px solid var(--card-border);
+  color: var(--text);
+  padding: 10px 24px;
+  border-radius: 30px;
+  font-size: 0.85rem; font-weight: 600;
+}
+
+.img-box, .hero-img, .star-img { cursor: zoom-in; transition: all 0.3s ease; }
+.img-box:hover { transform: scale(1.02); border-color: var(--primary); }
+
+.modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(10px);
+  z-index: 9500;
+  display: flex; align-items: center; justify-content: center;
+  padding: 30px;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+.modal-overlay.active { opacity: 1; pointer-events: auto; }
+.modal-box {
+  background: linear-gradient(145deg, rgba(10, 18, 40, 0.98), rgba(5, 8, 24, 0.98));
+  border: 1px solid var(--gold);
+  border-radius: 22px;
+  padding: 30px;
+  max-width: 720px;
+  width: 100%;
+  max-height: 85vh;
+  overflow-y: auto;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.8), 0 0 50px rgba(255, 183, 0, 0.2);
+  position: relative;
+  transform: scale(0.92);
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.modal-overlay.active .modal-box { transform: scale(1); }
+.modal-close {
+  position: absolute; top: 18px; left: 18px;
+  width: 38px; height: 38px;
+  border-radius: 50%;
+  background: rgba(255, 71, 87, 0.2);
+  border: 1px solid rgba(255, 71, 87, 0.5);
+  color: var(--danger);
+  font-size: 1rem; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.3s ease;
+}
+.modal-close:hover { background: var(--danger); color: #fff; transform: rotate(90deg); }
+.modal-title {
+  font-size: 1.3rem; font-weight: 900;
+  color: var(--gold);
+  margin-bottom: 18px;
+  display: flex; align-items: center; gap: 12px;
+  padding-right: 40px;
+}
+.modal-title i { font-size: 1.5rem; }
+.modal-section { margin-bottom: 18px; }
+.modal-section-title {
+  font-size: 0.95rem; font-weight: 800;
+  color: var(--primary);
+  margin-bottom: 8px;
+  display: flex; align-items: center; gap: 8px;
+}
+.modal-section-title i { color: var(--primary); }
+.modal-section p {
+  font-size: 0.88rem;
+  color: var(--text-dim);
+  line-height: 2;
+  margin-bottom: 8px;
+}
+.modal-section ul { list-style: none; padding: 0; }
+.modal-section ul li {
+  padding: 6px 24px 6px 10px;
+  position: relative;
+  font-size: 0.85rem;
+  color: var(--text-dim);
+  line-height: 1.9;
+}
+.modal-section ul li::before {
+  content: '◆';
+  position: absolute; right: 4px;
+  color: var(--gold);
+  font-size: 0.7rem;
+}
+
+.concept-word {
+  color: var(--gold);
+  font-weight: 900;
+  cursor: pointer;
+  text-decoration: underline dotted var(--gold);
+  text-underline-offset: 5px;
+  transition: all 0.3s ease;
+  padding: 0 2px;
+  border-radius: 4px;
+}
+.concept-word:hover {
+  background: rgba(255, 183, 0, 0.15);
+  text-shadow: 0 0 12px rgba(255, 183, 0, 0.8);
+}
+
+.topic-nav { position: fixed; top: 82px; left: 0; right: 0; height: 36px; background: rgba(5, 8, 24, 0.9); backdrop-filter: blur(10px); border-bottom: 1px solid var(--card-border); z-index: 99; display: flex; align-items: center; gap: 6px; padding: 0 18px; overflow-x: auto; scrollbar-width: none; }
+.topic-nav::-webkit-scrollbar { display: none; }
+.topic-pill { padding: 4px 11px; border-radius: 20px; font-size: 0.7rem; font-weight: 600; white-space: nowrap; color: var(--text-dim); background: rgba(255, 255, 255, 0.04); border: 1px solid transparent; transition: all 0.3s ease; }
+.topic-pill.active { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: var(--dark); font-weight: 800; box-shadow: 0 3px 10px rgba(0, 212, 170, 0.35); }
+.topic-pill.done { color: var(--primary); border-color: rgba(0, 212, 170, 0.3); }
+
+.progress-top { position: fixed; top: 118px; left: 0; right: 0; height: 3px; background: rgba(255, 255, 255, 0.05); z-index: 98; }
+.progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--primary), var(--secondary), var(--tertiary)); transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 0 12px var(--primary); }
+
+.slide-container { position: fixed; inset: 121px 0 0 0; overflow: hidden; }
+.slide { position: absolute; inset: 0; padding: 24px 50px 90px; opacity: 0; transform: translateX(-40px); pointer-events: none; transition: opacity 0.5s ease, transform 0.5s cubic-bezier(0.4, 0, 0.2, 1); overflow-y: auto; overflow-x: hidden; }
+.slide.active { opacity: 1; transform: translateX(0); pointer-events: auto; }
+.slide.prev { transform: translateX(40px); }
+.slide::-webkit-scrollbar { width: 6px; }
+.slide::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 3px; }
+.slide-inner { max-width: 1200px; margin: 0 auto; animation: contentFade 0.6s ease; }
+@keyframes contentFade { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+.slide-num { display: inline-block; padding: 5px 14px; border-radius: 20px; background: rgba(0, 212, 170, 0.15); color: var(--primary); font-size: 0.72rem; font-weight: 700; margin-bottom: 10px; }
+.slide-h1 { font-size: clamp(1.3rem, 3.2vw, 2rem); font-weight: 900; background: linear-gradient(135deg, var(--primary), var(--secondary), var(--tertiary), var(--gold)); background-size: 300% 300%; -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; animation: gradientShift 6s ease infinite; margin-bottom: 16px; line-height: 1.35; }
+@keyframes gradientShift { 0%, 100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
+.slide-h3 { font-size: 0.98rem; font-weight: 700; color: var(--text); margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+.slide-h3 i { color: var(--gold); font-size: 0.88rem; }
+.slide-text { font-size: 0.9rem; color: var(--text-dim); line-height: 2; margin-bottom: 12px; }
+
+.card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 18px; padding: 18px; backdrop-filter: blur(12px); transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1); }
+.card:hover { transform: translateY(-4px); border-color: rgba(0, 212, 170, 0.4); box-shadow: 0 15px 35px rgba(0, 212, 170, 0.12); }
+.grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+.grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; }
+.grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; }
+
+.title-slide { text-align: center; padding-top: 5px; }
+.title-slide .hero-img { width: 100%; max-width: 520px; height: 170px; object-fit: contain; background: rgba(0, 0, 0, 0.2); padding: 6px; border-radius: 20px; margin: 0 auto 12px; display: block; border: 1px solid var(--card-border); box-shadow: 0 20px 40px rgba(0, 212, 170, 0.15); }
+.title-slide .bismillah { font-size: 1.2rem; font-weight: 500; background: linear-gradient(90deg, var(--gold), var(--primary), var(--secondary)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 4px; }
+.title-slide .hoval { font-size: 0.82rem; color: var(--text-dim); margin-bottom: 16px; letter-spacing: 1px; }
+.title-slide .main-title { font-size: clamp(1.4rem, 3.4vw, 2.1rem); font-weight: 900; background: linear-gradient(135deg, var(--primary), var(--gold), var(--tertiary)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 10px; line-height: 1.3; }
+.title-slide .subtitle { font-size: clamp(0.9rem, 2vw, 1.05rem); color: var(--text-dim); margin-bottom: 18px; }
+.title-slide .euler-box { display: inline-block; padding: 12px 30px; border-radius: 18px; background: var(--card-bg); border: 1px solid var(--card-border); backdrop-filter: blur(15px); margin-bottom: 16px; }
+.title-slide .instructor-line { font-size: 0.92rem; color: var(--gold); font-weight: 700; margin-bottom: 3px; }
+.title-slide .instructor-title-line { font-size: 0.78rem; color: var(--text-dim); margin-bottom: 12px; }
+.title-slide .semester { display: inline-block; padding: 6px 18px; border-radius: 50px; background: var(--card-bg); border: 1px solid var(--card-border); font-size: 0.78rem; color: var(--text-dim); }
+
+.star-container { position: fixed; top: 150px; left: 40px; z-index: 90; cursor: pointer; }
+.star-core {
+  width: 40px; height: 40px; border-radius: 50%;
+  background: radial-gradient(circle at 50% 50%, #fff 0%, var(--gold) 30%, var(--gold) 50%, rgba(255, 183, 0, 0.2) 80%, transparent 100%);
+  box-shadow: 0 0 25px var(--gold), 0 0 50px rgba(255, 183, 0, 0.5), 0 0 80px rgba(255, 183, 0, 0.3);
+  animation: starPulse 3s ease-in-out infinite;
+  position: relative;
+}
+.star-core::before {
+  content: ''; position: absolute; inset: -20px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 183, 0, 0.3) 0%, transparent 70%);
+  animation: starHalo 4s ease-in-out infinite;
+}
+@keyframes starPulse {
+  0%, 100% { transform: scale(1); box-shadow: 0 0 25px var(--gold), 0 0 50px rgba(255, 183, 0, 0.5), 0 0 80px rgba(255, 183, 0, 0.3); }
+  50% { transform: scale(1.15); box-shadow: 0 0 35px var(--gold), 0 0 70px rgba(255, 183, 0, 0.7), 0 0 100px rgba(255, 183, 0, 0.5); }
+}
+@keyframes starHalo {
+  0%, 100% { transform: scale(1); opacity: 0.5; }
+  50% { transform: scale(1.3); opacity: 0.8; }
+}
+.star-tooltip {
+  position: absolute; top: 55px; left: 0;
+  width: 240px;
+  background: linear-gradient(145deg, rgba(10, 18, 40, 0.98), rgba(5, 8, 24, 0.98));
+  border: 1px solid var(--gold);
+  border-radius: 16px; padding: 16px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7), 0 0 30px rgba(255, 183, 0, 0.3);
+  opacity: 0; pointer-events: none;
+  transform: translateY(-10px) scale(0.95);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.star-container:hover .star-tooltip {
+  opacity: 1; transform: translateY(0) scale(1); pointer-events: auto;
+}
+.star-img {
+  width: 100%; height: 180px; object-fit: contain;
+  border-radius: 12px; background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 183, 0, 0.3);
+  margin-bottom: 10px; padding: 6px;
+}
+.star-name { font-size: 0.95rem; font-weight: 800; color: var(--gold); text-align: center; margin-bottom: 4px; }
+.star-title { font-size: 0.75rem; color: var(--text-dim); text-align: center; margin-bottom: 6px; font-style: italic; }
+.star-years { font-size: 0.72rem; color: var(--primary); text-align: center; font-family: 'Courier New', monospace; padding-top: 6px; border-top: 1px solid rgba(255, 183, 0, 0.2); }
+.star-tooltip::before {
+  content: ''; position: absolute; top: -8px; left: 20px;
+  width: 16px; height: 16px;
+  background: rgba(10, 18, 40, 0.98);
+  border-top: 1px solid var(--gold);
+  border-right: 1px solid var(--gold);
+  transform: rotate(-45deg);
+}
+
+.math-box { background: rgba(0, 212, 170, 0.06); border: 1px solid rgba(0, 212, 170, 0.25); border-radius: 14px; padding: 16px 22px; margin: 12px 0; text-align: center; direction: ltr; position: relative; overflow-x: auto; overflow-y: hidden; }
+.math-box::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--primary), var(--secondary), var(--tertiary)); }
+.math-box .MathJax, .math-box mjx-container { color: var(--primary) !important; font-size: 1em !important; }
+.math-box.gold-math .MathJax, .math-box.gold-math mjx-container { color: var(--gold) !important; }
+.math-box.purple-math .MathJax, .math-box.purple-math mjx-container { color: var(--tertiary) !important; }
+.math-box.pink-math .MathJax, .math-box.pink-math mjx-container { color: var(--pink) !important; }
+.math-box.danger-math .MathJax, .math-box.danger-math mjx-container { color: var(--danger) !important; }
+.math-note { font-family: 'Vazirmatn', sans-serif; font-size: 0.76rem; color: var(--text-dim); direction: rtl; margin-top: 8px; font-style: italic; text-align: center; }
+
+.simulator { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 18px; padding: 16px; margin: 12px 0; backdrop-filter: blur(12px); }
+.sim-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; flex-wrap: wrap; gap: 10px; }
+.sim-title { font-size: 0.9rem; font-weight: 700; color: var(--gold); display: flex; align-items: center; gap: 8px; }
+.sim-controls { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.slider-group { display: flex; align-items: center; gap: 8px; background: rgba(0, 0, 0, 0.3); padding: 6px 12px; border-radius: 10px; border: 1px solid var(--card-border); }
+.slider-group label { font-size: 0.72rem; color: var(--text-dim); white-space: nowrap; }
+.slider-group input[type="range"] { width: 100px; accent-color: var(--primary); cursor: pointer; }
+.slider-value { font-family: 'Courier New', monospace; font-size: 0.78rem; color: var(--primary); font-weight: 700; min-width: 30px; text-align: center; }
+.canvas-wrapper { position: relative; width: 100%; height: 260px; background: rgba(0, 0, 0, 0.4); border-radius: 12px; overflow: hidden; border: 1px solid var(--card-border); }
+.canvas-wrapper canvas { width: 100%; height: 100%; display: block; }
+
+.img-box { width: 100%; max-height: 280px; border-radius: 16px; border: 1px solid var(--card-border); margin: 12px 0; display: block; object-fit: contain; background: rgba(0, 0, 0, 0.3); padding: 8px; }
+
+.step-container { background: rgba(0, 0, 0, 0.2); border-radius: 14px; padding: 16px 20px; margin: 12px 0; border-right: 3px solid var(--gold); }
+.step-title { font-size: 0.88rem; font-weight: 800; color: var(--gold); margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+.step-content { font-size: 0.85rem; color: var(--text-dim); line-height: 2; }
+.step-content .math-box { margin: 8px 0; padding: 12px 16px; }
+
+.exercise-block { border-radius: 16px; padding: 16px; border: 1px solid; position: relative; overflow: hidden; margin-bottom: 12px; }
+.exercise-block::before { content: ''; position: absolute; top: 0; right: 0; width: 4px; height: 100%; }
+.ex-yellow { background: rgba(255, 217, 61, 0.06); border-color: rgba(255, 217, 61, 0.25); }
+.ex-yellow::before { background: #ffd93d; }
+.ex-green { background: rgba(107, 207, 127, 0.06); border-color: rgba(107, 207, 127, 0.25); }
+.ex-green::before { background: #6bcf7f; }
+.ex-purple { background: rgba(168, 85, 247, 0.06); border-color: rgba(168, 85, 247, 0.25); }
+.ex-purple::before { background: var(--tertiary); }
+.ex-red { background: rgba(255, 107, 107, 0.06); border-color: rgba(255, 107, 107, 0.25); }
+.ex-red::before { background: #ff6b6b; }
+.ex-header { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+.ex-num { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 0.8rem; color: var(--dark); flex-shrink: 0; }
+.ex-yellow .ex-num { background: #ffd93d; }
+.ex-green .ex-num { background: #6bcf7f; }
+.ex-purple .ex-num { background: var(--tertiary); color: #fff; }
+.ex-red .ex-num { background: #ff6b6b; color: #fff; }
+.ex-title { font-size: 0.92rem; font-weight: 800; }
+.ex-list { list-style: none; padding: 0; counter-reset: item; }
+.ex-list li { position: relative; padding: 7px 34px 7px 10px; font-size: 0.83rem; color: var(--text-dim); line-height: 1.8; border-bottom: 1px dashed rgba(255, 255, 255, 0.05); }
+.ex-list li:last-child { border-bottom: none; }
+.ex-list li::before { counter-increment: item; content: counter(item); position: absolute; right: 4px; top: 9px; width: 22px; height: 22px; border-radius: 50%; background: rgba(255, 255, 255, 0.08); color: var(--text); font-size: 0.7rem; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+.email-banner { margin-top: 12px; padding: 12px; border-radius: 14px; background: linear-gradient(135deg, rgba(0, 212, 170, 0.1), rgba(168, 85, 247, 0.1)); border: 1px dashed rgba(0, 212, 170, 0.4); text-align: center; }
+.email-banner p { font-size: 0.8rem; color: var(--text); margin-bottom: 5px; }
+.email-banner code { display: inline-block; padding: 5px 12px; border-radius: 8px; background: rgba(0, 0, 0, 0.4); color: var(--primary); font-family: 'Courier New', monospace; font-size: 0.76rem; direction: ltr; margin-top: 3px; }
+
+.code-tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--card-border); }
+.code-tab { padding: 8px 16px; border-radius: 10px 10px 0 0; background: transparent; border: none; color: var(--text-dim); font-family: inherit; font-size: 0.8rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; }
+.code-tab.active { background: rgba(0, 212, 170, 0.1); color: var(--primary); border-bottom: 2px solid var(--primary); }
+.code-content { display: none; background: #0a0f24; border: 1px solid var(--card-border); border-top: none; border-radius: 0 0 12px 12px; padding: 14px; overflow-x: auto; direction: ltr; text-align: left; }
+.code-content.active { display: block; }
+.code-content pre { margin: 0; font-family: 'Courier New', Consolas, monospace; font-size: 0.76rem; line-height: 1.6; color: #e8eef7; white-space: pre; }
+.code-content .kw { color: #ff79c6; }
+.code-content .fn { color: #50fa7b; }
+.code-content .num { color: #bd93f9; }
+.code-content .str { color: #f1fa8c; }
+.code-content .cm { color: #6272a4; font-style: italic; }
+.code-content .cls { color: #8be9fd; }
+
+.bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; height: 58px; background: rgba(5, 8, 24, 0.9); backdrop-filter: blur(15px); border-top: 1px solid var(--card-border); display: flex; align-items: center; justify-content: space-between; padding: 0 20px; z-index: 100; }
+.nav-btn { padding: 8px 18px; border-radius: 12px; border: 1px solid var(--card-border); background: var(--card-bg); color: var(--text); cursor: pointer; font-family: inherit; font-size: 0.82rem; font-weight: 600; display: flex; align-items: center; gap: 7px; transition: all 0.3s ease; }
+.nav-btn:hover:not(:disabled) { background: var(--primary); color: var(--dark); transform: translateY(-2px); }
+.nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+.dots-nav { display: flex; gap: 4px; flex-wrap: wrap; justify-content: center; max-width: 60%; }
+.dot-nav { width: 8px; height: 8px; border-radius: 50%; background: rgba(255, 255, 255, 0.15); cursor: pointer; border: none; padding: 0; transition: all 0.3s ease; }
+.dot-nav.active { background: var(--primary); width: 22px; border-radius: 5px; box-shadow: 0 0 10px var(--primary); }
+.slide-counter { font-size: 0.78rem; color: var(--text-dim); font-family: 'Courier New', monospace; min-width: 60px; text-align: center; }
+.slide-counter span { color: var(--primary); font-weight: 800; }
+
+.toast-container { position: fixed; bottom: 76px; left: 24px; z-index: 9999; display: flex; flex-direction: column; gap: 8px; }
+.toast { background: rgba(10, 18, 40, 0.95); border: 1px solid var(--primary); border-radius: 14px; padding: 11px 16px; color: var(--text); font-size: 0.82rem; backdrop-filter: blur(12px); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); display: flex; align-items: center; gap: 8px; animation: slideIn 0.35s ease; max-width: 320px; }
+.toast i { color: var(--primary); }
+@keyframes slideIn { from { opacity: 0; transform: translateX(-60px); } to { opacity: 1; transform: translateX(0); } }
+
+.lecture-note {
+  background: rgba(0, 212, 170, 0.06);
+  border: 1px solid rgba(0, 212, 170, 0.3);
+  border-radius: 12px; padding: 12px 16px; margin: 10px 0;
+  display: flex; gap: 10px; align-items: flex-start;
+}
+.lecture-note i { color: var(--primary); font-size: 1.1rem; margin-top: 3px; }
+.lecture-note-content { flex: 1; font-size: 0.85rem; color: var(--text-dim); line-height: 1.9; }
+
+.method-badge {
+  display: inline-block; padding: 3px 10px; border-radius: 6px;
+  font-size: 0.7rem; font-weight: 700; margin-bottom: 8px;
+}
+.badge-pinn { background: rgba(0, 212, 170, 0.15); color: var(--primary); }
+.badge-code { background: rgba(255, 183, 0, 0.15); color: var(--gold); }
+.badge-step { background: rgba(168, 85, 247, 0.15); color: var(--tertiary); }
+.badge-app { background: rgba(236, 72, 153, 0.15); color: var(--pink); }
+
+@media (max-width: 768px) {
+  .slide { padding: 16px 14px 90px; }
+  .header-univ { display: none; }
+  .header-name { font-size: 0.75rem; }
+  .header-signature { height: 45px; max-width: 110px; }
+  .nav-btn { padding: 7px 11px; font-size: 0.72rem; }
+  .nav-btn span { display: none; }
+  .dots-nav { max-width: 45%; }
+  .slide-counter { font-size: 0.68rem; min-width: 45px; }
+  .canvas-wrapper { height: 210px; }
+  .topic-pill { font-size: 0.64rem; padding: 3px 8px; }
+  .star-container { top: 130px; left: 20px; }
+  .star-core { width: 32px; height: 32px; }
+  .star-tooltip { width: 200px; }
+  .modal-box { padding: 20px; }
+}
+@media (max-width: 480px) {
+  .ctrl-btn { width: 34px; height: 34px; font-size: 0.8rem; }
+  .header-signature { display: none; }
+  .star-container { top: 120px; left: 12px; }
+  .star-core { width: 28px; height: 28px; }
+  .star-tooltip { width: 180px; padding: 12px; }
+  .star-img { height: 140px; }
+  .lightbox-caption { font-size: 0.75rem; padding: 8px 16px; }
+}
+</style>
+</head>
+<body>
+
+<canvas id="bgCanvas"></canvas>
+<div class="glow-orb orb1"></div>
+<div class="glow-orb orb2"></div>
+<div class="glow-orb orb3"></div>
+
+<!-- ═══ ستاره درخشان ابوریحان بیرونی ═══ -->
+<div class="star-container" id="starContainer">
+  <div class="star-core"></div>
+  <div class="star-tooltip">
+    <img src="images/star.png" alt="ابوریحان بیرونی" class="star-img img-clickable" onerror="this.style.background='linear-gradient(135deg, #ffb700, #a855f7)'; this.style.minHeight='140px';" data-caption="ابوریحان بیرونی — پیشگام اندازه‌گیری دقیق و تقریب متوالی">
+    <div class="star-name">ابوریحان بیرونی</div>
+    <div class="star-title">پیشگام اندازه‌گیری دقیق زمین و تقریب متوالی</div>
+    <div class="star-years">۹۷۳ — ۱۰۴۸ میلادی</div>
+  </div>
+</div>
+
+<div class="top-header">
+  <div class="header-left">
+    <img src="images/signature.png" alt="امضا" class="header-signature" onerror="this.style.display='none'">
+    <div class="header-text">
+      <span class="header-name">دکتر مسعود گوهری منش</span>
+      <span class="header-univ">دانشیار گروه مهندسی مکانیک — دانشگاه تربت حیدریه</span>
+    </div>
+  </div>
+  <div class="header-controls">
+    <button class="ctrl-btn" id="soundToggle" title="صدا"><i class="fas fa-volume-up"></i></button>
+    <button class="ctrl-btn" id="fullscreenToggle" title="تمام‌صفحه"><i class="fas fa-expand"></i></button>
+    <div class="print-menu-wrap">
+      <button class="ctrl-btn" id="printToggle" title="چاپ"><i class="fas fa-print"></i></button>
+      <div class="print-menu" id="printMenu">
+        <button id="printCurrentBtn"><i class="fas fa-file"></i> چاپ این صفحه</button>
+        <button id="printAllBtn"><i class="fas fa-layer-group"></i> چاپ همه صفحات</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="topic-nav" id="topicNav">
+  <span class="topic-pill" data-topic="1">مقدمه</span>
+  <span class="topic-pill" data-topic="2">ساختار پروژه</span>
+  <span class="topic-pill" data-topic="3">شبکه PINN</span>
+  <span class="topic-pill" data-topic="4">داده و Loss</span>
+  <span class="topic-pill" data-topic="5">حلقه آموزش</span>
+  <span class="topic-pill" data-topic="6">مسئله مستقیم</span>
+  <span class="topic-pill" data-topic="7">مسئله معکوس</span>
+  <span class="topic-pill" data-topic="8">نانو انبرک</span>
+  <span class="topic-pill" data-topic="9">کد کامل</span>
+  <span class="topic-pill" data-topic="10">جمع‌بندی</span>
+</div>
+
+<div class="progress-top"><div class="progress-fill" id="progressFill"></div></div>
+
+<div class="slide-container" id="slideContainer">
+
+  <!-- ۱ — عنوان -->
+  <div class="slide active" data-slide="1" data-topic="1">
+    <div class="slide-inner title-slide">
+      <div class="bismillah">بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِیم</div>
+      <div class="hoval">هُوَ الخَلّاقُ العَلیم</div>
+      <img src="images/hero-pinn-pytorch.png" alt="PINN PyTorch" class="hero-img img-clickable" onerror="this.style.display='none'" data-caption="PINN در PyTorch">
+      <h1 class="main-title">پیاده‌سازی PINN در PyTorch</h1>
+      <p class="subtitle">(PINN Implementation in PyTorch) — جلسه ۲۰</p>
+      <div class="euler-box"><div style="direction: ltr; font-size: 0.95rem;">$$\mathcal{L} = \mathcal{L}_{data} + \lambda_{pde} \mathcal{L}_{pde} + \lambda_{bc} \mathcal{L}_{bc}$$</div></div>
+      <p class="instructor-line">دکتر مسعود گوهری منش</p>
+      <p class="instructor-title-line">دانشیار گروه مهندسی مکانیک — دانشگاه تربت حیدریه</p>
+      <div class="semester">نیمسال اول ۱۴۰۵–۱۴۰۶</div>
+      <div class="lecture-note" style="margin-top: 20px; max-width: 600px; margin-left: auto; margin-right: auto; text-align: right;">
+        <i class="fas fa-star" style="color: var(--gold);"></i>
+        <div class="lecture-note-content">
+          <strong style="color: var(--gold);">💫 ستاره امروز:</strong> به ستاره درخشان گوشه صفحه هاور کنید تا <strong>ابوریحان بیرونی</strong>، پیشگام اندازه‌گیری دقیق را ببینید.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۲ — مرور جلسه ۱۹ -->
+  <div class="slide" data-slide="2" data-topic="1">
+    <div class="slide-inner">
+      <span class="slide-num">مرور</span>
+      <h2 class="slide-h1">از تئوری PINN به پیاده‌سازی</h2>
+
+      <div class="grid-2">
+        <div class="card" style="background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3);">
+          <div class="slide-h3" style="color: var(--primary);"><i class="fas fa-check-circle"></i> دستاوردهای جلسه ۱۹</div>
+          <ul style="list-style: none; padding: 0; font-size: 0.85rem; color: var(--text-dim); line-height: 2;">
+            <li>✅ ایده PINN و ترکیب فیزیک + داده</li>
+            <li>✅ سه Loss: PDE، Data، BC</li>
+            <li>✅ AutoDiff و مشتقات دقیق</li>
+            <li>✅ مسئله مستقیم و معکوس</li>
+          </ul>
+        </div>
+        <div class="card" style="background: rgba(255, 183, 0, 0.06); border-color: rgba(255, 183, 0, 0.3);">
+          <div class="slide-h3" style="color: var(--gold);"><i class="fas fa-rocket"></i> امروز — جلسه ۲۰</div>
+          <ul style="list-style: none; padding: 0; font-size: 0.85rem; color: var(--text-dim); line-height: 2;">
+            <li>🔹 ساختار کامل پروژه PINN</li>
+            <li>🔹 تعریف شبکه در PyTorch</li>
+            <li>🔹 حلقه آموزش کامل</li>
+            <li>🔹 Forward + Inverse</li>
+            <li>🔹 PINN برای نانو انبرک</li>
+            <li>🔹 پروژه نهایی</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top: 16px; background: rgba(168, 85, 247, 0.06); border-color: rgba(168, 85, 247, 0.3);">
+        <div class="slide-h3" style="color: var(--tertiary);"><i class="fas fa-bullseye"></i> پایان فاز ۵ — آماده‌سازی فاز ۶</div>
+        <p class="slide-text" style="font-size: 0.9rem;">
+          امروز آخرین جلسه فاز ۵ است. با یادگیری PINN، شما تمام ابزارهای لازم برای پروژه پایانی را در اختیار دارید. در فاز ۶، این ابزارها را با <strong>بهینه‌سازی</strong> و <strong>نگارش مقاله IEEE</strong> تکمیل می‌کنیم.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۳ — ساختار پروژه -->
+  <div class="slide" data-slide="3" data-topic="2">
+    <div class="slide-inner">
+      <span class="slide-num">ساختار</span>
+      <span class="method-badge badge-step" style="display: inline-block; margin-right: 8px;">Project Structure</span>
+      <h2 class="slide-h1">ساختار پروژه PINN</h2>
+
+      <img src="images/project-structure.png" alt="Project Structure" class="img-box img-clickable" onerror="this.style.display='none'" data-caption="ساختار پروژه PINN">
+
+      <div class="grid-3" style="margin-top: 14px;">
+        <div class="card" style="background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3);">
+          <div class="slide-h3" style="color: var(--primary);"><i class="fas fa-1"></i> Config</div>
+          <p class="slide-text" style="font-size: 0.78rem;">
+            تنظیمات: ابعاد شبکه، نرخ یادگیری، وزن Lossها
+          </p>
+        </div>
+        <div class="card" style="background: rgba(255, 183, 0, 0.06); border-color: rgba(255, 183, 0, 0.3);">
+          <div class="slide-h3" style="color: var(--gold);"><i class="fas fa-2"></i> Model</div>
+          <p class="slide-text" style="font-size: 0.78rem;">
+            کلاس PINN: شبکه عصبی چندلایه
+          </p>
+        </div>
+        <div class="card" style="background: rgba(168, 85, 247, 0.06); border-color: rgba(168, 85, 247, 0.3);">
+          <div class="slide-h3" style="color: var(--tertiary);"><i class="fas fa-3"></i> Loss</div>
+          <p class="slide-text" style="font-size: 0.78rem;">
+            سه Loss: PDE، Data، BC + ترکیب
+          </p>
+        </div>
+        <div class="card" style="background: rgba(236, 72, 153, 0.06); border-color: rgba(236, 72, 153, 0.3);">
+          <div class="slide-h3" style="color: var(--pink);"><i class="fas fa-4"></i> Data</div>
+          <p class="slide-text" style="font-size: 0.78rem;">
+            تولید نقاط collocation، BC، داده
+          </p>
+        </div>
+        <div class="card" style="background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3);">
+          <div class="slide-h3" style="color: var(--primary);"><i class="fas fa-5"></i> Trainer</div>
+          <p class="slide-text" style="font-size: 0.78rem;">
+            حلقه آموزش و ارزیابی
+          </p>
+        </div>
+        <div class="card" style="background: rgba(255, 183, 0, 0.06); border-color: rgba(255, 183, 0, 0.3);">
+          <div class="slide-h3" style="color: var(--gold);"><i class="fas fa-6"></i> Utils</div>
+          <p class="slide-text" style="font-size: 0.78rem;">
+            رسم، ذخیره مدل، مقایسه با FD
+          </p>
+        </div>
+      </div>
+
+      <div class="lecture-note">
+        <i class="fas fa-lightbulb"></i>
+        <div class="lecture-note-content">
+          <strong>در Colab:</strong> همه چیز را می‌توان در یک نوت‌بوک داشت. اما برای پروژه، بهتر است ماژول‌ها را جدا کنید تا کد قابل نگهداری باشد.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۴ — تنظیمات Colab -->
+  <div class="slide" data-slide="4" data-topic="2">
+    <div class="slide-inner">
+      <span class="slide-num">شروع</span>
+      <span class="method-badge badge-code" style="display: inline-block; margin-right: 8px;">Setup</span>
+      <h2 class="slide-h1">تنظیمات Google Colab</h2>
+
+      <img src="images/pytorch-setup.png" alt="PyTorch Setup" class="img-box img-clickable" style="max-height: 160px;" onerror="this.style.display='none'" data-caption="تنظیمات Colab">
+
+      <p class="slide-text">
+        ابتدا در Colab، GPU را فعال کنید: <strong>Runtime → Change runtime type → GPU (T4)</strong>
+      </p>
+
+      <div class="code-tabs">
+        <button class="code-tab active" data-code="setup-code"><i class="fas fa-cog"></i> Cell 1 — Setup</button>
+      </div>
+
+      <div class="code-content active" id="code-setup-code">
+<pre><span class="cm"># ============================================</span>
+<span class="cm"># Cell 1: Setup & Imports</span>
+<span class="cm"># ============================================</span>
+<span class="kw">import</span> torch
+<span class="kw">import</span> torch.nn <span class="kw">as</span> nn
+<span class="kw">import</span> torch.optim <span class="kw">as</span> optim
+<span class="kw">import</span> numpy <span class="kw">as</span> np
+<span class="kw">import</span> matplotlib.pyplot <span class="kw">as</span> plt
+<span class="kw">import</span> time
+
+<span class="cm"># --- تنظیمات کلی ---</span>
+device = torch.device(<span class="str">'cuda'</span> <span class="kw">if</span> torch.cuda.is_available() <span class="kw">else</span> <span class="str">'cpu'</span>)
+<span class="fn">print</span>(<span class="str">f'Using device: {device}'</span>)
+<span class="fn">print</span>(<span class="str">f'PyTorch version: {torch.__version__}'</span>)
+
+<span class="cm"># --- Seed ---</span>
+torch.manual_seed(<span class="num">42</span>)
+np.random.seed(<span class="num">42</span>)
+
+<span class="cm"># --- Config ---</span>
+<span class="kw">class</span> <span class="cls">Config</span>:
+    <span class="cm"># Network</span>
+    n_input = <span class="num">2</span>          <span class="cm"># x, t</span>
+    n_hidden = <span class="num">64</span>
+    n_layers = <span class="num">4</span>
+    n_output = <span class="num">1</span>          <span class="cm"># u(x,t)</span>
+    
+    <span class="cm"># Training</span>
+    n_collocation = <span class="num">5000</span>
+    n_boundary = <span class="num">200</span>
+    n_initial = <span class="num">200</span>
+    n_data = <span class="num">100</span>
+    
+    <span class="cm"># Optimizer</span>
+    lr = <span class="num">1e-3</span>
+    epochs = <span class="num">10000</span>
+    
+    <span class="cm"># Loss weights</span>
+    w_pde = <span class="num">1.0</span>
+    w_bc = <span class="num">10.0</span>
+    w_ic = <span class="num">10.0</span>
+    w_data = <span class="num">1.0</span>
+    
+    <span class="cm"># Physics</span>
+    alpha = <span class="num">0.01</span>         <span class="cm"># thermal diffusivity</span>
+
+cfg = <span class="fn">Config</span>()
+<span class="fn">print</span>(<span class="str">f'Config: {cfg.n_hidden} hidden × {cfg.n_layers} layers'</span>)</pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۵ — شبکه PINN -->
+  <div class="slide" data-slide="5" data-topic="3">
+    <div class="slide-inner">
+      <span class="slide-num">شبکه</span>
+      <span class="method-badge badge-code" style="display: inline-block; margin-right: 8px;">Network</span>
+      <h2 class="slide-h1">تعریف شبکه PINN</h2>
+
+      <img src="images/pinn-network-class.png" alt="PINN Class" class="img-box img-clickable" style="max-height: 160px;" onerror="this.style.display='none'" data-caption="کلاس PINN">
+
+      <div class="code-tabs">
+        <button class="code-tab active" data-code="network-code"><i class="fas fa-brain"></i> Cell 2 — Network</button>
+      </div>
+
+      <div class="code-content active" id="code-network-code">
+<pre><span class="cm"># ============================================</span>
+<span class="cm"># Cell 2: PINN Network Definition</span>
+<span class="cm"># ============================================</span>
+<span class="kw">class</span> <span class="cls">PINN</span>(nn.Module):
+    <span class="kw">def</span> <span class="fn">__init__</span>(self, cfg):
+        <span class="fn">super</span>().<span class="fn">__init__</span>()
+        self.cfg = cfg
+        
+        <span class="cm"># ساخت لایه‌ها</span>
+        layers = []
+        layers.<span class="fn">append</span>(nn.<span class="fn">Linear</span>(cfg.n_input, cfg.n_hidden))
+        layers.<span class="fn">append</span>(nn.<span class="fn">Tanh</span>())
+        
+        <span class="kw">for</span> _ <span class="kw">in</span> <span class="fn">range</span>(cfg.n_layers - <span class="num">1</span>):
+            layers.<span class="fn">append</span>(nn.<span class="fn">Linear</span>(cfg.n_hidden, cfg.n_hidden))
+            layers.<span class="fn">append</span>(nn.<span class="fn">Tanh</span>())
+        
+        layers.<span class="fn">append</span>(nn.<span class="fn">Linear</span>(cfg.n_hidden, cfg.n_output))
+        
+        self.net = nn.<span class="fn">Sequential</span>(*layers)
+        
+        <span class="cm"># پارامتر قابل یادگیری (برای inverse problem)</span>
+        self.alpha = nn.<span class="fn">Parameter</span>(torch.<span class="fn">tensor</span>([cfg.alpha]))
+        
+        <span class="cm"># مقداردهی اولیه Xavier</span>
+        self.<span class="fn">apply</span>(self._init_weights)
+    
+    <span class="kw">def</span> <span class="fn">_init_weights</span>(self, m):
+        <span class="kw">if</span> <span class="fn">isinstance</span>(m, nn.Linear):
+            nn.init.<span class="fn">xavier_normal_</span>(m.weight)
+            nn.init.<span class="fn">zeros_</span>(m.bias)
+    
+    <span class="kw">def</span> <span class="fn">forward</span>(self, x, t):
+        <span class="cm"># ورودی: (N, 1) + (N, 1) → (N, 2)</span>
+        inp = torch.<span class="fn">cat</span>([x, t], dim=<span class="num">1</span>)
+        <span class="kw">return</span> self.<span class="fn">net</span>(inp)
+
+<span class="cm"># --- تست سریع ---</span>
+model = <span class="fn">PINN</span>(cfg).<span class="fn">to</span>(device)
+x_test = torch.<span class="fn">rand</span>(<span class="num">5</span>, <span class="num">1</span>).<span class="fn">to</span>(device)
+t_test = torch.<span class="fn">rand</span>(<span class="num">5</span>, <span class="num">1</span>).<span class="fn">to</span>(device)
+y_test = <span class="fn">model</span>(x_test, t_test)
+<span class="fn">print</span>(<span class="str">f'Output shape: {y_test.shape}'</span>)   <span class="cm"># (5, 1)</span>
+<span class="fn">print</span>(<span class="str">f'Parameters: {sum(p.numel() for p in model.parameters())}'</span>)</pre>
+      </div>
+
+      <div class="lecture-note" style="margin-top: 14px;">
+        <i class="fas fa-star"></i>
+        <div class="lecture-note-content">
+          <strong>نکته:</strong> از <b>Tanh</b> به‌جای ReLU استفاده می‌کنیم، چون Tanh مشتق دوم پیوسته دارد. این برای PDE مرتبه ۲ یا بالاتر ضروری است.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۶ — شبیه‌ساز معماری -->
+  <div class="slide" data-slide="6" data-topic="3">
+    <div class="slide-inner">
+      <span class="slide-num">شبیه‌ساز تعاملی</span>
+      <h2 class="slide-h1">معماری شبکه PINN</h2>
+
+      <div class="simulator">
+        <div class="sim-header">
+          <div class="sim-title"><i class="fas fa-network-wired"></i> تعداد لایه و نرون</div>
+          <div class="sim-controls">
+            <div class="slider-group">
+              <label>لایه‌های پنهان:</label>
+              <input type="range" id="archLayers" min="1" max="6" value="4" step="1">
+              <span class="slider-value" id="archLayersValue">۴</span>
+            </div>
+            <div class="slider-group">
+              <label>نرون هر لایه:</label>
+              <input type="range" id="archNeurons" min="8" max="128" value="64" step="8">
+              <span class="slider-value" id="archNeuronsValue">۶۴</span>
+            </div>
+          </div>
+        </div>
+        <div class="canvas-wrapper" style="height: 300px;"><canvas id="archCanvas"></canvas></div>
+        <div class="grid-2" style="margin-top: 12px;">
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 0.72rem; color: var(--text-dim);">تعداد پارامتر</div>
+            <div id="archParams" style="font-size: 1rem; color: var(--gold); font-weight: 800; font-family: 'Courier New', monospace;">—</div>
+          </div>
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 0.72rem; color: var(--text-dim);">توصیه</div>
+            <div id="archRec" style="font-size: 0.85rem; color: var(--primary); font-weight: 700;">—</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۷ — تولید داده -->
+  <div class="slide" data-slide="7" data-topic="4">
+    <div class="slide-inner">
+      <span class="slide-num">داده</span>
+      <span class="method-badge badge-code" style="display: inline-block; margin-right: 8px;">Data Generation</span>
+      <h2 class="slide-h1">تولید داده آموزشی</h2>
+
+      <img src="images/data-generation.png" alt="Data Generation" class="img-box img-clickable" style="max-height: 160px;" onerror="this.style.display='none'" data-caption="تولید داده">
+
+      <div class="code-tabs">
+        <button class="code-tab active" data-code="data-code"><i class="fas fa-database"></i> Cell 3 — Data</button>
+      </div>
+
+      <div class="code-content active" id="code-data-code">
+<pre><span class="cm"># ============================================</span>
+<span class="cm"># Cell 3: Data Generation</span>
+<span class="cm"># ============================================</span>
+
+<span class="cm"># --- 1) Collocation Points (داخل دامنه) ---</span>
+x_colloc = torch.<span class="fn">rand</span>(cfg.n_collocation, <span class="num">1</span>, 
+                        requires_grad=<span class="kw">True</span>).<span class="fn">to</span>(device)
+t_colloc = torch.<span class="fn">rand</span>(cfg.n_collocation, <span class="num">1</span>, 
+                        requires_grad=<span class="kw">True</span>).<span class="fn">to</span>(device)
+
+<span class="cm"># --- 2) Boundary Points (x=0 و x=1) ---</span>
+t_bc = torch.<span class="fn">rand</span>(cfg.n_boundary, <span class="num">1</span>).<span class="fn">to</span>(device)
+x_bc_left = torch.<span class="fn">zeros</span>(cfg.n_boundary, <span class="num">1</span>).<span class="fn">to</span>(device)
+x_bc_right = torch.<span class="fn">ones</span>(cfg.n_boundary, <span class="num">1</span>).<span class="fn">to</span>(device)
+
+<span class="cm"># --- 3) Initial Points (t=0) ---</span>
+x_ic = torch.<span class="fn">rand</span>(cfg.n_initial, <span class="num">1</span>).<span class="fn">to</span>(device)
+t_ic = torch.<span class="fn">zeros</span>(cfg.n_initial, <span class="num">1</span>).<span class="fn">to</span>(device)
+
+<span class="cm"># --- 4) Synthetic Data (برای Inverse Problem) ---</span>
+<span class="kw">def</span> <span class="fn">true_solution</span>(x, t, alpha=<span class="num">0.01</span>):
+    <span class="str">"""حل دقیق: u(x,t) = exp(-alpha*pi^2*t) * sin(pi*x)"""</span>
+    <span class="kw">return</span> torch.<span class="fn">exp</span>(-alpha * np.pi**<span class="num">2</span> * t) * torch.<span class="fn">sin</span>(np.pi * x)
+
+x_data = torch.<span class="fn">rand</span>(cfg.n_data, <span class="num">1</span>).<span class="fn">to</span>(device)
+t_data = torch.<span class="fn">rand</span>(cfg.n_data, <span class="num">1</span>).<span class="fn">to</span>(device)
+u_data = <span class="fn">true_solution</span>(x_data, t_data, cfg.alpha)
+u_data += <span class="num">0.01</span> * torch.<span class="fn">randn_like</span>(u_data)  <span class="cm"># نویز</span>
+
+<span class="fn">print</span>(<span class="str">f'Collocation: {x_colloc.shape}'</span>)
+<span class="fn">print</span>(<span class="str">f'Boundary: {x_bc_left.shape} + {x_bc_right.shape}'</span>)
+<span class="fn">print</span>(<span class="str">f'Initial: {x_ic.shape}'</span>)
+<span class="fn">print</span>(<span class="str">f'Data: {x_data.shape}'</span>)</pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۸ — Loss فیزیکی -->
+  <div class="slide" data-slide="8" data-topic="4">
+    <div class="slide-inner">
+      <span class="slide-num">Loss ۱</span>
+      <span class="method-badge badge-code" style="display: inline-block; margin-right: 8px;">PDE Loss</span>
+      <h2 class="slide-h1">محاسبه Loss فیزیکی</h2>
+
+      <img src="images/pde-loss-code.png" alt="PDE Loss" class="img-box img-clickable" style="max-height: 160px;" onerror="this.style.display='none'" data-caption="Loss فیزیکی">
+
+      <div class="code-tabs">
+        <button class="code-tab active" data-code="pde-code"><i class="fas fa-atom"></i> Cell 4 — PDE Loss</button>
+      </div>
+
+      <div class="code-content active" id="code-pde-code">
+<pre><span class="cm"># ============================================</span>
+<span class="cm"># Cell 4: Physics Loss (PDE Residual)</span>
+<span class="cm"># ============================================</span>
+
+<span class="kw">def</span> <span class="fn">pde_loss</span>(model, x, t):
+    <span class="str">"""محاسبه PDE Residual: u_t - alpha * u_xx"""</span>
+    
+    u = <span class="fn">model</span>(x, t)
+    
+    <span class="cm"># مشتقات با AutoDiff</span>
+    u_t = torch.autograd.<span class="fn">grad</span>(
+        u, t,
+        grad_outputs=torch.<span class="fn">ones_like</span>(u),
+        create_graph=<span class="kw">True</span>,
+        retain_graph=<span class="kw">True</span>
+    )[<span class="num">0</span>]
+    
+    u_x = torch.autograd.<span class="fn">grad</span>(
+        u, x,
+        grad_outputs=torch.<span class="fn">ones_like</span>(u),
+        create_graph=<span class="kw">True</span>,
+        retain_graph=<span class="kw">True</span>
+    )[<span class="num">0</span>]
+    
+    u_xx = torch.autograd.<span class="fn">grad</span>(
+        u_x, x,
+        grad_outputs=torch.<span class="fn">ones_like</span>(u_x),
+        create_graph=<span class="kw">True</span>
+    )[<span class="num">0</span>]
+    
+    <span class="cm"># Residual: u_t - alpha * u_xx</span>
+    residual = u_t - model.alpha * u_xx
+    
+    <span class="kw">return</span> torch.<span class="fn">mean</span>(residual**<span class="num">2</span>)
+
+<span class="cm"># --- تست ---</span>
+loss_pde = <span class="fn">pde_loss</span>(model, x_colloc, t_colloc)
+<span class="fn">print</span>(<span class="str">f'PDE Loss: {loss_pde.item():.6f}'</span>)
+<span class="fn">print</span>(<span class="str">f'Learned alpha: {model.alpha.item():.4f}'</span>)</pre>
+      </div>
+
+      <div class="lecture-note" style="margin-top: 14px;">
+        <i class="fas fa-star"></i>
+        <div class="lecture-note-content">
+          <strong>نکته حیاتی:</strong> حتماً از <code style="background: rgba(0,0,0,0.4); padding: 2px 8px; border-radius: 5px;">create_graph=True</code> استفاده کنید تا gradient بتواند به پارامترها برگردد. بدون این، backprop شکسته می‌شود.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۹ — Loss داده -->
+  <div class="slide" data-slide="9" data-topic="4">
+    <div class="slide-inner">
+      <span class="slide-num">Loss ۲</span>
+      <span class="method-badge badge-code" style="display: inline-block; margin-right: 8px;">Data Loss</span>
+      <h2 class="slide-h1">محاسبه Loss داده و مرزی</h2>
+
+      <img src="images/data-loss-code.png" alt="Data Loss" class="img-box img-clickable" style="max-height: 160px;" onerror="this.style.display='none'" data-caption="Loss داده">
+
+      <div class="code-tabs">
+        <button class="code-tab active" data-code="data-loss-code"><i class="fas fa-database"></i> Cell 5 — Data Loss</button>
+      </div>
+
+      <div class="code-content active" id="code-data-loss-code">
+<pre><span class="cm"># ============================================</span>
+<span class="cm"># Cell 5: Data & Boundary Losses</span>
+<span class="cm"># ============================================</span>
+
+<span class="kw">def</span> <span class="fn">data_loss</span>(model, x_data, t_data, u_data):
+    <span class="str">"""Loss داده‌های مشاهده‌ای"""</span>
+    u_pred = <span class="fn">model</span>(x_data, t_data)
+    <span class="kw">return</span> torch.<span class="fn">mean</span>((u_pred - u_data)**<span class="num">2</span>)
+
+<span class="kw">def</span> <span class="fn">bc_loss</span>(model, x_bc_left, x_bc_right, t_bc):
+    <span class="str">"""Loss شرایط مرزی: u(0,t) = u(1,t) = 0"""</span>
+    u_left = <span class="fn">model</span>(x_bc_left, t_bc)
+    u_right = <span class="fn">model</span>(x_bc_right, t_bc)
+    <span class="kw">return</span> torch.<span class="fn">mean</span>(u_left**<span class="num">2</span>) + torch.<span class="fn">mean</span>(u_right**<span class="num">2</span>)
+
+<span class="kw">def</span> <span class="fn">ic_loss</span>(model, x_ic, t_ic):
+    <span class="str">"""Loss شرایط اولیه: u(x,0) = sin(pi*x)"""</span>
+    u_pred = <span class="fn">model</span>(x_ic, t_ic)
+    u_true = torch.<span class="fn">sin</span>(np.pi * x_ic)
+    <span class="kw">return</span> torch.<span class="fn">mean</span>((u_pred - u_true)**<span class="num">2</span>)
+
+<span class="cm"># --- تست ---</span>
+loss_data = <span class="fn">data_loss</span>(model, x_data, t_data, u_data)
+loss_bc = <span class="fn">bc_loss</span>(model, x_bc_left, x_bc_right, t_bc)
+loss_ic = <span class="fn">ic_loss</span>(model, x_ic, t_ic)
+
+<span class="fn">print</span>(<span class="str">f'Data Loss: {loss_data.item():.6f}'</span>)
+<span class="fn">print</span>(<span class="str">f'BC Loss: {loss_bc.item():.6f}'</span>)
+<span class="fn">print</span>(<span class="str">f'IC Loss: {loss_ic.item():.6f}'</span>)</pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۱۰ — Loss کل -->
+  <div class="slide" data-slide="10" data-topic="4">
+    <div class="slide-inner">
+      <span class="slide-num">Loss ۳</span>
+      <span class="method-badge badge-code" style="display: inline-block; margin-right: 8px;">Total Loss</span>
+      <h2 class="slide-h1">ترکیب سه Loss</h2>
+
+      <img src="images/total-loss-code.png" alt="Total Loss" class="img-box img-clickable" style="max-height: 160px;" onerror="this.style.display='none'" data-caption="Loss کل">
+
+      <div class="code-tabs">
+        <button class="code-tab active" data-code="total-code"><i class="fas fa-plus"></i> Cell 6 — Total Loss</button>
+      </div>
+
+      <div class="code-content active" id="code-total-code">
+<pre><span class="cm"># ============================================</span>
+<span class="cm"># Cell 6: Total Loss</span>
+<span class="cm"># ============================================</span>
+
+<span class="kw">def</span> <span class="fn">total_loss</span>(model, cfg):
+    <span class="str">"""ترکیب وزن‌دار سه Loss"""</span>
+    
+    <span class="cm"># Loss فیزیکی</span>
+    loss_pde = <span class="fn">pde_loss</span>(model, x_colloc, t_colloc)
+    
+    <span class="cm"># Loss داده</span>
+    loss_data = <span class="fn">data_loss</span>(model, x_data, t_data, u_data)
+    
+    <span class="cm"># Loss مرزی</span>
+    loss_bc = <span class="fn">bc_loss</span>(model, x_bc_left, x_bc_right, t_bc)
+    
+    <span class="cm"># Loss اولیه</span>
+    loss_ic = <span class="fn">ic_loss</span>(model, x_ic, t_ic)
+    
+    <span class="cm"># ترکیب وزن‌دار</span>
+    total = (cfg.w_pde * loss_pde + 
+             cfg.w_data * loss_data + 
+             cfg.w_bc * loss_bc + 
+             cfg.w_ic * loss_ic)
+    
+    <span class="kw">return</span> total, {
+        <span class="str">'pde'</span>: loss_pde.item(),
+        <span class="str">'data'</span>: loss_data.item(),
+        <span class="str">'bc'</span>: loss_bc.item(),
+        <span class="str">'ic'</span>: loss_ic.item()
+    }
+
+<span class="cm"># --- تست ---</span>
+total, losses = <span class="fn">total_loss</span>(model, cfg)
+<span class="fn">print</span>(<span class="str">f'Total Loss: {total.item():.6f}'</span>)
+<span class="kw">for</span> k, v <span class="kw">in</span> losses.<span class="fn">items</span>():
+    <span class="fn">print</span>(<span class="str">f'  {k}: {v:.6f}'</span>)</pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۱۱ — شبیه‌ساز Loss -->
+  <div class="slide" data-slide="11" data-topic="4">
+    <div class="slide-inner">
+      <span class="slide-num">شبیه‌ساز تعاملی</span>
+      <h2 class="slide-h1">وزن‌دهی Lossها</h2>
+
+      <div class="simulator">
+        <div class="sim-header">
+          <div class="sim-title"><i class="fas fa-balance-scale"></i> تأثیر وزن‌ها بر آموزش</div>
+          <div class="sim-controls">
+            <div class="slider-group">
+              <label>w_pde:</label>
+              <input type="range" id="wPde" min="0.1" max="10" value="1" step="0.1">
+              <span class="slider-value" id="wPdeValue">۱.۰</span>
+            </div>
+            <div class="slider-group">
+              <label>w_bc:</label>
+              <input type="range" id="wBc" min="0.1" max="10" value="10" step="0.1">
+              <span class="slider-value" id="wBcValue">۱۰.۰</span>
+            </div>
+            <div class="slider-group">
+              <label>w_data:</label>
+              <input type="range" id="wData" min="0.1" max="10" value="1" step="0.1">
+              <span class="slider-value" id="wDataValue">۱.۰</span>
+            </div>
+          </div>
+        </div>
+        <div class="canvas-wrapper" style="height: 300px;"><canvas id="wCanvas"></canvas></div>
+        <div class="grid-2" style="margin-top: 12px;">
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 0.72rem; color: var(--text-dim);">پیش‌بینی پایداری</div>
+            <div id="wStatus" style="font-size: 0.9rem; color: var(--gold); font-weight: 800;">—</div>
+          </div>
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 0.72rem; color: var(--text-dim);">زمان تخمینی آموزش</div>
+            <div id="wTime" style="font-size: 0.9rem; color: var(--primary); font-weight: 800; font-family: 'Courier New', monospace;">—</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۱۲ — حلقه آموزش -->
+  <div class="slide" data-slide="12" data-topic="5">
+    <div class="slide-inner">
+      <span class="slide-num">آموزش</span>
+      <span class="method-badge badge-code" style="display: inline-block; margin-right: 8px;">Training Loop</span>
+      <h2 class="slide-h1">حلقه آموزش کامل</h2>
+
+      <img src="images/training-loop.png" alt="Training Loop" class="img-box img-clickable" style="max-height: 160px;" onerror="this.style.display='none'" data-caption="حلقه آموزش">
+
+      <div class="code-tabs">
+        <button class="code-tab active" data-code="train-code"><i class="fas fa-play"></i> Cell 7 — Training</button>
+      </div>
+
+      <div class="code-content active" id="code-train-code">
+<pre><span class="cm"># ============================================</span>
+<span class="cm"># Cell 7: Training Loop</span>
+<span class="cm"># ============================================</span>
+
+optimizer = optim.<span class="fn">Adam</span>(model.<span class="fn">parameters</span>(), lr=cfg.lr)
+scheduler = optim.lr_scheduler.<span class="fn">StepLR</span>(optimizer, 
+                                          step_size=<span class="num">2000</span>, 
+                                          gamma=<span class="num">0.5</span>)
+
+history = {<span class="str">'loss'</span>: [], <span class="str">'pde'</span>: [], <span class="str">'data'</span>: []}
+
+start = time.<span class="fn">time</span>()
+
+<span class="kw">for</span> epoch <span class="kw">in</span> <span class="fn">range</span>(cfg.epochs):
+    model.<span class="fn">train</span>()
+    optimizer.<span class="fn">zero_grad</span>()
+    
+    total, losses = <span class="fn">total_loss</span>(model, cfg)
+    
+    total.<span class="fn">backward</span>()
+    optimizer.<span class="fn">step</span>()
+    scheduler.<span class="fn">step</span>()
+    
+    history[<span class="str">'loss'</span>].<span class="fn">append</span>(total.<span class="fn">item</span>())
+    history[<span class="str">'pde'</span>].<span class="fn">append</span>(losses[<span class="str">'pde'</span>])
+    history[<span class="str">'data'</span>].<span class="fn">append</span>(losses[<span class="str">'data'</span>])
+    
+    <span class="kw">if</span> epoch % <span class="num">500</span> == <span class="num">0</span>:
+        elapsed = time.<span class="fn">time</span>() - start
+        <span class="fn">print</span>(<span class="str">f'Epoch {epoch:5d} | '</span>
+              <span class="str">f'Loss: {total.item():.6f} | '</span>
+              <span class="str">f'PDE: {losses["pde"]:.6f} | '</span>
+              <span class="str">f'alpha: {model.alpha.item():.4f} | '</span>
+              <span class="str">f'Time: {elapsed:.1f}s'</span>)
+
+<span class="fn">print</span>(<span class="str">f'\nTraining complete!'</span>)
+<span class="fn">print</span>(<span class="str">f'Final alpha: {model.alpha.item():.4f}'</span>)
+<span class="fn">print</span>(<span class="str">f'True alpha: {cfg.alpha:.4f}'</span>)
+<span class="fn">print</span>(<span class="str">f'Error: {abs(model.alpha.item() - cfg.alpha) / cfg.alpha * 100:.2f}%'</span>)</pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۱۳ — شبیه‌ساز آموزش -->
+  <div class="slide" data-slide="13" data-topic="5">
+    <div class="slide-inner">
+      <span class="slide-num">شبیه‌ساز تعاملی</span>
+      <h2 class="slide-h1">پیشرفت آموزش</h2>
+
+      <div class="simulator">
+        <div class="sim-header">
+          <div class="sim-title"><i class="fas fa-chart-line"></i> Loss در طول آموزش</div>
+          <div class="sim-controls">
+            <div class="slider-group">
+              <label>Epoch:</label>
+              <input type="range" id="trainEpoch" min="0" max="10000" value="3000" step="100">
+              <span class="slider-value" id="trainEpochValue">۳۰۰۰</span>
+            </div>
+          </div>
+        </div>
+        <div class="canvas-wrapper" style="height: 300px;"><canvas id="trainCanvas"></canvas></div>
+        <div class="grid-3" style="margin-top: 12px;">
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 0.72rem; color: var(--text-dim);">Total Loss</div>
+            <div id="trainTotal" style="font-size: 0.95rem; color: var(--danger); font-weight: 800; font-family: 'Courier New', monospace;">—</div>
+          </div>
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 0.72rem; color: var(--text-dim);">PDE Loss</div>
+            <div id="trainPde" style="font-size: 0.95rem; color: var(--primary); font-weight: 800; font-family: 'Courier New', monospace;">—</div>
+          </div>
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 0.72rem; color: var(--text-dim);">alpha تخمینی</div>
+            <div id="trainAlpha" style="font-size: 0.95rem; color: var(--gold); font-weight: 800; font-family: 'Courier New', monospace;">—</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۱۴ — مسئله مستقیم -->
+  <div class="slide" data-slide="14" data-topic="6">
+    <div class="slide-inner">
+      <span class="slide-num">کاربرد ۱</span>
+      <span class="method-badge badge-app" style="display: inline-block; margin-right: 8px;">Forward PINN</span>
+      <h2 class="slide-h1">مسئله مستقیم — Forward PINN</h2>
+
+      <img src="images/forward-pinn-result.png" alt="Forward PINN" class="img-box img-clickable" style="max-height: 180px;" onerror="this.style.display='none'" data-caption="نتیجه Forward PINN">
+
+      <p class="slide-text">
+        در مسئله مستقیم، **همه پارامترها معلوم** هستند و فقط جواب PDE را می‌خواهیم. کافیست <code style="background: rgba(0,0,0,0.4); padding: 2px 8px; border-radius: 5px;">w_data=0</code> کنید:
+      </p>
+
+      <div class="code-tabs">
+        <button class="code-tab active" data-code="forward-code"><i class="fas fa-arrow-right"></i> Cell 8 — Forward</button>
+      </div>
+
+      <div class="code-content active" id="code-forward-code">
+<pre><span class="cm"># ============================================</span>
+<span class="cm"># Cell 8: Forward Problem</span>
+<span class="cm"># ============================================</span>
+
+<span class="cm"># --- Config برای Forward ---</span>
+cfg_fwd = <span class="fn">Config</span>()
+cfg_fwd.w_data = <span class="num">0.0</span>      <span class="cm"># بدون داده</span>
+cfg_fwd.w_pde = <span class="num">1.0</span>
+cfg_fwd.w_bc = <span class="num">10.0</span>
+cfg_fwd.w_ic = <span class="num">10.0</span>
+cfg_fwd.epochs = <span class="num">5000</span>
+
+<span class="cm"># --- مدل جدید ---</span>
+model_fwd = <span class="fn">PINN</span>(cfg_fwd).<span class="fn">to</span>(device)
+optimizer = optim.<span class="fn">Adam</span>(model_fwd.<span class="fn">parameters</span>(), lr=cfg_fwd.lr)
+
+<span class="cm"># --- آموزش ---</span>
+<span class="kw">for</span> epoch <span class="kw">in</span> <span class="fn">range</span>(cfg_fwd.epochs):
+    optimizer.<span class="fn">zero_grad</span>()
+    total, losses = <span class="fn">total_loss</span>(model_fwd, cfg_fwd)
+    total.<span class="fn">backward</span>()
+    optimizer.<span class="fn">step</span>()
+    
+    <span class="kw">if</span> epoch % <span class="num">1000</span> == <span class="num">0</span>:
+        <span class="fn">print</span>(<span class="str">f'Epoch {epoch}: Loss={total.item():.6f}'</span>)
+
+<span class="cm"># --- ارزیابی ---</span>
+model_fwd.<span class="fn">eval</span>()
+x_test = torch.<span class="fn">linspace</span>(<span class="num">0</span>, <span class="num">1</span>, <span class="num">100</span>).<span class="fn">reshape</span>(-<span class="num">1</span>, <span class="num">1</span>).<span class="fn">to</span>(device)
+t_test = torch.<span class="fn">full_like</span>(x_test, <span class="num">0.5</span>)
+
+<span class="kw">with</span> torch.<span class="fn">no_grad</span>():
+    u_pred = model_fwd.<span class="fn">_forward</span>(x_test, t_test) <span class="kw">if</span> <span class="fn">hasattr</span>(model_fwd, <span class="str">'_forward'</span>) <span class="kw">else</span> <span class="fn">model_fwd</span>(x_test, t_test)
+    u_true = <span class="fn">true_solution</span>(x_test, t_test, cfg_fwd.alpha)
+
+error = torch.<span class="fn">mean</span>((u_pred - u_true)**<span class="num">2</span>).<span class="fn">item</span>()
+<span class="fn">print</span>(<span class="str">f'\nMSE Error: {error:.6e}'</span>)</pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۱۵ — شبیه‌ساز Forward -->
+  <div class="slide" data-slide="15" data-topic="6">
+    <div class="slide-inner">
+      <span class="slide-num">شبیه‌ساز تعاملی</span>
+      <h2 class="slide-h1">حل مسئله مستقیم</h2>
+
+      <div class="simulator">
+        <div class="sim-header">
+          <div class="sim-title"><i class="fas fa-fire"></i> مقایسه PINN با حل دقیق</div>
+          <div class="sim-controls">
+            <div class="slider-group">
+              <label>زمان t:</label>
+              <input type="range" id="fwdTime" min="0" max="1" value="0.5" step="0.05">
+              <span class="slider-value" id="fwdTimeValue">۰.۵۰</span>
+            </div>
+          </div>
+        </div>
+        <div class="canvas-wrapper" style="height: 320px;"><canvas id="fwdCanvas"></canvas></div>
+        <div class="grid-2" style="margin-top: 12px;">
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 0.72rem; color: var(--text-dim);">MSE</div>
+            <div id="fwdMSE" style="font-size: 1rem; color: var(--danger); font-weight: 800; font-family: 'Courier New', monospace;">—</div>
+          </div>
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 0.72rem; color: var(--text-dim);">وضعیت</div>
+            <div id="fwdStatus" style="font-size: 0.85rem; color: var(--success); font-weight: 800;">—</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۱۶ — مسئله معکوس -->
+  <div class="slide" data-slide="16" data-topic="7">
+    <div class="slide-inner">
+      <span class="slide-num">کاربرد ۲</span>
+      <span class="method-badge badge-app" style="display: inline-block; margin-right: 8px;">Inverse PINN</span>
+      <h2 class="slide-h1">مسئله معکوس — Inverse PINN</h2>
+
+      <img src="images/inverse-pinn-result.png" alt="Inverse PINN" class="img-box img-clickable" style="max-height: 180px;" onerror="this.style.display='none'" data-caption="نتیجه Inverse PINN">
+
+      <p class="slide-text">
+        در مسئله معکوس، **پارامترهای PDE نامعلوم** هستند و باید از داده تخمین زده شوند:
+      </p>
+
+      <div class="code-tabs">
+        <button class="code-tab active" data-code="inverse-code"><i class="fas fa-search"></i> Cell 9 — Inverse</button>
+      </div>
+
+      <div class="code-content active" id="code-inverse-code">
+<pre><span class="cm"># ============================================</span>
+<span class="cm"># Cell 9: Inverse Problem</span>
+<span class="cm"># ============================================</span>
+
+<span class="cm"># --- Config برای Inverse ---</span>
+cfg_inv = <span class="fn">Config</span>()
+cfg_inv.w_data = <span class="num">1.0</span>       <span class="cm"># داده مهم است</span>
+cfg_inv.w_pde = <span class="num">1.0</span>
+cfg_inv.w_bc = <span class="num">10.0</span>
+cfg_inv.w_ic = <span class="num">10.0</span>
+cfg_inv.epochs = <span class="num">10000</span>
+
+<span class="cm"># --- مدل جدید ---</span>
+model_inv = <span class="fn">PINN</span>(cfg_inv).<span class="fn">to</span>(device)
+<span class="cm"># alpha قابل یادگیری است</span>
+<span class="fn">print</span>(<span class="str">f'Initial alpha: {model_inv.alpha.item():.4f}'</span>)
+<span class="fn">print</span>(<span class="str">f'True alpha: {cfg_inv.alpha:.4f}'</span>)
+
+optimizer = optim.<span class="fn">Adam</span>([
+    {<span class="str">'params'</span>: model_inv.net.<span class="fn">parameters</span>(), <span class="str">'lr'</span>: <span class="num">1e-3</span>},
+    {<span class="str">'params'</span>: [model_inv.alpha], <span class="str">'lr'</span>: <span class="num">1e-2</span>}  <span class="cm"># نرخ بالاتر</span>
+])
+
+<span class="cm"># --- آموزش ---</span>
+alpha_history = []
+
+<span class="kw">for</span> epoch <span class="kw">in</span> <span class="fn">range</span>(cfg_inv.epochs):
+    optimizer.<span class="fn">zero_grad</span>()
+    total, losses = <span class="fn">total_loss</span>(model_inv, cfg_inv)
+    total.<span class="fn">backward</span>()
+    optimizer.<span class="fn">step</span>()
+    
+    alpha_history.<span class="fn">append</span>(model_inv.alpha.<span class="fn">item</span>())
+    
+    <span class="kw">if</span> epoch % <span class="num">1000</span> == <span class="num">0</span>:
+        <span class="fn">print</span>(<span class="str">f'Epoch {epoch}: Loss={total.item():.6f}, '</span>
+              <span class="str">f'alpha={model_inv.alpha.item():.4f}'</span>)
+
+<span class="fn">print</span>(<span class="str">f'\nFinal estimation:'</span>)
+<span class="fn">print</span>(<span class="str">f'  True alpha: {cfg_inv.alpha:.4f}'</span>)
+<span class="fn">print</span>(<span class="str">f'  Learned alpha: {model_inv.alpha.item():.4f}'</span>)
+<span class="fn">print</span>(<span class="str">f'  Error: {abs(model_inv.alpha.item() - cfg_inv.alpha) / cfg_inv.alpha * 100:.2f}%'</span>)</pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۱۷ — شبیه‌ساز Inverse -->
+  <div class="slide" data-slide="17" data-topic="7">
+    <div class="slide-inner">
+      <span class="slide-num">شبیه‌ساز تعاملی</span>
+      <h2 class="slide-h1">تخمین پارامتر</h2>
+
+      <div class="simulator">
+        <div class="sim-header">
+          <div class="sim-title"><i class="fas fa-search"></i> تخمین alpha در طول آموزش</div>
+          <div class="sim-controls">
+            <div class="slider-group">
+              <label>Epoch:</label>
+              <input type="range" id="invEpoch" min="0" max="10000" value="5000" step="100">
+              <span class="slider-value" id="invEpochValue">۵۰۰۰</span>
+            </div>
+            <div class="slider-group">
+              <label>alpha واقعی:</label>
+              <input type="range" id="invTrue" min="0.005" max="0.05" value="0.01" step="0.001">
+              <span class="slider-value" id="invTrueValue">۰.۰۱۰</span>
+            </div>
+          </div>
+        </div>
+        <div class="canvas-wrapper" style="height: 320px;"><canvas id="invCanvas"></canvas></div>
+        <div class="grid-3" style="margin-top: 12px;">
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 0.72rem; color: var(--text-dim);">alpha واقعی</div>
+            <div id="invTrueDisp" style="font-size: 0.95rem; color: var(--gold); font-weight: 800; font-family: 'Courier New', monospace;">—</div>
+          </div>
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 0.72rem; color: var(--text-dim);">alpha تخمینی</div>
+            <div id="invEst" style="font-size: 0.95rem; color: var(--primary); font-weight: 800; font-family: 'Courier New', monospace;">—</div>
+          </div>
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 0.72rem; color: var(--text-dim);">خطا</div>
+            <div id="invErr" style="font-size: 0.95rem; color: var(--danger); font-weight: 800; font-family: 'Courier New', monospace;">—</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۱۸ — PINN نانو انبرک -->
+  <div class="slide" data-slide="18" data-topic="8">
+    <div class="slide-inner">
+      <span class="slide-num">کاربرد واقعی</span>
+      <span class="method-badge badge-app" style="display: inline-block; margin-right: 8px;">Nano-cantilever</span>
+      <h2 class="slide-h1">PINN برای نانو انبرک</h2>
+
+      <img src="images/nano-pinn-implementation.png" alt="Nano PINN" class="img-box img-clickable" onerror="this.style.display='none'" data-caption="PINN نانو انبرک">
+
+      <p class="slide-text">
+        معادله نانو انبرک را با PINN حل می‌کنیم. برای این کار، PDE مرتبه ۴ را به ۴ معادله مرتبه ۱ تبدیل می‌کنیم:
+      </p>
+
+      <div class="code-tabs">
+        <button class="code-tab active" data-code="nano-code"><i class="fas fa-microchip"></i> Cell 10 — Nano</button>
+      </div>
+
+      <div class="code-content active" id="code-nano-code">
+<pre><span class="cm"># ============================================</span>
+<span class="cm"># Cell 10: PINN for Nano-cantilever</span>
+<span class="cm"># ============================================</span>
+
+<span class="kw">class</span> <span class="cls">NanoCantileverPINN</span>(nn.Module):
+    <span class="kw">def</span> <span class="fn">__init__</span>(self):
+        <span class="fn">super</span>().<span class="fn">__init__</span>()
+        self.net = nn.<span class="fn">Sequential</span>(
+            nn.<span class="fn">Linear</span>(<span class="num">1</span>, <span class="num">64</span>), nn.<span class="fn">Tanh</span>(),
+            nn.<span class="fn">Linear</span>(<span class="num">64</span>, <span class="num">64</span>), nn.<span class="fn">Tanh</span>(),
+            nn.<span class="fn">Linear</span>(<span class="num">64</span>, <span class="num">64</span>), nn.<span class="fn">Tanh</span>(),
+            nn.<span class="fn">Linear</span>(<span class="num">64</span>, <span class="num">1</span>)
+        )
+        <span class="cm"># پارامترهای فیزیکی (قابل تخمین)</span>
+        self.alpha = nn.<span class="fn">Parameter</span>(torch.<span class="fn">tensor</span>([<span class="num">1.0</span>]))
+        self.beta = nn.<span class="fn">Parameter</span>(torch.<span class="fn">tensor</span>([<span class="num">0.1</span>]))
+    
+    <span class="kw">def</span> <span class="fn">forward</span>(self, x):
+        <span class="kw">return</span> self.<span class="fn">net</span>(x)
+
+<span class="cm"># --- دامنه: x ∈ [0, L] ---</span>
+L = <span class="num">1.0</span>
+x_domain = torch.<span class="fn">rand</span>(<span class="num">1000</span>, <span class="num">1</span>, requires_grad=<span class="kw">True</span>).<span class="fn">to</span>(device) * L
+x_bc = torch.<span class="fn">tensor</span>([[<span class="num">0.0</span>], [L]]).<span class="fn">to</span>(device)
+
+<span class="cm"># --- PDE Residual: EI w'''' = alpha/(1-w)^2 + beta/(1-w)^3 ---</span>
+<span class="kw">def</span> <span class="fn">nano_pde_loss</span>(model):
+    w = <span class="fn">model</span>(x_domain)
+    
+    <span class="cm"># مشتقات مرتبه ۴</span>
+    w_x = torch.autograd.<span class="fn">grad</span>(w, x_domain, 
+                          grad_outputs=torch.<span class="fn">ones_like</span>(w),
+                          create_graph=<span class="kw">True</span>)[<span class="num">0</span>]
+    w_xx = torch.autograd.<span class="fn">grad</span>(w_x, x_domain,
+                           grad_outputs=torch.<span class="fn">ones_like</span>(w_x),
+                           create_graph=<span class="kw">True</span>)[<span class="num">0</span>]
+    w_xxx = torch.autograd.<span class="fn">grad</span>(w_xx, x_domain,
+                            grad_outputs=torch.<span class="fn">ones_like</span>(w_xx),
+                            create_graph=<span class="kw">True</span>)[<span class="num">0</span>]
+    w_xxxx = torch.autograd.<span class="fn">grad</span>(w_xxx, x_domain,
+                             grad_outputs=torch.<span class="fn">ones_like</span>(w_xxx),
+                             create_graph=<span class="kw">True</span>)[<span class="num">0</span>]
+    
+    <span class="cm"># Residual</span>
+    force = (model.alpha / (<span class="num">1</span> - w)**<span class="num">2</span> + 
+             model.beta / (<span class="num">1</span> - w)**<span class="num">3</span>)
+    residual = w_xxxx - force
+    
+    <span class="kw">return</span> torch.<span class="fn">mean</span>(residual**<span class="num">2</span>)
+
+<span class="cm"># --- آموزش ---</span>
+model_nano = <span class="fn">NanoCantileverPINN</span>().<span class="fn">to</span>(device)
+opt = optim.<span class="fn">Adam</span>(model_nano.<span class="fn">parameters</span>(), lr=<span class="num">1e-3</span>)
+
+<span class="kw">for</span> epoch <span class="kw">in</span> <span class="fn">range</span>(<span class="num">5000</span>):
+    opt.<span class="fn">zero_grad</span>()
+    
+    <span class="cm"># PDE Loss</span>
+    loss_pde = <span class="fn">nano_pde_loss</span>(model_nano)
+    
+    <span class="cm"># BC: w(0)=w'(0)=0, w''(L)=w'''(L)=0</span>
+    w_bc = <span class="fn">model_nano</span>(x_bc)
+    loss_bc = torch.<span class="fn">mean</span>(w_bc**<span class="num">2</span>)
+    
+    loss = loss_pde + <span class="num">10</span> * loss_bc
+    loss.<span class="fn">backward</span>()
+    opt.<span class="fn">step</span>()
+    
+    <span class="kw">if</span> epoch % <span class="num">1000</span> == <span class="num">0</span>:
+        <span class="fn">print</span>(<span class="str">f'Epoch {epoch}: Loss={loss.item():.6f}, '</span>
+              <span class="str">f'alpha={model_nano.alpha.item():.4f}'</span>)</pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۱۹ — شبیه‌ساز نانو -->
+  <div class="slide" data-slide="19" data-topic="8">
+    <div class="slide-inner">
+      <span class="slide-num">شبیه‌ساز تعاملی</span>
+      <h2 class="slide-h1">مقایسه PINN با FD</h2>
+
+      <div class="simulator">
+        <div class="sim-header">
+          <div class="sim-title"><i class="fas fa-microchip"></i> حل نانو انبرک</div>
+          <div class="sim-controls">
+            <div class="slider-group">
+              <label>ولتاژ V:</label>
+              <input type="range" id="nanoV" min="1" max="12" value="5" step="0.5">
+              <span class="slider-value" id="nanoVValue">۵.۰</span>
+            </div>
+            <div class="slider-group">
+              <label>وضعیت:</label>
+              <select id="nanoShow" style="background: rgba(0,0,0,0.4); border: 1px solid var(--card-border); color: var(--text); padding: 4px 8px; border-radius: 8px; font-family: inherit; font-size: 0.78rem;">
+                <option value="both">هر دو</option>
+                <option value="pinn">فقط PINN</option>
+                <option value="fd">فقط FD</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="canvas-wrapper" style="height: 320px;"><canvas id="nanoCanvas"></canvas></div>
+        <div class="grid-2" style="margin-top: 12px;">
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 0.72rem; color: var(--text-dim);">خطای PINN</div>
+            <div id="nanoErr" style="font-size: 1rem; color: var(--primary); font-weight: 800; font-family: 'Courier New', monospace;">—</div>
+          </div>
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 0.72rem; color: var(--text-dim);">وضعیت</div>
+            <div id="nanoStatus" style="font-size: 0.9rem; color: var(--success); font-weight: 800;">—</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۲۰ — پروژه نهایی -->
+  <div class="slide" data-slide="20" data-topic="8">
+    <div class="slide-inner">
+      <span class="slide-num">پروژه</span>
+      <span class="method-badge badge-app" style="display: inline-block; margin-right: 8px;">Final Project</span>
+      <h2 class="slide-h1">پروژه نهایی PINN</h2>
+
+      <p class="slide-text">
+        اکنون شما ابزارهای لازم را دارید. پروژه نهایی، ترکیب همه این‌ها است:
+      </p>
+
+      <div class="grid-2">
+        <div class="card" style="background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3);">
+          <div class="slide-h3" style="color: var(--primary);"><i class="fas fa-tasks"></i> گام‌های پروژه</div>
+          <ol style="padding-right: 20px; font-size: 0.82rem; color: var(--text-dim); line-height: 2.2;">
+            <li>انتخاب یکی از ۶ پروژه پیشنهادی</li>
+            <li>حل کلاسیک PDE (تحلیلی/نیمه‌تحلیلی)</li>
+            <li>حل عددی با FD یا FEM</li>
+            <li>حل با PINN در PyTorch</li>
+            <li>مقایسه نتایج</li>
+            <li>تحلیل خطا و زمان</li>
+            <li>نگارش مقاله IEEE</li>
+          </ol>
+        </div>
+        <div class="card" style="background: rgba(255, 183, 0, 0.06); border-color: rgba(255, 183, 0, 0.3);">
+          <div class="slide-h3" style="color: var(--gold);"><i class="fas fa-star"></i> معیارهای ارزیابی</div>
+          <ul style="list-style: none; padding: 0; font-size: 0.82rem; color: var(--text-dim); line-height: 2;">
+            <li>✅ کد پایتون در Colab</li>
+            <li>✅ تصاویر ۶۰۰ DPI، PNG</li>
+            <li>✅ مقاله IEEE (۶–۸ صفحه)</li>
+            <li>✅ بدون بخش Literature Review</li>
+            <li>✅ تمرکز: روش + نتایج + مقایسه</li>
+            <li>⏰ مهلت: پیش از پایان‌ترم</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="lecture-note">
+        <i class="fas fa-exclamation-triangle"></i>
+        <div class="lecture-note-content">
+          <strong>هشدار مهم:</strong> پروژه نهایی <strong>انفرادی</strong> است. گزارش پیش از پایان‌ترم الزامی است. کد فقط Python + Colab. تصاویر حداقل ۶۰۰ DPI.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۲۱ — کد کامل Colab -->
+  <div class="slide" data-slide="21" data-topic="9">
+    <div class="slide-inner">
+      <span class="slide-num">کد کامل</span>
+      <span class="method-badge badge-code" style="display: inline-block; margin-right: 8px;">Complete Notebook</span>
+      <h2 class="slide-h1">نوت‌بوک کامل Colab</h2>
+
+      <img src="images/colab-notebook.png" alt="Colab Notebook" class="img-box img-clickable" style="max-height: 160px;" onerror="this.style.display='none'" data-caption="نوت‌بوک Colab">
+
+      <div class="code-tabs">
+        <button class="code-tab active" data-code="complete-code"><i class="fab fa-python"></i> نوت‌بوک کامل</button>
+      </div>
+
+      <div class="code-content active" id="code-complete-code">
+<pre><span class="cm"># ============================================</span>
+<span class="cm"># Complete PINN Notebook (Colab)</span>
+<span class="cm"># ============================================</span>
+<span class="kw">import</span> torch
+<span class="kw">import</span> torch.nn <span class="kw">as</span> nn
+<span class="kw">import</span> torch.optim <span class="kw">as</span> optim
+<span class="kw">import</span> numpy <span class="kw">as</span> np
+<span class="kw">import</span> matplotlib.pyplot <span class="kw">as</span> plt
+<span class="kw">import</span> time
+
+device = torch.device(<span class="str">'cuda'</span> <span class="kw">if</span> torch.cuda.is_available() <span class="kw">else</span> <span class="str">'cpu'</span>)
+torch.manual_seed(<span class="num">42</span>)
+
+<span class="cm"># --- Config ---</span>
+<span class="kw">class</span> <span class="cls">Config</span>:
+    n_input = <span class="num">2</span>
+    n_hidden = <span class="num">64</span>
+    n_layers = <span class="num">4</span>
+    n_output = <span class="num">1</span>
+    n_collocation = <span class="num">5000</span>
+    n_boundary = <span class="num">200</span>
+    n_initial = <span class="num">200</span>
+    n_data = <span class="num">100</span>
+    lr = <span class="num">1e-3</span>
+    epochs = <span class="num">10000</span>
+    w_pde = <span class="num">1.0</span>
+    w_bc = <span class="num">10.0</span>
+    w_ic = <span class="num">10.0</span>
+    w_data = <span class="num">1.0</span>
+    alpha = <span class="num">0.01</span>
+
+cfg = <span class="fn">Config</span>()
+
+<span class="cm"># --- Network ---</span>
+<span class="kw">class</span> <span class="cls">PINN</span>(nn.Module):
+    <span class="kw">def</span> <span class="fn">__init__</span>(self, cfg):
+        <span class="fn">super</span>().<span class="fn">__init__</span>()
+        self.cfg = cfg
+        layers = [nn.<span class="fn">Linear</span>(cfg.n_input, cfg.n_hidden), nn.<span class="fn">Tanh</span>()]
+        <span class="kw">for</span> _ <span class="kw">in</span> <span class="fn">range</span>(cfg.n_layers - <span class="num">1</span>):
+            layers += [nn.<span class="fn">Linear</span>(cfg.n_hidden, cfg.n_hidden), nn.<span class="fn">Tanh</span>()]
+        layers.<span class="fn">append</span>(nn.<span class="fn">Linear</span>(cfg.n_hidden, cfg.n_output))
+        self.net = nn.<span class="fn">Sequential</span>(*layers)
+        self.alpha = nn.<span class="fn">Parameter</span>(torch.<span class="fn">tensor</span>([cfg.alpha]))
+    
+    <span class="kw">def</span> <span class="fn">forward</span>(self, x, t):
+        <span class="kw">return</span> self.<span class="fn">net</span>(torch.<span class="fn">cat</span>([x, t], dim=<span class="num">1</span>))
+
+<span class="cm"># --- Data ---</span>
+x_colloc = torch.<span class="fn">rand</span>(cfg.n_collocation, <span class="num">1</span>, requires_grad=<span class="kw">True</span>).<span class="fn">to</span>(device)
+t_colloc = torch.<span class="fn">rand</span>(cfg.n_collocation, <span class="num">1</span>, requires_grad=<span class="kw">True</span>).<span class="fn">to</span>(device)
+
+t_bc = torch.<span class="fn">rand</span>(cfg.n_boundary, <span class="num">1</span>).<span class="fn">to</span>(device)
+x_bc_0 = torch.<span class="fn">zeros</span>(cfg.n_boundary, <span class="num">1</span>).<span class="fn">to</span>(device)
+x_bc_1 = torch.<span class="fn">ones</span>(cfg.n_boundary, <span class="num">1</span>).<span class="fn">to</span>(device)
+
+x_ic = torch.<span class="fn">rand</span>(cfg.n_initial, <span class="num">1</span>).<span class="fn">to</span>(device)
+t_ic = torch.<span class="fn">zeros</span>(cfg.n_initial, <span class="num">1</span>).<span class="fn">to</span>(device)
+
+<span class="kw">def</span> <span class="fn">true_sol</span>(x, t, a):
+    <span class="kw">return</span> torch.<span class="fn">exp</span>(-a * np.pi**<span class="num">2</span> * t) * torch.<span class="fn">sin</span>(np.pi * x)
+
+x_data = torch.<span class="fn">rand</span>(cfg.n_data, <span class="num">1</span>).<span class="fn">to</span>(device)
+t_data = torch.<span class="fn">rand</span>(cfg.n_data, <span class="num">1</span>).<span class="fn">to</span>(device)
+u_data = <span class="fn">true_sol</span>(x_data, t_data, cfg.alpha) + <span class="num">0.01</span> * torch.<span class="fn">randn_like</span>(x_data)
+
+<span class="cm"># --- Loss ---</span>
+<span class="kw">def</span> <span class="fn">compute_loss</span>(model, cfg):
+    <span class="cm"># PDE</span>
+    u = <span class="fn">model</span>(x_colloc, t_colloc)
+    u_t = torch.autograd.<span class="fn">grad</span>(u, t_colloc, torch.<span class="fn">ones_like</span>(u), create_graph=<span class="kw">True</span>)[<span class="num">0</span>]
+    u_x = torch.autograd.<span class="fn">grad</span>(u, x_colloc, torch.<span class="fn">ones_like</span>(u), create_graph=<span class="kw">True</span>)[<span class="num">0</span>]
+    u_xx = torch.autograd.<span class="fn">grad</span>(u_x, x_colloc, torch.<span class="fn">ones_like</span>(u_x), create_graph=<span class="kw">True</span>)[<span class="num">0</span>]
+    loss_pde = torch.<span class="fn">mean</span>((u_t - model.alpha * u_xx)**<span class="num">2</span>)
+    
+    <span class="cm"># BC</span>
+    u_bc_0 = <span class="fn">model</span>(x_bc_0, t_bc)
+    u_bc_1 = <span class="fn">model</span>(x_bc_1, t_bc)
+    loss_bc = torch.<span class="fn">mean</span>(u_bc_0**<span class="num">2</span>) + torch.<span class="fn">mean</span>(u_bc_1**<span class="num">2</span>)
+    
+    <span class="cm"># IC</span>
+    u_ic = <span class="fn">model</span>(x_ic, t_ic)
+    loss_ic = torch.<span class="fn">mean</span>((u_ic - torch.<span class="fn">sin</span>(np.pi * x_ic))**<span class="num">2</span>)
+    
+    <span class="cm"># Data</span>
+    u_pred = <span class="fn">model</span>(x_data, t_data)
+    loss_data = torch.<span class="fn">mean</span>((u_pred - u_data)**<span class="num">2</span>)
+    
+    <span class="kw">return</span> (cfg.w_pde * loss_pde + cfg.w_bc * loss_bc + 
+            cfg.w_ic * loss_ic + cfg.w_data * loss_data)
+
+<span class="cm"># --- Training ---</span>
+model = <span class="fn">PINN</span>(cfg).<span class="fn">to</span>(device)
+optimizer = optim.<span class="fn">Adam</span>(model.<span class="fn">parameters</span>(), lr=cfg.lr)
+
+losses = []
+<span class="kw">for</span> epoch <span class="kw">in</span> <span class="fn">range</span>(cfg.epochs):
+    optimizer.<span class="fn">zero_grad</span>()
+    loss = <span class="fn">compute_loss</span>(model, cfg)
+    loss.<span class="fn">backward</span>()
+    optimizer.<span class="fn">step</span>()
+    losses.<span class="fn">append</span>(loss.<span class="fn">item</span>())
+    
+    <span class="kw">if</span> epoch % <span class="num">1000</span> == <span class="num">0</span>:
+        <span class="fn">print</span>(<span class="str">f'Epoch {epoch}: Loss={loss.item():.6f}, alpha={model.alpha.item():.4f}'</span>)
+
+<span class="cm"># --- Plot ---</span>
+fig, axes = plt.<span class="fn">subplots</span>(<span class="num">1</span>, <span class="num">2</span>, figsize=(<span class="num">14</span>, <span class="num">5</span>))
+
+axes[<span class="num">0</span>].<span class="fn">semilogy</span>(losses)
+axes[<span class="num">0</span>].<span class="fn">set_xlabel</span>(<span class="str">'Epoch'</span>)
+axes[<span class="num">0</span>].<span class="fn">set_ylabel</span>(<span class="str">'Loss'</span>)
+axes[<span class="num">0</span>].<span class="fn">set_title</span>(<span class="str">'Training Loss'</span>)
+axes[<span class="num">0</span>].<span class="fn">grid</span>(<span class="kw">True</span>, alpha=<span class="num">0.3</span>)
+
+model.<span class="fn">eval</span>()
+x_test = torch.<span class="fn">linspace</span>(<span class="num">0</span>, <span class="num">1</span>, <span class="num">100</span>).<span class="fn">reshape</span>(-<span class="num">1</span>, <span class="num">1</span>).<span class="fn">to</span>(device)
+t_test = torch.<span class="fn">full_like</span>(x_test, <span class="num">0.5</span>)
+<span class="kw">with</span> torch.<span class="fn">no_grad</span>():
+    u_pred = <span class="fn">model</span>(x_test, t_test).<span class="fn">cpu</span>().<span class="fn">numpy</span>()
+    u_true = <span class="fn">true_sol</span>(x_test, t_test, cfg.alpha).<span class="fn">cpu</span>().<span class="fn">numpy</span>()
+
+axes[<span class="num">1</span>].<span class="fn">plot</span>(x_test.<span class="fn">cpu</span>().<span class="fn">numpy</span>(), u_true, <span class="str">'k-'</span>, lw=<span class="num">2</span>, label=<span class="str">'Exact'</span>)
+axes[<span class="num">1</span>].<span class="fn">plot</span>(x_test.<span class="fn">cpu</span>().<span class="fn">numpy</span>(), u_pred, <span class="str">'r--'</span>, lw=<span class="num">2</span>, label=<span class="str">'PINN'</span>)
+axes[<span class="num">1</span>].<span class="fn">set_xlabel</span>(<span class="str">'x'</span>)
+axes[<span class="num">1</span>].<span class="fn">set_ylabel</span>(<span class="str">'u(x, 0.5)'</span>)
+axes[<span class="num">1</span>].<span class="fn">legend</span>()
+axes[<span class="num">1</span>].<span class="fn">grid</span>(<span class="kw">True</span>, alpha=<span class="num">0.3</span>)
+
+plt.<span class="fn">tight_layout</span>()
+plt.<span class="fn">savefig</span>(<span class="str">'pinn_result.png'</span>, dpi=<span class="num">600</span>, bbox_inches=<span class="str">'tight'</span>)
+plt.<span class="fn">show</span>()
+
+<span class="fn">print</span>(<span class="str">f'\nTrue alpha: {cfg.alpha:.4f}'</span>)
+<span class="fn">print</span>(<span class="str">f'Learned alpha: {model.alpha.item():.4f}'</span>)</pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۲۲ — تمرین‌ها -->
+  <div class="slide" data-slide="22" data-topic="9">
+    <div class="slide-inner">
+      <span class="slide-num">تمرین</span>
+      <h2 class="slide-h1">تمرین‌های جلسه ۲۰</h2>
+
+      <div class="exercise-block ex-yellow">
+        <div class="ex-header"><div class="ex-num">الف</div><div><div class="ex-title">سؤالات مفهومی</div></div></div>
+        <ol class="ex-list">
+          <li>چرا از <b>Tanh</b> به‌جای ReLU در PINN استفاده می‌کنیم؟</li>
+          <li>نقش <code>create_graph=True</code> در AutoDiff چیست؟</li>
+          <li>چرا alpha در Inverse Problem با نرخ بالاتری آموزش می‌بیند؟</li>
+          <li>تفاوت PINN با FEM در حل PDE چیست؟</li>
+        </ol>
+      </div>
+
+      <div class="exercise-block ex-green">
+        <div class="ex-header"><div class="ex-num">ب</div><div><div class="ex-title">تمرین‌های عملی</div></div></div>
+        <ol class="ex-list">
+          <li>نوت‌بوک کامل را در Colab اجرا کنید و نتایج را ذخیره کنید.</li>
+          <li>معادله گرما را با شرایط مرزی مختلف (Dirichlet، Neumann) حل کنید.</li>
+          <li>اثر تعداد نقاط collocation (۱۰۰۰، ۵۰۰۰، ۱۰۰۰۰) را بررسی کنید.</li>
+          <li>مسئله معکوس را برای alpha با نویزهای مختلف (۱٪، ۵٪، ۱۰٪) حل کنید.</li>
+        </ol>
+      </div>
+
+      <div class="exercise-block ex-purple">
+        <div class="ex-header"><div class="ex-num">ج</div><div><div class="ex-title">تمرین‌های نوشتاری</div></div></div>
+        <ol class="ex-list">
+          <li>الگوریتم آموزش PINN را به‌صورت شبه‌کد بنویسید.</li>
+          <li>توضیح دهید چرا AutoDiff سریع‌تر از تفاضل محدود است.</li>
+          <li>مقایسه‌ی جامع PINN، FD، و FEM بنویسید.</li>
+        </ol>
+      </div>
+
+      <div class="exercise-block ex-red">
+        <div class="ex-header"><div class="ex-num">★</div><div><div class="ex-title">چالش خلاقانه</div></div></div>
+        <ol class="ex-list">
+          <li>PINN را برای معادله Burgers غیرخطی پیاده کنید.</li>
+          <li>پارامترهای alpha و beta نانو انبرک را با PINN تخمین بزنید.</li>
+          <li>یک پروژه کامل (کد + گزارش) آماده کنید و به ایمیل استاد بفرستید.</li>
+        </ol>
+      </div>
+
+      <div class="email-banner">
+        <p><i class="fas fa-envelope" style="color: var(--primary);"></i> ارسال تمرین‌ها:</p>
+        <code>m.goharimanesh@gmail.com</code>
+        <p style="margin-top: 8px; font-size: 0.78rem;">Subject الزامی:</p>
+        <code>[Advanced Engineering Mathematics] HW20 - نام و نام خانوادگی - شماره دانشجویی</code>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۲۳ — جمع‌بندی فاز ۵ -->
+  <div class="slide" data-slide="23" data-topic="10">
+    <div class="slide-inner">
+      <span class="slide-num">پایان فاز ۵</span>
+      <h2 class="slide-h1">جمع‌بندی فاز ۵ — آماده‌سازی فاز ۶</h2>
+
+      <img src="images/phase-5-summary.png" alt="Phase 5 Summary" class="img-box img-clickable" style="max-height: 160px;" onerror="this.style.display='none'" data-caption="جمع‌بندی فاز ۵">
+
+      <div class="grid-4" style="margin-top: 14px;">
+        <div class="card" style="background: rgba(30, 60, 114, 0.3); border-color: rgba(0, 212, 170, 0.4); text-align: center; padding: 14px;">
+          <i class="fas fa-brain" style="font-size: 1.5rem; color: var(--primary); display: block; margin-bottom: 8px;"></i>
+          <div class="slide-h3" style="justify-content: center; font-size: 0.82rem;">جلسه ۱۷</div>
+          <p class="slide-text" style="font-size: 0.72rem;">مقدمه ML</p>
+        </div>
+        <div class="card" style="background: rgba(30, 111, 92, 0.3); border-color: rgba(0, 212, 170, 0.4); text-align: center; padding: 14px;">
+          <i class="fas fa-network-wired" style="font-size: 1.5rem; color: var(--gold); display: block; margin-bottom: 8px;"></i>
+          <div class="slide-h3" style="justify-content: center; font-size: 0.82rem;">جلسه ۱۸</div>
+          <p class="slide-text" style="font-size: 0.72rem;">Backprop</p>
+        </div>
+        <div class="card" style="background: rgba(184, 107, 30, 0.3); border-color: rgba(0, 212, 170, 0.4); text-align: center; padding: 14px;">
+          <i class="fas fa-atom" style="font-size: 1.5rem; color: var(--tertiary); display: block; margin-bottom: 8px;"></i>
+          <div class="slide-h3" style="justify-content: center; font-size: 0.82rem;">جلسه ۱۹</div>
+          <p class="slide-text" style="font-size: 0.72rem;">PINN تئوری</p>
+        </div>
+        <div class="card" style="background: rgba(106, 44, 112, 0.3); border-color: rgba(0, 212, 170, 0.4); text-align: center; padding: 14px;">
+          <i class="fas fa-code" style="font-size: 1.5rem; color: var(--pink); display: block; margin-bottom: 8px;"></i>
+          <div class="slide-h3" style="justify-content: center; font-size: 0.82rem;">جلسه ۲۰</div>
+          <p class="slide-text" style="font-size: 0.72rem;">PINN عملی</p>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top: 16px; background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3);">
+        <div class="slide-h3" style="color: var(--primary);"><i class="fas fa-check-circle"></i> دستاوردهای فاز ۵</div>
+        <div class="grid-2">
+          <ul style="list-style: none; padding: 0; font-size: 0.82rem; color: var(--text-dim); line-height: 2;">
+            <li>✅ انواع یادگیری ماشین</li>
+            <li>✅ شبکه عصبی و Backprop</li>
+            <li>✅ تئوری PINN و سه Loss</li>
+          </ul>
+          <ul style="list-style: none; padding: 0; font-size: 0.82rem; color: var(--text-dim); line-height: 2;">
+            <li>✅ پیاده‌سازی کامل در PyTorch</li>
+            <li>✅ حل Forward و Inverse</li>
+            <li>✅ PINN برای نانو انبرک</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="lecture-note" style="margin-top: 14px;">
+        <i class="fas fa-rocket"></i>
+        <div class="lecture-note-content">
+          <strong>آماده برای فاز ۶:</strong> در فاز ۶، ابزارهای بهینه‌سازی پیشرفته و نگارش مقاله IEEE را یاد می‌گیریم. پروژه پایانی، ترکیب همه چیز است.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۲۴ — خداحافظی -->
+  <div class="slide" data-slide="24" data-topic="10">
+    <div class="slide-inner title-slide">
+      <div style="font-size: 3.5rem; color: var(--gold); margin-bottom: 18px;">
+        <i class="fas fa-check-circle"></i>
+      </div>
+      <h2 class="slide-h1">پایان فاز ۵ — PINN کامل</h2>
+      <p class="slide-text" style="font-size: 1rem;">
+        امروز اولین PINN خود را ساختید — این یک نقطه عطف در یادگیری شما است! 🌟
+      </p>
+
+      <div class="grid-4" style="margin-top: 20px; max-width: 900px; margin-left: auto; margin-right: auto;">
+        <div class="card" style="text-align: center; padding: 12px;">
+          <i class="fas fa-atom" style="font-size: 1.4rem; color: var(--primary); display: block; margin-bottom: 6px;"></i>
+          <div style="font-size: 0.78rem; font-weight: 700; color: var(--primary);">Physics</div>
+        </div>
+        <div class="card" style="text-align: center; padding: 12px;">
+          <i class="fas fa-database" style="font-size: 1.4rem; color: var(--gold); display: block; margin-bottom: 6px;"></i>
+          <div style="font-size: 0.78rem; font-weight: 700; color: var(--gold);">Data</div>
+        </div>
+        <div class="card" style="text-align: center; padding: 12px;">
+          <i class="fas fa-brain" style="font-size: 1.4rem; color: var(--tertiary); display: block; margin-bottom: 6px;"></i>
+          <div style="font-size: 0.78rem; font-weight: 700; color: var(--tertiary);">Neural Net</div>
+        </div>
+        <div class="card" style="text-align: center; padding: 12px;">
+          <i class="fas fa-cog" style="font-size: 1.4rem; color: var(--pink); display: block; margin-bottom: 6px;"></i>
+          <div style="font-size: 0.78rem; font-weight: 700; color: var(--pink);">AutoDiff</div>
+        </div>
+      </div>
+
+      <div class="math-box gold-math" style="margin-top: 22px; background: rgba(255, 183, 0, 0.08); padding: 22px; max-width: 700px; margin-left: auto; margin-right: auto;">
+        <div style="font-size: 1rem;">
+          $$\mathcal{L} = \lambda_{data}\mathcal{L}_{data} + \lambda_{pde}\mathcal{L}_{pde} + \lambda_{bc}\mathcal{L}_{bc}$$
+        </div>
+        <p class="math-note">Loss کل PINN — در یک نوت‌بوک PyTorch</p>
+      </div>
+
+      <div class="card" style="margin-top: 20px; max-width: 700px; margin-left: auto; margin-right: auto; background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3);">
+        <div class="slide-h3" style="justify-content: center; color: var(--primary);"><i class="fas fa-arrow-left"></i> فاز ۶ — جلسه ۲۱</div>
+        <p class="slide-text" style="font-size: 0.88rem;">
+          <strong style="color: var(--primary);">بهینه‌سازی بدون قید و Adam</strong>
+        </p>
+        <ul style="list-style: none; padding: 0; font-size: 0.82rem; color: var(--text-dim); line-height: 2; margin-top: 8px;">
+          <li>🔹 بهینه‌سازی گرادیانی پیشرفته</li>
+          <li>🔹 الگوریتم Adam کامل</li>
+          <li>🔹 نرخ یادگیری تطبیقی</li>
+          <li>🔹 کاربرد در PINN</li>
+        </ul>
+      </div>
+
+      <p class="instructor-line" style="margin-top: 22px;">دکتر مسعود گوهری منش</p>
+      <p class="instructor-title-line">دانشیار گروه مهندسی مکانیک — دانشگاه تربت حیدریه</p>
+
+      <p style="font-size: 0.95rem; color: var(--gold); margin-top: 24px; font-weight: 800;">
+        🇮🇷 با افتخار برای دانشجویان مکاترونیک 🇮🇷
+      </p>
+    </div>
+  </div>
+
+</div>
+
+<div class="bottom-nav">
+  <button class="nav-btn" id="prevBtn" disabled><i class="fas fa-arrow-right"></i><span>قبلی</span></button>
+  <div class="dots-nav" id="dotsNav"></div>
+  <div class="slide-counter"><span id="currentSlide">۱</span> / ۲۴</div>
+  <button class="nav-btn" id="nextBtn"><span>بعدی</span><i class="fas fa-arrow-left"></i></button>
+</div>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- Lightbox -->
+<div class="lightbox" id="lightbox">
+  <button class="lightbox-close" id="lightboxClose"><i class="fas fa-times"></i></button>
+  <img src="" alt="" class="lightbox-img" id="lightboxImg">
+  <div class="lightbox-caption" id="lightboxCaption"></div>
+</div>
+
+<!-- Modal پیاده‌سازی -->
+<div class="modal-overlay" id="conceptModal">
+  <div class="modal-box">
+    <button class="modal-close" id="conceptClose"><i class="fas fa-times"></i></button>
+    <h2 class="modal-title"><i class="fas fa-book-open"></i> پیاده‌سازی PINN و پیوند با ابوریحان بیرونی</h2>
+
+    <div class="modal-section">
+      <div class="modal-section-title"><i class="fas fa-history"></i> ابوریحان بیرونی — پیشگام اندازه‌گیری دقیق</div>
+      <p>
+        <b>ابوریحان بیرونی</b> (۹۷۳–۱۰۴۸ م) در کتاب <b>«قانون مسعودی»</b> شعاع زمین را با خطای کمتر از <strong>۱٪</strong> محاسبه کرد. روش او مبتنی بر <strong>اندازه‌گیری دقیق</strong> و <strong>تقریب متوالی</strong> بود.
+      </p>
+      <p>
+        او با استفاده از یک کوه و افق، زاویه‌ی افت را اندازه گرفت و از رابطه‌ی هندسی، شعاع زمین را محاسبه کرد — این روش، هزار سال پیش از ظهور کامپیوتر، بسیار شگفت‌انگیز است.
+      </p>
+    </div>
+
+    <div class="modal-section">
+      <div class="modal-section-title"><i class="fas fa-brain"></i> پیوند با آموزش PINN</div>
+      <p>
+        فرایند آموزش PINN، بسیار شبیه به روش ابوریحان است:
+      </p>
+      <ul>
+        <li><strong>اندازه‌گیری دقیق</strong> = داده‌های تجربی (Data Loss)</li>
+        <li><strong>مدل ریاضی</strong> = PDE (Physics Loss)</li>
+        <li><strong>تقریب متوالی</strong> = حلقه آموزش (Epochs)</li>
+        <li><strong>کاهش خطا</strong> = Loss Decreasing</li>
+        <li><strong>نتیجه دقیق</strong> = PINN خوب آموزش‌دیده</li>
+      </ul>
+    </div>
+
+    <div class="modal-section">
+      <div class="modal-section-title"><i class="fas fa-globe"></i> تقارب معنایی علم و تاریخ</div>
+      <p>
+        ابوریحان، در قرن ۱۱ میلادی، همان مسیری را طی کرد که امروز PINN با میلیون‌ها پارامتر و GPU طی می‌کند: از <strong>داده</strong> و <strong>مدل</strong>، به <strong>نتیجه دقیق</strong>.
+      </p>
+      <p>
+        این تقارب نشان می‌دهد که <strong>روش علمی</strong>، جوهره‌ای ثابت دارد که در هر عصری با ابزارهای متفاوت ظاهر می‌شود. از ابوریحان تا PyTorch، همان تلاش برای <strong>فهم دقیق طبیعت</strong>.
+      </p>
+    </div>
+
+    <div class="lecture-note" style="margin-top: 16px;">
+      <i class="fas fa-star"></i>
+      <div class="lecture-note-content">
+        <strong>درس امروز:</strong> وقتی PINN را آموزش می‌دهید، به یاد بیاورید که ابوریحان، هزار سال پیش، با همان فلسفه به دنبال فهم دقیق جهان بود. علم، سفر پیوسته‌ی انسان است.
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ═══ Navigation ═══ */
+const slides = document.querySelectorAll('.slide');
+const totalSlides = slides.length;
+let currentSlide = 0;
+const topicPills = document.querySelectorAll('.topic-pill');
+
+const dotsNav = document.getElementById('dotsNav');
+for (let i = 0; i < totalSlides; i++) {
+  const dot = document.createElement('button');
+  dot.className = 'dot-nav' + (i === 0 ? ' active' : '');
+  dot.addEventListener('click', () => goToSlide(i));
+  dotsNav.appendChild(dot);
+}
+
+function goToSlide(n) {
+  if (n < 0 || n >= totalSlides) return;
+  slides.forEach((s, i) => {
+    s.classList.remove('active', 'prev');
+    if (i < n) s.classList.add('prev');
+    if (i === n) s.classList.add('active');
+  });
+  currentSlide = n;
+  updateNav();
+  playTransition();
+  setTimeout(() => {
+    initVisibleCharts();
+    if (window.MathJax && window.MathJax.typesetPromise) window.MathJax.typesetPromise();
+  }, 100);
+}
+
+function updateNav() {
+  document.querySelectorAll('.dot-nav').forEach((d, i) => d.classList.toggle('active', i === currentSlide));
+  document.getElementById('currentSlide').textContent = toFa(currentSlide + 1);
+  document.getElementById('prevBtn').disabled = currentSlide === 0;
+  document.getElementById('nextBtn').disabled = currentSlide === totalSlides - 1;
+  document.getElementById('progressFill').style.width = ((currentSlide + 1) / totalSlides * 100) + '%';
+  const currentTopic = slides[currentSlide].dataset.topic;
+  topicPills.forEach(pill => {
+    const t = parseInt(pill.dataset.topic);
+    const ct = parseInt(currentTopic);
+    pill.classList.toggle('active', t === ct);
+    pill.classList.toggle('done', t < ct);
+    if (t === ct) pill.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+  });
+}
+
+document.getElementById('prevBtn').addEventListener('click', () => goToSlide(currentSlide - 1));
+document.getElementById('nextBtn').addEventListener('click', () => goToSlide(currentSlide + 1));
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowLeft') { e.preventDefault(); goToSlide(currentSlide + 1); }
+  else if (e.key === 'ArrowRight') { e.preventDefault(); goToSlide(currentSlide - 1); }
+  else if (e.key === ' ') { e.preventDefault(); goToSlide(currentSlide + 1); }
+  else if (e.key === 'Home') { e.preventDefault(); goToSlide(0); }
+  else if (e.key === 'End') { e.preventDefault(); goToSlide(totalSlides - 1); }
+  else if (e.key === 'Escape') {
+    if (document.fullscreenElement) document.exitFullscreen();
+    closeLightbox();
+    closeConceptModal();
+    printMenu.classList.remove('show');
+  }
+});
+
+let touchStartX = 0, touchStartY = 0;
+document.addEventListener('touchstart', e => {
+  touchStartX = e.changedTouches[0].screenX;
+  touchStartY = e.changedTouches[0].screenY;
+}, { passive: true });
+document.addEventListener('touchend', e => {
+  const dx = e.changedTouches[0].screenX - touchStartX;
+  const dy = e.changedTouches[0].screenY - touchStartY;
+  if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy)) {
+    if (dx < 0) goToSlide(currentSlide + 1);
+    else goToSlide(currentSlide - 1);
+  }
+}, { passive: true });
+
+/* ═══ Lightbox ═══ */
+const lightbox = document.getElementById('lightbox');
+const lightboxImg = document.getElementById('lightboxImg');
+const lightboxCaption = document.getElementById('lightboxCaption');
+
+document.querySelectorAll('.img-clickable').forEach(img => {
+  img.addEventListener('click', e => {
+    e.stopPropagation();
+    const src = img.getAttribute('src');
+    const caption = img.getAttribute('data-caption') || img.getAttribute('alt') || '';
+    if (src) {
+      lightboxImg.src = src;
+      lightboxCaption.textContent = caption;
+      lightbox.classList.add('active');
+    }
+  });
+});
+
+document.getElementById('lightboxClose').addEventListener('click', closeLightbox);
+lightbox.addEventListener('click', e => {
+  if (e.target === lightbox) closeLightbox();
+});
+
+function closeLightbox() { lightbox.classList.remove('active'); }
+
+/* ═══ Modal ═══ */
+const conceptModal = document.getElementById('conceptModal');
+document.querySelectorAll('[data-concept]').forEach(el => {
+  el.addEventListener('click', e => {
+    e.stopPropagation();
+    conceptModal.classList.add('active');
+  });
+});
+document.getElementById('conceptClose').addEventListener('click', closeConceptModal);
+conceptModal.addEventListener('click', e => {
+  if (e.target === conceptModal) closeConceptModal();
+});
+function closeConceptModal() { conceptModal.classList.remove('active'); }
+
+/* ═══ Print ═══ */
+const printToggle = document.getElementById('printToggle');
+const printMenu = document.getElementById('printMenu');
+
+printToggle.addEventListener('click', e => {
+  e.stopPropagation();
+  printMenu.classList.toggle('show');
+});
+
+document.addEventListener('click', e => {
+  if (!printMenu.contains(e.target) && e.target !== printToggle) {
+    printMenu.classList.remove('show');
+  }
+});
+
+document.getElementById('printCurrentBtn').addEventListener('click', () => {
+  printMenu.classList.remove('show');
+  slides.forEach(s => s.classList.remove('print-visible'));
+  slides[currentSlide].classList.add('print-visible');
+  showToast('آماده‌سازی چاپ این صفحه...');
+  setTimeout(() => {
+    window.print();
+    setTimeout(() => slides.forEach(s => s.classList.remove('print-visible')), 500);
+  }, 300);
+});
+
+document.getElementById('printAllBtn').addEventListener('click', () => {
+  printMenu.classList.remove('show');
+  slides.forEach(s => s.classList.add('print-visible'));
+  showToast('آماده‌سازی چاپ همه صفحات...');
+  setTimeout(() => {
+    window.print();
+    setTimeout(() => slides.forEach(s => s.classList.remove('print-visible')), 500);
+  }, 300);
+});
+
+/* ═══ Audio ═══ */
+let audioCtx = null, soundEnabled = true;
+function initAudio() { if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
+function playTransition() {
+  if (!soundEnabled) return;
+  initAudio();
+  [440, 554.37].forEach((freq, i) => {
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.connect(gain); gain.connect(audioCtx.destination);
+    osc.frequency.value = freq; osc.type = 'sine';
+    const t = audioCtx.currentTime + i * 0.06;
+    gain.gain.setValueAtTime(0.04, t);
+    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.18);
+    osc.start(t); osc.stop(t + 0.22);
+  });
+}
+document.getElementById('soundToggle').addEventListener('click', function() {
+  soundEnabled = !soundEnabled;
+  this.classList.toggle('active', soundEnabled);
+  this.innerHTML = soundEnabled ? '<i class="fas fa-volume-up"></i>' : '<i class="fas fa-volume-mute"></i>';
+  showToast(soundEnabled ? 'صدا فعال' : 'صدا غیرفعال');
+});
+document.getElementById('fullscreenToggle').addEventListener('click', function() {
+  if (!document.fullscreenElement) { document.documentElement.requestFullscreen(); this.innerHTML = '<i class="fas fa-compress"></i>'; }
+  else { document.exitFullscreen(); this.innerHTML = '<i class="fas fa-expand"></i>'; }
+});
+function showToast(msg) {
+  const container = document.getElementById('toastContainer');
+  const toast = document.createElement('div');
+  toast.className = 'toast';
+  toast.innerHTML = `<i class="fas fa-info-circle"></i> ${msg}`;
+  container.appendChild(toast);
+  setTimeout(() => { toast.style.opacity = '0'; toast.style.transform = 'translateX(-60px)'; setTimeout(() => toast.remove(), 300); }, 2400);
+}
+function toFa(n) { const fa = ['۰','۱','۲','۳','۴','۵','۶','۷','۸','۹']; return String(n).replace(/\d/g, d => fa[d]); }
+
+/* ═══ Background ═══ */
+const bgCanvas = document.getElementById('bgCanvas');
+const bgCtx = bgCanvas.getContext('2d');
+let particles = [];
+function resizeBg() { bgCanvas.width = window.innerWidth; bgCanvas.height = window.innerHeight; }
+resizeBg();
+window.addEventListener('resize', resizeBg);
+class Particle {
+  constructor() { this.reset(); }
+  reset() {
+    this.x = Math.random() * bgCanvas.width;
+    this.y = Math.random() * bgCanvas.height;
+    this.size = Math.random() * 1.6 + 0.4;
+    this.speedX = (Math.random() - 0.5) * 0.3;
+    this.speedY = (Math.random() - 0.5) * 0.3;
+    this.opacity = Math.random() * 0.5 + 0.15;
+    const colors = ['#00d4aa', '#06b6d4', '#a855f7', '#ffb700'];
+    this.color = colors[Math.floor(Math.random() * colors.length)];
+  }
+  update() { this.x += this.speedX; this.y += this.speedY; if (this.x < 0 || this.x > bgCanvas.width || this.y < 0 || this.y > bgCanvas.height) this.reset(); }
+  draw() { bgCtx.beginPath(); bgCtx.arc(this.x, this.y, this.size, 0, Math.PI*2); bgCtx.fillStyle = this.color; bgCtx.globalAlpha = this.opacity; bgCtx.fill(); bgCtx.globalAlpha = 1; }
+}
+for (let i = 0; i < 50; i++) particles.push(new Particle());
+function animateBg() { bgCtx.clearRect(0, 0, bgCanvas.width, bgCanvas.height); particles.forEach(p => { p.update(); p.draw(); }); requestAnimationFrame(animateBg); }
+animateBg();
+
+/* ═══ Helpers ═══ */
+function setupCanvas(canvasId) {
+  const canvas = document.getElementById(canvasId);
+  if (!canvas) return null;
+  const dpr = window.devicePixelRatio || 1;
+  const rect = canvas.getBoundingClientRect();
+  canvas.width = rect.width * dpr; canvas.height = rect.height * dpr;
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+  return { ctx, w: rect.width, h: rect.height };
+}
+
+/* ═══ Architecture Simulator ═══ */
+function drawArch() {
+  const s = setupCanvas('archCanvas');
+  if (!s) return;
+  const { ctx, w, h } = s;
+  ctx.clearRect(0, 0, w, h);
+
+  const nLayers = parseInt(document.getElementById('archLayers').value);
+  const nNeurons = parseInt(document.getElementById('archNeurons').value);
+
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+  ctx.fillRect(0, 0, w, h);
+
+  const totalLayers = nLayers + 2;
+  const layerGap = (w - 120) / (totalLayers - 1);
+  const padX = 60;
+  const padY = 30;
+  const maxNeurons = Math.min(nNeurons, 20);
+  const neuronGap = (h - 2 * padY) / (maxNeurons + 1);
+  const neuronRadius = Math.min(neuronGap * 0.35, 8);
+
+  // Draw connections
+  ctx.strokeStyle = 'rgba(255, 183, 0, 0.15)';
+  ctx.lineWidth = 1;
+  for (let l = 0; l < totalLayers - 1; l++) {
+    const x1 = padX + l * layerGap;
+    const x2 = padX + (l + 1) * layerGap;
+    const n1 = (l === 0 || l === totalLayers - 1) ? 2 : maxNeurons;
+    const n2 = (l + 1 === 0 || l + 1 === totalLayers - 1) ? 2 : maxNeurons;
+    for (let i = 0; i < n1; i++) {
+      for (let j = 0; j < n2; j++) {
+        const y1 = padY + (i + 1) * (h - 2 * padY) / (n1 + 1);
+        const y2 = padY + (j + 1) * (h - 2 * padY) / (n2 + 1);
+        ctx.beginPath();
+        ctx.moveTo(x1, y1);
+        ctx.lineTo(x2, y2);
+        ctx.stroke();
+      }
+    }
+  }
+
+  // Draw neurons
+  for (let l = 0; l < totalLayers; l++) {
+    const x = padX + l * layerGap;
+    const n = (l === 0 || l === totalLayers - 1) ? 2 : maxNeurons;
+    let color;
+    if (l === 0) color = '#00d4aa';
+    else if (l === totalLayers - 1) color = '#ec4899';
+    else color = '#ffb700';
+    
+    for (let i = 0; i < n; i++) {
+      const y = padY + (i + 1) * (h - 2 * padY) / (n + 1);
+      ctx.fillStyle = color;
+      ctx.shadowColor = color;
+      ctx.shadowBlur = 6;
+      ctx.beginPath();
+      ctx.arc(x, y, neuronRadius, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.shadowBlur = 0;
+    }
+  }
+
+  // Labels
+  ctx.fillStyle = '#9aa7bd';
+  ctx.font = 'bold 11px Vazirmatn';
+  ctx.textAlign = 'center';
+  ctx.fillText('Input', padX, 20);
+  ctx.fillText('Hidden Layers', w / 2, 20);
+  ctx.fillText('Output', w - 60, 20);
+
+  // Params calculation
+  const params = (2 * nNeurons + nNeurons) + (nLayers - 1) * (nNeurons * nNeurons + nNeurons) + (nNeurons * 1 + 1);
+  
+  document.getElementById('archLayersValue').textContent = toFa(nLayers);
+  document.getElementById('archNeuronsValue').textContent = toFa(nNeurons);
+  document.getElementById('archParams').textContent = toFa(params.toLocaleString('en'));
+  
+  const recEl = document.getElementById('archRec');
+  if (params < 1000) {
+    recEl.textContent = 'کوچک — سریع ولی محدود';
+    recEl.style.color = 'var(--danger)';
+  } else if (params < 50000) {
+    recEl.textContent = '✓ مناسب برای PINN';
+    recEl.style.color = 'var(--success)';
+  } else {
+    recEl.textContent = 'بزرگ — نیاز به GPU';
+    recEl.style.color = 'var(--gold)';
+  }
+}
+
+/* ═══ Loss Weights Simulator ═══ */
+function drawW() {
+  const s = setupCanvas('wCanvas');
+  if (!s) return;
+  const { ctx, w, h } = s;
+  ctx.clearRect(0, 0, w, h);
+
+  const wPde = parseFloat(document.getElementById('wPde').value);
+  const wBc = parseFloat(document.getElementById('wBc').value);
+  const wData = parseFloat(document.getElementById('wData').value);
+
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+  ctx.fillRect(0, 0, w, h);
+
+  const padX = 60;
+  const barW = (w - 2 * padX) / 3;
+  const padY = 60;
+  const maxW = Math.max(wPde, wBc, wData, 1);
+
+  const bars = [
+    { label: 'w_pde', value: wPde, color: '#00d4aa' },
+    { label: 'w_bc', value: wBc, color: '#ffb700' },
+    { label: 'w_data', value: wData, color: '#a855f7' }
+  ];
+
+  bars.forEach((bar, i) => {
+    const x = padX + i * barW + barW * 0.2;
+    const barH = (bar.value / maxW) * (h - 2 * padY);
+    const y = h - padY - barH;
+    
+    ctx.fillStyle = bar.color;
+    ctx.shadowColor = bar.color;
+    ctx.shadowBlur = 12;
+    ctx.fillRect(x, y, barW * 0.6, barH);
+    ctx.shadowBlur = 0;
+    
+    ctx.fillStyle = '#e8eef7';
+    ctx.font = 'bold 12px Vazirmatn';
+    ctx.textAlign = 'center';
+    ctx.fillText(bar.label, x + barW * 0.3, h - padY + 22);
+    ctx.fillText(toFa(bar.value.toFixed(1)), x + barW * 0.3, y - 12);
+  });
+
+  // Update displays
+  document.getElementById('wPdeValue').textContent = toFa(wPde.toFixed(1));
+  document.getElementById('wBcValue').textContent = toFa(wBc.toFixed(1));
+  document.getElementById('wDataValue').textContent = toFa(wData.toFixed(1));
+
+  const statusEl = document.getElementById('wStatus');
+  const timeEl = document.getElementById('wTime');
+  const ratio = wPde / Math.max(wBc, wData);
+  
+  if (ratio < 0.1) {
+    statusEl.textContent = '⚠ PDE نادیده';
+    statusEl.style.color = 'var(--danger)';
+    timeEl.textContent = '~سریع ولی نادرست';
+  } else if (ratio > 10) {
+    statusEl.textContent = '⚠ BC/Data نادیده';
+    statusEl.style.color = 'var(--danger)';
+    timeEl.textContent = '~سریع ولی نادرست';
+  } else {
+    statusEl.textContent = '✓ توازن خوب';
+    statusEl.style.color = 'var(--success)';
+    timeEl.textContent = '~۱-۲ دقیقه (GPU)';
+  }
+}
+
+/* ═══ Training Simulator ═══ */
+function drawTrain() {
+  const s = setupCanvas('trainCanvas');
+  if (!s) return;
+  const { ctx, w, h } = s;
+  ctx.clearRect(0, 0, w, h);
+
+  const epoch = parseInt(document.getElementById('trainEpoch').value);
+  const maxEpoch = 10000;
+
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+  ctx.fillRect(0, 0, w, h);
+
+  const padX = 60, padY_top = 30, padY_bot = 50;
+  const plotW = w - 2 * padX;
+  const plotH = h - padY_top - padY_bot;
+
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.moveTo(padX, padY_top);
+  ctx.lineTo(padX, padY_top + plotH);
+  ctx.lineTo(padX + plotW, padY_top + plotH);
+  ctx.stroke();
+
+  const epochToPx = (e) => padX + (e / maxEpoch) * plotW;
+  const lossToPy = (l) => padY_top + plotH - l * plotH;
+
+  // Loss curve
+  ctx.beginPath();
+  ctx.strokeStyle = '#00d4aa';
+  ctx.lineWidth = 2.5;
+  ctx.shadowColor = '#00d4aa';
+  ctx.shadowBlur = 6;
+  for (let e = 0; e <= maxEpoch; e += 50) {
+    const loss = Math.exp(-e / 2000) * 0.9 + 0.001;
+    const px = epochToPx(e);
+    const py = lossToPy(loss);
+    if (e === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+  }
+  ctx.stroke();
+  ctx.shadowBlur = 0;
+
+  // Current position
+  const currentLoss = Math.exp(-epoch / 2000) * 0.9 + 0.001;
+  const px = epochToPx(epoch);
+  const py = lossToPy(currentLoss);
+  ctx.fillStyle = '#ffb700';
+  ctx.shadowColor = '#ffb700';
+  ctx.shadowBlur = 12;
+  ctx.beginPath();
+  ctx.arc(px, py, 7, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.shadowBlur = 0;
+
+  // Labels
+  ctx.fillStyle = '#9aa7bd';
+  ctx.font = '11px Vazirmatn';
+  ctx.textAlign = 'right';
+  ctx.fillText('Loss', padX - 8, padY_top + 15);
+  ctx.textAlign = 'center';
+  ctx.fillText('Epoch', padX + plotW / 2, padY_top + plotH + 25);
+
+  // Update values
+  document.getElementById('trainEpochValue').textContent = toFa(epoch);
+  document.getElementById('trainTotal').textContent = toFa(currentLoss.toFixed(5));
+  document.getElementById('trainPde').textContent = toFa((currentLoss * 0.3).toFixed(5));
+  const alphaEst = 0.01 * (1 + Math.exp(-epoch / 1500) * 0.5);
+  document.getElementById('trainAlpha').textContent = toFa(alphaEst.toFixed(4));
+}
+
+/* ═══ Forward Simulator ═══ */
+function drawFwd() {
+  const s = setupCanvas('fwdCanvas');
+  if (!s) return;
+  const { ctx, w, h } = s;
+  ctx.clearRect(0, 0, w, h);
+
+  const t = parseFloat(document.getElementById('fwdTime').value);
+  const alpha = 0.01;
+
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+  ctx.fillRect(0, 0, w, h);
+
+  const padX = 60, padY_top = 30, padY_bot = 50;
+  const plotW = w - 2 * padX;
+  const plotH = h - padY_top - padY_bot;
+  const xToPx = (x) => padX + x * plotW;
+  const yToPy = (y) => padY_top + plotH / 2 - y * (plotH / 2 - 20);
+
+  // Axes
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.moveTo(padX, padY_top + plotH / 2);
+  ctx.lineTo(padX + plotW, padY_top + plotH / 2);
+  ctx.stroke();
+
+  // Exact solution
+  const trueSol = (x) => Math.exp(-alpha * Math.PI * Math.PI * t) * Math.sin(Math.PI * x);
+  ctx.beginPath();
+  ctx.strokeStyle = '#00d4aa';
+  ctx.lineWidth = 3;
+  ctx.shadowColor = '#00d4aa';
+  ctx.shadowBlur = 6;
+  for (let i = 0; i <= 200; i++) {
+    const x = i / 200;
+    const y = trueSol(x);
+    const px = xToPx(x);
+    const py = yToPy(y);
+    if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+  }
+  ctx.stroke();
+  ctx.shadowBlur = 0;
+
+  // PINN prediction (close to true)
+  ctx.beginPath();
+  ctx.strokeStyle = '#ffb700';
+  ctx.lineWidth = 2;
+  ctx.setLineDash([6, 4]);
+  for (let i = 0; i <= 200; i++) {
+    const x = i / 200;
+    const y = trueSol(x) + 0.005 * Math.sin(x * 20);
+    const px = xToPx(x);
+    const py = yToPy(y);
+    if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+  }
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Labels
+  ctx.fillStyle = '#9aa7bd';
+  ctx.font = '11px Vazirmatn';
+  ctx.textAlign = 'center';
+  ctx.fillText('x', padX + plotW / 2, padY_top + plotH + 25);
+
+  ctx.font = 'bold 11px Vazirmatn';
+  ctx.textAlign = 'right';
+  ctx.fillStyle = '#00d4aa';
+  ctx.fillText('Exact', w - 20, 22);
+  ctx.fillStyle = '#ffb700';
+  ctx.fillText('PINN', w - 90, 22);
+
+  document.getElementById('fwdTimeValue').textContent = toFa(t.toFixed(2));
+  const mse = 0.0001;
+  document.getElementById('fwdMSE').textContent = toFa(mse.toExponential(2));
+  document.getElementById('fwdStatus').textContent = '✓ دقت خوب';
+}
+
+/* ═══ Inverse Simulator ═══ */
+function drawInv() {
+  const s = setupCanvas('invCanvas');
+  if (!s) return;
+  const { ctx, w, h } = s;
+  ctx.clearRect(0, 0, w, h);
+
+  const epoch = parseInt(document.getElementById('invEpoch').value);
+  const trueAlpha = parseFloat(document.getElementById('invTrue').value);
+
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+  ctx.fillRect(0, 0, w, h);
+
+  const padX = 60, padY_top = 30, padY_bot = 50;
+  const plotW = w - 2 * padX;
+  const plotH = h - padY_top - padY_bot;
+
+  // Axes
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.moveTo(padX, padY_top);
+  ctx.lineTo(padX, padY_top + plotH);
+  ctx.lineTo(padX + plotW, padY_top + plotH);
+  ctx.stroke();
+
+  // Alpha trajectory
+  const alphaMax = 0.05;
+  const epochMax = 10000;
+  
+  ctx.beginPath();
+  ctx.strokeStyle = '#00d4aa';
+  ctx.lineWidth = 2.5;
+  ctx.shadowColor = '#00d4aa';
+  ctx.shadowBlur = 6;
+  
+  for (let e = 0; e <= epochMax; e += 100) {
+    const est = 1.0 + (trueAlpha - 1.0) * (1 - Math.exp(-e / 1500));
+    const px = padX + (e / epochMax) * plotW;
+    const py = padY_top + plotH - (est / alphaMax) * plotH;
+    if (e === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+  }
+  ctx.stroke();
+  ctx.shadowBlur = 0;
+
+  // True alpha line
+  const yTrue = padY_top + plotH - (trueAlpha / alphaMax) * plotH;
+  ctx.strokeStyle = '#ffb700';
+  ctx.lineWidth = 2;
+  ctx.setLineDash([6, 4]);
+  ctx.beginPath();
+  ctx.moveTo(padX, yTrue);
+  ctx.lineTo(padX + plotW, yTrue);
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Current position
+  const currentEst = 1.0 + (trueAlpha - 1.0) * (1 - Math.exp(-epoch / 1500));
+  const px = padX + (epoch / epochMax) * plotW;
+  const py = padY_top + plotH - (currentEst / alphaMax) * plotH;
+  ctx.fillStyle = '#00d4aa';
+  ctx.shadowColor = '#00d4aa';
+  ctx.shadowBlur = 12;
+  ctx.beginPath();
+  ctx.arc(px, py, 7, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.shadowBlur = 0;
+
+  // Labels
+  ctx.fillStyle = '#9aa7bd';
+  ctx.font = '11px Vazirmatn';
+  ctx.textAlign = 'right';
+  ctx.fillText('alpha', padX - 8, padY_top + 15);
+  ctx.textAlign = 'center';
+  ctx.fillText('Epoch', padX + plotW / 2, padY_top + plotH + 25);
+
+  ctx.font = 'bold 11px Vazirmatn';
+  ctx.textAlign = 'right';
+  ctx.fillStyle = '#ffb700';
+  ctx.fillText('True', w - 20, 22);
+  ctx.fillStyle = '#00d4aa';
+  ctx.fillText('Estimated', w - 70, 22);
+
+  document.getElementById('invEpochValue').textContent = toFa(epoch);
+  document.getElementById('invTrueValue').textContent = toFa(trueAlpha.toFixed(3));
+  document.getElementById('invTrueDisp').textContent = toFa(trueAlpha.toFixed(4));
+  document.getElementById('invEst').textContent = toFa(currentEst.toFixed(4));
+  const error = Math.abs(currentEst - trueAlpha) / trueAlpha * 100;
+  document.getElementById('invErr').textContent = toFa(error.toFixed(2)) + '%';
+}
+
+/* ═══ Nano Simulator ═══ */
+function drawNano() {
+  const s = setupCanvas('nanoCanvas');
+  if (!s) return;
+  const { ctx, w, h } = s;
+  ctx.clearRect(0, 0, w, h);
+
+  const V = parseFloat(document.getElementById('nanoV').value);
+  const show = document.getElementById('nanoShow').value;
+
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+  ctx.fillRect(0, 0, w, h);
+
+  const padX = 60, padY_top = 60, padY_bot = 60;
+  const beamW = w - 2 * padX;
+  const substrateY = h - padY_bot;
+  const beamY0 = padY_top + 30;
+  const displayGap = substrateY - beamY0;
+
+  // Physics
+  const g = 200e-9;
+  const L = 50e-6;
+  const b = 5e-6;
+  const hh = 0.5e-6;
+  const E = 150e9;
+  const eps0 = 8.854e-12;
+  const I = b * Math.pow(hh, 3) / 12;
+  const k_eq = 8 * E * I / Math.pow(L, 4);
+  const V_pullin = Math.sqrt(8 * k_eq * Math.pow(g, 3) / (27 * eps0 * b * L));
+  const q_es = eps0 * b * V * V / (2 * Math.pow(g, 2));
+  let w_max = q_es * Math.pow(L, 4) / (8 * E * I);
+  w_max = Math.min(w_max, g * 0.95);
+  const ratio = w_max / g;
+
+  // Substrate
+  ctx.fillStyle = 'rgba(168, 85, 247, 0.3)';
+  ctx.fillRect(padX, substrateY, beamW, 25);
+
+  // FD solution (reference)
+  if (show === 'both' || show === 'fd') {
+    ctx.beginPath();
+    ctx.strokeStyle = '#a855f7';
+    ctx.lineWidth = 3;
+    ctx.setLineDash([8, 4]);
+    for (let i = 0; i <= 100; i++) {
+      const xi = i / 100;
+      const defl = ratio * Math.pow(xi, 2) * (6 - 4 * xi + xi * xi) / 3;
+      const x = padX + xi * beamW;
+      const y = beamY0 + defl * displayGap * 0.85;
+      if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+    ctx.setLineDash([]);
+  }
+
+  // PINN solution
+  if (show === 'both' || show === 'pinn') {
+    ctx.beginPath();
+    ctx.strokeStyle = '#00d4aa';
+    ctx.lineWidth = 2.5;
+    ctx.shadowColor = '#00d4aa';
+    ctx.shadowBlur = 6;
+    for (let i = 0; i <= 100; i++) {
+      const xi = i / 100;
+      const defl = ratio * Math.pow(xi, 2) * (6 - 4 * xi + xi * xi) / 3 + 0.01 * Math.sin(xi * 10);
+      const x = padX + xi * beamW;
+      const y = beamY0 + defl * displayGap * 0.85;
+      if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+    ctx.shadowBlur = 0;
+  }
+
+  // Cantilever base
+  ctx.fillStyle = '#ffb700';
+  ctx.fillRect(padX - 14, beamY0 - 25, 14, 50);
+
+  // Labels
+  ctx.fillStyle = '#00d4aa';
+  ctx.font = 'bold 12px Vazirmatn';
+  ctx.textAlign = 'right';
+  ctx.fillText(`V = ${toFa(V.toFixed(1))} V`, w - 15, 22);
+  ctx.textAlign = 'left';
+  ctx.fillStyle = '#ff4757';
+  ctx.fillText(`V_pull-in = ${toFa(V_pullin.toFixed(2))} V`, 15, 22);
+
+  // Update
+  document.getElementById('nanoVValue').textContent = toFa(V.toFixed(1));
+  document.getElementById('nanoErr').textContent = toFa('1.00') + '%';
+  
+  const statusEl = document.getElementById('nanoStatus');
+  if (V >= V_pullin) {
+    statusEl.textContent = '⚠ Pull-in';
+    statusEl.style.color = 'var(--danger)';
+  } else {
+    statusEl.textContent = '✓ پایدار';
+    statusEl.style.color = 'var(--success)';
+  }
+}
+
+/* ═══ Events ═══ */
+document.getElementById('archLayers').addEventListener('input', drawArch);
+document.getElementById('archNeurons').addEventListener('input', drawArch);
+document.getElementById('wPde').addEventListener('input', drawW);
+document.getElementById('wBc').addEventListener('input', drawW);
+document.getElementById('wData').addEventListener('input', drawW);
+document.getElementById('trainEpoch').addEventListener('input', drawTrain);
+document.getElementById('fwdTime').addEventListener('input', drawFwd);
+document.getElementById('invEpoch').addEventListener('input', drawInv);
+document.getElementById('invTrue').addEventListener('input', drawInv);
+document.getElementById('nanoV').addEventListener('input', drawNano);
+document.getElementById('nanoShow').addEventListener('change', drawNano);
+
+/* ═══ Code Tabs ═══ */
+document.querySelectorAll('.code-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    const parent = tab.parentElement;
+    parent.querySelectorAll('.code-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    const contentId = 'code-' + tab.dataset.code;
+    const content = document.getElementById(contentId);
+    if (content) {
+      const allContents = parent.parentElement.querySelectorAll('.code-content');
+      allContents.forEach(c => c.classList.remove('active'));
+      content.classList.add('active');
+    }
+  });
+});
+
+/* ═══ Render ═══ */
+function initVisibleCharts() {
+  const activeSlide = document.querySelector('.slide.active');
+  if (!activeSlide) return;
+  const num = activeSlide.dataset.slide;
+  if (num === '6') drawArch();
+  else if (num === '11') drawW();
+  else if (num === '13') drawTrain();
+  else if (num === '15') drawFwd();
+  else if (num === '17') drawInv();
+  else if (num === '19') drawNano();
+}
+
+/* ═══ Init ═══ */
+updateNav();
+setTimeout(() => {
+  initVisibleCharts();
+  if (window.MathJax && window.MathJax.typesetPromise) window.MathJax.typesetPromise();
+}, 400);
+setTimeout(() => showToast('به جلسه ۲۰ خوش آمدید — PINN عملی 🌟'), 1000);
+
+window.addEventListener('resize', () => setTimeout(() => {
+  initVisibleCharts();
+  if (window.MathJax && window.MathJax.typesetPromise) window.MathJax.typesetPromise();
+}, 200));
+</script>
+
+</body>
+</html>

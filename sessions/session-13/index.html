@@ -1,0 +1,2112 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>جلسه ۱۳ — مقدمه Perturbation | دکتر مسعود گوهری منش</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+<script>
+window.MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']],
+    displayMath: [['$$', '$$'], ['\\[', '\\]']],
+    processEscapes: true
+  },
+  options: { skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'] },
+  svg: { fontCache: 'global' }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" async></script>
+
+<style>
+:root {
+  --primary: #00d4aa;
+  --secondary: #06b6d4;
+  --tertiary: #a855f7;
+  --gold: #ffb700;
+  --success: #22c55e;
+  --danger: #ff4757;
+  --pink: #ec4899;
+  --dark: #050818;
+  --darker: #020410;
+  --card-bg: rgba(255, 255, 255, 0.05);
+  --card-border: rgba(255, 255, 255, 0.1);
+  --text: #e8eef7;
+  --text-dim: #9aa7bd;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { overflow: hidden; height: 100%; }
+body {
+  font-family: 'Vazirmatn', sans-serif;
+  background: var(--dark);
+  color: var(--text);
+  direction: rtl;
+  line-height: 1.8;
+}
+#bgCanvas { position: fixed; inset: 0; z-index: -2; background: radial-gradient(ellipse at top, #0a1230 0%, var(--darker) 50%, #000 100%); }
+.glow-orb { position: fixed; border-radius: 50%; filter: blur(120px); opacity: 0.3; z-index: -1; pointer-events: none; animation: floatOrb 25s ease-in-out infinite; }
+.orb1 { width: 600px; height: 600px; background: var(--primary); top: -200px; right: -200px; }
+.orb2 { width: 500px; height: 500px; background: var(--gold); bottom: -150px; left: -150px; animation-delay: -8s; }
+.orb3 { width: 400px; height: 400px; background: var(--tertiary); top: 30%; left: 25%; animation-delay: -15s; opacity: 0.12; }
+@keyframes floatOrb { 0%, 100% { transform: translate(0, 0) scale(1); } 33% { transform: translate(50px, -40px) scale(1.15); } 66% { transform: translate(-40px, 50px) scale(0.9); } }
+
+.top-header { position: fixed; top: 0; left: 0; right: 0; height: 82px; background: rgba(5, 8, 24, 0.9); backdrop-filter: blur(15px); border-bottom: 1px solid var(--card-border); display: flex; align-items: center; justify-content: space-between; padding: 0 18px; z-index: 100; }
+.header-left { display: flex; align-items: center; gap: 14px; }
+.header-signature { height: 60px; width: auto; max-width: 170px; object-fit: contain; filter: drop-shadow(0 0 10px rgba(0, 212, 170, 0.4)); border-radius: 8px; background: rgba(255, 255, 255, 0.05); padding: 4px; }
+.header-text { display: flex; flex-direction: column; line-height: 1.35; }
+.header-name { font-size: 0.88rem; color: var(--gold); font-weight: 800; white-space: nowrap; }
+.header-univ { font-size: 0.7rem; color: var(--text-dim); font-weight: 500; }
+.header-controls { display: flex; gap: 8px; flex-shrink: 0; align-items: center; }
+.ctrl-btn { width: 38px; height: 38px; border-radius: 10px; border: 1px solid var(--card-border); background: var(--card-bg); backdrop-filter: blur(10px); color: var(--text); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; transition: all 0.3s ease; }
+.ctrl-btn:hover { background: var(--primary); color: var(--dark); transform: translateY(-2px); }
+.ctrl-btn.active { background: var(--primary); color: var(--dark); }
+
+.topic-nav { position: fixed; top: 82px; left: 0; right: 0; height: 36px; background: rgba(5, 8, 24, 0.9); backdrop-filter: blur(10px); border-bottom: 1px solid var(--card-border); z-index: 99; display: flex; align-items: center; gap: 6px; padding: 0 18px; overflow-x: auto; scrollbar-width: none; }
+.topic-nav::-webkit-scrollbar { display: none; }
+.topic-pill { padding: 4px 11px; border-radius: 20px; font-size: 0.7rem; font-weight: 600; white-space: nowrap; color: var(--text-dim); background: rgba(255, 255, 255, 0.04); border: 1px solid transparent; transition: all 0.3s ease; }
+.topic-pill.active { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: var(--dark); font-weight: 800; box-shadow: 0 3px 10px rgba(0, 212, 170, 0.35); }
+.topic-pill.done { color: var(--primary); border-color: rgba(0, 212, 170, 0.3); }
+
+.progress-top { position: fixed; top: 118px; left: 0; right: 0; height: 3px; background: rgba(255, 255, 255, 0.05); z-index: 98; }
+.progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--primary), var(--secondary), var(--tertiary)); transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 0 12px var(--primary); }
+
+.slide-container { position: fixed; inset: 121px 0 0 0; overflow: hidden; }
+.slide { position: absolute; inset: 0; padding: 24px 50px 90px; opacity: 0; transform: translateX(-40px); pointer-events: none; transition: opacity 0.5s ease, transform 0.5s cubic-bezier(0.4, 0, 0.2, 1); overflow-y: auto; overflow-x: hidden; }
+.slide.active { opacity: 1; transform: translateX(0); pointer-events: auto; }
+.slide.prev { transform: translateX(40px); }
+.slide::-webkit-scrollbar { width: 6px; }
+.slide::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 3px; }
+.slide-inner { max-width: 1200px; margin: 0 auto; animation: contentFade 0.6s ease; }
+@keyframes contentFade { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+.slide-num { display: inline-block; padding: 5px 14px; border-radius: 20px; background: rgba(0, 212, 170, 0.15); color: var(--primary); font-size: 0.72rem; font-weight: 700; margin-bottom: 10px; }
+.slide-h1 { font-size: clamp(1.3rem, 3.2vw, 2rem); font-weight: 900; background: linear-gradient(135deg, var(--primary), var(--secondary), var(--tertiary), var(--gold)); background-size: 300% 300%; -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; animation: gradientShift 6s ease infinite; margin-bottom: 16px; line-height: 1.35; }
+@keyframes gradientShift { 0%, 100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
+.slide-h3 { font-size: 0.98rem; font-weight: 700; color: var(--text); margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+.slide-h3 i { color: var(--gold); font-size: 0.88rem; }
+.slide-text { font-size: 0.9rem; color: var(--text-dim); line-height: 2; margin-bottom: 12px; }
+
+.card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 18px; padding: 18px; backdrop-filter: blur(12px); transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1); }
+.card:hover { transform: translateY(-4px); border-color: rgba(0, 212, 170, 0.4); box-shadow: 0 15px 35px rgba(0, 212, 170, 0.12); }
+.grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+.grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; }
+.grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; }
+
+.title-slide { text-align: center; padding-top: 5px; }
+.title-slide .hero-img { width: 100%; max-width: 520px; height: 170px; object-fit: contain; background: rgba(0, 0, 0, 0.2); padding: 6px; border-radius: 20px; margin: 0 auto 12px; display: block; border: 1px solid var(--card-border); box-shadow: 0 20px 40px rgba(0, 212, 170, 0.15); }
+.title-slide .bismillah { font-size: 1.2rem; font-weight: 500; background: linear-gradient(90deg, var(--gold), var(--primary), var(--secondary)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 4px; }
+.title-slide .hoval { font-size: 0.82rem; color: var(--text-dim); margin-bottom: 16px; letter-spacing: 1px; }
+.title-slide .main-title { font-size: clamp(1.7rem, 4.2vw, 2.6rem); font-weight: 900; background: linear-gradient(135deg, var(--primary), var(--gold), var(--tertiary)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 10px; line-height: 1.3; }
+.title-slide .subtitle { font-size: clamp(0.9rem, 2vw, 1.05rem); color: var(--text-dim); margin-bottom: 18px; }
+.title-slide .euler-box { display: inline-block; padding: 12px 30px; border-radius: 18px; background: var(--card-bg); border: 1px solid var(--card-border); backdrop-filter: blur(15px); margin-bottom: 16px; }
+.title-slide .instructor-line { font-size: 0.92rem; color: var(--gold); font-weight: 700; margin-bottom: 3px; }
+.title-slide .instructor-title-line { font-size: 0.78rem; color: var(--text-dim); margin-bottom: 12px; }
+.title-slide .semester { display: inline-block; padding: 6px 18px; border-radius: 50px; background: var(--card-bg); border: 1px solid var(--card-border); font-size: 0.78rem; color: var(--text-dim); }
+
+/* ═══ ستاره درخشان ═══ */
+.star-container {
+  position: fixed;
+  top: 150px;
+  left: 40px;
+  z-index: 90;
+  cursor: pointer;
+}
+.star-core {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 50%, #fff 0%, var(--gold) 30%, var(--gold) 50%, rgba(255, 183, 0, 0.2) 80%, transparent 100%);
+  box-shadow: 0 0 25px var(--gold), 0 0 50px rgba(255, 183, 0, 0.5), 0 0 80px rgba(255, 183, 0, 0.3);
+  animation: starPulse 3s ease-in-out infinite;
+  position: relative;
+}
+.star-core::before {
+  content: '';
+  position: absolute;
+  inset: -20px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 183, 0, 0.3) 0%, transparent 70%);
+  animation: starHalo 4s ease-in-out infinite;
+}
+@keyframes starPulse {
+  0%, 100% { transform: scale(1); box-shadow: 0 0 25px var(--gold), 0 0 50px rgba(255, 183, 0, 0.5), 0 0 80px rgba(255, 183, 0, 0.3); }
+  50% { transform: scale(1.15); box-shadow: 0 0 35px var(--gold), 0 0 70px rgba(255, 183, 0, 0.7), 0 0 100px rgba(255, 183, 0, 0.5); }
+}
+@keyframes starHalo {
+  0%, 100% { transform: scale(1); opacity: 0.5; }
+  50% { transform: scale(1.3); opacity: 0.8; }
+}
+.star-tooltip {
+  position: absolute;
+  top: 55px;
+  left: 0;
+  width: 240px;
+  background: linear-gradient(145deg, rgba(10, 18, 40, 0.98), rgba(5, 8, 24, 0.98));
+  border: 1px solid var(--gold);
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7), 0 0 30px rgba(255, 183, 0, 0.3);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-10px) scale(0.95);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.star-container:hover .star-tooltip {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  pointer-events: auto;
+}
+.star-img {
+  width: 100%;
+  height: 180px;
+  object-fit: contain;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 183, 0, 0.3);
+  margin-bottom: 10px;
+  padding: 6px;
+}
+.star-name {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--gold);
+  text-align: center;
+  margin-bottom: 4px;
+}
+.star-title {
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  text-align: center;
+  margin-bottom: 6px;
+  font-style: italic;
+}
+.star-years {
+  font-size: 0.72rem;
+  color: var(--primary);
+  text-align: center;
+  font-family: 'Courier New', monospace;
+  padding-top: 6px;
+  border-top: 1px solid rgba(255, 183, 0, 0.2);
+}
+.star-tooltip::before {
+  content: '';
+  position: absolute;
+  top: -8px;
+  left: 20px;
+  width: 16px;
+  height: 16px;
+  background: rgba(10, 18, 40, 0.98);
+  border-top: 1px solid var(--gold);
+  border-right: 1px solid var(--gold);
+  transform: rotate(-45deg);
+}
+
+/* ═══ بقیه استایل‌ها ═══ */
+.math-box { background: rgba(0, 212, 170, 0.06); border: 1px solid rgba(0, 212, 170, 0.25); border-radius: 14px; padding: 16px 22px; margin: 12px 0; text-align: center; direction: ltr; position: relative; overflow-x: auto; overflow-y: hidden; }
+.math-box::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--primary), var(--secondary), var(--tertiary)); }
+.math-box .MathJax, .math-box mjx-container { color: var(--primary) !important; font-size: 1em !important; }
+.math-box.gold-math .MathJax, .math-box.gold-math mjx-container { color: var(--gold) !important; }
+.math-box.purple-math .MathJax, .math-box.purple-math mjx-container { color: var(--tertiary) !important; }
+.math-box.pink-math .MathJax, .math-box.pink-math mjx-container { color: var(--pink) !important; }
+.math-box.danger-math .MathJax, .math-box.danger-math mjx-container { color: var(--danger) !important; }
+.math-note { font-family: 'Vazirmatn', sans-serif; font-size: 0.76rem; color: var(--text-dim); direction: rtl; margin-top: 8px; font-style: italic; text-align: center; }
+
+.simulator { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 18px; padding: 16px; margin: 12px 0; backdrop-filter: blur(12px); }
+.sim-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; flex-wrap: wrap; gap: 10px; }
+.sim-title { font-size: 0.9rem; font-weight: 700; color: var(--gold); display: flex; align-items: center; gap: 8px; }
+.sim-controls { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.slider-group { display: flex; align-items: center; gap: 8px; background: rgba(0, 0, 0, 0.3); padding: 6px 12px; border-radius: 10px; border: 1px solid var(--card-border); }
+.slider-group label { font-size: 0.72rem; color: var(--text-dim); white-space: nowrap; }
+.slider-group input[type="range"] { width: 100px; accent-color: var(--primary); cursor: pointer; }
+.slider-value { font-family: 'Courier New', monospace; font-size: 0.78rem; color: var(--primary); font-weight: 700; min-width: 30px; text-align: center; }
+.canvas-wrapper { position: relative; width: 100%; height: 260px; background: rgba(0, 0, 0, 0.4); border-radius: 12px; overflow: hidden; border: 1px solid var(--card-border); }
+.canvas-wrapper canvas { width: 100%; height: 100%; display: block; }
+
+.img-box { width: 100%; max-height: 280px; border-radius: 16px; border: 1px solid var(--card-border); margin: 12px 0; display: block; object-fit: contain; background: rgba(0, 0, 0, 0.3); padding: 8px; }
+
+/* ═══ گام‌های حل ═══ */
+.step-container {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 14px;
+  padding: 16px 20px;
+  margin: 12px 0;
+  border-right: 3px solid var(--gold);
+}
+.step-title {
+  font-size: 0.88rem;
+  font-weight: 800;
+  color: var(--gold);
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.step-content {
+  font-size: 0.85rem;
+  color: var(--text-dim);
+  line-height: 2;
+}
+.step-content .math-box {
+  margin: 8px 0;
+  padding: 12px 16px;
+}
+
+.exercise-block { border-radius: 16px; padding: 16px; border: 1px solid; position: relative; overflow: hidden; margin-bottom: 12px; }
+.exercise-block::before { content: ''; position: absolute; top: 0; right: 0; width: 4px; height: 100%; }
+.ex-yellow { background: rgba(255, 217, 61, 0.06); border-color: rgba(255, 217, 61, 0.25); }
+.ex-yellow::before { background: #ffd93d; }
+.ex-green { background: rgba(107, 207, 127, 0.06); border-color: rgba(107, 207, 127, 0.25); }
+.ex-green::before { background: #6bcf7f; }
+.ex-purple { background: rgba(168, 85, 247, 0.06); border-color: rgba(168, 85, 247, 0.25); }
+.ex-purple::before { background: var(--tertiary); }
+.ex-red { background: rgba(255, 107, 107, 0.06); border-color: rgba(255, 107, 107, 0.25); }
+.ex-red::before { background: #ff6b6b; }
+.ex-header { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+.ex-num { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 0.8rem; color: var(--dark); flex-shrink: 0; }
+.ex-yellow .ex-num { background: #ffd93d; }
+.ex-green .ex-num { background: #6bcf7f; }
+.ex-purple .ex-num { background: var(--tertiary); color: #fff; }
+.ex-red .ex-num { background: #ff6b6b; color: #fff; }
+.ex-title { font-size: 0.92rem; font-weight: 800; }
+.ex-list { list-style: none; padding: 0; counter-reset: item; }
+.ex-list li { position: relative; padding: 7px 34px 7px 10px; font-size: 0.83rem; color: var(--text-dim); line-height: 1.8; border-bottom: 1px dashed rgba(255, 255, 255, 0.05); }
+.ex-list li:last-child { border-bottom: none; }
+.ex-list li::before { counter-increment: item; content: counter(item); position: absolute; right: 4px; top: 9px; width: 22px; height: 22px; border-radius: 50%; background: rgba(255, 255, 255, 0.08); color: var(--text); font-size: 0.7rem; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+.email-banner { margin-top: 12px; padding: 12px; border-radius: 14px; background: linear-gradient(135deg, rgba(0, 212, 170, 0.1), rgba(168, 85, 247, 0.1)); border: 1px dashed rgba(0, 212, 170, 0.4); text-align: center; }
+.email-banner p { font-size: 0.8rem; color: var(--text); margin-bottom: 5px; }
+.email-banner code { display: inline-block; padding: 5px 12px; border-radius: 8px; background: rgba(0, 0, 0, 0.4); color: var(--primary); font-family: 'Courier New', monospace; font-size: 0.76rem; direction: ltr; margin-top: 3px; }
+
+.code-tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--card-border); }
+.code-tab { padding: 8px 16px; border-radius: 10px 10px 0 0; background: transparent; border: none; color: var(--text-dim); font-family: inherit; font-size: 0.8rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; }
+.code-tab.active { background: rgba(0, 212, 170, 0.1); color: var(--primary); border-bottom: 2px solid var(--primary); }
+.code-content { display: none; background: #0a0f24; border: 1px solid var(--card-border); border-top: none; border-radius: 0 0 12px 12px; padding: 14px; overflow-x: auto; direction: ltr; text-align: left; }
+.code-content.active { display: block; }
+.code-content pre { margin: 0; font-family: 'Courier New', Consolas, monospace; font-size: 0.76rem; line-height: 1.6; color: #e8eef7; white-space: pre; }
+.code-content .kw { color: #ff79c6; }
+.code-content .fn { color: #50fa7b; }
+.code-content .num { color: #bd93f9; }
+.code-content .str { color: #f1fa8c; }
+.code-content .cm { color: #6272a4; font-style: italic; }
+
+.bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; height: 58px; background: rgba(5, 8, 24, 0.9); backdrop-filter: blur(15px); border-top: 1px solid var(--card-border); display: flex; align-items: center; justify-content: space-between; padding: 0 20px; z-index: 100; }
+.nav-btn { padding: 8px 18px; border-radius: 12px; border: 1px solid var(--card-border); background: var(--card-bg); color: var(--text); cursor: pointer; font-family: inherit; font-size: 0.82rem; font-weight: 600; display: flex; align-items: center; gap: 7px; transition: all 0.3s ease; }
+.nav-btn:hover:not(:disabled) { background: var(--primary); color: var(--dark); transform: translateY(-2px); }
+.nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+.dots-nav { display: flex; gap: 4px; flex-wrap: wrap; justify-content: center; max-width: 60%; }
+.dot-nav { width: 8px; height: 8px; border-radius: 50%; background: rgba(255, 255, 255, 0.15); cursor: pointer; border: none; padding: 0; transition: all 0.3s ease; }
+.dot-nav.active { background: var(--primary); width: 22px; border-radius: 5px; box-shadow: 0 0 10px var(--primary); }
+.slide-counter { font-size: 0.78rem; color: var(--text-dim); font-family: 'Courier New', monospace; min-width: 60px; text-align: center; }
+.slide-counter span { color: var(--primary); font-weight: 800; }
+
+.toast-container { position: fixed; bottom: 76px; left: 24px; z-index: 9999; display: flex; flex-direction: column; gap: 8px; }
+.toast { background: rgba(10, 18, 40, 0.95); border: 1px solid var(--primary); border-radius: 14px; padding: 11px 16px; color: var(--text); font-size: 0.82rem; backdrop-filter: blur(12px); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); display: flex; align-items: center; gap: 8px; animation: slideIn 0.35s ease; max-width: 320px; }
+.toast i { color: var(--primary); }
+@keyframes slideIn { from { opacity: 0; transform: translateX(-60px); } to { opacity: 1; transform: translateX(0); } }
+
+.lecture-note {
+  background: rgba(0, 212, 170, 0.06);
+  border: 1px solid rgba(0, 212, 170, 0.3);
+  border-radius: 12px;
+  padding: 12px 16px;
+  margin: 10px 0;
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+.lecture-note i {
+  color: var(--primary);
+  font-size: 1.1rem;
+  margin-top: 3px;
+}
+.lecture-note-content {
+  flex: 1;
+  font-size: 0.85rem;
+  color: var(--text-dim);
+  line-height: 1.9;
+}
+
+.level-badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 6px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+.level-1 { background: rgba(0, 212, 170, 0.15); color: var(--primary); }
+.level-2 { background: rgba(255, 183, 0, 0.15); color: var(--gold); }
+.level-3 { background: rgba(168, 85, 247, 0.15); color: var(--tertiary); }
+
+@media (max-width: 768px) {
+  .slide { padding: 16px 14px 90px; }
+  .header-univ { display: none; }
+  .header-name { font-size: 0.75rem; }
+  .header-signature { height: 45px; max-width: 110px; }
+  .nav-btn { padding: 7px 11px; font-size: 0.72rem; }
+  .nav-btn span { display: none; }
+  .dots-nav { max-width: 45%; }
+  .slide-counter { font-size: 0.68rem; min-width: 45px; }
+  .canvas-wrapper { height: 210px; }
+  .topic-pill { font-size: 0.64rem; padding: 3px 8px; }
+  .star-container { top: 130px; left: 20px; }
+  .star-core { width: 32px; height: 32px; }
+  .star-tooltip { width: 200px; }
+}
+@media (max-width: 480px) {
+  .ctrl-btn { width: 32px; height: 32px; font-size: 0.75rem; }
+  .header-signature { display: none; }
+  .star-container { top: 120px; left: 12px; }
+  .star-core { width: 28px; height: 28px; }
+  .star-tooltip { width: 180px; padding: 12px; }
+  .star-img { height: 140px; }
+}
+</style>
+</head>
+<body>
+
+<canvas id="bgCanvas"></canvas>
+<div class="glow-orb orb1"></div>
+<div class="glow-orb orb2"></div>
+<div class="glow-orb orb3"></div>
+
+<!-- ═══ ستاره درخشان ابوریحان بیرونی ═══ -->
+<div class="star-container" id="starContainer">
+  <div class="star-core"></div>
+  <div class="star-tooltip">
+    <img src="images/star.png" alt="ابوریحان بیرونی" class="star-img" onerror="this.style.background='linear-gradient(135deg, #ffb700, #a855f7)'; this.style.minHeight='140px';">
+    <div class="star-name">ابوریحان بیرونی</div>
+    <div class="star-title">پدر زمین‌سنجی و ریاضیات کاربردی</div>
+    <div class="star-years">۹۷۳ — ۱۰۴۸ میلادی</div>
+  </div>
+</div>
+
+<div class="top-header">
+  <div class="header-left">
+    <img src="images/signature-blue.png" alt="امضا" class="header-signature" onerror="this.style.display='none'">
+    <div class="header-text">
+      <span class="header-name">دکتر مسعود گوهری منش</span>
+      <span class="header-univ">دانشیار گروه مهندسی مکانیک — دانشگاه تربت حیدریه</span>
+    </div>
+  </div>
+  <div class="header-controls">
+    <button class="ctrl-btn" id="soundToggle" title="صدا"><i class="fas fa-volume-up"></i></button>
+    <button class="ctrl-btn" id="fullscreenToggle" title="تمام‌صفحه"><i class="fas fa-expand"></i></button>
+  </div>
+</div>
+
+<div class="topic-nav" id="topicNav">
+  <span class="topic-pill" data-topic="1">مقدمه</span>
+  <span class="topic-pill" data-topic="2">مفهوم ε و O</span>
+  <span class="topic-pill" data-topic="3">بسط سری</span>
+  <span class="topic-pill" data-topic="4">مثال‌های جبری</span>
+  <span class="topic-pill" data-topic="5">مثال‌های ODE</span>
+  <span class="topic-pill" data-topic="6">گذار به PDE</span>
+  <span class="topic-pill" data-topic="7">کاربرد نانو</span>
+  <span class="topic-pill" data-topic="8">محدودیت‌ها</span>
+  <span class="topic-pill" data-topic="9">کد و تمرین</span>
+  <span class="topic-pill" data-topic="10">جمع‌بندی</span>
+</div>
+
+<div class="progress-top"><div class="progress-fill" id="progressFill"></div></div>
+
+<div class="slide-container" id="slideContainer">
+
+  <!-- ۱ — عنوان -->
+  <div class="slide active" data-slide="1" data-topic="1">
+    <div class="slide-inner title-slide">
+      <div class="bismillah">بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِیم</div>
+      <div class="hoval">هُوَ الخَلّاقُ العَلیم</div>
+      <img src="images/hero-perturbation.png" alt="Perturbation" class="hero-img" onerror="this.style.display='none'">
+      <h1 class="main-title">مقدمه Perturbation</h1>
+      <p class="subtitle">(Introduction to Perturbation Methods) — جلسه ۱۳</p>
+      <div class="euler-box"><div style="direction: ltr; font-size: 1.05rem;">$$x = x_0 + \epsilon x_1 + \epsilon^2 x_2 + \cdots$$</div></div>
+      <p class="instructor-line">دکتر مسعود گوهری منش</p>
+      <p class="instructor-title-line">دانشیار گروه مهندسی مکانیک — دانشگاه تربت حیدریه</p>
+      <div class="semester">نیمسال اول ۱۴۰۵–۱۴۰۶</div>
+      <div class="lecture-note" style="margin-top: 20px; max-width: 600px; margin-left: auto; margin-right: auto; text-align: right;">
+        <i class="fas fa-star" style="color: var(--gold);"></i>
+        <div class="lecture-note-content">
+          <strong style="color: var(--gold);">💫 ستاره امروز:</strong> به ستاره درخشان گوشه صفحه هاور کنید تا <strong>ابوریحان بیرونی</strong>، پیشگام روش‌های تقریبی در ریاضیات را ببینید.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۲ — مرور فاز ۳ -->
+  <div class="slide" data-slide="2" data-topic="1">
+    <div class="slide-inner">
+      <span class="slide-num">مرور</span>
+      <h2 class="slide-h1">خداحافظ فاز ۳، سلام فاز ۴</h2>
+
+      <div class="grid-2">
+        <div class="card" style="background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3);">
+          <div class="slide-h3" style="color: var(--primary);"><i class="fas fa-check-circle"></i> فاز ۳ (پایان یافته)</div>
+          <ul style="list-style: none; padding: 0; font-size: 0.85rem; color: var(--text-dim); line-height: 2;">
+            <li>✅ معادله تیر اویلر-برنولی</li>
+            <li>✅ ارتعاشات و فرکانس‌های طبیعی</li>
+            <li>✅ نانو انبرک و نیروهای بین‌مولکولی</li>
+            <li>✅ پایداری و پدیده Pull-in</li>
+          </ul>
+        </div>
+        <div class="card" style="background: rgba(255, 183, 0, 0.06); border-color: rgba(255, 183, 0, 0.3);">
+          <div class="slide-h3" style="color: var(--gold);"><i class="fas fa-rocket"></i> فاز ۴ (شروع)</div>
+          <ul style="list-style: none; padding: 0; font-size: 0.85rem; color: var(--text-dim); line-height: 2;">
+            <li>🔹 جلسه ۱۳: مقدمه Perturbation ← امروز</li>
+            <li>🔹 جلسه ۱۴: چند مقیاسی و Lindstedt-Poincaré</li>
+            <li>🔹 جلسه ۱۵: تفاضل محدود و رانگ-کوتا</li>
+            <li>🔹 جلسه ۱۶: روش‌های طیفی و FEM</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top: 16px; background: rgba(168, 85, 247, 0.06); border-color: rgba(168, 85, 247, 0.3);">
+        <div class="slide-h3" style="color: var(--tertiary);"><i class="fas fa-bullseye"></i> چرا Perturbation؟</div>
+        <p class="slide-text" style="font-size: 0.9rem;">
+          در فاز ۳، با معادلات <strong>غیرخطی</strong> نانو انبرک آشنا شدید. <strong>هیچ راه‌حل دقیق بسته‌ای</strong> برای این معادلات وجود ندارد. روش Perturbation به ما اجازه می‌دهد با فرض اینکه <strong>پارامتر ε کوچک است</strong>، جواب را به‌صورت <strong>سری توانی</strong> بنویسیم و مرتبه‌به‌مرتبه حل کنیم.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۳ — چرا Perturbation -->
+  <div class="slide" data-slide="3" data-topic="1">
+    <div class="slide-inner">
+      <span class="slide-num">انگیزه</span>
+      <h2 class="slide-h1">چرا به Perturbation نیاز داریم؟</h2>
+
+      <p class="slide-text">
+        بیشتر معادلات واقعی در فیزیک و مهندسی، <strong>غیرخطی</strong> هستند و حل دقیق ندارند. Perturbation یکی از قدرتمندترین ابزارها برای حل تقریبی این معادلات است.
+      </p>
+
+      <div class="grid-3">
+        <div class="card" style="background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3); text-align: center;">
+          <i class="fas fa-square-root-variable" style="font-size: 2rem; color: var(--primary); margin-bottom: 10px; display: block;"></i>
+          <div class="slide-h3" style="justify-content: center; color: var(--primary);">معادلات جبری</div>
+          <p class="slide-text" style="font-size: 0.82rem;">
+            $x^2 + \epsilon x - 1 = 0$
+          </p>
+          <p class="slide-text" style="font-size: 0.75rem;">
+            ریشه‌ها با تقریب
+          </p>
+        </div>
+        <div class="card" style="background: rgba(255, 183, 0, 0.06); border-color: rgba(255, 183, 0, 0.3); text-align: center;">
+          <i class="fas fa-wave-square" style="font-size: 2rem; color: var(--gold); margin-bottom: 10px; display: block;"></i>
+          <div class="slide-h3" style="justify-content: center; color: var(--gold);">ODE</div>
+          <p class="slide-text" style="font-size: 0.82rem;">
+            $y'' + \epsilon y^2 = 0$
+          </p>
+          <p class="slide-text" style="font-size: 0.75rem;">
+            معادلات غیرخطی فیزیک
+          </p>
+        </div>
+        <div class="card" style="background: rgba(168, 85, 247, 0.06); border-color: rgba(168, 85, 247, 0.3); text-align: center;">
+          <i class="fas fa-cube" style="font-size: 2rem; color: var(--tertiary); margin-bottom: 10px; display: block;"></i>
+          <div class="slide-h3" style="justify-content: center; color: var(--tertiary);">PDE</div>
+          <p class="slide-text" style="font-size: 0.82rem;">
+            $w'''' = f(w)$
+          </p>
+          <p class="slide-text" style="font-size: 0.75rem;">
+            نانو انبرک، تیر غیرخطی
+          </p>
+        </div>
+      </div>
+
+      <div class="lecture-note" style="margin-top: 14px;">
+        <i class="fas fa-lightbulb"></i>
+        <div class="lecture-note-content">
+          <strong>هدف این جلسه:</strong> شما یاد می‌گیرید که در سه سطح پیشرونده (جبری → ODE → PDE)، با روش Perturbation آشنا شوید و آن را گام‌به‌گام اجرا کنید.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۴ — مفهوم ε کوچک -->
+  <div class="slide" data-slide="4" data-topic="2">
+    <div class="slide-inner">
+      <span class="slide-num">مفهوم ε</span>
+      <h2 class="slide-h1">پارامتر کوچک ε</h2>
+
+      <p class="slide-text">
+        Perturbation بر پایه یک ایده ساده استوار است: اگر یک پارامتر در مسئله <strong>کوچک</strong> باشد، جواب تقریباً همان جواب مسئله ساده‌تر است.
+      </p>
+
+      <img src="images/small-parameter-concept.png" alt="Small Parameter" class="img-box" style="max-height: 200px;" onerror="this.style.display='none'">
+
+      <div class="grid-2" style="margin-top: 14px;">
+        <div class="card" style="background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3);">
+          <div class="slide-h3" style="color: var(--primary);"><i class="fas fa-compress"></i> شرط اصلی</div>
+          <div class="math-box" style="padding: 14px;">
+            $$0 < \epsilon \ll 1$$
+          </div>
+          <p class="slide-text" style="font-size: 0.85rem;">
+            پارامتر $\epsilon$ باید بسیار کوچک باشد — مثل $\epsilon = 0.01$ یا $\epsilon = 0.1$. هرچه کوچک‌تر، دقت بیشتر.
+          </p>
+        </div>
+        <div class="card" style="background: rgba(255, 183, 0, 0.06); border-color: rgba(255, 183, 0, 0.3);">
+          <div class="slide-h3" style="color: var(--gold);"><i class="fas fa-cogs"></i> مسئله پیوسته</div>
+          <p class="slide-text" style="font-size: 0.85rem;">
+            مسئله به‌صورت ترکیب دو بخش نوشته می‌شود:
+          </p>
+          <div class="math-box gold-math" style="padding: 12px;">
+            $$\mathcal{L}(x) = \underbrace{\mathcal{L}_0(x)}_{\text{حل‌شدنی}} + \epsilon \underbrace{\mathcal{N}(x)}_{\text{اختلال}}$$
+          </div>
+          <p class="slide-text" style="font-size: 0.78rem;">
+            $\mathcal{L}_0$ = عملگر ساده (حل دقیق دارد) | $\mathcal{N}$ = اختلال (غیرخطی)
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۵ — نماد O و o -->
+  <div class="slide" data-slide="5" data-topic="2">
+    <div class="slide-inner">
+      <span class="slide-num">نمادها</span>
+      <h2 class="slide-h1">نماد O و o — درجه بزرگی</h2>
+
+      <p class="slide-text">
+        برای مرتب کردن جملات بسط، از نمادهای **Big-O** و **Little-o** استفاده می‌کنیم.
+      </p>
+
+      <img src="images/big-o-notation.png" alt="Big-O Notation" class="img-box" style="max-height: 180px;" onerror="this.style.display='none'">
+
+      <div class="grid-2" style="margin-top: 14px;">
+        <div class="card" style="background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3);">
+          <div class="slide-h3" style="color: var(--primary);"><i class="fas fa-arrow-up"></i> Big-O</div>
+          <div class="math-box" style="padding: 12px;">
+            $$f(\epsilon) = O(g(\epsilon))$$
+          </div>
+          <p class="slide-text" style="font-size: 0.82rem;">
+            یعنی $f$ به همان سرعت یا سریع‌تر از $g$ به صفر می‌رود (در $\epsilon \to 0$).
+          </p>
+          <p class="slide-text" style="font-size: 0.78rem;">
+            مثال: $\epsilon^2 + \epsilon^3 = O(\epsilon^2)$
+          </p>
+        </div>
+        <div class="card" style="background: rgba(255, 183, 0, 0.06); border-color: rgba(255, 183, 0, 0.3);">
+          <div class="slide-h3" style="color: var(--gold);"><i class="fas fa-arrow-down"></i> Little-o</div>
+          <div class="math-box gold-math" style="padding: 12px;">
+            $$f(\epsilon) = o(g(\epsilon))$$
+          </div>
+          <p class="slide-text" style="font-size: 0.82rem;">
+            یعنی $f$ سریع‌تر از $g$ به صفر می‌رود.
+          </p>
+          <p class="slide-text" style="font-size: 0.78rem;">
+            مثال: $\epsilon^3 = o(\epsilon^2)$
+          </p>
+        </div>
+      </div>
+
+      <div class="lecture-note" style="margin-top: 14px;">
+        <i class="fas fa-info-circle"></i>
+        <div class="lecture-note-content">
+          <strong>کاربرد در Perturbation:</strong> وقتی می‌نویسیم $x = x_0 + \epsilon x_1 + O(\epsilon^2)$، یعنی مرتبه صفر و اول را دقیق حساب کرده‌ایم و از مرتبه دوم به بعد را رها کرده‌ایم.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۶ — اصل بسط سری -->
+  <div class="slide" data-slide="6" data-topic="3">
+    <div class="slide-inner">
+      <span class="slide-num">اصل کار</span>
+      <h2 class="slide-h1">فرض بسط سری توانی</h2>
+
+      <p class="slide-text">
+        فرض اصلی Perturbation این است که جواب مسئله را می‌توان به‌صورت **سری توانی** در $\epsilon$ نوشت:
+      </p>
+
+      <img src="images/series-expansion-concept.png" alt="Series Expansion" class="img-box" style="max-height: 180px;" onerror="this.style.display='none'">
+
+      <div class="math-box gold-math" style="padding: 20px; margin-top: 12px;">
+        <div style="font-size: 1.15rem;">
+          $$x(\epsilon) = x_0 + \epsilon x_1 + \epsilon^2 x_2 + \epsilon^3 x_3 + \cdots$$
+        </div>
+      </div>
+
+      <div class="grid-3" style="margin-top: 14px;">
+        <div class="card" style="text-align: center; padding: 14px;">
+          <div class="level-badge level-1">مرتبه صفر</div>
+          <div style="font-family: 'Courier New', monospace; font-size: 1rem; color: var(--primary); font-weight: 700;">$x_0$</div>
+          <p class="slide-text" style="font-size: 0.75rem; margin-top: 6px;">جواب مسئله بدون اختلال</p>
+        </div>
+        <div class="card" style="text-align: center; padding: 14px;">
+          <div class="level-badge level-2">مرتبه اول</div>
+          <div style="font-family: 'Courier New', monospace; font-size: 1rem; color: var(--gold); font-weight: 700;">$\epsilon x_1$</div>
+          <p class="slide-text" style="font-size: 0.75rem; margin-top: 6px;">اولین تصحیح</p>
+        </div>
+        <div class="card" style="text-align: center; padding: 14px;">
+          <div class="level-badge level-3">مرتبه دوم</div>
+          <div style="font-family: 'Courier New', monospace; font-size: 1rem; color: var(--tertiary); font-weight: 700;">$\epsilon^2 x_2$</div>
+          <p class="slide-text" style="font-size: 0.75rem; margin-top: 6px;">تصحیح دقیق‌تر</p>
+        </div>
+      </div>
+
+      <div class="lecture-note" style="margin-top: 14px;">
+        <i class="fas fa-lightbulb"></i>
+        <div class="lecture-note-content">
+          <strong>سه گام اصلی:</strong> (۱) بسط را در معادله اصلی جایگذاری کن. (۲) توان‌های $\epsilon$ را جمع کن. (۳) معادلات مرتبه‌به‌مرتبه را حل کن.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۷ — مرتبه صفر -->
+  <div class="slide" data-slide="7" data-topic="3">
+    <div class="slide-inner">
+      <span class="slide-num">ساده‌ترین حالت</span>
+      <h2 class="slide-h1">مرتبه صفر — مسئله حل‌شده</h2>
+
+      <p class="slide-text">
+        مرتبه صفر یعنی $\epsilon = 0$. مسئله به ساده‌ترین شکل خود بازمی‌گردد و معمولاً **حل دقیق** دارد.
+      </p>
+
+      <div class="step-container">
+        <div class="step-title"><i class="fas fa-1"></i> معادله اصلی با اختلال</div>
+        <div class="step-content">
+          <div class="math-box" style="padding: 12px;">
+            $$\mathcal{L}_0(x) + \epsilon \mathcal{N}(x) = 0$$
+          </div>
+        </div>
+      </div>
+
+      <div class="step-container" style="border-right-color: var(--primary);">
+        <div class="step-title" style="color: var(--primary);"><i class="fas fa-2"></i> جایگذاری بسط سری</div>
+        <div class="step-content">
+          <div class="math-box" style="padding: 12px;">
+            $$\mathcal{L}_0(x_0 + \epsilon x_1 + \cdots) + \epsilon \mathcal{N}(x_0 + \epsilon x_1 + \cdots) = 0$$
+          </div>
+        </div>
+      </div>
+
+      <div class="step-container" style="border-right-color: var(--gold);">
+        <div class="step-title"><i class="fas fa-3"></i> مرتبه صفر ($\epsilon^0$)</div>
+        <div class="step-content">
+          <div class="math-box gold-math" style="padding: 14px;">
+            $$\mathcal{L}_0(x_0) = 0$$
+          </div>
+          <p style="font-size: 0.82rem; margin-top: 8px;">
+            این مسئله ساده است و $x_0$ را می‌دهد.
+          </p>
+        </div>
+      </div>
+
+      <div class="lecture-note">
+        <i class="fas fa-star"></i>
+        <div class="lecture-note-content">
+          <strong>نکته:</strong> مرتبه صفر معمولاً همان جواب مسئله خطی بدون اختلال است. اگر این را داشته باشیم، بقیه مراتب به‌صورت بازگشتی حل می‌شوند.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۸ — شبیه‌ساز مرتبه‌ها -->
+  <div class="slide" data-slide="8" data-topic="3">
+    <div class="slide-inner">
+      <span class="slide-num">شبیه‌ساز تعاملی</span>
+      <h2 class="slide-h1">شبیه‌ساز مراتب بسط</h2>
+      <p class="slide-text">تعداد جملات بسط را تغییر دهید و دقت تقریب را ببینید.</p>
+
+      <div class="simulator">
+        <div class="sim-header">
+          <div class="sim-title"><i class="fas fa-chart-line"></i> تابع دقیق در مقابل بسط سری</div>
+          <div class="sim-controls">
+            <div class="slider-group">
+              <label>ε:</label>
+              <input type="range" id="orderEps" min="0.01" max="0.5" value="0.1" step="0.01">
+              <span class="slider-value" id="orderEpsValue">۰.۱۰</span>
+            </div>
+            <div class="slider-group">
+              <label>تعداد جملات:</label>
+              <input type="range" id="orderN" min="1" max="5" value="2" step="1">
+              <span class="slider-value" id="orderNValue">۲</span>
+            </div>
+          </div>
+        </div>
+        <div class="canvas-wrapper" style="height: 300px;"><canvas id="orderCanvas"></canvas></div>
+        <div class="grid-3" style="margin-top: 12px;">
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 0.72rem; color: var(--text-dim);">جواب دقیق (ε=0.1)</div>
+            <div id="orderExact" style="font-size: 0.95rem; color: var(--primary); font-weight: 800; font-family: 'Courier New', monospace;">—</div>
+          </div>
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 0.72rem; color: var(--text-dim);">تقریب بسط</div>
+            <div id="orderApprox" style="font-size: 0.95rem; color: var(--gold); font-weight: 800; font-family: 'Courier New', monospace;">—</div>
+          </div>
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 0.72rem; color: var(--text-dim);">خطا</div>
+            <div id="orderError" style="font-size: 0.95rem; color: var(--danger); font-weight: 800; font-family: 'Courier New', monospace;">—</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۹ — مثال جبری ۱ -->
+  <div class="slide" data-slide="9" data-topic="4">
+    <div class="slide-inner">
+      <span class="slide-num">سطح ۱ — جبری</span>
+      <span class="level-badge level-1" style="display: inline-block; margin-right: 8px;">مثال ۱</span>
+      <h2 class="slide-h1">مثال جبری: $x^2 + \epsilon x - 1 = 0$</h2>
+
+      <img src="images/algebraic-example-1.png" alt="Algebraic 1" class="img-box" style="max-height: 160px;" onerror="this.style.display='none'">
+
+      <p class="slide-text">
+        این معادله درجه ۲ حل دقیق دارد، اما برای آموزش Perturbation از آن استفاده می‌کنیم.
+      </p>
+
+      <div class="step-container">
+        <div class="step-title"><i class="fas fa-1"></i> گام ۱: فرض بسط سری</div>
+        <div class="step-content">
+          <div class="math-box" style="padding: 12px;">
+            $$x = x_0 + \epsilon x_1 + \epsilon^2 x_2 + \cdots$$
+          </div>
+        </div>
+      </div>
+
+      <div class="step-container" style="border-right-color: var(--primary);">
+        <div class="step-title" style="color: var(--primary);"><i class="fas fa-2"></i> گام ۲: جایگذاری در معادله</div>
+        <div class="step-content">
+          <div class="math-box" style="padding: 12px; font-size: 0.85rem;">
+            $$(x_0 + \epsilon x_1 + \epsilon^2 x_2)^2 + \epsilon(x_0 + \epsilon x_1) - 1 = 0$$
+          </div>
+          <p style="font-size: 0.82rem;">بسط:</p>
+          <div class="math-box" style="padding: 12px; font-size: 0.82rem;">
+            $$x_0^2 + 2\epsilon x_0 x_1 + \epsilon^2(x_1^2 + 2x_0 x_2) + \epsilon x_0 + \epsilon^2 x_1 - 1 = 0$$
+          </div>
+        </div>
+      </div>
+
+      <div class="step-container" style="border-right-color: var(--gold);">
+        <div class="step-title"><i class="fas fa-3"></i> گام ۳: جمع‌آوری توان‌های ε</div>
+        <div class="step-content">
+          <div class="math-box gold-math" style="padding: 10px; font-size: 0.82rem;">
+            $$\epsilon^0: \quad x_0^2 - 1 = 0 \quad \Rightarrow \quad x_0 = \pm 1$$
+          </div>
+          <div class="math-box gold-math" style="padding: 10px; font-size: 0.82rem; margin-top: 8px;">
+            $$\epsilon^1: \quad 2x_0 x_1 + x_0 = 0 \quad \Rightarrow \quad x_1 = -1/2$$
+          </div>
+          <div class="math-box gold-math" style="padding: 10px; font-size: 0.82rem; margin-top: 8px;">
+            $$\epsilon^2: \quad x_1^2 + 2x_0 x_2 + x_1 = 0 \quad \Rightarrow \quad x_2 = -1/8$$
+          </div>
+        </div>
+      </div>
+
+      <div class="math-box purple-math" style="padding: 16px; margin-top: 12px;">
+        <div style="font-size: 0.95rem;">
+          $$x = 1 - \frac{1}{2}\epsilon - \frac{1}{8}\epsilon^2 + O(\epsilon^3)$$
+        </div>
+        <p class="math-note">جواب برای ریشه مثبت</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۱۰ — مثال جبری ۲ -->
+  <div class="slide" data-slide="10" data-topic="4">
+    <div class="slide-inner">
+      <span class="slide-num">سطح ۱ — جبری</span>
+      <span class="level-badge level-1" style="display: inline-block; margin-right: 8px;">مثال ۲</span>
+      <h2 class="slide-h1">مثال جبری پیشرفته‌تر</h2>
+
+      <img src="images/algebraic-example-2.png" alt="Algebraic 2" class="img-box" style="max-height: 160px;" onerror="this.style.display='none'">
+
+      <div class="math-box" style="padding: 16px;">
+        <div style="font-size: 1.05rem;">
+          $$x^3 + \epsilon x - 1 = 0$$
+        </div>
+      </div>
+
+      <div class="step-container">
+        <div class="step-title"><i class="fas fa-1"></i> گام ۱: بسط سری</div>
+        <div class="step-content">
+          <div class="math-box" style="padding: 10px; font-size: 0.85rem;">
+            $$x = x_0 + \epsilon x_1 + \epsilon^2 x_2 + \cdots$$
+          </div>
+        </div>
+      </div>
+
+      <div class="step-container" style="border-right-color: var(--primary);">
+        <div class="step-title" style="color: var(--primary);"><i class="fas fa-2"></i> گام ۲: جمع‌آوری مراتب</div>
+        <div class="step-content">
+          <div class="math-box" style="padding: 10px; font-size: 0.82rem;">
+            $$\epsilon^0: \quad x_0^3 = 1 \quad \Rightarrow \quad x_0 = 1$$
+          </div>
+          <div class="math-box" style="padding: 10px; font-size: 0.82rem; margin-top: 6px;">
+            $$\epsilon^1: \quad 3x_0^2 x_1 + x_0 = 0 \quad \Rightarrow \quad x_1 = -1/3$$
+          </div>
+          <div class="math-box" style="padding: 10px; font-size: 0.82rem; margin-top: 6px;">
+            $$\epsilon^2: \quad 3x_0^2 x_2 + 3x_0 x_1^2 + x_1 = 0 \quad \Rightarrow \quad x_2 = 0$$
+          </div>
+        </div>
+      </div>
+
+      <div class="math-box gold-math" style="padding: 16px;">
+        <div style="font-size: 0.95rem;">
+          $$x = 1 - \frac{1}{3}\epsilon + O(\epsilon^3)$$
+        </div>
+      </div>
+
+      <div class="lecture-note">
+        <i class="fas fa-lightbulb"></i>
+        <div class="lecture-note-content">
+          <strong>مقایسه با حل دقیق:</strong> برای $\epsilon = 0.1$، جواب دقیق $x \approx 0.967$ است و بسط ما $x \approx 0.967$ می‌دهد — خطای کمتر از $10^{-3}$!
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۱۱ — مثال جبری ۳ (نانو انبرک) -->
+  <div class="slide" data-slide="11" data-topic="4">
+    <div class="slide-inner">
+      <span class="slide-num">سطح ۱ — جبری</span>
+      <span class="level-badge level-1" style="display: inline-block; margin-right: 8px;">مثال ۳ — نانو</span>
+      <h2 class="slide-h1">کاربرد در نانو انبرک</h2>
+
+      <img src="images/cantilever-perturbation-algebraic.png" alt="Nano Perturbation" class="img-box" style="max-height: 160px;" onerror="this.style.display='none'">
+
+      <p class="slide-text">
+        معادله تعادل استاتیک نانو انبرک را ساده کرده‌ایم:
+      </p>
+
+      <div class="math-box" style="padding: 14px;">
+        $$w + \epsilon w^3 = 1$$
+      </div>
+
+      <p class="slide-text" style="font-size: 0.85rem;">
+        این معادله در واقع تعادل بین نیروی مکانیکی (خطی) و الکترواستاتیک (غیرخطی با $\epsilon \propto V^2$) را نشان می‌دهد.
+      </p>
+
+      <div class="step-container">
+        <div class="step-title"><i class="fas fa-1"></i> گام ۱: بسط سری</div>
+        <div class="step-content">
+          <div class="math-box" style="padding: 10px;">
+            $$w = w_0 + \epsilon w_1 + \epsilon^2 w_2 + \cdots$$
+          </div>
+        </div>
+      </div>
+
+      <div class="step-container" style="border-right-color: var(--primary);">
+        <div class="step-title" style="color: var(--primary);"><i class="fas fa-2"></i> گام ۲: جایگذاری</div>
+        <div class="step-content">
+          <div class="math-box" style="padding: 12px; font-size: 0.8rem;">
+            $$(w_0 + \epsilon w_1 + \epsilon^2 w_2) + \epsilon(w_0 + \epsilon w_1)^3 = 1$$
+          </div>
+          <div class="math-box" style="padding: 12px; font-size: 0.8rem;">
+            $$w_0 + \epsilon w_1 + \epsilon^2 w_2 + \epsilon w_0^3 + 3\epsilon^2 w_0^2 w_1 + \cdots = 1$$
+          </div>
+        </div>
+      </div>
+
+      <div class="step-container" style="border-right-color: var(--gold);">
+        <div class="step-title"><i class="fas fa-3"></i> گام ۳: مراتب</div>
+        <div class="step-content">
+          <div class="math-box gold-math" style="padding: 10px; font-size: 0.85rem;">
+            $$\epsilon^0: \quad w_0 = 1$$
+          </div>
+          <div class="math-box gold-math" style="padding: 10px; font-size: 0.85rem; margin-top: 6px;">
+            $$\epsilon^1: \quad w_1 + w_0^3 = 0 \quad \Rightarrow \quad w_1 = -1$$
+          </div>
+          <div class="math-box gold-math" style="padding: 10px; font-size: 0.85rem; margin-top: 6px;">
+            $$\epsilon^2: \quad w_2 + 3w_0^2 w_1 = 0 \quad \Rightarrow \quad w_2 = 3$$
+          </div>
+        </div>
+      </div>
+
+      <div class="math-box purple-math" style="padding: 16px;">
+        <div style="font-size: 1rem;">
+          $$w = 1 - \epsilon + 3\epsilon^2 + O(\epsilon^3)$$
+        </div>
+        <p class="math-note">جواب تقریبی خمش نانو انبرک</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۱۲ — مقایسه با جواب دقیق -->
+  <div class="slide" data-slide="12" data-topic="4">
+    <div class="slide-inner">
+      <span class="slide-num">تحلیل خطا</span>
+      <h2 class="slide-h1">مقایسه با جواب دقیق</h2>
+
+      <img src="images/convergence-comparison.png" alt="Convergence" class="img-box" style="max-height: 180px;" onerror="this.style.display='none'">
+
+      <p class="slide-text">
+        هرچه تعداد مراتب بسط بیشتر شود، خطا کاهش می‌یابد. اما همیشه یک <strong>خطای باقیمانده</strong> وجود دارد.
+      </p>
+
+      <div class="card">
+        <div class="slide-h3"><i class="fas fa-chart-bar"></i> مقایسه عددی برای ε = 0.2</div>
+        <table style="width: 100%; border-collapse: collapse; font-size: 0.8rem; direction: rtl;">
+          <thead>
+            <tr style="background: rgba(0, 212, 170, 0.15);">
+              <th style="padding: 8px; color: var(--primary); border: 1px solid var(--card-border);">مرتبه</th>
+              <th style="padding: 8px; color: var(--primary); border: 1px solid var(--card-border);">مقدار x</th>
+              <th style="padding: 8px; color: var(--primary); border: 1px solid var(--card-border);">خطا</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td style="padding: 6px; border: 1px solid var(--card-border); text-align: center; color: var(--text);">دقیق</td><td style="padding: 6px; border: 1px solid var(--card-border); text-align: center; color: var(--primary); font-family: monospace;">0.9188</td><td style="padding: 6px; border: 1px solid var(--card-border); text-align: center; color: var(--text-dim);">—</td></tr>
+            <tr><td style="padding: 6px; border: 1px solid var(--card-border); text-align: center; color: var(--text);">مرتبه ۰</td><td style="padding: 6px; border: 1px solid var(--card-border); text-align: center; color: var(--gold); font-family: monospace;">1.0000</td><td style="padding: 6px; border: 1px solid var(--card-border); text-align: center; color: var(--danger); font-family: monospace;">8.1%</td></tr>
+            <tr><td style="padding: 6px; border: 1px solid var(--card-border); text-align: center; color: var(--text);">مرتبه ۱</td><td style="padding: 6px; border: 1px solid var(--card-border); text-align: center; color: var(--gold); font-family: monospace;">0.9000</td><td style="padding: 6px; border: 1px solid var(--card-border); text-align: center; color: var(--gold); font-family: monospace;">2.0%</td></tr>
+            <tr><td style="padding: 6px; border: 1px solid var(--card-border); text-align: center; color: var(--text);">مرتبه ۲</td><td style="padding: 6px; border: 1px solid var(--card-border); text-align: center; color: var(--gold); font-family: monospace;">0.9200</td><td style="padding: 6px; border: 1px solid var(--card-border); text-align: center; color: var(--success); font-family: monospace;">0.1%</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="lecture-note" style="margin-top: 14px;">
+        <i class="fas fa-star"></i>
+        <div class="lecture-note-content">
+          <strong>نتیجه:</strong> هر مرتبه اضافه، خطا را حدوداً یک مرتبه بزرگی کاهش می‌دهد. برای $\epsilon = 0.2$، مرتبه ۲ کافی است.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۱۳ — مثال ODE ۱ -->
+  <div class="slide" data-slide="13" data-topic="5">
+    <div class="slide-inner">
+      <span class="slide-num">سطح ۲ — ODE</span>
+      <span class="level-badge level-2" style="display: inline-block; margin-right: 8px;">مثال ۱</span>
+      <h2 class="slide-h1">مثال ODE: $y' + \epsilon y^2 = 1$</h2>
+
+      <img src="images/ode-example-1.png" alt="ODE 1" class="img-box" style="max-height: 160px;" onerror="this.style.display='none'">
+
+      <p class="slide-text">
+        با شرط اولیه $y(0) = 0$. این معادله غیرخطی است و حل دقیق آن پیچیده است.
+      </p>
+
+      <div class="step-container">
+        <div class="step-title"><i class="fas fa-1"></i> گام ۱: بسط سری</div>
+        <div class="step-content">
+          <div class="math-box" style="padding: 10px;">
+            $$y(t) = y_0(t) + \epsilon y_1(t) + \epsilon^2 y_2(t) + \cdots$$
+          </div>
+        </div>
+      </div>
+
+      <div class="step-container" style="border-right-color: var(--primary);">
+        <div class="step-title" style="color: var(--primary);"><i class="fas fa-2"></i> گام ۲: جایگذاری</div>
+        <div class="step-content">
+          <div class="math-box" style="padding: 12px; font-size: 0.82rem;">
+            $$(y_0' + \epsilon y_1' + \cdots) + \epsilon(y_0 + \epsilon y_1)^2 = 1$$
+          </div>
+        </div>
+      </div>
+
+      <div class="step-container" style="border-right-color: var(--gold);">
+        <div class="step-title"><i class="fas fa-3"></i> گام ۳: مراتب</div>
+        <div class="step-content">
+          <div class="math-box gold-math" style="padding: 10px; font-size: 0.85rem;">
+            $$\epsilon^0: \quad y_0' = 1, \quad y_0(0)=0 \quad \Rightarrow \quad y_0 = t$$
+          </div>
+          <div class="math-box gold-math" style="padding: 10px; font-size: 0.85rem; margin-top: 6px;">
+            $$\epsilon^1: \quad y_1' + y_0^2 = 0, \quad y_1(0)=0 \quad \Rightarrow \quad y_1 = -t^3/3$$
+          </div>
+          <div class="math-box gold-math" style="padding: 10px; font-size: 0.85rem; margin-top: 6px;">
+            $$\epsilon^2: \quad y_2' + 2y_0 y_1 = 0 \quad \Rightarrow \quad y_2 = t^5/15$$
+          </div>
+        </div>
+      </div>
+
+      <div class="math-box purple-math" style="padding: 16px;">
+        <div style="font-size: 0.95rem;">
+          $$y(t) = t - \frac{\epsilon}{3}t^3 + \frac{\epsilon^2}{15}t^5 + O(\epsilon^3)$$
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۱۴ — مثال ODE ۲ -->
+  <div class="slide" data-slide="14" data-topic="5">
+    <div class="slide-inner">
+      <span class="slide-num">سطح ۲ — ODE</span>
+      <span class="level-badge level-2" style="display: inline-block; margin-right: 8px;">مثال ۲</span>
+      <h2 class="slide-h1">مثال ODE: اسیلاتور غیرخطی</h2>
+
+      <img src="images/ode-example-2.png" alt="ODE 2" class="img-box" style="max-height: 160px;" onerror="this.style.display='none'">
+
+      <div class="math-box" style="padding: 14px;">
+        $$y'' + y + \epsilon y^3 = 0$$
+      </div>
+
+      <p class="slide-text">
+        با شرایط اولیه $y(0)=1، y'(0)=0$. این معادله **اسیلاتور Duffing** است.
+      </p>
+
+      <div class="step-container">
+        <div class="step-title"><i class="fas fa-1"></i> گام ۱: بسط سری</div>
+        <div class="step-content">
+          <div class="math-box" style="padding: 10px;">
+            $$y = y_0 + \epsilon y_1 + \epsilon^2 y_2 + \cdots$$
+          </div>
+        </div>
+      </div>
+
+      <div class="step-container" style="border-right-color: var(--gold);">
+        <div class="step-title"><i class="fas fa-2"></i> گام ۲: مراتب</div>
+        <div class="step-content">
+          <div class="math-box gold-math" style="padding: 10px; font-size: 0.85rem;">
+            $$\epsilon^0: \quad y_0'' + y_0 = 0 \quad \Rightarrow \quad y_0 = \cos t$$
+          </div>
+          <div class="math-box gold-math" style="padding: 10px; font-size: 0.85rem; margin-top: 6px;">
+            $$\epsilon^1: \quad y_1'' + y_1 = -y_0^3 = -\cos^3 t$$
+          </div>
+        </div>
+      </div>
+
+      <div class="lecture-note" style="margin-top: 12px;">
+        <i class="fas fa-exclamation-triangle"></i>
+        <div class="lecture-note-content">
+          <strong>هشدار — جمله‌های سکولار:</strong> حل $y_1$ شامل جمله $t\sin t$ می‌شود که با افزایش $t$ رشد می‌کند. این پدیده **secular term** نام دارد و نشان می‌دهد بسط سری ساده برای زمان‌های طولانی اعتبار ندارد.
+        </div>
+      </div>
+
+      <div class="math-box danger-math" style="padding: 12px;">
+        <div style="font-size: 0.9rem;">
+          $$y_1 \supset -\frac{3}{8}t\sin t \quad \text{(سکولار)}$$
+        </div>
+        <p class="math-note">راه‌حل: روش‌های چند مقیاسی (جلسه ۱۴)</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۱۵ — آونگ غیرخطی -->
+  <div class="slide" data-slide="15" data-topic="5">
+    <div class="slide-inner">
+      <span class="slide-num">کاربرد</span>
+      <h2 class="slide-h1">آونگ غیرخطی</h2>
+
+      <img src="images/nonlinear-pendulum.png" alt="Nonlinear Pendulum" class="img-box" style="max-height: 180px;" onerror="this.style.display='none'">
+
+      <div class="math-box" style="padding: 14px;">
+        $$\theta'' + \frac{g}{L}\sin\theta = 0$$
+      </div>
+
+      <p class="slide-text">
+        برای زوایای کوچک، $\sin\theta \approx \theta$ و آونگ ساده می‌شود. اما برای زوایای بزرگ، باید $\sin\theta$ را بسط دهیم:
+      </p>
+
+      <div class="math-box gold-math" style="padding: 12px;">
+        $$\sin\theta = \theta - \frac{\theta^3}{6} + \frac{\theta^5}{120} - \cdots$$
+      </div>
+
+      <p class="slide-text" style="font-size: 0.85rem;">
+        با تعریف $\epsilon = \theta_0^2/6$ (که $\theta_0$ دامنه اولیه است):
+      </p>
+
+      <div class="math-box" style="padding: 12px;">
+        $$\theta'' + \omega_0^2 \theta - \epsilon \omega_0^2 \theta^3 + O(\epsilon^2) = 0$$
+      </div>
+
+      <div class="lecture-note" style="margin-top: 12px;">
+        <i class="fas fa-lightbulb"></i>
+        <div class="lecture-note-content">
+          <strong>نتیجه فیزیکی:</strong> فرکانس نوسان آونگ غیرخطی به دامنه آن بستگی دارد — بر خلاف آونگ خطی که فرکانس آن ثابت است. این پدیده را می‌توان با Perturbation مدل کرد.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۱۶ — شبیه‌ساز آونگ غیرخطی -->
+  <div class="slide" data-slide="16" data-topic="5">
+    <div class="slide-inner">
+      <span class="slide-num">شبیه‌ساز تعاملی</span>
+      <h2 class="slide-h1">شبیه‌ساز آونگ غیرخطی</h2>
+
+      <div class="simulator">
+        <div class="sim-header">
+          <div class="sim-title"><i class="fas fa-clock"></i> مقایسه آونگ خطی و غیرخطی</div>
+          <div class="sim-controls">
+            <div class="slider-group">
+              <label>دامنه θ₀ (درجه):</label>
+              <input type="range" id="pendulumAmp" min="5" max="80" value="30" step="5">
+              <span class="slider-value" id="pendulumAmpValue">۳۰°</span>
+            </div>
+          </div>
+        </div>
+        <div class="canvas-wrapper" style="height: 300px;"><canvas id="pendulumCanvas"></canvas></div>
+        <div class="grid-3" style="margin-top: 12px;">
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 0.72rem; color: var(--text-dim);">فرکانس خطی</div>
+            <div id="pendLinearFreq" style="font-size: 0.95rem; color: var(--primary); font-weight: 800; font-family: 'Courier New', monospace;">—</div>
+          </div>
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 0.72rem; color: var(--text-dim);">فرکانس غیرخطی</div>
+            <div id="pendNonlinearFreq" style="font-size: 0.95rem; color: var(--gold); font-weight: 800; font-family: 'Courier New', monospace;">—</div>
+          </div>
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 0.72rem; color: var(--text-dim);">اختلاف</div>
+            <div id="pendDiff" style="font-size: 0.95rem; color: var(--danger); font-weight: 800; font-family: 'Courier New', monospace;">—</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۱۷ — گذار به PDE -->
+  <div class="slide" data-slide="17" data-topic="6">
+    <div class="slide-inner">
+      <span class="slide-num">سطح ۳ — PDE</span>
+      <h2 class="slide-h1">گذار از ODE به PDE</h2>
+
+      <img src="images/pde-transition.png" alt="PDE Transition" class="img-box" style="max-height: 180px;" onerror="this.style.display='none'">
+
+      <p class="slide-text">
+        تا اینجا با معادلات جبری و ODE کار کردیم. حالا وارد **سطح سوم** می‌شویم: **معادلات دیفرانسیل جزئی (PDE)**.
+      </p>
+
+      <div class="grid-3">
+        <div class="card" style="background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3); text-align: center; padding: 14px;">
+          <div class="level-badge level-1">سطح ۱</div>
+          <div class="slide-h3" style="justify-content: center; color: var(--primary); font-size: 0.88rem;">جبری</div>
+          <div style="font-family: monospace; font-size: 0.82rem; color: var(--text-dim);">$x^2 + \epsilon x - 1 = 0$</div>
+        </div>
+        <div class="card" style="background: rgba(255, 183, 0, 0.06); border-color: rgba(255, 183, 0, 0.3); text-align: center; padding: 14px;">
+          <div class="level-badge level-2">سطح ۲</div>
+          <div class="slide-h3" style="justify-content: center; color: var(--gold); font-size: 0.88rem;">ODE</div>
+          <div style="font-family: monospace; font-size: 0.82rem; color: var(--text-dim);">$y'' + \epsilon y^3 = 0$</div>
+        </div>
+        <div class="card" style="background: rgba(168, 85, 247, 0.06); border-color: rgba(168, 85, 247, 0.3); text-align: center; padding: 14px; border-width: 2px;">
+          <div class="level-badge level-3">سطح ۳ — امروز</div>
+          <div class="slide-h3" style="justify-content: center; color: var(--tertiary); font-size: 0.88rem;">PDE</div>
+          <div style="font-family: monospace; font-size: 0.82rem; color: var(--text-dim);">$w'''' + \epsilon f(w) = 0$</div>
+        </div>
+      </div>
+
+      <div class="lecture-note" style="margin-top: 14px;">
+        <i class="fas fa-info-circle"></i>
+        <div class="lecture-note-content">
+          <strong>تفاوت اصلی:</strong> در PDE، جواب یک <strong>تابع چندمتغیره</strong> است ($w(x,t)$) و عملگر دیفرانسیلی شامل مشتقات جزئی است. اما اصل Perturbation یکسان است.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۱۸ — مثال PDE نانو انبرک -->
+  <div class="slide" data-slide="18" data-topic="7">
+    <div class="slide-inner">
+      <span class="slide-num">سطح ۳ — کاربرد</span>
+      <h2 class="slide-h1">حل PDE نانو انبرک با Perturbation</h2>
+
+      <img src="images/pde-cantilever-perturbation.png" alt="PDE Cantilever" class="img-box" style="max-height: 160px;" onerror="this.style.display='none'">
+
+      <p class="slide-text">
+        معادله بی‌بعد نانو انبرک:
+      </p>
+
+      <div class="math-box" style="padding: 14px;">
+        $$\frac{d^4 w}{dx^4} = \frac{\alpha V^2}{(1-w)^2} + \frac{\beta}{(1-w)^3}$$
+      </div>
+
+      <p class="slide-text" style="font-size: 0.85rem;">
+        با فرض $w$ کوچک، مخرج‌ها را بسط می‌دهیم:
+      </p>
+
+      <div class="math-box gold-math" style="padding: 12px;">
+        $$\frac{1}{(1-w)^2} \approx 1 + 2w + 3w^2 + \cdots$$
+      </div>
+
+      <div class="step-container">
+        <div class="step-title"><i class="fas fa-1"></i> گام ۱: نوشتن معادله با ε</div>
+        <div class="step-content">
+          <div class="math-box" style="padding: 10px; font-size: 0.85rem;">
+            $$w'''' = \epsilon(1 + 2w + 3w^2)$$
+          </div>
+          <p style="font-size: 0.82rem;">که $\epsilon = \alpha V^2 + \beta$</p>
+        </div>
+      </div>
+
+      <div class="step-container" style="border-right-color: var(--primary);">
+        <div class="step-title" style="color: var(--primary);"><i class="fas fa-2"></i> گام ۲: بسط سری</div>
+        <div class="step-content">
+          <div class="math-box" style="padding: 10px;">
+            $$w = w_0 + \epsilon w_1 + \epsilon^2 w_2 + \cdots$$
+          </div>
+        </div>
+      </div>
+
+      <div class="step-container" style="border-right-color: var(--gold);">
+        <div class="step-title"><i class="fas fa-3"></i> گام ۳: مراتب</div>
+        <div class="step-content">
+          <div class="math-box gold-math" style="padding: 10px; font-size: 0.85rem;">
+            $$\epsilon^0: \quad w_0'''' = 0 \quad \Rightarrow \quad w_0 = 0$$
+          </div>
+          <p style="font-size: 0.78rem;">(تیر بدون بار الکترواستاتیک، خمش صفر)</p>
+          <div class="math-box gold-math" style="padding: 10px; font-size: 0.85rem; margin-top: 6px;">
+            $$\epsilon^1: \quad w_1'''' = 1 \quad \Rightarrow \quad w_1 = \frac{x^4}{24} + Ax^3 + Bx^2$$
+          </div>
+          <div class="math-box gold-math" style="padding: 10px; font-size: 0.85rem; margin-top: 6px;">
+            $$\epsilon^2: \quad w_2'''' = 2w_1 \quad \Rightarrow \quad \text{(حل عددی)}$$
+          </div>
+        </div>
+      </div>
+
+      <div class="lecture-note">
+        <i class="fas fa-star"></i>
+        <div class="lecture-note-content">
+          <strong>شرایط مرزی:</strong> برای تیر یک‌سر گیردار: $w(0)=0$، $w'(0)=0$، $w''(1)=0$، $w'''(1)=0$. با اعمال اینها، ضرایب $A، B$ به‌دست می‌آیند.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۱۹ — شبیه‌ساز نانو انبرک -->
+  <div class="slide" data-slide="19" data-topic="7">
+    <div class="slide-inner">
+      <span class="slide-num">شبیه‌ساز تعاملی</span>
+      <h2 class="slide-h1">مقایسه Perturbation با حل عددی</h2>
+
+      <div class="simulator">
+        <div class="sim-header">
+          <div class="sim-title"><i class="fas fa-microchip"></i> مقایسه جواب‌های نانو انبرک</div>
+          <div class="sim-controls">
+            <div class="slider-group">
+              <label>ولتاژ V (V):</label>
+              <input type="range" id="nanoVolt" min="1" max="20" value="8" step="0.5">
+              <span class="slider-value" id="nanoVoltValue">۸.۰</span>
+            </div>
+            <div class="slider-group">
+              <label>تعداد جملات:</label>
+              <input type="range" id="nanoOrder" min="1" max="4" value="2" step="1">
+              <span class="slider-value" id="nanoOrderValue">۲</span>
+            </div>
+          </div>
+        </div>
+        <div class="canvas-wrapper" style="height: 320px;"><canvas id="nanoCompareCanvas"></canvas></div>
+        <div class="grid-2" style="margin-top: 12px;">
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 0.72rem; color: var(--text-dim);">خمش حداکثر (حل عددی)</div>
+            <div id="nanoNumeric" style="font-size: 1rem; color: var(--primary); font-weight: 800; font-family: 'Courier New', monospace;">—</div>
+          </div>
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 0.72rem; color: var(--text-dim);">خمش حداکثر (Perturbation)</div>
+            <div id="nanoPerturb" style="font-size: 1rem; color: var(--gold); font-weight: 800; font-family: 'Courier New', monospace;">—</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۲۰ — محدودیت‌ها -->
+  <div class="slide" data-slide="20" data-topic="8">
+    <div class="slide-inner">
+      <span class="slide-num">نقد روش</span>
+      <h2 class="slide-h1">محدودیت‌های Perturbation</h2>
+
+      <img src="images/limits-and-validation.png" alt="Limits" class="img-box" style="max-height: 180px;" onerror="this.style.display='none'">
+
+      <div class="grid-2" style="margin-top: 14px;">
+        <div class="card" style="background: rgba(255, 71, 87, 0.06); border-color: rgba(255, 71, 87, 0.3);">
+          <div class="slide-h3" style="color: var(--danger);"><i class="fas fa-exclamation-triangle"></i> محدودیت‌ها</div>
+          <ul style="list-style: none; padding: 0; font-size: 0.82rem; color: var(--text-dim); line-height: 2;">
+            <li>🔹 فقط برای ε کوچک معتبر است</li>
+            <li>🔹 جمله‌های سکولار در زمان‌های طولانی</li>
+            <li>🔹 برای مسائل با شوک یا مرزهای تیز</li>
+            <li>🔹 برای سیستم‌های شدیداً غیرخطی</li>
+          </ul>
+        </div>
+        <div class="card" style="background: rgba(34, 197, 94, 0.06); border-color: rgba(34, 197, 94, 0.3);">
+          <div class="slide-h3" style="color: var(--success);"><i class="fas fa-check-circle"></i> راه‌حل‌ها</div>
+          <ul style="list-style: none; padding: 0; font-size: 0.82rem; color: var(--text-dim); line-height: 2;">
+            <li>🔹 روش‌های چند مقیاسی (جلسه ۱۴)</li>
+            <li>🔹 Lindstedt-Poincaré</li>
+            <li>🔹 Padé approximants</li>
+            <li>🔹 روش‌های عددی (جلسه ۱۵)</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="lecture-note">
+        <i class="fas fa-info-circle"></i>
+        <div class="lecture-note-content">
+          <strong>نکته:</strong> Perturbation یک روش <strong>تقریبی</strong> است. برای اعتبارسنجی نتایج، همیشه باید با حل عددی یا تجربی مقایسه شود.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۲۱ — کد -->
+  <div class="slide" data-slide="21" data-topic="9">
+    <div class="slide-inner">
+      <span class="slide-num">کد</span>
+      <h2 class="slide-h1">پیاده‌سازی Perturbation</h2>
+
+      <div class="code-tabs">
+        <button class="code-tab active" data-code="matlab-pert"><i class="fas fa-square"></i> MATLAB</button>
+        <button class="code-tab" data-code="python-pert"><i class="fab fa-python"></i> Python (Colab)</button>
+      </div>
+
+      <div class="code-content active" id="code-matlab-pert">
+<pre><span class="cm">% === Perturbation برای معادله x^2 + eps*x - 1 = 0 ===</span>
+<span class="fn">clear</span>; <span class="fn">clc</span>; <span class="fn">close all</span>;
+
+eps_vec = <span class="fn">linspace</span>(<span class="num">0</span>, <span class="num">0.5</span>, <span class="num">50</span>);
+x_exact = <span class="fn">zeros</span>(<span class="fn">size</span>(eps_vec));
+x_pert0 = <span class="fn">zeros</span>(<span class="fn">size</span>(eps_vec));
+x_pert1 = <span class="fn">zeros</span>(<span class="fn">size</span>(eps_vec));
+x_pert2 = <span class="fn">zeros</span>(<span class="fn">size</span>(eps_vec));
+
+<span class="kw">for</span> i = <span class="num">1</span>:<span class="fn">length</span>(eps_vec)
+    eps = eps_vec(i);
+    <span class="cm">% حل دقیق (ریشه مثبت)</span>
+    x_exact(i) = (-eps + <span class="fn">sqrt</span>(eps^<span class="num">2</span> + <span class="num">4</span>))/<span class="num">2</span>;
+    
+    <span class="cm">% بسط Perturbation</span>
+    x_pert0(i) = <span class="num">1</span>;
+    x_pert1(i) = <span class="num">1</span> - <span class="num">0.5</span>*eps;
+    x_pert2(i) = <span class="num">1</span> - <span class="num">0.5</span>*eps - <span class="num">0.125</span>*eps^<span class="num">2</span>;
+<span class="kw">end</span>
+
+<span class="cm">% رسم نمودار</span>
+<span class="fn">figure</span>(<span class="str">'Color'</span>, <span class="str">'w'</span>);
+<span class="fn">plot</span>(eps_vec, x_exact, <span class="str">'k-'</span>, <span class="str">'LineWidth'</span>, <span class="num">2.5</span>); <span class="kw">hold on</span>;
+<span class="fn">plot</span>(eps_vec, x_pert0, <span class="str">'--'</span>, <span class="str">'Color'</span>, <span class="str">'#00d4aa'</span>, <span class="str">'LineWidth'</span>, <span class="num">1.5</span>);
+<span class="fn">plot</span>(eps_vec, x_pert1, <span class="str">'-.'</span>, <span class="str">'Color'</span>, <span class="str">'#ffb700'</span>, <span class="str">'LineWidth'</span>, <span class="num">1.5</span>);
+<span class="fn">plot</span>(eps_vec, x_pert2, <span class="str">':'</span>, <span class="str">'Color'</span>, <span class="str">'#a855f7'</span>, <span class="str">'LineWidth'</span>, <span class="num">2.5</span>);
+
+<span class="fn">xlabel</span>(<span class="str">'ε'</span>); <span class="fn">ylabel</span>(<span class="str">'x'</span>);
+<span class="fn">title</span>(<span class="str">'مقایسه Perturbation با حل دقیق'</span>);
+<span class="fn">legend</span>(<span class="str">'Exact'</span>, <span class="str">'Order 0'</span>, <span class="str">'Order 1'</span>, <span class="str">'Order 2'</span>);
+<span class="fn">grid on</span>;</pre>
+      </div>
+
+      <div class="code-content" id="code-python-pert">
+<pre><span class="cm"># === Perturbation for x^2 + eps*x - 1 = 0 ===</span>
+<span class="kw">import</span> numpy <span class="kw">as</span> np
+<span class="kw">import</span> matplotlib.pyplot <span class="kw">as</span> plt
+
+eps_vec = np.linspace(<span class="num">0</span>, <span class="num">0.5</span>, <span class="num">50</span>)
+
+<span class="cm"># Exact solution (positive root)</span>
+x_exact = (-eps_vec + np.sqrt(eps_vec**<span class="num">2</span> + <span class="num">4</span>)) / <span class="num">2</span>
+
+<span class="cm"># Perturbation expansion</span>
+x_pert0 = np.ones_like(eps_vec)
+x_pert1 = <span class="num">1</span> - <span class="num">0.5</span> * eps_vec
+x_pert2 = <span class="num">1</span> - <span class="num">0.5</span> * eps_vec - <span class="num">0.125</span> * eps_vec**<span class="num">2</span>
+
+plt.figure(figsize=(<span class="num">10</span>, <span class="num">6</span>))
+plt.plot(eps_vec, x_exact, <span class="str">'k-'</span>, linewidth=<span class="num">2.5</span>, label=<span class="str">'Exact'</span>)
+plt.plot(eps_vec, x_pert0, <span class="str">'--'</span>, color=<span class="str">'#00d4aa'</span>, linewidth=<span class="num">1.5</span>, label=<span class="str">'Order 0'</span>)
+plt.plot(eps_vec, x_pert1, <span class="str">'-.'</span>, color=<span class="str">'#ffb700'</span>, linewidth=<span class="num">1.5</span>, label=<span class="str">'Order 1'</span>)
+plt.plot(eps_vec, x_pert2, <span class="str">':'</span>, color=<span class="str">'#a855f7'</span>, linewidth=<span class="num">2.5</span>, label=<span class="str">'Order 2'</span>)
+
+plt.xlabel(<span class="str">'ε'</span>); plt.ylabel(<span class="str">'x'</span>)
+plt.title(<span class="str">'Perturbation vs Exact Solution'</span>)
+plt.legend(); plt.grid(<span class="kw">True</span>, alpha=<span class="num">0.3</span>)
+plt.savefig(<span class="str">'perturbation_compare.png'</span>, dpi=<span class="num">600</span>, bbox_inches=<span class="str">'tight'</span>)
+plt.show()</pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۲۲ — تمرین‌ها -->
+  <div class="slide" data-slide="22" data-topic="9">
+    <div class="slide-inner">
+      <span class="slide-num">تمرین</span>
+      <h2 class="slide-h1">تمرین‌های جلسه ۱۳</h2>
+
+      <div class="exercise-block ex-yellow">
+        <div class="ex-header"><div class="ex-num">الف</div><div><div class="ex-title">سؤالات مفهومی</div></div></div>
+        <ol class="ex-list">
+          <li>چرا در Perturbation، پارامتر ε باید کوچک باشد؟</li>
+          <li>تفاوت نماد Big-O و Little-o چیست؟</li>
+          <li>معنای «جمله سکولار» چیست و چرا مشکل‌ساز است؟</li>
+          <li>چرا Perturbation در زمان‌های طولانی اعتبار خود را از دست می‌دهد؟</li>
+        </ol>
+      </div>
+
+      <div class="exercise-block ex-green">
+        <div class="ex-header"><div class="ex-num">ب</div><div><div class="ex-title">تمرین‌های عملی</div></div></div>
+        <ol class="ex-list">
+          <li>معادله $x^3 + \epsilon x^2 - 1 = 0$ را با Perturbation تا مرتبه دوم حل کنید.</li>
+          <li>معادله $x^2 + \epsilon x^4 = 1$ را حل کنید و نتایج را با حل عددی مقایسه کنید.</li>
+          <li>معادله ODE $y' + \epsilon y^3 = 0$ با $y(0)=1$ را حل کنید.</li>
+          <li>معادله نانو انبرک $w'''' = \epsilon(1+2w+3w^2)$ را تا مرتبه دوم حل کنید.</li>
+        </ol>
+      </div>
+
+      <div class="exercise-block ex-purple">
+        <div class="ex-header"><div class="ex-num">ج</div><div><div class="ex-title">تمرین‌های نوشتاری</div></div></div>
+        <ol class="ex-list">
+          <li>اثبات کنید که $\epsilon^2 + \epsilon^3 = O(\epsilon^2)$.</li>
+          <li>بسط تیلور $\sin\theta$ را تا مرتبه پنجم بنویسید و خطا را تخمین بزنید.</li>
+          <li>فرکانس آونگ غیرخطی را با Perturbation تا مرتبه اول محاسبه کنید.</li>
+        </ol>
+      </div>
+
+      <div class="exercise-block ex-red">
+        <div class="ex-header"><div class="ex-num">★</div><div><div class="ex-title">چالش خلاقانه</div></div></div>
+        <ol class="ex-list">
+          <li>معادله van der Pol $y'' + \epsilon(y^2-1)y' + y = 0$ را با Perturbation حل کنید.</li>
+          <li>از روش Perturbation برای تخمین ولتاژ Pull-in در نانو انبرک استفاده کنید.</li>
+          <li>با Perturbation، پایداری تیر غیرخطی را تحلیل کنید.</li>
+        </ol>
+      </div>
+
+      <div class="email-banner">
+        <p><i class="fas fa-envelope" style="color: var(--primary);"></i> ارسال تمرین‌ها:</p>
+        <code>m.goharimanesh@gmail.com</code>
+        <p style="margin-top: 8px; font-size: 0.78rem;">Subject الزامی:</p>
+        <code>[Advanced Engineering Mathematics] HW13 - نام و نام خانوادگی - شماره دانشجویی</code>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۲۳ — نقشه راه پژوهش -->
+  <div class="slide" data-slide="23" data-topic="9">
+    <div class="slide-inner">
+      <span class="slide-num">نقشه راه</span>
+      <h2 class="slide-h1">کاربرد Perturbation در پژوهش</h2>
+
+      <div class="grid-2">
+        <div class="card" style="background: rgba(0, 212, 170, 0.06); border-color: rgba(0, 212, 170, 0.3);">
+          <div class="slide-h3" style="color: var(--primary);"><i class="fas fa-atom"></i> کاربردها در MEMS/NEMS</div>
+          <ul style="list-style: none; padding: 0; font-size: 0.82rem; color: var(--text-dim); line-height: 2;">
+            <li>🔹 حل معادله نانو انبرک</li>
+            <li>🔹 تحلیل Pull-in غیرخطی</li>
+            <li>🔹 نوسانات غیرخطی نانو رزوناتور</li>
+            <li>🔹 اثر کوپلینگ الکترو-حرارتی</li>
+          </ul>
+        </div>
+        <div class="card" style="background: rgba(255, 183, 0, 0.06); border-color: rgba(255, 183, 0, 0.3);">
+          <div class="slide-h3" style="color: var(--gold);"><i class="fas fa-robot"></i> کاربردها در رباتیک</div>
+          <ul style="list-style: none; padding: 0; font-size: 0.82rem; color: var(--text-dim); line-height: 2;">
+            <li>🔹 دینامیک بازوی انعطاف‌پذیر</li>
+            <li>🔹 کنترل غیرخطی</li>
+            <li>🔹 رباتیک نرم</li>
+            <li>🔹 سیستم‌های چندجسمی</li>
+          </ul>
+        </div>
+        <div class="card" style="background: rgba(168, 85, 247, 0.06); border-color: rgba(168, 85, 247, 0.3);">
+          <div class="slide-h3" style="color: var(--tertiary);"><i class="fas fa-brain"></i> ترکیب با یادگیری ماشین</div>
+          <ul style="list-style: none; padding: 0; font-size: 0.82rem; color: var(--text-dim); line-height: 2;">
+            <li>🔹 Physics-Informed (PINN)</li>
+            <li>🔹 داده‌های آموزشی از Perturbation</li>
+            <li>🔹 تخمین پارامتر ε</li>
+            <li>🔹 hybrid models</li>
+          </ul>
+        </div>
+        <div class="card" style="background: rgba(236, 72, 153, 0.06); border-color: rgba(236, 72, 153, 0.3);">
+          <div class="slide-h3" style="color: var(--pink);"><i class="fas fa-file-alt"></i> جهت‌های مقاله</div>
+          <ul style="list-style: none; padding: 0; font-size: 0.82rem; color: var(--text-dim); line-height: 2;">
+            <li>🔹 Perturbation + PINN</li>
+            <li>🔹 Perturbation برای نانو رزوناتور</li>
+            <li>🔹 Perturbation در رباتیک نرم</li>
+            <li>🔹 مقایسه روش‌های تحلیلی و عددی</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="lecture-note" style="margin-top: 14px;">
+        <i class="fas fa-bullseye"></i>
+        <div class="lecture-note-content">
+          <strong>پیشنهاد استاد:</strong> Perturbation یکی از پرکاربردترین ابزارها در مقالات Q1 IEEE و Elsevier است. اگر بر این روش مسلط شوید، می‌توانید در پروژه‌های نانو، رباتیک و MEMS، مقالات بسیار قوی منتشر کنید.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ۲۴ — خداحافظی -->
+  <div class="slide" data-slide="24" data-topic="10">
+    <div class="slide-inner title-slide">
+      <div style="font-size: 3.5rem; color: var(--gold); margin-bottom: 18px;">
+        <i class="fas fa-check-circle"></i>
+      </div>
+      <h2 class="slide-h1">جمع‌بندی و تا جلسه بعد</h2>
+      <p class="slide-text" style="font-size: 1rem;">
+        حالا با ابزار Perturbation آشنا شدید — آماده‌ی روش‌های پیشرفته‌تر باشید! 🌟
+      </p>
+
+      <div class="grid-3" style="margin-top: 20px; max-width: 900px; margin-left: auto; margin-right: auto;">
+        <div class="card" style="text-align: center; padding: 14px;">
+          <i class="fas fa-square-root-variable" style="font-size: 1.5rem; color: var(--primary); display: block; margin-bottom: 8px;"></i>
+          <div style="font-size: 0.85rem; font-weight: 700; color: var(--primary);">سطح ۱</div>
+          <div style="font-size: 0.75rem; color: var(--text-dim);">معادلات جبری</div>
+        </div>
+        <div class="card" style="text-align: center; padding: 14px;">
+          <i class="fas fa-wave-square" style="font-size: 1.5rem; color: var(--gold); display: block; margin-bottom: 8px;"></i>
+          <div style="font-size: 0.85rem; font-weight: 700; color: var(--gold);">سطح ۲</div>
+          <div style="font-size: 0.75rem; color: var(--text-dim);">ODE غیرخطی</div>
+        </div>
+        <div class="card" style="text-align: center; padding: 14px;">
+          <i class="fas fa-cube" style="font-size: 1.5rem; color: var(--tertiary); display: block; margin-bottom: 8px;"></i>
+          <div style="font-size: 0.85rem; font-weight: 700; color: var(--tertiary);">سطح ۳</div>
+          <div style="font-size: 0.75rem; color: var(--text-dim);">PDE نانو انبرک</div>
+        </div>
+      </div>
+
+      <div class="math-box gold-math" style="margin-top: 22px; background: rgba(255, 183, 0, 0.08); padding: 22px; max-width: 700px; margin-left: auto; margin-right: auto;">
+        <div style="font-size: 1.1rem;">
+          $$x = x_0 + \epsilon x_1 + \epsilon^2 x_2 + \cdots$$
+        </div>
+        <p class="math-note">ابزار اصلی فاز ۴</p>
+      </div>
+
+      <div class="card" style="margin-top: 20px; max-width: 700px; margin-left: auto; margin-right: auto; background: rgba(168, 85, 247, 0.06); border-color: rgba(168, 85, 247, 0.3);">
+        <div class="slide-h3" style="justify-content: center; color: var(--tertiary);"><i class="fas fa-arrow-left"></i> جلسه ۱۴</div>
+        <p class="slide-text" style="font-size: 0.88rem;">
+          <strong style="color: var(--primary);">روش‌های چند مقیاسی و Lindstedt-Poincaré</strong>
+        </p>
+        <ul style="list-style: none; padding: 0; font-size: 0.82rem; color: var(--text-dim); line-height: 2; margin-top: 8px;">
+          <li>🔹 حل مشکل جمله‌های سکولار</li>
+          <li>🔹 روش چند مقیاسی (Multiple Scales)</li>
+          <li>🔹 Lindstedt-Poincaré</li>
+          <li>🔹 کاربرد در اسیلاتورهای غیرخطی</li>
+        </ul>
+      </div>
+
+      <p class="instructor-line" style="margin-top: 22px;">دکتر مسعود گوهری منش</p>
+      <p class="instructor-title-line">دانشیار گروه مهندسی مکانیک — دانشگاه تربت حیدریه</p>
+
+      <p style="font-size: 0.95rem; color: var(--gold); margin-top: 24px; font-weight: 800;">
+        🇮🇷 با افتخار برای دانشجویان مکاترونیک 🇮🇷
+      </p>
+    </div>
+  </div>
+
+</div>
+
+<div class="bottom-nav">
+  <button class="nav-btn" id="prevBtn" disabled><i class="fas fa-arrow-right"></i><span>قبلی</span></button>
+  <div class="dots-nav" id="dotsNav"></div>
+  <div class="slide-counter"><span id="currentSlide">۱</span> / ۲۴</div>
+  <button class="nav-btn" id="nextBtn"><span>بعدی</span><i class="fas fa-arrow-left"></i></button>
+</div>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+/* ═══ ناوبری ═══ */
+const slides = document.querySelectorAll('.slide');
+const totalSlides = slides.length;
+let currentSlide = 0;
+const topicPills = document.querySelectorAll('.topic-pill');
+
+const dotsNav = document.getElementById('dotsNav');
+for (let i = 0; i < totalSlides; i++) {
+  const dot = document.createElement('button');
+  dot.className = 'dot-nav' + (i === 0 ? ' active' : '');
+  dot.addEventListener('click', () => goToSlide(i));
+  dotsNav.appendChild(dot);
+}
+
+function goToSlide(n) {
+  if (n < 0 || n >= totalSlides) return;
+  slides.forEach((s, i) => {
+    s.classList.remove('active', 'prev');
+    if (i < n) s.classList.add('prev');
+    if (i === n) s.classList.add('active');
+  });
+  currentSlide = n;
+  updateNav();
+  playTransition();
+  setTimeout(() => {
+    initVisibleCharts();
+    if (window.MathJax && window.MathJax.typesetPromise) window.MathJax.typesetPromise();
+  }, 100);
+}
+
+function updateNav() {
+  document.querySelectorAll('.dot-nav').forEach((d, i) => d.classList.toggle('active', i === currentSlide));
+  document.getElementById('currentSlide').textContent = toFa(currentSlide + 1);
+  document.getElementById('prevBtn').disabled = currentSlide === 0;
+  document.getElementById('nextBtn').disabled = currentSlide === totalSlides - 1;
+  document.getElementById('progressFill').style.width = ((currentSlide + 1) / totalSlides * 100) + '%';
+  const currentTopic = slides[currentSlide].dataset.topic;
+  topicPills.forEach(pill => {
+    const t = parseInt(pill.dataset.topic);
+    const ct = parseInt(currentTopic);
+    pill.classList.toggle('active', t === ct);
+    pill.classList.toggle('done', t < ct);
+    if (t === ct) pill.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+  });
+}
+
+document.getElementById('prevBtn').addEventListener('click', () => goToSlide(currentSlide - 1));
+document.getElementById('nextBtn').addEventListener('click', () => goToSlide(currentSlide + 1));
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowLeft') { e.preventDefault(); goToSlide(currentSlide + 1); }
+  else if (e.key === 'ArrowRight') { e.preventDefault(); goToSlide(currentSlide - 1); }
+  else if (e.key === ' ') { e.preventDefault(); goToSlide(currentSlide + 1); }
+  else if (e.key === 'Home') { e.preventDefault(); goToSlide(0); }
+  else if (e.key === 'End') { e.preventDefault(); goToSlide(totalSlides - 1); }
+  else if (e.key === 'Escape' && document.fullscreenElement) document.exitFullscreen();
+});
+
+let touchStartX = 0, touchStartY = 0;
+document.addEventListener('touchstart', e => {
+  touchStartX = e.changedTouches[0].screenX;
+  touchStartY = e.changedTouches[0].screenY;
+}, { passive: true });
+document.addEventListener('touchend', e => {
+  const dx = e.changedTouches[0].screenX - touchStartX;
+  const dy = e.changedTouches[0].screenY - touchStartY;
+  if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy)) {
+    if (dx < 0) goToSlide(currentSlide + 1);
+    else goToSlide(currentSlide - 1);
+  }
+}, { passive: true });
+
+/* ═══ صدا ═══ */
+let audioCtx = null, soundEnabled = true;
+function initAudio() { if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
+function playTransition() {
+  if (!soundEnabled) return;
+  initAudio();
+  [440, 554.37].forEach((freq, i) => {
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.connect(gain); gain.connect(audioCtx.destination);
+    osc.frequency.value = freq; osc.type = 'sine';
+    const t = audioCtx.currentTime + i * 0.06;
+    gain.gain.setValueAtTime(0.04, t);
+    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.18);
+    osc.start(t); osc.stop(t + 0.22);
+  });
+}
+document.getElementById('soundToggle').addEventListener('click', function() {
+  soundEnabled = !soundEnabled;
+  this.classList.toggle('active', soundEnabled);
+  this.innerHTML = soundEnabled ? '<i class="fas fa-volume-up"></i>' : '<i class="fas fa-volume-mute"></i>';
+  showToast(soundEnabled ? 'صدا فعال' : 'صدا غیرفعال');
+});
+document.getElementById('fullscreenToggle').addEventListener('click', function() {
+  if (!document.fullscreenElement) { document.documentElement.requestFullscreen(); this.innerHTML = '<i class="fas fa-compress"></i>'; }
+  else { document.exitFullscreen(); this.innerHTML = '<i class="fas fa-expand"></i>'; }
+});
+function showToast(msg) {
+  const container = document.getElementById('toastContainer');
+  const toast = document.createElement('div');
+  toast.className = 'toast';
+  toast.innerHTML = `<i class="fas fa-info-circle"></i> ${msg}`;
+  container.appendChild(toast);
+  setTimeout(() => { toast.style.opacity = '0'; toast.style.transform = 'translateX(-60px)'; setTimeout(() => toast.remove(), 300); }, 2400);
+}
+function toFa(n) { const fa = ['۰','۱','۲','۳','۴','۵','۶','۷','۸','۹']; return String(n).replace(/\d/g, d => fa[d]); }
+
+/* ═══ پس‌زمینه ═══ */
+const bgCanvas = document.getElementById('bgCanvas');
+const bgCtx = bgCanvas.getContext('2d');
+let particles = [];
+function resizeBg() { bgCanvas.width = window.innerWidth; bgCanvas.height = window.innerHeight; }
+resizeBg();
+window.addEventListener('resize', resizeBg);
+class Particle {
+  constructor() { this.reset(); }
+  reset() {
+    this.x = Math.random() * bgCanvas.width;
+    this.y = Math.random() * bgCanvas.height;
+    this.size = Math.random() * 1.6 + 0.4;
+    this.speedX = (Math.random() - 0.5) * 0.3;
+    this.speedY = (Math.random() - 0.5) * 0.3;
+    this.opacity = Math.random() * 0.5 + 0.15;
+    const colors = ['#00d4aa', '#06b6d4', '#a855f7', '#ffb700'];
+    this.color = colors[Math.floor(Math.random() * colors.length)];
+  }
+  update() { this.x += this.speedX; this.y += this.speedY; if (this.x < 0 || this.x > bgCanvas.width || this.y < 0 || this.y > bgCanvas.height) this.reset(); }
+  draw() { bgCtx.beginPath(); bgCtx.arc(this.x, this.y, this.size, 0, Math.PI*2); bgCtx.fillStyle = this.color; bgCtx.globalAlpha = this.opacity; bgCtx.fill(); bgCtx.globalAlpha = 1; }
+}
+for (let i = 0; i < 50; i++) particles.push(new Particle());
+function animateBg() { bgCtx.clearRect(0, 0, bgCanvas.width, bgCanvas.height); particles.forEach(p => { p.update(); p.draw(); }); requestAnimationFrame(animateBg); }
+animateBg();
+
+/* ═══ ابزار ═══ */
+function setupCanvas(canvasId) {
+  const canvas = document.getElementById(canvasId);
+  if (!canvas) return null;
+  const dpr = window.devicePixelRatio || 1;
+  const rect = canvas.getBoundingClientRect();
+  canvas.width = rect.width * dpr; canvas.height = rect.height * dpr;
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+  return { ctx, w: rect.width, h: rect.height };
+}
+
+/* ═══ شبیه‌ساز مراتب بسط ═══ */
+function drawOrder() {
+  const s = setupCanvas('orderCanvas');
+  if (!s) return;
+  const { ctx, w, h } = s;
+  ctx.clearRect(0, 0, w, h);
+
+  const eps = parseFloat(document.getElementById('orderEps').value);
+  const N = parseInt(document.getElementById('orderN').value);
+
+  // تابع هدف: x(ε) = (-ε + sqrt(ε²+4))/2
+  const exactX = (-eps + Math.sqrt(eps * eps + 4)) / 2;
+
+  // بسط
+  let approxX = 1;
+  if (N >= 1) approxX -= 0.5 * eps;
+  if (N >= 2) approxX -= 0.125 * eps * eps;
+  if (N >= 3) approxX -= 0.0625 * eps * eps * eps;
+
+  // پس‌زمینه
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+  ctx.fillRect(0, 0, w, h);
+
+  // شبکه
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
+  for (let i = 0; i <= 10; i++) {
+    ctx.beginPath();
+    ctx.moveTo((w / 10) * i, 0);
+    ctx.lineTo((w / 10) * i, h);
+    ctx.stroke();
+  }
+  for (let i = 0; i <= 6; i++) {
+    ctx.beginPath();
+    ctx.moveTo(0, (h / 6) * i);
+    ctx.lineTo(w, (h / 6) * i);
+    ctx.stroke();
+  }
+
+  // رسم سه منحنی
+  const padX = 50, padY_top = 30, padY_bot = 50;
+  const plotW = w - 2 * padX;
+  const plotH = h - padY_top - padY_bot;
+
+  const epsMax = 0.5;
+  const xMin = 0.7, xMax = 1.05;
+
+  const epsToPx = (e) => padX + (e / epsMax) * plotW;
+  const xToPy = (x) => padY_top + plotH - ((x - xMin) / (xMax - xMin)) * plotH;
+
+  // محورها
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.moveTo(padX, padY_top);
+  ctx.lineTo(padX, padY_top + plotH);
+  ctx.lineTo(padX + plotW, padY_top + plotH);
+  ctx.stroke();
+
+  // منحنی دقیق
+  ctx.beginPath();
+  ctx.strokeStyle = '#00d4aa';
+  ctx.lineWidth = 2.5;
+  ctx.shadowColor = '#00d4aa';
+  ctx.shadowBlur = 6;
+  for (let i = 0; i <= 100; i++) {
+    const ee = (i / 100) * epsMax;
+    const xx = (-ee + Math.sqrt(ee * ee + 4)) / 2;
+    const px = epsToPx(ee);
+    const py = xToPy(xx);
+    if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+  }
+  ctx.stroke();
+  ctx.shadowBlur = 0;
+
+  // منحنی تقریب
+  ctx.beginPath();
+  ctx.strokeStyle = '#ffb700';
+  ctx.lineWidth = 2;
+  ctx.setLineDash([6, 4]);
+  for (let i = 0; i <= 100; i++) {
+    const ee = (i / 100) * epsMax;
+    let xx = 1;
+    if (N >= 1) xx -= 0.5 * ee;
+    if (N >= 2) xx -= 0.125 * ee * ee;
+    if (N >= 3) xx -= 0.0625 * ee * ee * ee;
+    const px = epsToPx(ee);
+    const py = xToPy(xx);
+    if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+  }
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  // نقطه جاری
+  const px = epsToPx(eps);
+  const pyExact = xToPy(exactX);
+  const pyApprox = xToPy(approxX);
+
+  ctx.fillStyle = '#00d4aa';
+  ctx.beginPath();
+  ctx.arc(px, pyExact, 6, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.fillStyle = '#ffb700';
+  ctx.beginPath();
+  ctx.arc(px, pyApprox, 6, 0, Math.PI * 2);
+  ctx.fill();
+
+  // به‌روزرسانی
+  document.getElementById('orderEpsValue').textContent = toFa(eps.toFixed(2));
+  document.getElementById('orderNValue').textContent = toFa(N);
+  document.getElementById('orderExact').textContent = toFa(exactX.toFixed(4));
+  document.getElementById('orderApprox').textContent = toFa(approxX.toFixed(4));
+  const err = Math.abs((approxX - exactX) / exactX * 100);
+  document.getElementById('orderError').textContent = toFa(err.toFixed(3)) + '%';
+}
+
+/* ═══ شبیه‌ساز آونگ ═══ */
+function drawPendulum() {
+  const s = setupCanvas('pendulumCanvas');
+  if (!s) return;
+  const { ctx, w, h } = s;
+  ctx.clearRect(0, 0, w, h);
+
+  const ampDeg = parseFloat(document.getElementById('pendulumAmp').value);
+  const ampRad = ampDeg * Math.PI / 180;
+
+  // فرکانس‌ها
+  const omega_linear = 1.0;
+  const omega_nonlinear = omega_linear * (1 - ampRad * ampRad / 16);
+
+  // پس‌زمینه
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+  ctx.fillRect(0, 0, w, h);
+
+  // شبکه
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
+  for (let i = 0; i <= 10; i++) {
+    ctx.beginPath();
+    ctx.moveTo((w / 10) * i, 0);
+    ctx.lineTo((w / 10) * i, h);
+    ctx.stroke();
+  }
+  for (let i = 0; i <= 6; i++) {
+    ctx.beginPath();
+    ctx.moveTo(0, (h / 6) * i);
+    ctx.lineTo(w, (h / 6) * i);
+    ctx.stroke();
+  }
+
+  // محور زمان
+  const padX = 50, padY_top = 30, padY_bot = 50;
+  const plotW = w - 2 * padX;
+  const plotH = h - padY_top - padY_bot;
+
+  // دو منحنی θ(t)
+  const t_max = 20;
+  const θ_max = ampRad;
+
+  const tToPx = (t) => padX + (t / t_max) * plotW;
+  const θToPy = (θ) => padY_top + plotH / 2 - (θ / θ_max) * (plotH / 2 - 10);
+
+  // محور افقی
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.moveTo(padX, padY_top + plotH / 2);
+  ctx.lineTo(padX + plotW, padY_top + plotH / 2);
+  ctx.stroke();
+
+  // منحنی خطی
+  ctx.beginPath();
+  ctx.strokeStyle = '#00d4aa';
+  ctx.lineWidth = 2.5;
+  ctx.shadowColor = '#00d4aa';
+  ctx.shadowBlur = 6;
+  for (let i = 0; i <= 200; i++) {
+    const t = (i / 200) * t_max;
+    const θ = ampRad * Math.cos(omega_linear * t);
+    const px = tToPx(t);
+    const py = θToPy(θ);
+    if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+  }
+  ctx.stroke();
+  ctx.shadowBlur = 0;
+
+  // منحنی غیرخطی
+  ctx.beginPath();
+  ctx.strokeStyle = '#ffb700';
+  ctx.lineWidth = 2;
+  ctx.setLineDash([6, 4]);
+  for (let i = 0; i <= 200; i++) {
+    const t = (i / 200) * t_max;
+    const θ = ampRad * Math.cos(omega_nonlinear * t);
+    const px = tToPx(t);
+    const py = θToPy(θ);
+    if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+  }
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  // برچسب‌ها
+  ctx.fillStyle = '#9aa7bd';
+  ctx.font = '11px Vazirmatn';
+  ctx.textAlign = 'center';
+  ctx.fillText('زمان (s)', padX + plotW / 2, padY_top + plotH + 25);
+
+  // به‌روزرسانی
+  document.getElementById('pendulumAmpValue').textContent = toFa(ampDeg) + '°';
+  document.getElementById('pendLinearFreq').textContent = toFa(omega_linear.toFixed(4)) + ' rad/s';
+  document.getElementById('pendNonlinearFreq').textContent = toFa(omega_nonlinear.toFixed(4)) + ' rad/s';
+  const diff = ((omega_linear - omega_nonlinear) / omega_linear * 100);
+  document.getElementById('pendDiff').textContent = toFa(diff.toFixed(2)) + '%';
+}
+
+/* ═══ شبیه‌ساز نانو انبرک مقایسه ═══ */
+function drawNanoCompare() {
+  const s = setupCanvas('nanoCompareCanvas');
+  if (!s) return;
+  const { ctx, w, h } = s;
+  ctx.clearRect(0, 0, w, h);
+
+  const V = parseFloat(document.getElementById('nanoVolt').value);
+  const N = parseInt(document.getElementById('nanoOrder').value);
+
+  const eps = V * V * 1e-4; // پارامتر اختلال فرضی
+
+  // پس‌زمینه
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+  ctx.fillRect(0, 0, w, h);
+
+  // شبکه
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
+  for (let i = 0; i <= 10; i++) {
+    ctx.beginPath();
+    ctx.moveTo((w / 10) * i, 0);
+    ctx.lineTo((w / 10) * i, h);
+    ctx.stroke();
+  }
+  for (let i = 0; i <= 6; i++) {
+    ctx.beginPath();
+    ctx.moveTo(0, (h / 6) * i);
+    ctx.lineTo(w, (h / 6) * i);
+    ctx.stroke();
+  }
+
+  // محورهای x و w
+  const padX = 50, padY_top = 30, padY_bot = 50;
+  const plotW = w - 2 * padX;
+  const plotH = h - padY_top - padY_bot;
+
+  const xToPx = (x) => padX + x * plotW;
+  const wToPy = (w) => padY_top + plotH - (w / 0.05) * plotH;
+
+  // محورها
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.moveTo(padX, padY_top + plotH);
+  ctx.lineTo(padX + plotW, padY_top + plotH);
+  ctx.moveTo(padX, padY_top);
+  ctx.lineTo(padX, padY_top + plotH);
+  ctx.stroke();
+
+  // حل عددی (تقریبی)
+  ctx.beginPath();
+  ctx.strokeStyle = '#00d4aa';
+  ctx.lineWidth = 3;
+  ctx.shadowColor = '#00d4aa';
+  ctx.shadowBlur = 8;
+  for (let i = 0; i <= 100; i++) {
+    const x = i / 100;
+    // تیر یک‌سر گیردار با بار یکنواخت
+    const defl = (eps / (1 + eps * 10)) * Math.pow(x, 2) * (6 - 4 * x + x * x) / 3;
+    const px = xToPx(x);
+    const py = wToPy(defl);
+    if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+  }
+  ctx.stroke();
+  ctx.shadowBlur = 0;
+
+  // بسط Perturbation
+  ctx.beginPath();
+  ctx.strokeStyle = '#ffb700';
+  ctx.lineWidth = 2;
+  ctx.setLineDash([6, 4]);
+  let w0 = 0;
+  let w1 = 0;
+  let w2 = 0;
+  for (let i = 0; i <= 100; i++) {
+    const x = i / 100;
+    let defl = 0;
+    if (N >= 1) {
+      const w1_base = Math.pow(x, 4) / 24 - Math.pow(x, 3) / 6 + Math.pow(x, 2) / 4;
+      defl += eps * w1_base;
+    }
+    if (N >= 2) {
+      const w2_base = eps * eps * Math.pow(x, 2) / 100;
+      defl += w2_base;
+    }
+    const px = xToPx(x);
+    const py = wToPy(defl);
+    if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+  }
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  // برچسب‌ها
+  ctx.fillStyle = '#9aa7bd';
+  ctx.font = '11px Vazirmatn';
+  ctx.textAlign = 'center';
+  ctx.fillText('موقعیت در طول تیر (x)', padX + plotW / 2, padY_top + plotH + 25);
+  ctx.textAlign = 'left';
+  ctx.fillText('خمش w', padX - 40, padY_top + plotH / 2);
+
+  // راهنما
+  ctx.font = 'bold 11px Vazirmatn';
+  ctx.fillStyle = '#00d4aa';
+  ctx.textAlign = 'right';
+  ctx.fillText('حل عددی', w - 20, 22);
+  ctx.fillStyle = '#ffb700';
+  ctx.fillText('Perturbation', w - 120, 22);
+
+  // به‌روزرسانی
+  const numericMax = (eps / (1 + eps * 10)) / 3;
+  let perturbMax = 0;
+  if (N >= 1) perturbMax += eps * (1/24 - 1/6 + 1/4);
+  if (N >= 2) perturbMax += eps * eps / 100;
+
+  document.getElementById('nanoVoltValue').textContent = toFa(V.toFixed(1));
+  document.getElementById('nanoOrderValue').textContent = toFa(N);
+  document.getElementById('nanoNumeric').textContent = toFa((numericMax * 100).toFixed(3));
+  document.getElementById('nanoPerturb').textContent = toFa((perturbMax * 100).toFixed(3));
+}
+
+/* ═══ رویدادها ═══ */
+document.getElementById('orderEps').addEventListener('input', drawOrder);
+document.getElementById('orderN').addEventListener('input', drawOrder);
+document.getElementById('pendulumAmp').addEventListener('input', drawPendulum);
+document.getElementById('nanoVolt').addEventListener('input', drawNanoCompare);
+document.getElementById('nanoOrder').addEventListener('input', drawNanoCompare);
+
+/* ═══ تب‌های کد ═══ */
+document.querySelectorAll('.code-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    const parent = tab.parentElement;
+    parent.querySelectorAll('.code-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    const contentId = 'code-' + tab.dataset.code;
+    const content = document.getElementById(contentId);
+    if (content) {
+      const allContents = parent.parentElement.querySelectorAll('.code-content');
+      allContents.forEach(c => c.classList.remove('active'));
+      content.classList.add('active');
+    }
+  });
+});
+
+/* ═══ رندر ═══ */
+function initVisibleCharts() {
+  const activeSlide = document.querySelector('.slide.active');
+  if (!activeSlide) return;
+  const num = activeSlide.dataset.slide;
+  if (num === '8') drawOrder();
+  else if (num === '16') drawPendulum();
+  else if (num === '19') drawNanoCompare();
+}
+
+/* ═══ راه‌اندازی ═══ */
+updateNav();
+setTimeout(() => {
+  initVisibleCharts();
+  if (window.MathJax && window.MathJax.typesetPromise) window.MathJax.typesetPromise();
+}, 400);
+setTimeout(() => showToast('به جلسه ۱۳ خوش آمدید — مقدمه Perturbation 🌟'), 1000);
+
+window.addEventListener('resize', () => setTimeout(() => {
+  initVisibleCharts();
+  if (window.MathJax && window.MathJax.typesetPromise) window.MathJax.typesetPromise();
+}, 200));
+</script>
+
+</body>
+</html>
