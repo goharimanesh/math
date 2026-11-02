@@ -1,1318 +1,729 @@
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ریاضیات مهندسی پیشرفته | دکتر مسعود گوهری منش</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ریاضیات مهندسی پیشرفته | دکتر مسعود گوهری‌منش | دانشگاه تربت حیدریه</title>
+    <meta name="description" content="هاب درس ریاضیات مهندسی پیشرفته کارشناسی ارشد مکاترونیک — جلسات، پادکست‌ها، کتابخانه ویدیویی، متلب، پایتون و دائرةالمعارف ریاضیات مهندسی">
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 
-<style>
-:root {
-  --primary: #00d4aa;
-  --secondary: #06b6d4;
-  --tertiary: #a855f7;
-  --gold: #ffb700;
-  --success: #22c55e;
-  --danger: #ff4757;
-  --pink: #ec4899;
-  --dark: #050818;
-  --darker: #020410;
-  --card-bg: rgba(255, 255, 255, 0.04);
-  --card-border: rgba(255, 255, 255, 0.08);
-  --text: #e8eef7;
-  --text-dim: #9aa7bd;
-  --phase1: #1e3c72;
-  --phase2: #1e6f5c;
-  --phase3: #b86b1e;
-  --phase4: #6a2c70;
-  --phase5: #b33939;
-  --phase6: #2a5298;
-}
-* { margin: 0; padding: 0; box-sizing: border-box; }
-html { scroll-behavior: smooth; }
-body {
-  font-family: 'Vazirmatn', sans-serif;
-  background: var(--dark);
-  color: var(--text);
-  direction: rtl;
-  overflow-x: hidden;
-  line-height: 1.8;
-  min-height: 100vh;
-}
-#bgCanvas {
-  position: fixed; top: 0; left: 0;
-  width: 100%; height: 100%;
-  z-index: -2;
-  background: radial-gradient(ellipse at top, #0a1230 0%, var(--darker) 50%, #000 100%);
-}
-.glow-orb {
-  position: fixed; border-radius: 50%;
-  filter: blur(100px); opacity: 0.35;
-  z-index: -1; pointer-events: none;
-  animation: floatOrb 20s ease-in-out infinite;
-}
-.orb1 { width: 500px; height: 500px; background: var(--primary); top: -150px; right: -150px; }
-.orb2 { width: 400px; height: 400px; background: var(--tertiary); bottom: -100px; left: -100px; animation-delay: -7s; }
-.orb3 { width: 350px; height: 350px; background: var(--gold); top: 40%; left: 30%; animation-delay: -13s; opacity: 0.15; }
-@keyframes floatOrb {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  33% { transform: translate(40px, -30px) scale(1.1); }
-  66% { transform: translate(-30px, 40px) scale(0.95); }
-}
-.bismillah {
-  text-align: center; padding: 20px 15px 6px;
-  font-size: 1.25rem; font-weight: 500;
-  background: linear-gradient(90deg, var(--gold), var(--primary), var(--secondary));
-  -webkit-background-clip: text; background-clip: text;
-  -webkit-text-fill-color: transparent;
-  letter-spacing: 0.5px;
-  animation: fadeDown 1.2s ease;
-}
-.hoval-khallaq {
-  text-align: center; padding-bottom: 8px;
-  font-size: 0.95rem; color: var(--text-dim);
-  font-weight: 300; letter-spacing: 1px;
-  animation: fadeDown 1.4s ease;
-}
-.divider-ornament {
-  display: flex; align-items: center; justify-content: center;
-  gap: 12px; margin: 0 auto 15px; max-width: 400px;
-  animation: fadeDown 1.6s ease;
-}
-.divider-ornament::before,
-.divider-ornament::after {
-  content: ''; flex: 1; height: 1px;
-  background: linear-gradient(90deg, transparent, var(--primary), transparent);
-}
-.divider-ornament i { color: var(--gold); font-size: 0.9rem; animation: spin 8s linear infinite; }
-@keyframes spin { to { transform: rotate(360deg); } }
-@keyframes fadeDown {
-  from { opacity: 0; transform: translateY(-15px); }
-  to { opacity: 1; transform: translateY(0); }
-}
+    <style>
+        :root {
+            --accent: #ffb700; --accent2: #ff6b35; --success: #00d4aa; --danger: #ff4757;
+            --purple: #a855f7; --pink: #ec4899; --cyan: #06b6d4; --blue: #3b82f6;
+            --dark: #050818; --dark2: #0a0e27;
+            --glass: rgba(255,255,255,0.05); --glass-border: rgba(255,255,255,0.1);
+            --mono: 'Consolas', 'Courier New', monospace;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; scroll-padding-top: 80px; }
+        body { font-family: 'Vazirmatn', sans-serif; background: var(--dark); color: #fff; overflow-x: hidden; line-height: 1.7; }
+        a { color: inherit; }
+        .ltr { direction: ltr; unicode-bidi: isolate; display: inline-block; }
+        button { font-family: inherit; }
 
-.euler-hero {
-  max-width: 620px;
-  margin: 5px auto 20px;
-  padding: 0 20px;
-  text-align: center;
-  animation: fadeDown 1.8s ease;
-}
-.euler-label {
-  font-size: 0.78rem;
-  color: var(--text-dim);
-  letter-spacing: 4px;
-  text-transform: uppercase;
-  margin-bottom: 8px;
-  opacity: 0.7;
-  font-family: 'Courier New', monospace;
-}
-.euler-formula {
-  font-family: 'Cambria Math', 'Times New Roman', serif;
-  font-size: clamp(2.4rem, 7vw, 4.2rem);
-  font-weight: 400;
-  letter-spacing: 0.05em;
-  background: linear-gradient(135deg, var(--gold), var(--primary), var(--secondary), var(--tertiary), var(--pink));
-  background-size: 400% 400%;
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  animation: gradientShift 8s ease infinite, glowPulse 4s ease-in-out infinite;
-  line-height: 1.2;
-  direction: ltr;
-  display: inline-block;
-  padding: 5px 20px;
-}
-@keyframes gradientShift {
-  0%, 100% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-}
-@keyframes glowPulse {
-  0%, 100% { filter: drop-shadow(0 0 15px rgba(0, 212, 170, 0.3)); }
-  50% { filter: drop-shadow(0 0 35px rgba(255, 183, 0, 0.5)); }
-}
-.euler-caption {
-  margin-top: 10px;
-  font-size: 0.82rem;
-  color: var(--text-dim);
-  font-style: italic;
-  letter-spacing: 0.5px;
-}
-.euler-caption i { color: var(--gold); margin-left: 6px; }
+        /* بسم‌الله */
+        .bismillah-bar { position: relative; z-index: 1001; background: linear-gradient(90deg, rgba(5,8,24,.98), rgba(10,14,39,.98), rgba(5,8,24,.98)); border-bottom: 1px solid rgba(255,183,0,.2); padding: 18px 20px 14px; text-align: center; }
+        .bismillah-text { font-size: 22px; font-weight: 700; color: var(--accent); letter-spacing: 1px; text-shadow: 0 0 30px rgba(255,183,0,.4); margin-bottom: 4px; }
+        .bismillah-sub { font-size: 13px; color: rgba(255,255,255,.55); }
 
-.progress-bar-top {
-  position: fixed; top: 0; left: 0;
-  width: 0%; height: 3px;
-  background: linear-gradient(90deg, var(--primary), var(--secondary), var(--tertiary));
-  z-index: 9999; transition: width 0.15s ease;
-  box-shadow: 0 0 12px var(--primary);
-}
-.top-controls {
-  position: fixed; top: 15px; left: 15px;
-  display: flex; gap: 8px; z-index: 1000;
-}
-.ctrl-btn {
-  width: 42px; height: 42px; border-radius: 12px;
-  border: 1px solid var(--card-border);
-  background: rgba(10, 18, 40, 0.7);
-  backdrop-filter: blur(10px);
-  color: var(--text); cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 1rem; transition: all 0.3s ease;
-}
-.ctrl-btn:hover {
-  background: var(--primary); color: var(--dark);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(0, 212, 170, 0.4);
-}
-.ctrl-btn.active { background: var(--primary); color: var(--dark); }
+        /* پس‌زمینه */
+        .bubble { position: fixed; border-radius: 50%; filter: blur(100px); opacity: .12; z-index: 0; pointer-events: none; animation: floatBubble 25s infinite ease-in-out; }
+        .bubble-1 { width: 500px; height: 500px; background: var(--accent); top: -150px; right: -150px; }
+        .bubble-2 { width: 400px; height: 400px; background: var(--cyan); bottom: 10%; left: -150px; animation-delay: -8s; }
+        .bubble-3 { width: 350px; height: 350px; background: var(--purple); top: 40%; right: -100px; animation-delay: -16s; }
+        .bubble-4 { width: 300px; height: 300px; background: var(--pink); bottom: 30%; left: 30%; animation-delay: -4s; }
+        @keyframes floatBubble { 0%,100%{transform:translate(0,0) scale(1)} 25%{transform:translate(40px,-40px) scale(1.1)} 50%{transform:translate(-30px,30px) scale(.9)} 75%{transform:translate(30px,40px) scale(1.05)} }
+        .math-rain { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+        .math-rain span { position: absolute; top: -40px; color: rgba(255,183,0,.07); font-family: 'Times New Roman', serif; font-style: italic; animation: fall linear infinite; white-space: nowrap; }
+        @keyframes fall { to { transform: translateY(115vh) rotate(25deg); } }
 
-.main-header { text-align: center; padding: 10px 20px 30px; position: relative; }
-.course-icon {
-  font-size: 3.2rem; color: var(--primary);
-  margin-bottom: 12px;
-  animation: floatIcon 3s ease-in-out infinite;
-  filter: drop-shadow(0 0 20px rgba(0, 212, 170, 0.5));
-}
-@keyframes floatIcon {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-12px); }
-}
-.course-title {
-  font-size: clamp(1.8rem, 5vw, 3.2rem);
-  font-weight: 900;
-  background: linear-gradient(135deg, var(--primary), var(--secondary), var(--tertiary), var(--gold));
-  background-size: 300% 300%;
-  -webkit-background-clip: text; background-clip: text;
-  -webkit-text-fill-color: transparent;
-  animation: gradientShift 6s ease infinite;
-  margin-bottom: 12px; line-height: 1.3;
-}
-.course-subtitle {
-  font-size: clamp(0.95rem, 2.5vw, 1.2rem);
-  color: var(--text-dim); margin-bottom: 6px; font-weight: 400;
-}
-.instructor-name {
-  font-size: clamp(1.05rem, 2.8vw, 1.35rem);
-  color: var(--gold); font-weight: 600; margin-top: 10px;
-  text-shadow: 0 0 20px rgba(255, 183, 0, 0.3);
-}
-.instructor-title { font-size: 0.9rem; color: var(--text-dim); margin-top: 4px; }
-.semester-badge {
-  display: inline-block; margin-top: 20px;
-  padding: 8px 22px; border-radius: 50px;
-  background: var(--card-bg);
-  border: 1px solid var(--card-border);
-  font-size: 0.85rem; color: var(--text-dim);
-  backdrop-filter: blur(10px);
-}
-.semester-badge i { color: var(--primary); margin-left: 6px; }
+        /* هدر */
+        .top-nav { position: sticky; top: 0; height: 70px; background: rgba(5,8,24,.9); backdrop-filter: blur(20px); border-bottom: 1px solid var(--glass-border); display: flex; align-items: center; justify-content: space-between; padding: 0 30px; z-index: 1000; }
+        .logo-area { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+        .logo-icon { width: 45px; height: 45px; border-radius: 12px; background: linear-gradient(135deg, var(--accent), var(--accent2)); display: flex; align-items: center; justify-content: center; font-size: 24px; color: var(--dark); font-weight: 900; font-family: 'Times New Roman', serif; font-style: italic; }
+        .logo-text h1 { font-size: 16px; font-weight: 800; background: linear-gradient(135deg, var(--accent), var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; white-space: nowrap; }
+        .logo-text p { font-size: 11px; color: rgba(255,255,255,.5); margin-top: 2px; }
+        .nav-links { display: flex; gap: 2px; }
+        .nav-link { padding: 8px 10px; border-radius: 10px; color: rgba(255,255,255,.7); text-decoration: none; font-size: 12.5px; font-weight: 500; transition: all .3s; display: flex; align-items: center; gap: 6px; white-space: nowrap; }
+        .nav-link:hover, .nav-link.active { background: rgba(255,183,0,.15); color: var(--accent); }
+        .nav-controls { display: flex; gap: 8px; }
+        .ctrl-btn { width: 38px; height: 38px; border-radius: 10px; border: 1px solid var(--glass-border); background: var(--glass); color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all .3s; font-size: 15px; }
+        .ctrl-btn:hover { background: rgba(255,183,0,.2); border-color: var(--accent); color: var(--accent); }
+        #menuToggle { display: none; }
+        .mobile-menu { display: none; position: sticky; top: 60px; z-index: 999; background: rgba(5,8,24,.97); border-bottom: 1px solid var(--glass-border); padding: 10px 15px; flex-wrap: wrap; gap: 6px; }
+        .mobile-menu.open { display: flex; }
 
-.tabs-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 20px;
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-  justify-content: center;
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  background: linear-gradient(180deg, var(--dark) 60%, transparent);
-  padding-top: 20px;
-  padding-bottom: 15px;
-  backdrop-filter: blur(10px);
-}
-.tab-btn {
-  padding: 10px 22px;
-  border-radius: 12px;
-  border: 1px solid var(--card-border);
-  background: var(--card-bg);
-  color: var(--text-dim);
-  cursor: pointer;
-  font-family: inherit;
-  font-size: 0.88rem;
-  font-weight: 600;
-  transition: all 0.3s ease;
-  display: flex; align-items: center; gap: 8px;
-  backdrop-filter: blur(10px);
-}
-.tab-btn:hover {
-  color: var(--text);
-  border-color: var(--primary);
-  transform: translateY(-2px);
-}
-.tab-btn.active {
-  background: linear-gradient(135deg, var(--primary), var(--secondary));
-  color: var(--dark);
-  border-color: transparent;
-  box-shadow: 0 8px 25px rgba(0, 212, 170, 0.35);
-}
-.tab-content { display: none; }
-.tab-content.active { display: block; animation: fadeIn 0.5s ease; }
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(15px); }
-  to { opacity: 1; transform: translateY(0); }
-}
+        /* Hero */
+        .hero { position: relative; padding: 70px 40px 60px; z-index: 10; }
+        .hero-grid { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 1.1fr 1fr; gap: 50px; align-items: center; }
+        .euler { display: inline-flex; align-items: center; gap: 14px; padding: 10px 22px; border-radius: 50px; background: rgba(255,183,0,.08); border: 1px solid rgba(255,183,0,.3); margin-bottom: 22px; animation: fadeInUp .8s ease; }
+        .euler .eq { font-family: 'Times New Roman', serif; font-size: 24px; color: var(--accent); direction: ltr; font-style: italic; }
+        .euler .eq sup { font-size: 14px; }
+        .euler small { font-size: 12px; color: rgba(255,255,255,.6); }
+        .hero-title { font-size: 54px; font-weight: 900; line-height: 1.25; margin-bottom: 14px; background: linear-gradient(135deg, var(--accent), var(--accent2), var(--pink), var(--purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; animation: fadeInUp 1s ease; }
+        .hero-subtitle { font-size: 18px; color: rgba(255,255,255,.72); margin-bottom: 8px; animation: fadeInUp 1.2s ease; }
+        .hero-meta { font-size: 14px; color: rgba(255,255,255,.55); margin-bottom: 26px; animation: fadeInUp 1.3s ease; }
+        .hero-meta strong { color: var(--success); font-weight: 700; }
+        .hero-cta { display: flex; gap: 12px; flex-wrap: wrap; animation: fadeInUp 1.4s ease; }
+        .btn { display: inline-flex; align-items: center; gap: 8px; padding: 12px 22px; border-radius: 14px; font-size: 14px; font-weight: 700; text-decoration: none; cursor: pointer; border: 1px solid transparent; transition: all .3s; }
+        .btn-primary { background: linear-gradient(135deg, var(--accent), var(--accent2)); color: var(--dark); }
+        .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 15px 30px rgba(255,183,0,.3); }
+        .btn-ghost { background: var(--glass); border-color: var(--glass-border); color: #fff; }
+        .btn-ghost:hover { border-color: var(--success); color: var(--success); }
 
-.stats-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 15px; max-width: 900px;
-  margin: 20px auto 40px; padding: 0 20px;
-}
-.stat-card {
-  background: var(--card-bg);
-  border: 1px solid var(--card-border);
-  border-radius: 18px; padding: 20px 15px;
-  text-align: center; backdrop-filter: blur(12px);
-  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-}
-.stat-card:hover {
-  transform: translateY(-6px);
-  border-color: var(--primary);
-  box-shadow: 0 15px 35px rgba(0, 212, 170, 0.15);
-}
-.stat-icon { font-size: 1.6rem; color: var(--primary); margin-bottom: 8px; }
-.stat-number {
-  font-size: 1.9rem; font-weight: 800;
-  background: linear-gradient(135deg, var(--primary), var(--secondary));
-  -webkit-background-clip: text; background-clip: text;
-  -webkit-text-fill-color: transparent; line-height: 1.2;
-}
-.stat-label { font-size: 0.82rem; color: var(--text-dim); margin-top: 4px; }
+        .fourier-card { background: rgba(255,255,255,.04); border: 1px solid var(--glass-border); border-radius: 24px; padding: 20px; animation: fadeInUp 1.3s ease; }
+        .fourier-card .fc-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; gap: 10px; flex-wrap: wrap; }
+        .fourier-card h3 { font-size: 15px; font-weight: 800; color: var(--accent); }
+        .fourier-card .fc-sub { font-size: 12px; color: rgba(255,255,255,.55); }
+        .fourier-card canvas { width: 100%; height: 230px; display: block; border-radius: 14px; background: rgba(0,0,0,.25); }
+        .fc-controls { display: flex; align-items: center; gap: 12px; margin-top: 12px; flex-wrap: wrap; }
+        .fc-controls label { font-size: 12.5px; color: rgba(255,255,255,.7); }
+        .fc-controls input[type=range] { flex: 1; accent-color: var(--accent); min-width: 120px; }
+        .fc-controls .nval { font-weight: 800; color: var(--accent); min-width: 28px; text-align: center; }
+        .wave-switch { display: flex; gap: 6px; }
+        .wave-switch button { padding: 5px 11px; border-radius: 9px; border: 1px solid var(--glass-border); background: transparent; color: rgba(255,255,255,.7); font-size: 12px; cursor: pointer; }
+        .wave-switch button.active { border-color: var(--accent); color: var(--accent); background: rgba(255,183,0,.1); }
+        .fc-formula { margin-top: 10px; direction: ltr; text-align: center; font-family: 'Times New Roman', serif; font-style: italic; color: rgba(255,255,255,.75); font-size: 15px; }
 
-.section { max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
-.section-title {
-  font-size: clamp(1.3rem, 3.5vw, 1.9rem);
-  font-weight: 800; margin-bottom: 8px;
-  display: flex; align-items: center; gap: 12px;
-  color: var(--text);
-}
-.section-title i { color: var(--primary); font-size: 1.4rem; }
-.section-subtitle {
-  color: var(--text-dim); font-size: 0.95rem;
-  margin-bottom: 32px; padding-right: 44px;
-}
+        .stats { max-width: 1200px; margin: 50px auto 0; display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; }
+        .stat { background: var(--glass); border: 1px solid var(--glass-border); border-radius: 18px; padding: 18px 14px; text-align: center; transition: all .3s; }
+        .stat:hover { border-color: var(--accent); transform: translateY(-4px); }
+        .stat i { font-size: 20px; color: var(--accent); margin-bottom: 6px; }
+        .stat .num { font-size: 26px; font-weight: 900; }
+        .stat .lbl { font-size: 12px; color: rgba(255,255,255,.55); }
+        @keyframes fadeInUp { from{opacity:0;transform:translateY(40px)} to{opacity:1;transform:translateY(0)} }
 
-.phases-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 18px;
-}
-.phase-card {
-  position: relative; border-radius: 20px;
-  padding: 24px 22px;
-  background: var(--card-bg);
-  border: 1px solid var(--card-border);
-  backdrop-filter: blur(12px);
-  cursor: pointer; overflow: hidden;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-}
-.phase-card::before {
-  content: ''; position: absolute; inset: 0;
-  background: linear-gradient(135deg, var(--phase-color), transparent);
-  opacity: 0.15; transition: opacity 0.4s ease;
-}
-.phase-card:hover::before { opacity: 0.3; }
-.phase-card:hover {
-  transform: translateY(-8px) rotateX(2deg);
-  border-color: var(--phase-color);
-  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.4), 0 0 30px color-mix(in srgb, var(--phase-color) 30%, transparent);
-}
-.phase-number {
-  display: inline-flex; align-items: center; justify-content: center;
-  width: 44px; height: 44px; border-radius: 12px;
-  background: var(--phase-color); color: #fff;
-  font-weight: 800; font-size: 1.15rem;
-  margin-bottom: 14px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-}
-.phase-name { font-size: 1.1rem; font-weight: 700; margin-bottom: 8px; color: var(--text); }
-.phase-desc { font-size: 0.85rem; color: var(--text-dim); line-height: 1.7; margin-bottom: 14px; }
-.phase-sessions {
-  font-size: 0.78rem; color: var(--phase-color);
-  font-weight: 600; display: flex; align-items: center; gap: 6px;
-}
+        /* بخش‌ها */
+        .section { position: relative; padding: 90px 40px; z-index: 10; }
+        .section-header { text-align: center; margin-bottom: 50px; }
+        .section-tag { display: inline-block; padding: 6px 18px; background: rgba(0,212,170,.1); border: 1px solid rgba(0,212,170,.3); border-radius: 50px; font-size: 12px; font-weight: 600; color: var(--success); margin-bottom: 15px; }
+        .section-title { font-size: 40px; font-weight: 900; margin-bottom: 15px; background: linear-gradient(135deg, var(--accent), var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .section-subtitle { font-size: 16px; color: rgba(255,255,255,.6); max-width: 780px; margin: 0 auto; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .chip { padding: 7px 16px; border-radius: 50px; border: 1px solid var(--glass-border); background: var(--glass); color: rgba(255,255,255,.75); font-size: 12.5px; font-weight: 600; cursor: pointer; transition: all .25s; }
+        .chip:hover { border-color: var(--accent); color: var(--accent); }
+        .chip.active { background: rgba(255,183,0,.18); border-color: var(--accent); color: var(--accent); }
 
-/* ═══════ لیست جلسات ═══════ */
-.sessions-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 14px;
-}
-.session-item {
-  display: flex;
-  gap: 14px;
-  padding: 16px;
-  border-radius: 16px;
-  background: var(--card-bg);
-  border: 1px solid var(--card-border);
-  text-decoration: none;
-  color: var(--text);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  position: relative;
-  overflow: hidden;
-  backdrop-filter: blur(10px);
-}
-.session-item::before {
-  content: '';
-  position: absolute;
-  right: 0; top: 0; bottom: 0;
-  width: 4px;
-  background: var(--phase-color);
-  opacity: 0.6;
-  transition: opacity 0.3s ease;
-}
-.session-item:hover::before { opacity: 1; }
-.session-item:hover {
-  transform: translateX(-6px);
-  border-color: var(--phase-color);
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3), 0 0 20px color-mix(in srgb, var(--phase-color) 20%, transparent);
-}
-.session-item.locked {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-.session-item.locked:hover {
-  transform: none;
-  border-color: var(--card-border);
-  box-shadow: none;
-}
-.session-icon {
-  width: 46px; height: 46px;
-  border-radius: 12px;
-  background: linear-gradient(135deg, var(--phase-color), color-mix(in srgb, var(--phase-color) 60%, #000));
-  display: flex; align-items: center; justify-content: center;
-  color: #fff; font-weight: 800;
-  font-size: 0.95rem;
-  flex-shrink: 0;
-  font-family: 'Courier New', monospace;
-}
-.session-info { flex: 1; min-width: 0; }
-.session-number {
-  font-size: 0.68rem;
-  color: var(--phase-color);
-  font-weight: 700;
-  margin-bottom: 3px;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-.session-title {
-  font-size: 0.92rem;
-  font-weight: 700;
-  color: var(--text);
-  line-height: 1.5;
-  margin-bottom: 4px;
-}
-.session-meta {
-  font-size: 0.72rem;
-  color: var(--text-dim);
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.session-status {
-  font-size: 0.65rem;
-  padding: 2px 8px;
-  border-radius: 20px;
-  font-weight: 700;
-}
-.status-available {
-  background: rgba(34, 197, 94, 0.15);
-  color: var(--success);
-}
-.status-soon {
-  background: rgba(255, 183, 0, 0.15);
-  color: var(--gold);
-}
-.status-locked {
-  background: rgba(255, 255, 255, 0.05);
-  color: var(--text-dim);
-}
+        /* نقشه راه */
+        .roadmap { display: grid; grid-template-columns: repeat(6, 1fr); gap: 14px; }
+        .phase-card { padding: 22px 14px; border-radius: 20px; text-align: center; transition: all .4s; cursor: pointer; border: 1px solid var(--glass-border); color: #fff; background: linear-gradient(160deg, color-mix(in srgb, var(--pc) 45%, transparent), color-mix(in srgb, var(--pc) 8%, transparent)); }
+        .phase-card:hover { transform: translateY(-8px) scale(1.02); box-shadow: 0 25px 50px rgba(0,0,0,.4); border-color: color-mix(in srgb, var(--pc) 80%, white); }
+        .phase-card .phase-num { width: 42px; height: 42px; border-radius: 50%; background: rgba(255,255,255,.15); display: flex; align-items: center; justify-content: center; margin: 0 auto 12px; font-size: 17px; font-weight: 800; }
+        .phase-card .phase-icon { font-size: 26px; margin-bottom: 10px; color: var(--accent); }
+        .phase-card h4 { font-size: 13.5px; font-weight: 800; margin-bottom: 6px; line-height: 1.6; }
+        .phase-card .topics { font-size: 11px; color: rgba(255,255,255,.62); line-height: 1.7; margin-bottom: 6px; }
+        .phase-card .range { font-size: 11px; color: var(--accent); font-weight: 700; }
 
-/* ═══════ ارزشیابی ═══════ */
-.grade-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 16px;
-  margin-bottom: 24px;
-}
-.grade-card {
-  background: var(--card-bg);
-  border: 1px solid var(--card-border);
-  border-radius: 18px;
-  padding: 24px 20px;
-  text-align: center;
-  backdrop-filter: blur(12px);
-  transition: all 0.3s ease;
-  position: relative;
-  overflow: hidden;
-}
-.grade-card::before {
-  content: '';
-  position: absolute;
-  top: 0; right: 0;
-  width: 100%; height: 3px;
-  background: var(--grade-color);
-}
-.grade-card:hover {
-  transform: translateY(-5px);
-  border-color: var(--grade-color);
-  box-shadow: 0 15px 35px color-mix(in srgb, var(--grade-color) 20%, transparent);
-}
-.grade-icon {
-  font-size: 2rem;
-  color: var(--grade-color);
-  margin-bottom: 12px;
-}
-.grade-value {
-  font-size: 2.4rem;
-  font-weight: 900;
-  background: linear-gradient(135deg, var(--grade-color), color-mix(in srgb, var(--grade-color) 60%, #fff));
-  -webkit-background-clip: text; background-clip: text;
-  -webkit-text-fill-color: transparent;
-  line-height: 1;
-  margin-bottom: 8px;
-}
-.grade-label {
-  font-size: 0.88rem;
-  font-weight: 700;
-  color: var(--text);
-  margin-bottom: 6px;
-}
-.grade-desc {
-  font-size: 0.75rem;
-  color: var(--text-dim);
-  line-height: 1.7;
-}
+        /* جلسات */
+        .syllabus-toolbar { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin-bottom: 20px; }
+        .table-wrap { overflow-x: auto; border-radius: 20px; }
+        .syllabus-table { width: 100%; border-collapse: collapse; background: var(--glass); border-radius: 20px; overflow: hidden; border: 1px solid var(--glass-border); min-width: 720px; }
+        .syllabus-table thead { background: rgba(255,183,0,.1); }
+        .syllabus-table th { padding: 16px 15px; text-align: right; font-size: 14px; font-weight: 700; color: var(--accent); border-bottom: 1px solid var(--glass-border); }
+        .syllabus-table td { padding: 13px 15px; font-size: 13.5px; border-bottom: 1px solid rgba(255,255,255,.05); color: rgba(255,255,255,.85); vertical-align: middle; }
+        .syllabus-table tbody tr { transition: background .3s; }
+        .syllabus-table tbody tr:hover { background: rgba(255,183,0,.05); }
+        .syllabus-table tr.flash { animation: flash 1.8s ease; }
+        @keyframes flash { 0%,60% { background: rgba(255,183,0,.22); } 100% { background: transparent; } }
+        .syllabus-table tr.phase-row td { background: rgba(255,255,255,.03); color: var(--success); font-weight: 700; font-size: 12.5px; padding: 10px 15px; }
+        .session-badge { display: inline-flex; align-items: center; justify-content: center; min-width: 34px; padding: 4px 10px; background: rgba(255,183,0,.15); border-radius: 50px; font-size: 12px; font-weight: 700; color: var(--accent); }
+        .vid-count { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; color: var(--cyan); margin-top: 3px; cursor: pointer; background: none; border: none; padding: 0; }
+        .vid-count:hover { color: var(--accent); }
+        .link-group { display: flex; gap: 8px; flex-wrap: wrap; }
+        .s-btn { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 10px; font-size: 12px; font-weight: 700; text-decoration: none; transition: all .25s; border: 1px solid; white-space: nowrap; }
+        .s-btn.lesson { color: var(--accent); border-color: rgba(255,183,0,.35); background: rgba(255,183,0,.08); }
+        .s-btn.lesson:hover { background: var(--accent); color: var(--dark); }
+        .s-btn.podcast { color: var(--purple); border-color: rgba(168,85,247,.35); background: rgba(168,85,247,.08); }
+        .s-btn.podcast:hover { background: var(--purple); color: #fff; }
+        .s-btn.missing { opacity: .35; pointer-events: none; filter: grayscale(1); }
+        .s-btn.missing::after { content: ' (به‌زودی)'; font-weight: 400; }
+        .syllabus-note { text-align: center; font-size: 12px; color: rgba(255,255,255,.45); margin-top: 14px; }
 
-/* ═══════ تمرین‌ها ═══════ */
-.homework-list {
-  display: grid;
-  gap: 10px;
-  margin-top: 20px;
-}
-.hw-item {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 14px 18px;
-  border-radius: 14px;
-  background: var(--card-bg);
-  border: 1px solid var(--card-border);
-  backdrop-filter: blur(10px);
-  transition: all 0.3s ease;
-}
-.hw-item:hover {
-  border-color: var(--primary);
-  transform: translateX(-4px);
-}
-.hw-num {
-  width: 38px; height: 38px;
-  border-radius: 10px;
-  background: linear-gradient(135deg, var(--primary), var(--secondary));
-  color: var(--dark);
-  display: flex; align-items: center; justify-content: center;
-  font-weight: 900;
-  font-size: 0.85rem;
-  flex-shrink: 0;
-}
-.hw-info { flex: 1; }
-.hw-title {
-  font-size: 0.88rem;
-  font-weight: 700;
-  color: var(--text);
-  margin-bottom: 3px;
-}
-.hw-meta {
-  font-size: 0.72rem;
-  color: var(--text-dim);
-}
-.hw-deadline {
-  font-size: 0.72rem;
-  padding: 4px 12px;
-  border-radius: 20px;
-  background: rgba(0, 212, 170, 0.15);
-  color: var(--primary);
-  font-weight: 700;
-  white-space: nowrap;
-}
+        /* ارزشیابی */
+        .assessment-grid { display: grid; grid-template-columns: 1fr 1.25fr; gap: 40px; align-items: start; }
+        .chart-container { background: var(--glass); border: 1px solid var(--glass-border); border-radius: 25px; padding: 30px; max-width: 420px; margin: 0 auto; width: 100%; }
+        .assessment-list { display: flex; flex-direction: column; gap: 14px; }
+        .assessment-item { display: flex; align-items: center; gap: 18px; padding: 18px; background: var(--glass); border: 1px solid var(--glass-border); border-radius: 15px; transition: all .3s; }
+        .assessment-item:hover { transform: translateX(-8px); border-color: var(--accent); }
+        .assessment-icon { width: 52px; height: 52px; border-radius: 15px; display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; }
+        .assessment-info h4 { font-size: 15.5px; font-weight: 700; margin-bottom: 3px; }
+        .assessment-info p { font-size: 13px; color: rgba(255,255,255,.6); }
+        .assessment-score { margin-right: auto; font-size: 24px; font-weight: 800; color: var(--accent); flex-shrink: 0; }
+        .rules-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-top: 40px; }
+        .rule-card { background: var(--glass); border: 1px solid var(--glass-border); border-radius: 18px; padding: 20px 22px; border-right: 3px solid var(--rc, var(--accent)); }
+        .rule-card h4 { font-size: 15px; font-weight: 800; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+        .rule-card h4 i { color: var(--rc, var(--accent)); }
+        .rule-card p, .rule-card li { font-size: 13.2px; color: rgba(255,255,255,.75); line-height: 1.9; }
+        .rule-card ul { list-style: none; }
+        .rule-card li::before { content: '•'; color: var(--rc, var(--accent)); margin-left: 8px; }
+        .rule-card .ok::before { content: '✓'; color: var(--success); }
+        .rule-card .no::before { content: '✕'; color: var(--danger); }
+        .copy-box { display: flex; align-items: center; gap: 8px; margin-top: 10px; background: rgba(0,0,0,.35); border: 1px dashed rgba(255,183,0,.35); border-radius: 10px; padding: 8px 10px; }
+        .copy-box code { flex: 1; direction: ltr; text-align: left; font-family: var(--mono); font-size: 12px; color: var(--accent); overflow-wrap: anywhere; }
+        .copy-box button { border: none; background: rgba(255,183,0,.15); color: var(--accent); border-radius: 8px; padding: 6px 10px; cursor: pointer; font-size: 12px; flex-shrink: 0; }
+        .copy-box button:hover { background: var(--accent); color: var(--dark); }
 
-/* ═══════ مراجع ═══════ */
-.refs-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 16px;
-}
-.ref-card {
-  background: var(--card-bg);
-  border: 1px solid var(--card-border);
-  border-radius: 16px; padding: 20px;
-  backdrop-filter: blur(10px); transition: all 0.3s ease;
-}
-.ref-card:hover { border-color: var(--secondary); transform: translateY(-3px); }
-.ref-type {
-  font-size: 0.72rem; color: var(--secondary);
-  font-weight: 700; margin-bottom: 8px;
-  display: flex; align-items: center; gap: 6px;
-}
-.ref-title {
-  font-size: 0.9rem; font-weight: 600;
-  color: var(--text); margin-bottom: 6px; line-height: 1.6;
-}
-.ref-author {
-  font-size: 0.78rem; color: var(--text-dim);
-  direction: ltr; text-align: left;
-}
+        /* پروژه‌ها */
+        .projects-intro { background: linear-gradient(135deg, rgba(255,183,0,.08), rgba(0,212,170,.08)); border: 1px solid rgba(255,183,0,.2); border-radius: 20px; padding: 22px; margin-bottom: 30px; }
+        .pipeline { display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap; }
+        .pipeline .step { padding: 8px 14px; border-radius: 12px; background: rgba(255,255,255,.06); border: 1px solid var(--glass-border); font-size: 13px; font-weight: 700; display: flex; align-items: center; gap: 7px; }
+        .pipeline .step i { color: var(--accent); }
+        .pipeline .arrow { color: rgba(255,255,255,.35); }
+        .projects-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+        .project-card { background: var(--glass); border: 1px solid var(--glass-border); border-radius: 20px; padding: 22px; transition: all .4s; }
+        .project-card:hover { transform: translateY(-8px); border-color: var(--accent); box-shadow: 0 25px 50px rgba(255,183,0,.12); }
+        .project-head { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+        .project-num { width: 46px; height: 46px; border-radius: 14px; background: linear-gradient(135deg, var(--accent), var(--accent2)); display: flex; align-items: center; justify-content: center; font-size: 19px; font-weight: 900; color: var(--dark); flex-shrink: 0; }
+        .project-head h3 { font-size: 15.5px; font-weight: 800; line-height: 1.5; }
+        .project-desc { font-size: 13px; color: rgba(255,255,255,.7); line-height: 1.85; }
+        .tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 14px; padding-top: 12px; border-top: 1px dashed rgba(255,255,255,.1); }
+        .tags span { padding: 4px 10px; background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.1); border-radius: 50px; font-size: 11px; color: rgba(255,255,255,.7); }
 
-/* ═══════ قوانین ═══════ */
-.rules-container {
-  background: var(--card-bg);
-  border: 1px solid var(--card-border);
-  border-radius: 20px; padding: 28px;
-  backdrop-filter: blur(12px);
-}
-.rule-item {
-  display: flex; gap: 16px;
-  padding: 16px 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-}
-.rule-item:last-child { border-bottom: none; }
-.rule-icon {
-  flex-shrink: 0; width: 42px; height: 42px;
-  border-radius: 12px;
-  background: rgba(0, 212, 170, 0.12);
-  color: var(--primary);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 1.05rem;
-}
-.rule-icon.danger { background: rgba(255, 71, 87, 0.12); color: var(--danger); }
-.rule-icon.gold { background: rgba(255, 183, 0, 0.12); color: var(--gold); }
-.rule-icon.purple { background: rgba(168, 85, 247, 0.12); color: var(--tertiary); }
-.rule-content h4 {
-  font-size: 0.95rem; font-weight: 700;
-  color: var(--text); margin-bottom: 6px;
-}
-.rule-content p { font-size: 0.85rem; color: var(--text-dim); line-height: 1.8; }
-.rule-content ul {
-  font-size: 0.82rem; color: var(--text-dim);
-  line-height: 2; padding-right: 18px; margin-top: 6px;
-}
-.email-box {
-  display: inline-flex; align-items: center; gap: 8px;
-  padding: 8px 16px; border-radius: 10px;
-  background: rgba(0, 212, 170, 0.1);
-  border: 1px solid rgba(0, 212, 170, 0.3);
-  color: var(--primary); font-family: 'Courier New', monospace;
-  font-size: 0.85rem; margin-top: 8px;
-  direction: ltr; cursor: pointer; transition: all 0.3s ease;
-}
-.email-box:hover {
-  background: rgba(0, 212, 170, 0.2);
-  transform: scale(1.02);
-}
-.subject-format {
-  display: block; padding: 12px 16px;
-  border-radius: 10px;
-  background: rgba(168, 85, 247, 0.1);
-  border: 1px dashed rgba(168, 85, 247, 0.4);
-  color: var(--tertiary); font-family: 'Courier New', monospace;
-  font-size: 0.78rem; margin-top: 10px;
-  direction: ltr; text-align: left;
-  overflow-x: auto; white-space: nowrap;
-}
+        /* تمرین‌ها */
+        .hw-timeline { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+        .hw-card { background: var(--glass); border: 1px solid var(--glass-border); border-radius: 18px; padding: 18px; position: relative; transition: all .3s; }
+        .hw-card:hover { border-color: var(--purple); transform: translateY(-4px); }
+        .hw-card .hw-n { font-size: 11px; font-weight: 800; color: var(--purple); background: rgba(168,85,247,.15); border-radius: 20px; padding: 3px 10px; display: inline-block; margin-bottom: 8px; }
+        .hw-card h4 { font-size: 14px; font-weight: 800; margin-bottom: 10px; line-height: 1.6; }
+        .hw-card .hw-meta { font-size: 12px; color: rgba(255,255,255,.6); display: flex; flex-direction: column; gap: 4px; }
+        .hw-card .hw-meta i { color: var(--accent); width: 16px; }
 
-/* ═══════ تماس ═══════ */
-.contact-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 16px;
-}
-.contact-card {
-  background: var(--card-bg);
-  border: 1px solid var(--card-border);
-  border-radius: 16px; padding: 22px;
-  text-align: center; backdrop-filter: blur(10px);
-  transition: all 0.3s ease; text-decoration: none;
-  color: var(--text); display: block;
-}
-.contact-card:hover {
-  transform: translateY(-5px);
-  border-color: var(--primary);
-  box-shadow: 0 15px 35px rgba(0, 212, 170, 0.15);
-}
-.contact-icon { font-size: 1.8rem; color: var(--primary); margin-bottom: 12px; }
-.contact-label { font-size: 0.85rem; font-weight: 700; margin-bottom: 6px; }
-.contact-value {
-  font-size: 0.8rem; color: var(--text-dim);
-  direction: ltr; word-break: break-all;
-}
+        /* ===== کتابخانه ویدیویی ===== */
+        .lib-shell { background: rgba(255,255,255,.03); border: 1px solid var(--glass-border); border-radius: 26px; padding: 26px; }
+        .lib-cats { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 20px; }
+        .lib-cat { position: relative; text-align: right; padding: 16px; border-radius: 18px; border: 1px solid var(--glass-border); background: var(--glass); color: #fff; cursor: pointer; transition: all .3s; overflow: hidden; }
+        .lib-cat::after { content: ''; position: absolute; inset: auto 0 0 0; height: 3px; background: var(--cc); transform: scaleX(0); transition: transform .3s; transform-origin: right; }
+        .lib-cat:hover { transform: translateY(-4px); border-color: color-mix(in srgb, var(--cc) 60%, transparent); }
+        .lib-cat.active { background: color-mix(in srgb, var(--cc) 16%, transparent); border-color: var(--cc); }
+        .lib-cat.active::after { transform: scaleX(1); }
+        .lib-cat .ci { width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center; background: color-mix(in srgb, var(--cc) 22%, transparent); color: var(--cc); font-size: 18px; margin-bottom: 10px; }
+        .lib-cat h4 { font-size: 14.5px; font-weight: 800; margin-bottom: 2px; }
+        .lib-cat .cm { font-size: 11.5px; color: rgba(255,255,255,.55); }
+        .lib-cat .cm b { color: var(--cc); }
+        .lib-toolbar { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-bottom: 16px; }
+        .lib-search { position: relative; flex: 1; min-width: 220px; }
+        .lib-search input, .wiki-search input { width: 100%; padding: 13px 46px 13px 16px; border-radius: 14px; border: 1px solid var(--glass-border); background: rgba(0,0,0,.25); color: #fff; font-family: inherit; font-size: 14px; outline: none; transition: border-color .3s; }
+        .lib-search input:focus, .wiki-search input:focus { border-color: var(--accent); }
+        .lib-search i, .wiki-search i { position: absolute; right: 18px; top: 50%; transform: translateY(-50%); color: var(--accent); }
+        .lib-sort { display: flex; gap: 6px; }
+        .lib-intro { display: flex; gap: 14px; align-items: flex-start; background: linear-gradient(135deg, color-mix(in srgb, var(--cc) 14%, transparent), transparent); border: 1px solid color-mix(in srgb, var(--cc) 35%, transparent); border-radius: 16px; padding: 14px 18px; margin-bottom: 18px; font-size: 13.5px; color: rgba(255,255,255,.82); line-height: 1.9; }
+        .lib-intro i { color: var(--cc); font-size: 20px; margin-top: 4px; }
+        .lib-group { margin-bottom: 26px; }
+        .lib-group-head { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+        .lib-group-head .gn { width: 30px; height: 30px; border-radius: 9px; background: color-mix(in srgb, var(--cc) 20%, transparent); color: var(--cc); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 13px; flex-shrink: 0; }
+        .lib-group-head h3 { font-size: 16.5px; font-weight: 800; }
+        .lib-group-head .gm { font-size: 12px; color: rgba(255,255,255,.5); margin-right: auto; white-space: nowrap; }
+        .lib-group-head::after { content: ''; flex: 0 0 0; }
+        .video-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(330px, 1fr)); gap: 12px; }
+        .video-card { display: flex; gap: 14px; align-items: flex-start; padding: 14px; border-radius: 16px; background: var(--glass); border: 1px solid var(--glass-border); text-decoration: none; color: #fff; transition: all .3s; position: relative; }
+        .video-card:hover { border-color: var(--cc); transform: translateY(-3px); background: rgba(255,255,255,.07); }
+        .video-card .play { width: 52px; height: 52px; border-radius: 14px; flex-shrink: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; background: linear-gradient(135deg, color-mix(in srgb, var(--cc) 75%, black), color-mix(in srgb, var(--cc) 35%, black)); position: relative; }
+        .video-card .play i { font-size: 16px; color: #fff; transition: transform .3s; }
+        .video-card:hover .play i { transform: scale(1.25); }
+        .video-card .play .idx { font-size: 10px; color: rgba(255,255,255,.75); margin-top: 3px; font-weight: 700; }
+        .video-card .vbody { flex: 1; min-width: 0; }
+        .video-card h5 { font-size: 14px; font-weight: 800; line-height: 1.6; margin-bottom: 3px; }
+        .video-card .vdesc { font-size: 12.3px; color: rgba(255,255,255,.62); line-height: 1.75; margin-bottom: 7px; }
+        .video-card .vmeta { display: flex; gap: 10px; flex-wrap: wrap; font-size: 11px; color: rgba(255,255,255,.5); }
+        .video-card .vmeta i { color: var(--cc); margin-left: 3px; }
+        .video-card .rel { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 8px; }
+        .video-card .rel button { border: 1px solid rgba(255,183,0,.3); background: rgba(255,183,0,.08); color: var(--accent); border-radius: 20px; font-size: 10.5px; padding: 2px 9px; cursor: pointer; font-weight: 700; }
+        .video-card .rel button:hover { background: var(--accent); color: var(--dark); }
+        .badge-hot { position: absolute; top: -8px; left: 12px; background: linear-gradient(135deg, var(--danger), var(--accent2)); color: #fff; font-size: 10px; font-weight: 800; padding: 2px 9px; border-radius: 20px; box-shadow: 0 4px 12px rgba(255,71,87,.35); }
+        .lib-empty { text-align: center; padding: 40px; color: rgba(255,255,255,.45); }
+        .lib-footnote { font-size: 12px; color: rgba(255,255,255,.45); text-align: center; margin-top: 10px; }
 
-.footer {
-  text-align: center; padding: 40px 20px;
-  border-top: 1px solid var(--card-border);
-  margin-top: 40px; color: var(--text-dim);
-  font-size: 0.82rem;
-}
-.footer-heart {
-  color: var(--danger);
-  animation: heartbeat 1.5s ease infinite;
-  display: inline-block; margin: 0 4px;
-}
-@keyframes heartbeat {
-  0%, 100% { transform: scale(1); }
-  25% { transform: scale(1.2); }
-  50% { transform: scale(1); }
-  75% { transform: scale(1.15); }
-}
+        /* ===== دائرةالمعارف ===== */
+        .wiki-shell { background: rgba(255,255,255,.03); border: 1px solid var(--glass-border); border-radius: 26px; padding: 26px; }
+        .wiki-search { position: relative; margin-bottom: 18px; }
+        .wiki-tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+        .wiki-tab { padding: 9px 15px; border-radius: 12px; border: 1px solid var(--glass-border); background: var(--glass); color: rgba(255,255,255,.75); font-size: 13px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 7px; transition: all .25s; }
+        .wiki-tab:hover { color: var(--accent); border-color: rgba(255,183,0,.4); }
+        .wiki-tab.active { background: linear-gradient(135deg, var(--accent), var(--accent2)); color: var(--dark); border-color: transparent; }
+        .wiki-tab .count { font-size: 11px; padding: 0 7px; border-radius: 20px; background: rgba(0,0,0,.2); }
+        .wiki-filters { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 16px; }
+        .wiki-meta { font-size: 12.5px; color: rgba(255,255,255,.5); margin-bottom: 14px; }
+        .wiki-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
+        .wiki-card { background: var(--glass); border: 1px solid var(--glass-border); border-radius: 16px; padding: 18px 20px; transition: border-color .25s, transform .25s; }
+        .wiki-card:hover { border-color: rgba(255,183,0,.45); transform: translateY(-3px); }
+        .wiki-card .w-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; margin-bottom: 8px; }
+        .wiki-card h4 { font-size: 15.5px; font-weight: 800; line-height: 1.5; }
+        .wiki-card .en { font-size: 12.5px; color: var(--success); font-weight: 600; direction: ltr; text-align: left; display: block; margin-top: 2px; }
+        .wiki-card .w-cat { font-size: 10.5px; padding: 3px 9px; border-radius: 20px; background: rgba(168,85,247,.15); color: var(--purple); white-space: nowrap; font-weight: 700; }
+        .wiki-card p { font-size: 13.2px; color: rgba(255,255,255,.75); line-height: 1.9; }
+        .wiki-card ul { padding-right: 18px; margin-top: 6px; }
+        .wiki-card li { font-size: 13px; color: rgba(255,255,255,.75); line-height: 1.85; margin-bottom: 3px; }
+        .formula { direction: ltr; text-align: left; font-family: var(--mono); background: rgba(0,0,0,.35); border: 1px solid rgba(255,183,0,.2); border-radius: 10px; padding: 10px 12px; margin: 8px 0; font-size: 13px; color: var(--accent); white-space: pre-wrap; }
+        .wiki-card .w-link { display: inline-flex; align-items: center; gap: 6px; margin-top: 10px; font-size: 12.5px; color: var(--cyan); text-decoration: none; font-weight: 600; direction: ltr; }
+        .wiki-card .w-link:hover { color: var(--accent); }
+        mark { background: rgba(255,183,0,.35); color: #fff; border-radius: 3px; padding: 0 2px; }
+        .wiki-empty { text-align: center; padding: 40px; color: rgba(255,255,255,.45); grid-column: 1 / -1; }
+        .wiki-alpha { display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 14px; }
+        .wiki-alpha button { min-width: 30px; height: 30px; border-radius: 8px; border: 1px solid var(--glass-border); background: transparent; color: rgba(255,255,255,.6); font-size: 12px; cursor: pointer; }
+        .wiki-alpha button.active, .wiki-alpha button:hover { border-color: var(--accent); color: var(--accent); }
+        .wiki-disclaimer { margin-top: 20px; font-size: 12px; color: rgba(255,255,255,.45); text-align: center; line-height: 1.9; }
 
-.toast-container {
-  position: fixed; bottom: 24px; right: 24px;
-  z-index: 9999; display: flex;
-  flex-direction: column; gap: 10px;
-}
-.toast {
-  background: rgba(10, 18, 40, 0.95);
-  border: 1px solid var(--primary);
-  border-radius: 14px; padding: 14px 20px;
-  color: var(--text); font-size: 0.88rem;
-  backdrop-filter: blur(12px);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-  display: flex; align-items: center; gap: 10px;
-  animation: slideIn 0.35s ease; max-width: 340px;
-}
-.toast i { color: var(--primary); }
-@keyframes slideIn {
-  from { opacity: 0; transform: translateX(60px); }
-  to { opacity: 1; transform: translateX(0); }
-}
+        /* مراجع */
+        .refs-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+        .ref-item { display: flex; gap: 14px; align-items: center; padding: 16px 18px; background: var(--glass); border: 1px solid var(--glass-border); border-radius: 15px; transition: all .3s; }
+        .ref-item:hover { transform: translateX(-6px); border-color: var(--success); }
+        .ref-type { font-size: 11px; font-weight: 800; padding: 4px 10px; border-radius: 20px; background: rgba(0,212,170,.15); color: var(--success); white-space: nowrap; }
+        .ref-item .rt { direction: ltr; text-align: left; flex: 1; }
+        .ref-item .rt b { display: block; font-size: 14px; }
+        .ref-item .rt span { font-size: 12px; color: rgba(255,255,255,.55); }
 
-.reveal {
-  opacity: 0; transform: translateY(30px);
-  transition: opacity 0.7s ease, transform 0.7s ease;
-}
-.reveal.visible { opacity: 1; transform: translateY(0); }
+        /* تماس */
+        .contact-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+        .contact-card { text-align: center; padding: 26px 18px; background: var(--glass); border: 1px solid var(--glass-border); border-radius: 20px; text-decoration: none; transition: all .3s; }
+        .contact-card:hover { border-color: var(--accent); transform: translateY(-5px); }
+        .contact-card i { font-size: 28px; color: var(--accent); margin-bottom: 10px; }
+        .contact-card h4 { font-size: 13px; color: rgba(255,255,255,.55); font-weight: 500; margin-bottom: 4px; }
+        .contact-card p { font-size: 14.5px; font-weight: 700; overflow-wrap: anywhere; }
 
-body.light-mode {
-  --dark: #f5f7fb;
-  --darker: #e8ecf5;
-  --text: #0a1230;
-  --text-dim: #5a6478;
-  --card-bg: rgba(255, 255, 255, 0.7);
-  --card-border: rgba(0, 0, 0, 0.08);
-}
-body.light-mode #bgCanvas {
-  background: radial-gradient(ellipse at top, #dde6f5 0%, #e8ecf5 50%, #f5f7fb 100%);
-}
-body.light-mode .glow-orb { opacity: 0.2; }
-body.light-mode .tabs-container {
-  background: linear-gradient(180deg, var(--dark) 60%, transparent);
-}
+        /* فوتر */
+        .footer { position: relative; padding: 50px 40px 30px; background: rgba(0,0,0,.3); border-top: 1px solid var(--glass-border); z-index: 10; text-align: center; }
+        .footer-title { font-size: 21px; font-weight: 800; background: linear-gradient(135deg, var(--accent), var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 10px; }
+        .footer-divider { width: 100px; height: 2px; background: linear-gradient(90deg, transparent, var(--accent), transparent); margin: 20px auto; }
+        .footer-credit { font-size: 12px; color: rgba(255,255,255,.45); margin-top: 8px; }
+        .footer-credit strong { color: var(--accent); }
 
-@media (max-width: 640px) {
-  .top-controls { top: 10px; left: 10px; gap: 6px; }
-  .ctrl-btn { width: 38px; height: 38px; font-size: 0.9rem; }
-  .section { padding: 30px 15px; }
-  .section-subtitle { padding-right: 0; }
-  .stats-grid { grid-template-columns: repeat(2, 1fr); }
-  .toast-container { right: 12px; left: 12px; bottom: 12px; }
-  .toast { max-width: 100%; }
-  .tab-btn { padding: 8px 14px; font-size: 0.78rem; }
-  .session-item { padding: 14px 12px; }
-  .session-title { font-size: 0.85rem; }
-}
+        ::-webkit-scrollbar { width: 10px; }
+        ::-webkit-scrollbar-track { background: var(--dark); }
+        ::-webkit-scrollbar-thumb { background: linear-gradient(var(--accent), var(--accent2)); border-radius: 5px; }
+        .reveal { opacity: 0; transform: translateY(40px); transition: all .8s ease; }
+        .reveal.visible { opacity: 1; transform: translateY(0); }
+        .toast { position: fixed; top: 90px; left: 50%; transform: translateX(-50%) translateY(-20px); background: rgba(0,212,170,.95); color: #fff; padding: 14px 30px; border-radius: 12px; font-size: 14px; font-weight: 600; z-index: 2000; opacity: 0; visibility: hidden; transition: all .4s; box-shadow: 0 10px 40px rgba(0,0,0,.4); }
+        .toast.show { opacity: 1; visibility: visible; transform: translateX(-50%) translateY(0); }
+        .to-top { position: fixed; bottom: 24px; left: 24px; width: 46px; height: 46px; border-radius: 14px; background: linear-gradient(135deg, var(--accent), var(--accent2)); color: var(--dark); border: none; font-size: 18px; cursor: pointer; z-index: 900; opacity: 0; pointer-events: none; transition: opacity .3s; }
+        .to-top.show { opacity: 1; pointer-events: auto; }
 
-::-webkit-scrollbar { width: 10px; }
-::-webkit-scrollbar-track { background: var(--darker); }
-::-webkit-scrollbar-thumb {
-  background: linear-gradient(var(--primary), var(--secondary));
-  border-radius: 10px;
-}
-::-webkit-scrollbar-thumb:hover { background: var(--primary); }
-</style>
+        @media (max-width: 1280px) { .nav-link span.txt { display: none; } .nav-link { padding: 8px 11px; font-size: 14px; } }
+        @media (max-width: 1100px) {
+            .roadmap { grid-template-columns: repeat(3, 1fr); }
+            .lib-cats { grid-template-columns: repeat(3, 1fr); }
+            .projects-grid { grid-template-columns: repeat(2, 1fr); }
+            .hw-timeline { grid-template-columns: repeat(2, 1fr); }
+            .stats { grid-template-columns: repeat(3, 1fr); }
+        }
+        @media (max-width: 900px) {
+            .nav-links { display: none; } #menuToggle { display: flex; }
+            .mobile-menu .nav-link span.txt { display: inline; } .mobile-menu .nav-link { font-size: 13px; }
+            .hero { padding: 40px 16px; } .hero-grid { grid-template-columns: 1fr; gap: 30px; }
+            .hero-title { font-size: 38px; }
+            .section { padding: 70px 16px; } .section-title { font-size: 28px; }
+            .assessment-grid, .rules-grid, .refs-grid, .contact-grid { grid-template-columns: 1fr; }
+            .wiki-shell, .lib-shell { padding: 16px; }
+            .video-grid { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 600px) {
+            .bismillah-text { font-size: 16px; } .bismillah-sub { font-size: 11px; }
+            .top-nav { padding: 0 15px; height: 60px; }
+            .logo-text h1 { font-size: 13px; } .logo-text p { display: none; }
+            .hero-title { font-size: 30px; } .hero-subtitle { font-size: 15px; }
+            .euler .eq { font-size: 19px; }
+            .stats { grid-template-columns: repeat(2, 1fr); } .stat .num { font-size: 22px; }
+            .roadmap { grid-template-columns: 1fr 1fr; gap: 10px; }
+            .lib-cats { grid-template-columns: 1fr 1fr; }
+            .projects-grid, .hw-timeline { grid-template-columns: 1fr; }
+            .section-title { font-size: 23px; }
+            .wiki-grid { grid-template-columns: 1fr; }
+            .lib-group-head { flex-wrap: wrap; } .lib-group-head .gm { margin-right: 40px; }
+            .ref-item { flex-direction: column; align-items: flex-start; }
+            .syllabus-table { min-width: 0; }
+            .syllabus-table thead { display: none; }
+            .syllabus-table tr { display: grid; grid-template-columns: auto 1fr; gap: 6px 10px; padding: 12px; border-bottom: 1px solid rgba(255,255,255,.06); }
+            .syllabus-table td { border: none; padding: 0; }
+            .syllabus-table td.c-links { grid-column: 1 / -1; }
+            .syllabus-table tr.phase-row { display: block; padding: 0; }
+            .syllabus-table tr.phase-row td { display: block; }
+        }
+    </style>
 </head>
 <body>
 
-<canvas id="bgCanvas"></canvas>
-<div class="glow-orb orb1"></div>
-<div class="glow-orb orb2"></div>
-<div class="glow-orb orb3"></div>
-
-<div class="progress-bar-top" id="progressBar"></div>
-
-<div class="top-controls">
-  <button class="ctrl-btn" id="soundToggle" title="صدا"><i class="fas fa-volume-up"></i></button>
-  <button class="ctrl-btn" id="musicToggle" title="موسیقی"><i class="fas fa-music"></i></button>
-  <button class="ctrl-btn" id="themeToggle" title="حالت روشن/تاریک"><i class="fas fa-moon"></i></button>
-  <button class="ctrl-btn" id="fullscreenToggle" title="تمام‌صفحه"><i class="fas fa-expand"></i></button>
-</div>
-
-<div class="bismillah">بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِیم</div>
-<div class="hoval-khallaq">هُوَ الخَلّاقُ العَلیم</div>
-<div class="divider-ornament"><i class="fas fa-star"></i></div>
-
-<div class="euler-hero">
-  <div class="euler-label">Euler's Identity</div>
-  <div class="euler-formula">e<sup>iπ</sup> + 1 = 0</div>
-  <div class="euler-caption"><i class="fas fa-infinity"></i> زیباترین رابطه ریاضیات</div>
-</div>
-
-<header class="main-header">
-  <div class="course-icon"><i class="fas fa-square-root-variable"></i></div>
-  <h1 class="course-title">ریاضیات مهندسی پیشرفته</h1>
-  <p class="course-subtitle">کارشناسی ارشد مکاترونیک — دانشکده فنی و مهندسی</p>
-  <p class="instructor-name">مدرس: دکتر مسعود گوهری منش</p>
-  <p class="instructor-title">دانشیار گروه مهندسی مکانیک — دانشگاه تربت حیدریه</p>
-  <div class="semester-badge">
-    <i class="fas fa-calendar-alt"></i>
-    نیمسال اول ۱۴۰۵–۱۴۰۶
-  </div>
-</header>
-
-<div class="tabs-container">
-  <button class="tab-btn active" data-tab="tab-overview"><i class="fas fa-home"></i> نمای کلی</button>
-  <button class="tab-btn" data-tab="tab-sessions"><i class="fas fa-list-ol"></i> جلسات</button>
-  <button class="tab-btn" data-tab="tab-syllabus"><i class="fas fa-scroll"></i> سیلابس</button>
-  <button class="tab-btn" data-tab="tab-grading"><i class="fas fa-chart-pie"></i> ارزشیابی</button>
-  <button class="tab-btn" data-tab="tab-projects"><i class="fas fa-diagram-project"></i> پروژه‌ها</button>
-  <button class="tab-btn" data-tab="tab-homeworks"><i class="fas fa-pencil"></i> تمرین‌ها</button>
-  <button class="tab-btn" data-tab="tab-tutorials"><i class="fas fa-video"></i> آموزش‌ها</button>
-  <button class="tab-btn" data-tab="tab-references"><i class="fas fa-book"></i> مراجع</button>
-  <button class="tab-btn" data-tab="tab-rules"><i class="fas fa-gavel"></i> قوانین</button>
-  <button class="tab-btn" data-tab="tab-contact"><i class="fas fa-address-card"></i> تماس</button>
-</div>
-
-<!-- ══════════ تب ۱: نمای کلی ══════════ -->
-<div class="tab-content active" id="tab-overview">
-  <div class="stats-grid reveal">
-    <div class="stat-card">
-      <div class="stat-icon"><i class="fas fa-book-open"></i></div>
-      <div class="stat-number">۲۴</div>
-      <div class="stat-label">جلسه آموزشی</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-icon"><i class="fas fa-layer-group"></i></div>
-      <div class="stat-number">۶</div>
-      <div class="stat-label">فاز موضوعی</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-icon"><i class="fas fa-diagram-project"></i></div>
-      <div class="stat-number">۶</div>
-      <div class="stat-label">موضوع پروژه</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-icon"><i class="fas fa-star"></i></div>
-      <div class="stat-number">۲۰</div>
-      <div class="stat-label">نمره نهایی</div>
-    </div>
-  </div>
-
-  <section class="section">
-    <h2 class="section-title"><i class="fas fa-route"></i> نقشه راه دوره</h2>
-    <p class="section-subtitle">شش فاز پیوسته از مبانی فوریه تا مقاله IEEE</p>
-
-    <div class="phases-grid">
-      <div class="phase-card reveal" style="--phase-color: var(--phase1)" onclick="switchTab('tab-sessions')">
-        <div class="phase-number">۱</div>
-        <div class="phase-name">بازیابی فوریه و مبانی</div>
-        <div class="phase-desc">سری فوریه، تبدیل فوریه، FFT، فضای برداری، مقدار ویژه، SVD</div>
-        <div class="phase-sessions"><i class="fas fa-clock"></i> جلسات ۱ تا ۴</div>
-      </div>
-      <div class="phase-card reveal" style="--phase-color: var(--phase2)" onclick="switchTab('tab-sessions')">
-        <div class="phase-number">۲</div>
-        <div class="phase-name">PDE های کلاسیک</div>
-        <div class="phase-desc">دسته‌بندی PDE، معادله گرما، موج، لاپلاس و پواسون</div>
-        <div class="phase-sessions"><i class="fas fa-clock"></i> جلسات ۵ تا ۸</div>
-      </div>
-      <div class="phase-card reveal" style="--phase-color: var(--phase3)" onclick="switchTab('tab-sessions')">
-        <div class="phase-number">۳</div>
-        <div class="phase-name">تیر، نانو انبرک و ارتعاشات</div>
-        <div class="phase-desc">تیر اویلر-برنولی، ارتعاشات، نانو انبرک، پایداری و pull-in</div>
-        <div class="phase-sessions"><i class="fas fa-clock"></i> جلسات ۹ تا ۱۲</div>
-      </div>
-      <div class="phase-card reveal" style="--phase-color: var(--phase4)" onclick="switchTab('tab-sessions')">
-        <div class="phase-number">۴</div>
-        <div class="phase-name">Perturbation و روش‌های عددی</div>
-        <div class="phase-desc">اختلال منظم، چند مقیاسی، Lindstedt-Poincaré، تفاضل محدود، FEM</div>
-        <div class="phase-sessions"><i class="fas fa-clock"></i> جلسات ۱۳ تا ۱۶</div>
-      </div>
-      <div class="phase-card reveal" style="--phase-color: var(--phase5)" onclick="switchTab('tab-sessions')">
-        <div class="phase-number">۵</div>
-        <div class="phase-name">یادگیری ماشین و PINN</div>
-        <div class="phase-desc">مقدمه ML، شبکه عصبی، backpropagation، PINN، پیاده‌سازی PyTorch</div>
-        <div class="phase-sessions"><i class="fas fa-clock"></i> جلسات ۱۷ تا ۲۰</div>
-      </div>
-      <div class="phase-card reveal" style="--phase-color: var(--phase6)" onclick="switchTab('tab-sessions')">
-        <div class="phase-number">۶</div>
-        <div class="phase-name">بهینه‌سازی و مقاله IEEE</div>
-        <div class="phase-desc">بهینه‌سازی بدون قید، با قید، تکاملی، کارگاه نگارش مقاله</div>
-        <div class="phase-sessions"><i class="fas fa-clock"></i> جلسات ۲۱ تا ۲۴</div>
-      </div>
-    </div>
-  </section>
-</div>
-
-<!-- ══════════ تب ۲: جلسات ══════════ -->
-<div class="tab-content" id="tab-sessions">
-  <section class="section">
-    <h2 class="section-title"><i class="fas fa-list-ol"></i> جلسات دوره</h2>
-    <p class="section-subtitle">۲۴ جلسه تعاملی — روی هر جلسه کلیک کنید</p>
-
-    <div class="session-filters" id="sessionFilters" style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:20px;">
-      <button class="filter-btn active" data-filter="all">همه</button>
-      <button class="filter-btn" data-filter="1">فاز ۱</button>
-      <button class="filter-btn" data-filter="2">فاز ۲</button>
-      <button class="filter-btn" data-filter="3">فاز ۳</button>
-      <button class="filter-btn" data-filter="4">فاز ۴</button>
-      <button class="filter-btn" data-filter="5">فاز ۵</button>
-      <button class="filter-btn" data-filter="6">فاز ۶</button>
+    <div class="bismillah-bar">
+        <div class="bismillah-text">بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِیم</div>
+        <div class="bismillah-sub">هُوَ الخَلّاقُ العَلیم</div>
     </div>
 
-    <div class="sessions-list" id="sessionsList"></div>
-  </section>
-</div>
+    <div class="bubble bubble-1"></div><div class="bubble bubble-2"></div>
+    <div class="bubble bubble-3"></div><div class="bubble bubble-4"></div>
+    <div class="math-rain" id="mathRain" aria-hidden="true"></div>
 
-<!-- ══════════ تب ۳: سیلابس ══════════ -->
-<div class="tab-content" id="tab-syllabus">
-  <section class="section">
-    <h2 class="section-title"><i class="fas fa-scroll"></i> سیلابس کامل درس</h2>
-    <p class="section-subtitle">۶ فاز موضوعی — ۲۴ جلسه ۹۰ دقیقه‌ای</p>
+    <nav class="top-nav">
+        <a href="#hero" class="logo-area">
+            <div class="logo-icon">∂</div>
+            <div class="logo-text">
+                <h1>ریاضیات مهندسی پیشرفته</h1>
+                <p>دانشگاه تربت حیدریه</p>
+            </div>
+        </a>
+        <div class="nav-links" id="navLinks">
+            <a href="#hero" class="nav-link" title="خانه"><i class="fas fa-home"></i> <span class="txt">خانه</span></a>
+            <a href="#roadmap" class="nav-link" title="نقشه راه"><i class="fas fa-route"></i> <span class="txt">نقشه راه</span></a>
+            <a href="#syllabus" class="nav-link" title="جلسات"><i class="fas fa-list"></i> <span class="txt">جلسات</span></a>
+            <a href="#assessment" class="nav-link" title="ارزشیابی و قوانین"><i class="fas fa-scale-balanced"></i> <span class="txt">ارزشیابی</span></a>
+            <a href="#projects" class="nav-link" title="پروژه‌ها"><i class="fas fa-cube"></i> <span class="txt">پروژه‌ها</span></a>
+            <a href="#homeworks" class="nav-link" title="تمرین‌ها"><i class="fas fa-pen"></i> <span class="txt">تمرین‌ها</span></a>
+            <a href="#tutorials" class="nav-link" title="آموزش‌های ویدیویی"><i class="fas fa-circle-play"></i> <span class="txt">آموزش‌ها</span></a>
+            <a href="#encyclopedia" class="nav-link" title="دائرةالمعارف"><i class="fas fa-book-atlas"></i> <span class="txt">دائرةالمعارف</span></a>
+            <a href="#references" class="nav-link" title="مراجع"><i class="fas fa-book"></i> <span class="txt">مراجع</span></a>
+            <a href="#contact" class="nav-link" title="تماس"><i class="fas fa-envelope"></i> <span class="txt">تماس</span></a>
+        </div>
+        <div class="nav-controls">
+            <button class="ctrl-btn" id="menuToggle" title="منو" aria-label="منو"><i class="fas fa-bars"></i></button>
+            <button class="ctrl-btn" id="soundToggle" title="افکت صوتی" aria-label="افکت صوتی"><i class="fas fa-volume-up"></i></button>
+            <button class="ctrl-btn" id="fullscreenToggle" title="تمام‌صفحه" aria-label="تمام‌صفحه"><i class="fas fa-expand"></i></button>
+        </div>
+    </nav>
+    <div class="mobile-menu" id="mobileMenu"></div>
 
-    <div class="rules-container">
-      <div class="rule-item">
-        <div class="rule-icon" style="background: rgba(30,60,114,0.3); color: var(--primary);"><i class="fas fa-1"></i></div>
-        <div class="rule-content">
-          <h4>فاز ۱: بازیابی فوریه و مبانی (جلسات ۱–۴)</h4>
-          <ul>
-            <li>جلسه ۱: آنالیز فوریه — سری فوریه، تقارن‌ها، پارسوال، انتگرال فوریه</li>
-            <li>جلسه ۲: FFT، فیلتر و کانولوشن</li>
-            <li>جلسه ۳: فضای برداری، پایه و تبدیل خطی</li>
-            <li>جلسه ۴: مقدار ویژه، SVD و شبه‌معکوس</li>
-          </ul>
-        </div>
-      </div>
-      <div class="rule-item">
-        <div class="rule-icon" style="background: rgba(30,111,92,0.3); color: var(--primary);"><i class="fas fa-2"></i></div>
-        <div class="rule-content">
-          <h4>فاز ۲: PDE های کلاسیک (جلسات ۵–۸)</h4>
-          <ul>
-            <li>جلسه ۵: دسته‌بندی و آشنایی با PDE</li>
-            <li>جلسه ۶: معادله گرما و جداسازی متغیرها</li>
-            <li>جلسه ۷: معادله موج و حل دالامبر</li>
-            <li>جلسه ۸: معادله لاپلاس و پواسون</li>
-          </ul>
-        </div>
-      </div>
-      <div class="rule-item">
-        <div class="rule-icon" style="background: rgba(184,107,30,0.3); color: var(--gold);"><i class="fas fa-3"></i></div>
-        <div class="rule-content">
-          <h4>فاز ۳: تیر، نانو انبرک و ارتعاشات (جلسات ۹–۱۲)</h4>
-          <ul>
-            <li>جلسه ۹: معادله تیر اویلر-برنولی</li>
-            <li>جلسه ۱۰: ارتعاشات تیر و فرکانس‌های طبیعی</li>
-            <li>جلسه ۱۱: نانو انبرک (Nano-cantilever) و نیروهای بین‌مولکولی</li>
-            <li>جلسه ۱۲: پایداری و پدیده Pull-in</li>
-          </ul>
-        </div>
-      </div>
-      <div class="rule-item">
-        <div class="rule-icon" style="background: rgba(106,44,112,0.3); color: var(--tertiary);"><i class="fas fa-4"></i></div>
-        <div class="rule-content">
-          <h4>فاز ۴: Perturbation و روش‌های عددی (جلسات ۱۳–۱۶)</h4>
-          <ul>
-            <li>جلسه ۱۳: مقدمه Perturbation</li>
-            <li>جلسه ۱۴: چند مقیاسی و Lindstedt-Poincaré</li>
-            <li>جلسه ۱۵: تفاضل محدود و رانگ-کوتا</li>
-            <li>جلسه ۱۶: روش‌های طیفی و FEM مقدماتی</li>
-          </ul>
-        </div>
-      </div>
-      <div class="rule-item">
-        <div class="rule-icon" style="background: rgba(179,57,57,0.3); color: var(--danger);"><i class="fas fa-5"></i></div>
-        <div class="rule-content">
-          <h4>فاز ۵: یادگیری ماشین و PINN (جلسات ۱۷–۲۰)</h4>
-          <ul>
-            <li>جلسه ۱۷: مقدمه یادگیری ماشین</li>
-            <li>جلسه ۱۸: شبکه عصبی و backpropagation</li>
-            <li>جلسه ۱۹: PINN — فرمول‌بندی و loss فیزیکی</li>
-            <li>جلسه ۲۰: پیاده‌سازی PINN در PyTorch</li>
-          </ul>
-        </div>
-      </div>
-      <div class="rule-item">
-        <div class="rule-icon" style="background: rgba(42,82,152,0.3); color: var(--secondary);"><i class="fas fa-6"></i></div>
-        <div class="rule-content">
-          <h4>فاز ۶: بهینه‌سازی و مقاله IEEE (جلسات ۲۱–۲۴)</h4>
-          <ul>
-            <li>جلسه ۲۱: بهینه‌سازی بدون قید و Adam</li>
-            <li>جلسه ۲۲: بهینه‌سازی با قید، لاگرانژ، KKT</li>
-            <li>جلسه ۲۳: بهینه‌سازی تکاملی: GA و PSO</li>
-            <li>جلسه ۲۴: کارگاه مقاله IEEE و جمع‌بندی</li>
-          </ul>
-        </div>
-      </div>
-    </div>
-  </section>
-</div>
+    <div class="toast" id="toast">پیام</div>
+    <button class="to-top" id="toTop" aria-label="بالای صفحه"><i class="fas fa-arrow-up"></i></button>
 
-<!-- ══════════ تب ۴: ارزشیابی ══════════ -->
-<div class="tab-content" id="tab-grading">
-  <section class="section">
-    <h2 class="section-title"><i class="fas fa-chart-pie"></i> نحوه ارزشیابی</h2>
-    <p class="section-subtitle">مجموع نمره: ۲۰ — تقسیم‌بندی شفاف</p>
+    <!-- ===== Hero ===== -->
+    <section class="hero" id="hero">
+        <div class="hero-grid">
+            <div>
+                <div class="euler">
+                    <span class="eq">e<sup>iπ</sup> + 1 = 0</span>
+                    <small>اتحاد اویلر — زیباترین رابطه ریاضیات</small>
+                </div>
+                <h1 class="hero-title">ریاضیات مهندسی پیشرفته</h1>
+                <p class="hero-subtitle">از سری فوریه و PDE تا نانو انبرک، Perturbation، شبکه‌های عصبی فیزیک‌آگاه (PINN) و بهینه‌سازی</p>
+                <p class="hero-meta">
+                    کارشناسی ارشد مکاترونیک — دانشکده فنی و مهندسی<br>
+                    مدرس: <strong>دکتر مسعود گوهری‌منش</strong>، دانشیار گروه مهندسی مکانیک — نیمسال اول ۱۴۰۵–۱۴۰۶
+                </p>
+                <div class="hero-cta">
+                    <a href="#syllabus" class="btn btn-primary"><i class="fas fa-play"></i> جلسات و پادکست‌ها</a>
+                    <a href="#tutorials" class="btn btn-ghost"><i class="fas fa-circle-play"></i> کتابخانه ویدیویی</a>
+                    <a href="#encyclopedia" class="btn btn-ghost"><i class="fas fa-book-atlas"></i> دائرةالمعارف</a>
+                </div>
+            </div>
 
-    <div class="grade-grid">
-      <div class="grade-card" style="--grade-color: var(--tertiary);">
-        <div class="grade-icon"><i class="fas fa-file-signature"></i></div>
-        <div class="grade-value">۶</div>
-        <div class="grade-label">پایان‌ترم</div>
-        <div class="grade-desc">آزمون کتبی جامع از کل مباحث</div>
-      </div>
-      <div class="grade-card" style="--grade-color: var(--primary);">
-        <div class="grade-icon"><i class="fas fa-pencil"></i></div>
-        <div class="grade-value">۸</div>
-        <div class="grade-label">تمرین‌ها</div>
-        <div class="grade-desc">۸ تمرین × ۱ نمره</div>
-      </div>
-      <div class="grade-card" style="--grade-color: var(--gold);">
-        <div class="grade-icon"><i class="fas fa-diagram-project"></i></div>
-        <div class="grade-value">۶</div>
-        <div class="grade-label">پروژه پایانی</div>
-        <div class="grade-desc">انفرادی + مقاله IEEE + ارائه</div>
-      </div>
-    </div>
+            <div class="fourier-card">
+                <div class="fc-head">
+                    <div>
+                        <h3><i class="fas fa-wave-square"></i> آزمایشگاه زنده سری فوریه</h3>
+                        <div class="fc-sub">تعداد جملات را تغییر دهید و همگرایی (و پدیده گیبس) را ببینید</div>
+                    </div>
+                    <div class="wave-switch" id="waveSwitch">
+                        <button class="active" data-w="square">مربعی</button>
+                        <button data-w="saw">دندانه‌اره‌ای</button>
+                        <button data-w="tri">مثلثی</button>
+                    </div>
+                </div>
+                <canvas id="fourierCanvas" aria-label="نمودار تقریب سری فوریه"></canvas>
+                <div class="fc-controls">
+                    <label for="nTerms">تعداد هارمونیک‌ها</label>
+                    <input type="range" id="nTerms" min="1" max="40" value="5">
+                    <span class="nval" id="nVal">۵</span>
+                </div>
+                <div class="fc-formula" id="fFormula"></div>
+            </div>
+        </div>
 
-    <div class="rules-container" style="margin-top: 24px;">
-      <div class="rule-item">
-        <div class="rule-icon"><i class="fas fa-file-word"></i></div>
-        <div class="rule-content">
-          <h4>فرمت تحویل تمرین‌ها</h4>
-          <p>تمامی تمرین‌ها باید <strong>تایپ‌شده در Word</strong> و با فرمت استاندارد ارسال شوند. تمرین دست‌نویس پذیرفته نمی‌شود.</p>
+        <div class="stats">
+            <div class="stat"><i class="fas fa-chalkboard-teacher"></i><div class="num">۲۴</div><div class="lbl">جلسه ۹۰ دقیقه‌ای</div></div>
+            <div class="stat"><i class="fas fa-podcast"></i><div class="num">۲۴</div><div class="lbl">پادکست / ارائه</div></div>
+            <div class="stat"><i class="fas fa-circle-play"></i><div class="num" id="statVideos">—</div><div class="lbl">ویدیوی آموزشی</div></div>
+            <div class="stat"><i class="fas fa-cube"></i><div class="num">۶</div><div class="lbl">موضوع پروژه</div></div>
+            <div class="stat"><i class="fas fa-book-atlas"></i><div class="num" id="statWiki">—</div><div class="lbl">مدخل دائرةالمعارف</div></div>
         </div>
-      </div>
-      <div class="rule-item">
-        <div class="rule-icon"><i class="fas fa-envelope"></i></div>
-        <div class="rule-content">
-          <h4>ایمیل ارسال</h4>
-          <p>تمرین‌ها فقط به آدرس زیر ارسال شوند:</p>
-          <div class="email-box" onclick="copyEmail()">
-            <i class="fas fa-copy"></i>
-            m.goharimanesh@gmail.com
-          </div>
-        </div>
-      </div>
-      <div class="rule-item">
-        <div class="rule-icon purple"><i class="fas fa-tag"></i></div>
-        <div class="rule-content">
-          <h4>فرمت Subject ایمیل (الزامی)</h4>
-          <p>Subject ایمیل باید دقیقاً به این شکل باشد:</p>
-          <code class="subject-format">[Advanced Engineering Mathematics] HW## - نام و نام خانوادگی - شماره دانشجویی</code>
-        </div>
-      </div>
-      <div class="rule-item">
-        <div class="rule-icon"><i class="fas fa-clock"></i></div>
-        <div class="rule-content">
-          <h4>مهلت تحویل تمرین‌ها</h4>
-          <p>هر تمرین تا <strong>یک هفته</strong> پس از جلسه مربوطه فرصت تحویل دارد. تأخیر موجب کسر نمره می‌شود.</p>
-        </div>
-      </div>
-      <div class="rule-item">
-        <div class="rule-icon gold"><i class="fas fa-user"></i></div>
-        <div class="rule-content">
-          <h4>پروژه پایانی — انفرادی</h4>
-          <p>پروژه پایانی <strong>کاملاً انفرادی</strong> است و هر دانشجو موظف است به‌طور مستقل پروژه خود را انجام دهد.</p>
-        </div>
-      </div>
-      <div class="rule-item">
-        <div class="rule-icon danger"><i class="fas fa-calendar-xmark"></i></div>
-        <div class="rule-content">
-          <h4>مهلت گزارش نهایی پروژه (بسیار مهم)</h4>
-          <p>گزارش نهایی پروژه در قالب مقاله <strong>باید پیش از پایان‌ترم ارسال شود</strong>. در صورت عدم ارسال تا این مهلت، پروژه <strong>قابل قبول نخواهد بود</strong> و نمره‌ای تعلق نمی‌گیرد.</p>
-        </div>
-      </div>
-      <div class="rule-item">
-        <div class="rule-icon purple"><i class="fas fa-file-lines"></i></div>
-        <div class="rule-content">
-          <h4>ساختار گزارش نهایی (مقاله)</h4>
-          <p>گزارش نهایی باید شامل بخش‌های زیر باشد:</p>
-          <ul>
-            <li>✅ <strong>روش کار</strong> (Methodology)</li>
-            <li>✅ <strong>استخراج نتایج</strong> (Results)</li>
-            <li>✅ <strong>مقایسه</strong> (Comparison)</li>
-            <li>✅ <strong>نتیجه‌گیری نهایی</strong> (Conclusion)</li>
-            <li>❌ <strong>مرور پیشینه پژوهش</strong> — <strong>نیاز نیست</strong></li>
-          </ul>
-        </div>
-      </div>
-      <div class="rule-item">
-        <div class="rule-icon"><i class="fab fa-python"></i></div>
-        <div class="rule-content">
-          <h4>زبان برنامه‌نویسی پروژه</h4>
-          <p>تمام کدهای پروژه باید در <strong>Python</strong> و در <strong>Google Colab</strong> نوشته شوند. MATLAB ممنوع است.</p>
-        </div>
-      </div>
-      <div class="rule-item">
-        <div class="rule-icon gold"><i class="fas fa-image"></i></div>
-        <div class="rule-content">
-          <h4>کیفیت تصاویر خروجی</h4>
-          <ul>
-            <li>✅ حداقل <strong>۶۰۰ DPI</strong></li>
-            <li>✅ فرمت <strong>PNG</strong></li>
-            <li>✅ قابلیت ذخیره‌سازی و بازیابی</li>
-          </ul>
-        </div>
-      </div>
-    </div>
-  </section>
-</div>
+    </section>
 
-<!-- ══════════ تب ۵: پروژه‌ها ══════════ -->
-<div class="tab-content" id="tab-projects">
-  <section class="section">
-    <h2 class="section-title"><i class="fas fa-diagram-project"></i> پروژه‌های پایانی</h2>
-    <p class="section-subtitle">۶ موضوع زنجیره‌ای — انفرادی — حل کلاسیک + Perturbation + عددی + PINN + مقاله IEEE</p>
-    <div class="phases-grid" id="projectsGrid"></div>
-  </section>
-</div>
-
-<!-- ══════════ تب ۶: تمرین‌ها ══════════ -->
-<div class="tab-content" id="tab-homeworks">
-  <section class="section">
-    <h2 class="section-title"><i class="fas fa-pencil"></i> تمرین‌های کلاسی</h2>
-    <p class="section-subtitle">۸ تمرین در طول ترم — هر یک ۱ نمره</p>
-
-    <div class="homework-list" id="homeworksList"></div>
-
-    <div class="email-banner" style="margin-top: 24px; padding: 16px; border-radius: 14px; background: linear-gradient(135deg, rgba(0, 212, 170, 0.1), rgba(168, 85, 247, 0.1)); border: 1px dashed rgba(0, 212, 170, 0.4); text-align: center;">
-      <p style="font-size: 0.85rem; color: var(--text); margin-bottom: 6px;">
-        <i class="fas fa-envelope" style="color: var(--primary);"></i>
-        ارسال همه تمرین‌ها به ایمیل:
-      </p>
-      <code style="display: inline-block; padding: 6px 14px; border-radius: 8px; background: rgba(0, 0, 0, 0.4); color: var(--primary); font-family: 'Courier New', monospace; font-size: 0.82rem; direction: ltr;">
-        m.goharimanesh@gmail.com
-      </code>
-      <p style="margin-top: 10px; font-size: 0.8rem;">Subject الزامی:</p>
-      <code style="display: inline-block; padding: 6px 14px; border-radius: 8px; background: rgba(168, 85, 247, 0.15); color: var(--tertiary); font-family: 'Courier New', monospace; font-size: 0.78rem; direction: ltr; margin-top: 6px;">
-        [Advanced Engineering Mathematics] HW## - نام - شماره دانشجویی
-      </code>
-    </div>
-  </section>
-</div>
-
-<!-- ══════════ تب ۷: آموزش‌ها ══════════ -->
-<div class="tab-content" id="tab-tutorials">
-  <section class="section">
-    <h2 class="section-title"><i class="fas fa-video"></i> آموزش‌های مکمل</h2>
-    <p class="section-subtitle">ویدیوهای آموزشی از کانال آپارات</p>
-
-    <div class="rules-container">
-      <div class="rule-item">
-        <div class="rule-icon"><i class="fas fa-graduation-cap"></i></div>
-        <div class="rule-content">
-          <h4>آموزش مقدماتی متلب — ۱۴ جلسه</h4>
-          <p>از صفر تا صد با محیط متلب. لینک‌ها در پوشه <code style="background: rgba(0,0,0,0.3); padding: 2px 8px; border-radius: 5px;">assets/matlab/</code></p>
+    <!-- ===== نقشه راه ===== -->
+    <section class="section" id="roadmap">
+        <div class="container">
+            <div class="section-header reveal">
+                <span class="section-tag"><i class="fas fa-route"></i> نقشه راه دوره</span>
+                <h2 class="section-title">شش فاز پیوسته</h2>
+                <p class="section-subtitle">از مبانی فوریه تا مقاله IEEE — روی هر فاز کلیک کنید تا جلسات آن نمایش داده شود</p>
+            </div>
+            <div class="roadmap reveal" id="roadmapGrid"></div>
         </div>
-      </div>
-      <div class="rule-item">
-        <div class="rule-icon purple"><i class="fas fa-table"></i></div>
-        <div class="rule-content">
-          <h4>آموزش ماتریس‌ها در متلب — ۱۵ جلسه</h4>
-          <p>همه چیز درباره ماتریس‌ها در متلب</p>
-        </div>
-      </div>
-      <div class="rule-item">
-        <div class="rule-icon gold"><i class="fas fa-cogs"></i></div>
-        <div class="rule-content">
-          <h4>شبیه‌سازی و مدل‌سازی در متلب — ۱۶ جلسه</h4>
-          <p>از شبیه‌سازی ساده تا سیستم‌های پیچیده</p>
-        </div>
-      </div>
-      <div class="rule-item">
-        <div class="rule-icon" style="background: rgba(236,72,153,0.12); color: var(--pink);"><i class="fab fa-python"></i></div>
-        <div class="rule-content">
-          <h4>آموزش Python + Google Colab</h4>
-          <p>لینک‌ها در پوشه <code style="background: rgba(0,0,0,0.3); padding: 2px 8px; border-radius: 5px;">assets/python/</code></p>
-        </div>
-      </div>
-    </div>
-  </section>
-</div>
+    </section>
 
-<!-- ══════════ تب ۸: مراجع ══════════ -->
-<div class="tab-content" id="tab-references">
-  <section class="section">
-    <h2 class="section-title"><i class="fas fa-book"></i> مراجع و منابع</h2>
-    <p class="section-subtitle">کتاب‌های مرجع، مقالات کلیدی و منابع آنلاین</p>
-    <div class="refs-grid" id="refsGrid"></div>
-  </section>
-</div>
-
-<!-- ══════════ تب ۹: قوانین ══════════ -->
-<div class="tab-content" id="tab-rules">
-  <section class="section">
-    <h2 class="section-title"><i class="fas fa-gavel"></i> قوانین درس</h2>
-    <p class="section-subtitle">لطفاً تمام قوانین را با دقت مطالعه کنید</p>
-
-    <div class="rules-container reveal">
-      <div class="rule-item">
-        <div class="rule-icon"><i class="fas fa-users"></i></div>
-        <div class="rule-content">
-          <h4>حضور در کلاس</h4>
-          <p>حضور منظم در کلاس توصیه می‌شود. غیبت بیش از ۳ جلسه بدون عذر موجه موجب محرومیت از آزمون می‌شود.</p>
+    <!-- ===== جلسات ===== -->
+    <section class="section" id="syllabus">
+        <div class="container">
+            <div class="section-header reveal">
+                <span class="section-tag"><i class="fas fa-list"></i> سیلابس و جلسات</span>
+                <h2 class="section-title">۲۴ جلسه آموزشی</h2>
+                <p class="section-subtitle">هر جلسه شامل محتوای درس و یک پادکست/ارائه مجزا؛ ویدیوهای آپارات مرتبط با هر جلسه هم مشخص شده‌اند</p>
+            </div>
+            <div class="syllabus-toolbar reveal" id="phaseFilter"></div>
+            <div class="table-wrap reveal">
+                <table class="syllabus-table">
+                    <thead>
+                        <tr><th style="width:80px">جلسه</th><th>موضوع</th><th style="width:270px">محتوا</th></tr>
+                    </thead>
+                    <tbody id="syllabusBody"></tbody>
+                </table>
+            </div>
+            <p class="syllabus-note"><i class="fas fa-folder-tree"></i> ساختار پوشه‌ها:
+                <span class="ltr">sessions/session-XX/index.html</span> و
+                <span class="ltr">sessions/session-XX/podcast-XX/index.html</span></p>
         </div>
-      </div>
-      <div class="rule-item">
-        <div class="rule-icon gold"><i class="fas fa-handshake"></i></div>
-        <div class="rule-content">
-          <h4>اصالت کار</h4>
-          <p>همه تمرین‌ها و پروژه‌ها باید کار <strong>اصیل دانشجو</strong> باشد. کپی‌برداری موجب نمره صفر و ارجاع به کمیته انتظامی می‌شود.</p>
-        </div>
-      </div>
-      <div class="rule-item">
-        <div class="rule-icon purple"><i class="fas fa-question-circle"></i></div>
-        <div class="rule-content">
-          <h4>سوالات</h4>
-          <p>سوالات درسی از طریق ایمیل یا در ساعات مشاوره (دوشنبه‌ها ۸–۱۰) پاسخ داده می‌شوند.</p>
-        </div>
-      </div>
-      <div class="rule-item">
-        <div class="rule-icon danger"><i class="fas fa-exclamation-triangle"></i></div>
-        <div class="rule-content">
-          <h4>مهلت‌ها</h4>
-          <p>مهلت تحویل تمرین‌ها و پروژه <strong>غیرقابل تمدید</strong> است. تأخیر موجب کسر ۱۰٪ نمره به ازای هر روز می‌شود.</p>
-        </div>
-      </div>
-      <div class="rule-item">
-        <div class="rule-icon"><i class="fas fa-file-alt"></i></div>
-        <div class="rule-content">
-          <h4>استاندارد تحویل</h4>
-          <p>همه مدارک باید با فرمت PDF و با رعایت استانداردهای نگارشی ارسال شوند.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-</div>
+    </section>
 
-<!-- ══════════ تب ۱۰: تماس ══════════ -->
-<div class="tab-content" id="tab-contact">
-  <section class="section">
-    <h2 class="section-title"><i class="fas fa-address-card"></i> تماس با استاد</h2>
-    <p class="section-subtitle">ساعت پاسخگویی: دوشنبه‌ها ۸–۱۰</p>
+    <!-- ===== ارزشیابی و قوانین ===== -->
+    <section class="section" id="assessment">
+        <div class="container">
+            <div class="section-header reveal">
+                <span class="section-tag"><i class="fas fa-scale-balanced"></i> ارزشیابی و قوانین</span>
+                <h2 class="section-title">نحوه ارزشیابی</h2>
+                <p class="section-subtitle">مجموع ۲۰ نمره — تقسیم‌بندی شفاف</p>
+            </div>
+            <div class="assessment-grid">
+                <div class="chart-container reveal"><canvas id="assessmentChart"></canvas></div>
+                <div class="assessment-list reveal">
+                    <div class="assessment-item">
+                        <div class="assessment-icon" style="background:rgba(255,183,0,.15);color:var(--accent)"><i class="fas fa-file-alt"></i></div>
+                        <div class="assessment-info"><h4>آزمون پایان‌ترم</h4><p>آزمون کتبی جامع از کل مباحث</p></div>
+                        <div class="assessment-score">۶</div>
+                    </div>
+                    <div class="assessment-item">
+                        <div class="assessment-icon" style="background:rgba(168,85,247,.15);color:var(--purple)"><i class="fas fa-pen"></i></div>
+                        <div class="assessment-info"><h4>تمرین‌ها</h4><p>۸ تمرین × ۱ نمره — تایپ‌شده در Word</p></div>
+                        <div class="assessment-score">۸</div>
+                    </div>
+                    <div class="assessment-item">
+                        <div class="assessment-icon" style="background:rgba(0,212,170,.15);color:var(--success)"><i class="fas fa-file-lines"></i></div>
+                        <div class="assessment-info"><h4>پروژه پایانی</h4><p>انفرادی + گزارش در قالب مقاله IEEE + ارائه</p></div>
+                        <div class="assessment-score">۶</div>
+                    </div>
+                </div>
+            </div>
 
-    <div class="contact-grid reveal">
-      <a class="contact-card" href="mailto:m.goharimanesh@gmail.com">
-        <div class="contact-icon"><i class="fas fa-envelope"></i></div>
-        <div class="contact-label">ایمیل</div>
-        <div class="contact-value">m.goharimanesh@gmail.com</div>
-      </a>
-      <div class="contact-card">
-        <div class="contact-icon"><i class="fas fa-clock"></i></div>
-        <div class="contact-label">ساعت مشاوره</div>
-        <div class="contact-value">دوشنبه‌ها ۸–۱۰</div>
-      </div>
-      <div class="contact-card">
-        <div class="contact-icon"><i class="fas fa-building"></i></div>
-        <div class="contact-label">دانشکده</div>
-        <div class="contact-value">فنی و مهندسی</div>
-      </div>
-      <div class="contact-card">
-        <div class="contact-icon"><i class="fas fa-university"></i></div>
-        <div class="contact-label">دانشگاه</div>
-        <div class="contact-value">دانشگاه تربت حیدریه</div>
-      </div>
-    </div>
-  </section>
-</div>
+            <div class="rules-grid">
+                <div class="rule-card reveal" style="--rc: var(--accent)">
+                    <h4><i class="fas fa-envelope-open-text"></i> ارسال تمرین‌ها</h4>
+                    <p>تمامی تمرین‌ها تایپ‌شده در Word و با فرمت استاندارد ارسال شوند؛ تمرین دست‌نویس پذیرفته نمی‌شود. فقط به آدرس <b class="ltr">m.goharimanesh@gmail.com</b> و با Subject دقیقاً به شکل زیر:</p>
+                    <div class="copy-box"><code id="subjectFmt">[Advanced Engineering Mathematics] HW## - نام و نام خانوادگی - شماره دانشجویی</code><button data-copy="subjectFmt"><i class="fas fa-copy"></i> کپی</button></div>
+                </div>
+                <div class="rule-card reveal" style="--rc: var(--danger)">
+                    <h4><i class="fas fa-hourglass-half"></i> مهلت‌ها</h4>
+                    <ul>
+                        <li>هر تمرین تا یک هفته پس از جلسه مربوطه فرصت تحویل دارد.</li>
+                        <li>مهلت‌ها غیرقابل تمدید است؛ تأخیر موجب کسر ۱۰٪ نمره به ازای هر روز می‌شود.</li>
+                        <li>گزارش نهایی پروژه در قالب مقاله باید <b>پیش از پایان‌ترم</b> ارسال شود؛ در غیر این صورت نمره‌ای تعلق نمی‌گیرد.</li>
+                    </ul>
+                </div>
+                <div class="rule-card reveal" style="--rc: var(--success)">
+                    <h4><i class="fas fa-file-signature"></i> ساختار گزارش نهایی (مقاله)</h4>
+                    <ul>
+                        <li class="ok">روش کار (Methodology)</li>
+                        <li class="ok">استخراج نتایج (Results)</li>
+                        <li class="ok">مقایسه (Comparison)</li>
+                        <li class="ok">نتیجه‌گیری نهایی (Conclusion)</li>
+                        <li class="no">مرور پیشینه پژوهش — نیاز نیست</li>
+                    </ul>
+                </div>
+                <div class="rule-card reveal" style="--rc: var(--cyan)">
+                    <h4><i class="fab fa-python"></i> زبان برنامه‌نویسی و خروجی‌ها</h4>
+                    <ul>
+                        <li class="ok">تمام کدهای پروژه در Python و در Google Colab</li>
+                        <li class="no">استفاده از MATLAB در پروژه ممنوع است</li>
+                        <li class="ok">تصاویر خروجی با حداقل ۶۰۰ DPI و فرمت PNG</li>
+                        <li class="ok">قابلیت ذخیره‌سازی و بازیابی نتایج</li>
+                    </ul>
+                </div>
+                <div class="rule-card reveal" style="--rc: var(--purple)">
+                    <h4><i class="fas fa-user-check"></i> حضور و اصالت کار</h4>
+                    <ul>
+                        <li>غیبت بیش از ۳ جلسه بدون عذر موجه موجب محرومیت از آزمون می‌شود.</li>
+                        <li>پروژه کاملاً انفرادی است؛ کپی‌برداری موجب نمره صفر و ارجاع به کمیته انتظامی می‌شود.</li>
+                    </ul>
+                </div>
+                <div class="rule-card reveal" style="--rc: var(--pink)">
+                    <h4><i class="fas fa-file-pdf"></i> استاندارد تحویل و پرسش‌ها</h4>
+                    <ul>
+                        <li>همه مدارک با فرمت PDF و با رعایت استانداردهای نگارشی ارسال شوند.</li>
+                        <li>سوالات درسی از طریق ایمیل یا در ساعات مشاوره (دوشنبه‌ها ۸–۱۰) پاسخ داده می‌شوند.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
 
-<footer class="footer">
-  <p>طراحی و توسعه: دکتر مسعود گوهری منش</p>
-  <p style="margin-top: 8px;">دانشیار گروه مهندسی مکانیک — دانشگاه تربت حیدریه</p>
-  <p style="margin-top: 8px;">نیمسال اول ۱۴۰۵–۱۴۰۶ — با<i class="fas fa-heart footer-heart"></i>برای دانشجویان مکاترونیک</p>
-</footer>
+    <!-- ===== پروژه‌ها ===== -->
+    <section class="section" id="projects">
+        <div class="container">
+            <div class="section-header reveal">
+                <span class="section-tag"><i class="fas fa-cube"></i> پروژه‌های پایانی</span>
+                <h2 class="section-title">۶ موضوع زنجیره‌ای — انفرادی</h2>
+                <p class="section-subtitle">هر پروژه یک مسئله فیزیکی را از چهار مسیر حل و در قالب مقاله IEEE گزارش می‌کند</p>
+            </div>
+            <div class="projects-intro reveal">
+                <div class="pipeline">
+                    <span class="step"><i class="fas fa-pen-nib"></i> حل کلاسیک</span><span class="arrow"><i class="fas fa-arrow-left"></i></span>
+                    <span class="step"><i class="fas fa-wave-square"></i> Perturbation</span><span class="arrow"><i class="fas fa-arrow-left"></i></span>
+                    <span class="step"><i class="fas fa-calculator"></i> حل عددی</span><span class="arrow"><i class="fas fa-arrow-left"></i></span>
+                    <span class="step"><i class="fas fa-brain"></i> PINN</span><span class="arrow"><i class="fas fa-arrow-left"></i></span>
+                    <span class="step"><i class="fas fa-file-lines"></i> مقاله IEEE</span>
+                </div>
+            </div>
+            <div class="projects-grid" id="projectsGrid"></div>
+        </div>
+    </section>
 
-<div class="toast-container" id="toastContainer"></div>
+    <!-- ===== تمرین‌ها ===== -->
+    <section class="section" id="homeworks">
+        <div class="container">
+            <div class="section-header reveal">
+                <span class="section-tag"><i class="fas fa-pen"></i> تمرین‌های کلاسی</span>
+                <h2 class="section-title">۸ تمرین در طول ترم</h2>
+                <p class="section-subtitle">هر تمرین ۱ نمره — ارسال به ایمیل درس با Subject استاندارد</p>
+            </div>
+            <div class="hw-timeline" id="hwGrid"></div>
+        </div>
+    </section>
+
+    <!-- ===== کتابخانه ویدیویی ===== -->
+    <section class="section" id="tutorials">
+        <div class="container">
+            <div class="section-header reveal">
+                <span class="section-tag"><i class="fas fa-circle-play"></i> کتابخانه ویدیویی</span>
+                <h2 class="section-title">آموزش‌های ریاضیات، متلب و پایتون</h2>
+                <p class="section-subtitle">گزیده‌ای دسته‌بندی‌شده از آموزش‌های ویدیویی دکتر گوهری‌منش در آپارات، مرتب‌شده به ترتیب یادگیری و مرتبط با جلسات درس</p>
+            </div>
+
+            <div class="lib-shell reveal">
+                <div class="lib-cats" id="libCats"></div>
+                <div class="lib-toolbar">
+                    <div class="lib-search">
+                        <i class="fas fa-search"></i>
+                        <input type="search" id="libSearch" placeholder="جستجو در ویدیوها... (مثلاً پارسوال، ode45، NumPy)" autocomplete="off">
+                    </div>
+                    <div class="lib-sort" id="libSort">
+                        <button class="chip active" data-sort="order"><i class="fas fa-list-ol"></i> ترتیب آموزشی</button>
+                        <button class="chip" data-sort="views"><i class="fas fa-fire"></i> پربازدیدترین</button>
+                    </div>
+                </div>
+                <div id="libIntro"></div>
+                <div id="libBody"></div>
+                <p class="lib-footnote"><i class="fas fa-circle-info"></i> تعداد بازدیدها مربوط به زمان تدوین کتابچه آموزش‌هاست. ویدیوها در آپارات و در زبانه جدید باز می‌شوند.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== دائرةالمعارف ===== -->
+    <section class="section" id="encyclopedia">
+        <div class="container">
+            <div class="section-header reveal">
+                <span class="section-tag"><i class="fas fa-book-atlas"></i> دائرةالمعارف ریاضیات مهندسی</span>
+                <h2 class="section-title">مرجع سریع دانشجوی ارشد</h2>
+                <p class="section-subtitle">واژه‌نامه، فرمول‌نامه، نکات حل مسئله، ابزارهای پایتون، کتاب‌ها و دوره‌های آنلاین، مجلات و پایگاه‌های پژوهشی</p>
+            </div>
+            <div class="wiki-shell reveal">
+                <div class="wiki-search">
+                    <i class="fas fa-search"></i>
+                    <input type="search" id="wikiSearch" placeholder="جستجو در دائرةالمعارف... (فارسی یا انگلیسی، مثلاً لاپلاس، SVD، PINN)" autocomplete="off">
+                </div>
+                <div class="wiki-tabs" id="wikiTabs"></div>
+                <div class="wiki-alpha" id="wikiAlpha"></div>
+                <div class="wiki-filters" id="wikiFilters"></div>
+                <div class="wiki-meta" id="wikiMeta"></div>
+                <div class="wiki-grid" id="wikiGrid"></div>
+                <p class="wiki-disclaimer"><i class="fas fa-circle-info"></i> نمایه و رتبه مجلات هر سال تغییر می‌کند؛ پیش از ارسال مقاله وضعیت فعلی را در Scopus، ISC و فهرست مجلات نامعتبر وزارت علوم بررسی کنید.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== مراجع ===== -->
+    <section class="section" id="references">
+        <div class="container">
+            <div class="section-header reveal">
+                <span class="section-tag"><i class="fas fa-book"></i> مراجع و منابع</span>
+                <h2 class="section-title">کتاب‌های مرجع و مقالات کلیدی</h2>
+            </div>
+            <div class="refs-grid reveal" id="refsGrid"></div>
+        </div>
+    </section>
+
+    <!-- ===== تماس ===== -->
+    <section class="section" id="contact">
+        <div class="container">
+            <div class="section-header reveal">
+                <span class="section-tag"><i class="fas fa-envelope"></i> تماس با استاد</span>
+                <h2 class="section-title">در ارتباط باشید</h2>
+            </div>
+            <div class="contact-grid reveal">
+                <a class="contact-card" href="mailto:m.goharimanesh@gmail.com"><i class="fas fa-envelope"></i><h4>ایمیل</h4><p class="ltr">m.goharimanesh@gmail.com</p></a>
+                <div class="contact-card"><i class="fas fa-clock"></i><h4>ساعت مشاوره</h4><p>دوشنبه‌ها ۸–۱۰</p></div>
+                <div class="contact-card"><i class="fas fa-university"></i><h4>دانشکده</h4><p>فنی و مهندسی — دانشگاه تربت حیدریه</p></div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="footer-title">ریاضیات مهندسی پیشرفته | دانشگاه تربت حیدریه</div>
+        <p class="footer-credit">دانشیار گروه مهندسی مکانیک — نیمسال اول ۱۴۰۵–۱۴۰۶ — برای دانشجویان مکاترونیک</p>
+        <div class="footer-divider"></div>
+        <p class="footer-credit">طراحی و توسعه: <strong>دکتر مسعود گوهری‌منش</strong> | تمامی حقوق محفوظ است</p>
+        <p class="footer-credit"><strong>Powered by Dr. Masoud Goharimanesh</strong></p>
+    </footer>
 
 <script>
-/* ═══════════════════════════════════════════
-   داده‌های فازها
-   ═══════════════════════════════════════════ */
-const phases = [
-  { id: 1, name: 'بازیابی فوریه و مبانی', color: '#1e3c72', icon: 'fa-wave-square' },
-  { id: 2, name: 'PDE های کلاسیک', color: '#1e6f5c', icon: 'fa-fire' },
-  { id: 3, name: 'تیر، نانو انبرک و ارتعاشات', color: '#b86b1e', icon: 'fa-ruler' },
-  { id: 4, name: 'Perturbation و روش‌های عددی', color: '#6a2c70', icon: 'fa-calculator' },
-  { id: 5, name: 'یادگیری ماشین و PINN', color: '#b33939', icon: 'fa-brain' },
-  { id: 6, name: 'بهینه‌سازی و مقاله IEEE', color: '#2a5298', icon: 'fa-chart-line' }
+// ================================================================
+// ۱) پیکربندی مسیرها — در صورت تغییر ساختار پوشه‌ها فقط همین‌جا را عوض کنید
+// ================================================================
+const CONFIG = {
+    sessionPath: n => `sessions/session-${pad(n)}/index.html`,
+    podcastPath: n => `sessions/session-${pad(n)}/podcast-${pad(n)}/index.html`,
+    checkLinks: true
+};
+function pad(n) { return String(n).padStart(2, '0'); }
+const fa = n => String(n).replace(/\d/g, d => '۰۱۲۳۴۵۶۷۸۹'[d]);
+
+// ================================================================
+// ۲) داده‌های درس
+// ================================================================
+const PHASES = [
+  { id: 1, name: 'بازیابی فوریه و مبانی', color: '#2a5298', icon: 'fa-wave-square', topics: 'سری و تبدیل فوریه، FFT، فضای برداری، مقدار ویژه، SVD', range: [1, 4] },
+  { id: 2, name: 'PDE های کلاسیک', color: '#1e6f5c', icon: 'fa-fire', topics: 'دسته‌بندی PDE، گرما، موج، لاپلاس و پواسون', range: [5, 8] },
+  { id: 3, name: 'تیر، نانو انبرک و ارتعاشات', color: '#b86b1e', icon: 'fa-ruler-horizontal', topics: 'اویلر-برنولی، فرکانس طبیعی، نانو انبرک، Pull-in', range: [9, 12] },
+  { id: 4, name: 'Perturbation و روش‌های عددی', color: '#6a2c70', icon: 'fa-calculator', topics: 'اختلال منظم، چندمقیاسی، لیندشتد-پوانکاره، FD، FEM', range: [13, 16] },
+  { id: 5, name: 'یادگیری ماشین و PINN', color: '#b33939', icon: 'fa-brain', topics: 'شبکه عصبی، Backprop، PINN، PyTorch', range: [17, 20] },
+  { id: 6, name: 'بهینه‌سازی و مقاله IEEE', color: '#0e7490', icon: 'fa-chart-line', topics: 'Adam، لاگرانژ و KKT، GA و PSO، کارگاه مقاله', range: [21, 24] }
 ];
 
-/* ═══════════════════════════════════════════
-   داده‌های جلسات — همه ۲۴ جلسه آماده و قابل کلیک
-   مسیر هر جلسه: sessions/session-XX/index.html
-   ═══════════════════════════════════════════ */
-const sessions = [
-  { n: 1,  title: 'بازیابی سری فوریه و تبدیل فوریه',           phase: 1, available: true },
-  { n: 2,  title: 'FFT، فیلتر و کانولوشن',                      phase: 1, available: true },
-  { n: 3,  title: 'فضای برداری، پایه و تبدیل خطی',              phase: 1, available: true },
-  { n: 4,  title: 'مقدار ویژه، SVD و شبه‌معکوس',                phase: 1, available: true },
-  { n: 5,  title: 'دسته‌بندی و آشنایی با PDE',                   phase: 2, available: true },
-  { n: 6,  title: 'معادله گرما و جداسازی متغیرها',              phase: 2, available: true },
-  { n: 7,  title: 'معادله موج و حل دالامبر',                    phase: 2, available: true },
-  { n: 8,  title: 'معادله لاپلاس و پواسون',                     phase: 2, available: true },
-  { n: 9,  title: 'معادله تیر اویلر-برنولی',                    phase: 3, available: true },
-  { n: 10, title: 'ارتعاشات تیر و فرکانس‌های طبیعی',            phase: 3, available: true },
-  { n: 11, title: 'نانو انبرک و نیروهای بین‌مولکولی',           phase: 3, available: true },
-  { n: 12, title: 'پایداری و پدیده Pull-in',                    phase: 3, available: true },
-  { n: 13, title: 'مقدمه Perturbation',                         phase: 4, available: true },
-  { n: 14, title: 'روش‌های چند مقیاسی و Lindstedt-Poincaré',    phase: 4, available: true },
-  { n: 15, title: 'تفاضل محدود و رانگ-کوتا',                    phase: 4, available: true },
-  { n: 16, title: 'روش‌های طیفی و FEM مقدماتی',                 phase: 4, available: true },
-  { n: 17, title: 'مقدمه یادگیری ماشین',                        phase: 5, available: true },
-  { n: 18, title: 'شبکه عصبی و Backpropagation',                phase: 5, available: true },
-  { n: 19, title: 'PINN: فرمول‌بندی و Loss فیزیکی',             phase: 5, available: true },
-  { n: 20, title: 'پیاده‌سازی PINN در PyTorch',                 phase: 5, available: true },
-  { n: 21, title: 'بهینه‌سازی بدون قید و Adam',                 phase: 6, available: true },
-  { n: 22, title: 'بهینه‌سازی با قید، لاگرانژ، KKT',            phase: 6, available: true },
-  { n: 23, title: 'بهینه‌سازی تکاملی: GA و PSO',                phase: 6, available: true },
-  { n: 24, title: 'کارگاه مقاله IEEE و جمع‌بندی',               phase: 6, available: true }
+const SESSIONS = [
+  'بازیابی سری فوریه و تبدیل فوریه', 'FFT، فیلتر و کانولوشن', 'فضای برداری، پایه و تبدیل خطی', 'مقدار ویژه، SVD و شبه‌معکوس',
+  'دسته‌بندی و آشنایی با PDE', 'معادله گرما و جداسازی متغیرها', 'معادله موج و حل دالامبر', 'معادله لاپلاس و پواسون',
+  'معادله تیر اویلر-برنولی', 'ارتعاشات تیر و فرکانس‌های طبیعی', 'نانو انبرک و نیروهای بین‌مولکولی', 'پایداری و پدیده Pull-in',
+  'مقدمه Perturbation', 'روش‌های چند مقیاسی و Lindstedt-Poincaré', 'تفاضل محدود و رانگ-کوتا', 'روش‌های طیفی و FEM مقدماتی',
+  'مقدمه یادگیری ماشین', 'شبکه عصبی و Backpropagation', 'PINN: فرمول‌بندی و Loss فیزیکی', 'پیاده‌سازی PINN در PyTorch',
+  'بهینه‌سازی بدون قید و Adam', 'بهینه‌سازی با قید، لاگرانژ، KKT', 'بهینه‌سازی تکاملی: GA و PSO', 'کارگاه مقاله IEEE و جمع‌بندی'
+].map((title, i) => ({ n: i + 1, title }));
+
+const PROJECTS = [
+  { title: 'ارتعاش تیر اویلر-برنولی تحت بار متحرک', desc: 'حل PDE مرتبه ۴ تیر تحت بار متحرک با روش‌های کلاسیک، عددی و PINN', tags: ['PDE مرتبه ۴', 'تیر', 'PINN', 'سری فوریه'] },
+  { title: 'نانو انبرک الکترواستاتیک با نیروی واندروالس', desc: 'حل غیرخطی نانو انبرک با perturbation و مقایسه با PINN و حل عددی', tags: ['غیرخطی', 'نانو', 'Perturbation', 'Pull-in'] },
+  { title: 'نانو انبرک تحت نیروی کازیمیر', desc: 'بررسی اثر نیروی کازیمیر در ناپایداری نانو انبرک با سه روش حل', tags: ['نانو', 'کازیمیر', 'غیرخطی', 'PINN'] },
+  { title: 'دینامیک بازوی ربات انعطاف‌پذیر', desc: 'حل PDE کوپل دینامیک بازوی انعطاف‌پذیر با رویکرد تحلیلی و PINN', tags: ['رباتیک', 'PDE کوپل', 'Perturbation', 'کنترل'] },
+  { title: 'انتقال حرارت در عملگر پیزوالکتریک', desc: 'حل معادله گرما در عملگر پیزو با سری فوریه و PINN', tags: ['گرما', 'پیزو', 'سری فوریه', 'PINN'] },
+  { title: 'معادله برگرز در جریان میکروسیال', desc: 'حل معادله غیرخطی برگرز با روش‌های کلاسیک، عددی و PINN', tags: ['برگرز', 'غیرخطی', 'میکروسیال', 'شوک'] }
 ];
 
-/* ═══════════════════════════════════════════
-   داده‌های پروژه‌ها
-   ═══════════════════════════════════════════ */
-const projects = [
-  { n: 1, title: 'ارتعاش تیر اویلر-برنولی تحت بار متحرک', desc: 'حل PDE مرتبه ۴ تیر تحت بار متحرک با روش‌های کلاسیک، عددی و PINN', tags: ['PDE مرتبه ۴', 'تیر', 'PINN', 'سری فوریه'] },
-  { n: 2, title: 'نانو انبرک الکترواستاتیک با نیروی واندروالس', desc: 'حل غیرخطی نانو انبرک با perturbation و مقایسه با PINN و حل عددی', tags: ['غیرخطی', 'نانو', 'Perturbation', 'Pull-in'] },
-  { n: 3, title: 'نانو انبرک تحت نیروی کازیمیر', desc: 'بررسی اثر نیروی کازیمیر در ناپایداری نانو انبرک با سه روش حل', tags: ['نانو', 'کازیمیر', 'غیرخطی', 'PINN'] },
-  { n: 4, title: 'دینامیک بازوی ربات انعطاف‌پذیر', desc: 'حل PDE کوپل دینامیک بازوی انعطاف‌پذیر با رویکرد تحلیلی و PINN', tags: ['رباتیک', 'PDE کوپل', 'Perturbation', 'کنترل'] },
-  { n: 5, title: 'انتقال حرارت در عملگر پیزوالکتریک', desc: 'حل معادله گرما در عملگر پیزو با سری فوریه و PINN', tags: ['گرما', 'پیزو', 'سری فوریه', 'PINN'] },
-  { n: 6, title: 'معادله برگرز در جریان میکروسیال', desc: 'حل معادله غیرخطی برگرز با روش‌های کلاسیک، عددی و PINN', tags: ['برگرز', 'غیرخطی', 'میکروسیال', 'شوک'] }
+const HOMEWORKS = [
+  { title: 'سری فوریه و تقارن‌ها', from: 1, to: 2, deadline: 'هفته ۳' },
+  { title: 'FFT و پردازش سیگنال', from: 2, to: 3, deadline: 'هفته ۵' },
+  { title: 'معادله گرما و موج', from: 5, to: 7, deadline: 'هفته ۹' },
+  { title: 'تیر و ارتعاشات', from: 9, to: 10, deadline: 'هفته ۱۲' },
+  { title: 'نانو انبرک', from: 11, to: 12, deadline: 'هفته ۱۴' },
+  { title: 'Perturbation و عددی', from: 13, to: 15, deadline: 'هفته ۱۶' },
+  { title: 'PINN و یادگیری ماشین', from: 17, to: 20, deadline: 'هفته ۱۹' },
+  { title: 'بهینه‌سازی', from: 21, to: 23, deadline: 'هفته ۲۲' }
 ];
 
-/* ═══════════════════════════════════════════
-   داده‌های تمرین‌ها
-   ═══════════════════════════════════════════ */
-const homeworks = [
-  { n: 1, title: 'تمرین ۱ — سری فوریه و تقارن‌ها',        from: 1,  to: 2,  deadline: 'هفته ۳' },
-  { n: 2, title: 'تمرین ۲ — FFT و پردازش سیگنال',         from: 2,  to: 3,  deadline: 'هفته ۵' },
-  { n: 3, title: 'تمرین ۳ — معادله گرما و موج',           from: 5,  to: 7,  deadline: 'هفته ۹' },
-  { n: 4, title: 'تمرین ۴ — تیر و ارتعاشات',              from: 9,  to: 10, deadline: 'هفته ۱۲' },
-  { n: 5, title: 'تمرین ۵ — نانو انبرک',                  from: 11, to: 12, deadline: 'هفته ۱۴' },
-  { n: 6, title: 'تمرین ۶ — Perturbation و عددی',         from: 13, to: 15, deadline: 'هفته ۱۶' },
-  { n: 7, title: 'تمرین ۷ — PINN و یادگیری ماشین',        from: 17, to: 20, deadline: 'هفته ۱۹' },
-  { n: 8, title: 'تمرین ۸ — بهینه‌سازی',                  from: 21, to: 23, deadline: 'هفته ۲۲' }
-];
-
-/* ═══════════════════════════════════════════
-   داده‌های مراجع
-   ═══════════════════════════════════════════ */
-const references = [
+const REFERENCES = [
   { type: 'کتاب مرجع', title: 'Advanced Engineering Mathematics', author: 'Erwin Kreyszig, 10th Edition' },
   { type: 'کتاب PDE', title: 'Partial Differential Equations for Scientists and Engineers', author: 'Stanley J. Farlow' },
   { type: 'Perturbation', title: 'Perturbation Methods', author: 'Ali H. Nayfeh' },
@@ -1325,341 +736,684 @@ const references = [
   { type: 'مقاله', title: 'Pull-in Instability in Nano-cantilevers', author: 'Various MEMS Journals' }
 ];
 
-/* ═══════════════════════════════════════════
-   رندر جلسات
-   ═══════════════════════════════════════════ */
-function renderSessions(filter = 'all') {
-  const container = document.getElementById('sessionsList');
-  container.innerHTML = '';
-  const filtered = filter === 'all' ? sessions : sessions.filter(s => s.phase === parseInt(filter));
+// ================================================================
+// ۳) کتابخانه ویدیویی (استخراج‌شده از کتابچه آموزش‌ها)
+// ================================================================
+const VIDEOS = [{"id":1,"c":"math","g":"مقدمه و چرایی آنالیز فوریه","t":"کلیات و سرفصل درس ریاضیات مهندسی","u":"https://www.aparat.com/v/g62Tb","d":"21:07","v":2252,"dt":"شهریور 1399","ds":"مرور سرفصل‌ها و نقشه راه جامع درس ریاضیات مهندسی دانشگاه","r":[]},{"id":2,"c":"math","g":"مقدمه و چرایی آنالیز فوریه","t":"کاربرد و چرایی آنالیز فوریه در مهندسی","u":"https://www.aparat.com/v/n88963b","d":"18:24","v":602,"dt":"مهر 1400","ds":"چرا به آنالیز فوریه نیاز داریم و چگونه سیگنال‌های پیچیده تجزیه می‌شوند","r":[1]},{"id":3,"c":"math","g":"مقدمه و چرایی آنالیز فوریه","t":"مقدمه‌ای بر سری فوریه - پاییز ۱۴۰۴","u":"https://www.aparat.com/v/tolgb96","d":"15:20","v":19,"dt":"آذر 1404","ds":"تعاریف اولیه، فرمول اصلی و مفاهیم پایه سری فوریه","r":[1]},{"id":4,"c":"math","g":"محاسبه ضرایب سری فوریه","t":"پیدا کردن ضرایب ثابت و کسینوسی سری فوریه","u":"https://www.aparat.com/v/z06ez9f","d":"18:45","v":382,"dt":"مهر 1399","ds":"محاسبه دقیق ضریب a0 و an در بسط سری فوریه","r":[1]},{"id":5,"c":"math","g":"محاسبه ضرایب سری فوریه","t":"به دست آوردن ضریب سینوسی سری فوریه","u":"https://www.aparat.com/v/z84e7p0","d":"19:12","v":655,"dt":"مهر 1399","ds":"محاسبه ضریب bn و انتگرال‌گیری روی توابع تناوبی","r":[1]},{"id":6,"c":"math","g":"محاسبه ضرایب سری فوریه","t":"نحوه به دست آوردن ضرایب سری فوریه","u":"https://www.aparat.com/v/r281dzj","d":"22:15","v":5185,"dt":"فروردین 1399","ds":"روش کلی و گام‌به‌گام استخراج ضرایب سری فوریه برای توابع مختلف","r":[1]},{"id":7,"c":"math","g":"تقارن‌ها و بسط نیم‌دامنه","t":"تقارن‌های اصلی در سری فوریه (توابع زوج و فرد)","u":"https://www.aparat.com/v/v28i49f","d":"16:30","v":442,"dt":"آبان 1399","ds":"چگونه تقارن زوج و فرد محاسبات سری فوریه را به شدت ساده می‌کند","r":[1]},{"id":8,"c":"math","g":"تقارن‌ها و بسط نیم‌دامنه","t":"بسط‌های کسینوسی و سینوسی سری فوریه","u":"https://www.aparat.com/v/k1Oco","d":"20:10","v":1112,"dt":"آبان 1399","ds":"بسط نیم‌دامنه و تولید سری‌های صرفاً سینوسی یا کسینوسی","r":[1]},{"id":9,"c":"math","g":"تقارن‌ها و بسط نیم‌دامنه","t":"تقارن‌های مخفی در سری فوریه","u":"https://www.aparat.com/v/a75gq88","d":"14:18","v":266,"dt":"آبان 1399","ds":"شناسایی تقارن‌های جابه‌جا شده و نیم‌موج برای حذف ضرایب اضافی","r":[1]},{"id":10,"c":"math","g":"حل مسئله و مثال‌های امتحانی","t":"مراحل حل یک مسئله سری فوریه","u":"https://www.aparat.com/v/Kvt38","d":"17:40","v":288,"dt":"فروردین 1399","ds":"جمع‌بندی الگوریتمی و مراحل حل امتحانی مسایل سری فوریه","r":[1]},{"id":11,"c":"math","g":"حل مسئله و مثال‌های امتحانی","t":"حل مثال جامع سری فوریه (مثال ۱)","u":"https://www.aparat.com/v/w371n00","d":"25:10","v":12137,"dt":"مهر 1399","ds":"پربازدیدترین ویدیو حل تشریحی و کامل سری فوریه","r":[1]},{"id":12,"c":"math","g":"حل مسئله و مثال‌های امتحانی","t":"حل مثال دوم مبحث سری فوریه","u":"https://www.aparat.com/v/2l3kA","d":"18:20","v":421,"dt":"آبان 1399","ds":"حل مثال کاربردی با تابع چندضابطه‌ای و بررسی تقارب","r":[1]},{"id":13,"c":"math","g":"حل مسئله و مثال‌های امتحانی","t":"حل مثال سوم سری فوریه","u":"https://www.aparat.com/v/XDvth","d":"19:05","v":827,"dt":"آبان 1399","ds":"حل مثال امتحانی پیشرفته سری فوریه","r":[1]},{"id":14,"c":"math","g":"حل مسئله و مثال‌های امتحانی","t":"حل سری‌های عددی به کمک سری فوریه","u":"https://www.aparat.com/v/t69797x","d":"15:45","v":901,"dt":"آبان 1399","ds":"به دست آوردن مجموع سری‌های عددی با جایگذاری در سری فوریه","r":[1]},{"id":15,"c":"math","g":"پارسوال و انتگرال فوریه","t":"تساوی پارسوال در سری فوریه","u":"https://www.aparat.com/v/b51g711","d":"16:50","v":1979,"dt":"آبان 1399","ds":"قضیه پارسوال و کاربرد آن در محاسبه توان و مجموع سری‌های توان دوم","r":[1]},{"id":16,"c":"math","g":"پارسوال و انتگرال فوریه","t":"انتگرال فوریه - ساختار و حل مثال","u":"https://www.aparat.com/v/j68m9cw","d":"21:30","v":653,"dt":"آذر 1399","ds":"گذر از توابع متناوب به غیرمتناوب و فرمول‌بندی انتگرال فوریه","r":[1,2]},{"id":17,"c":"math","g":"پارسوال و انتگرال فوریه","t":"حل انتگرال‌های ناسره به کمک انتگرال فوریه","u":"https://www.aparat.com/v/v61nkg3","d":"18:15","v":332,"dt":"آذر 1399","ds":"محاسبه دقیق انتگرال‌های سخت و ناسره با استفاده از قضایای انتگرال فوریه","r":[1,2]},{"id":18,"c":"math","g":"اعداد و توابع مختلط","t":"مقدمه‌ای بر فصل اعداد مختلط","u":"https://www.aparat.com/v/o55h9vu","d":"12:10","v":84,"dt":"دی 1399","ds":"تعریف عدد مختلط، قسمت حقیقی و موهومی و نمایش قطبی","r":[]},{"id":19,"c":"math","g":"اعداد و توابع مختلط","t":"جبر مختلط و عملگرهای اصلی","u":"https://www.aparat.com/v/n48k1t2","d":"15:30","v":168,"dt":"بهمن 1399","ds":"ضرب، تقسیم، توان و ریشه‌گیری از اعداد مختلط","r":[]},{"id":20,"c":"math","g":"اعداد و توابع مختلط","t":"حل معادله سینوسی با اعداد مختلط sin(z)=2","u":"https://www.aparat.com/v/m62x4yk","d":"14:20","v":493,"dt":"مرداد 1399","ds":"بررسی پاسخ‌های جالب معادلات مثلثاتی در حوزه اعداد مختلط","r":[]},{"id":21,"c":"math","g":"اعداد و توابع مختلط","t":"توابع مختلط تحلیلی و معادلات کوشی-ریمان","u":"https://www.aparat.com/v/v49j936","d":"22:45","v":932,"dt":"بهمن 1399","ds":"شرایط مشتق‌پذیری توابع مختلط و معادلات Cauchy-Riemann","r":[]},{"id":22,"c":"math","g":"اعداد و توابع مختلط","t":"قضیه انتگرال کوشی در آنالیز مختلط","u":"https://www.aparat.com/v/j176s9n","d":"20:15","v":1380,"dt":"بهمن 1399","ds":"محاسبه انتگرال‌های مسدود روی مسیرهای بسته در صفحه مختلط","r":[]},{"id":23,"c":"math","g":"اعداد و توابع مختلط","t":"مانده تابع مختلط در نقاط تکی (Residue Theorem)","u":"https://www.aparat.com/v/y31dg9l","d":"24:10","v":1444,"dt":"بهمن 1399","ds":"محاسبه مانده‌ها و استفاده از قضیه مانده در انتگرال‌گیری","r":[]},{"id":24,"c":"math","g":"اعداد و توابع مختلط","t":"حل انتگرال‌های حقیقی به کمک آنالیز مختلط","u":"https://www.aparat.com/v/b29uv52","d":"21:00","v":980,"dt":"بهمن 1399","ds":"تکنیک‌های معجزه‌آسای تبدیل انتگرال‌های دشوار حقیقی به مختلط","r":[]},{"id":25,"c":"math","g":"مبانی معادلات با مشتقات جزئی","t":"مقدمه‌ای بر معادلات با مشتقات جزئی","u":"https://www.aparat.com/v/q23u86j","d":"11:30","v":186,"dt":"دی 1399","ds":"تعریف مراتب، درجه و دسته‌بندی معادلات مشتقات جزئی","r":[5]},{"id":26,"c":"math","g":"مبانی معادلات با مشتقات جزئی","t":"عملگر مشتق و تغییر متغیرها در مشتقات جزئی","u":"https://www.aparat.com/v/z84ya","d":"18:40","v":1960,"dt":"دی 1399","ds":"قاعده زنجیره‌ای و تغییر متغیر در PDEs","r":[5]},{"id":27,"c":"math","g":"مبانی معادلات با مشتقات جزئی","t":"حل معادلات مرتبه اول شبه‌خطی به کمک لاگرانژ","u":"https://www.aparat.com/v/z39ylus","d":"22:15","v":1398,"dt":"دی 1399","ds":"روش ویژگی‌ها و دستگاه معادلات کمکی لاگرانژ","r":[5]},{"id":28,"c":"math","g":"مبانی معادلات با مشتقات جزئی","t":"حل معادله مرتبه دوم خطی مشتقات جزئی","u":"https://www.aparat.com/v/0eg5P","d":"25:00","v":1184,"dt":"دی 1399","ds":"دسته‌بندی بیضوی، سهموی و هذلولوی و روش جداسازی متغیرها","r":[5,6]},{"id":29,"c":"math","g":"معادله موج و معادله گرما","t":"حل معادله موج یک‌بعدی (Wave Equation)","u":"https://www.aparat.com/v/36Rhw","d":"26:30","v":1681,"dt":"دی 1399","ds":"استخراج و حل کامل معادله ارتعاش تار کشیده شده","r":[7]},{"id":30,"c":"math","g":"معادله موج و معادله گرما","t":"حل دالامبر معادله موج","u":"https://www.aparat.com/v/s811bz6","d":"21:10","v":1769,"dt":"دی 1399","ds":"روش دالامبر (D'Alembert) و پاسخ‌های امواج پیش‌رونده و پس‌رونده","r":[7]},{"id":31,"c":"math","g":"معادله موج و معادله گرما","t":"شبیه‌سازی معادله موج در متلب","u":"https://www.aparat.com/v/n56w446","d":"19:45","v":2120,"dt":"دی 1399","ds":"کدنویسی و انیمیشن‌سازی حرکت امواج در محیط متلب","r":[7]},{"id":32,"c":"math","g":"معادله موج و معادله گرما","t":"حل معادله انتقال حرارت یک‌بعدی (Heat Equation)","u":"https://www.aparat.com/v/n6896d9","d":"28:15","v":5394,"dt":"مرداد 1399","ds":"حل مسئله نفوذ حرارت در میله با شرایط مرزی همگن و ناهمگن","r":[6]},{"id":33,"c":"matlab","g":"مبانی متلب و ماتریس‌ها","t":"درس‌نامه جامع متلب - جلسه اول (آشنایی با محیط)","u":"https://www.aparat.com/v/LVo4K","d":"14:20","v":391,"dt":"بهمن 1397","ds":"معرفی نرم‌افزار متلب، پنجره Command و متغیرها","r":[]},{"id":34,"c":"matlab","g":"مبانی متلب و ماتریس‌ها","t":"ماتریس‌ها در متلب - درس‌نامه جامع (قسمت ۱)","u":"https://www.aparat.com/v/1X0gV","d":"18:10","v":740,"dt":"فروردین 1399","ds":"تعریف ماتریس‌ها، درایه‌ها و عملگرهای ماتریسی در متلب","r":[3,4]},{"id":35,"c":"matlab","g":"مبانی متلب و ماتریس‌ها","t":"فراخوانی سطر و ستون ماتریس به صورت کلی و جزئی","u":"https://www.aparat.com/v/wCVH4","d":"12:40","v":317,"dt":"آبان 1402","ds":"تکنیک‌های اندیس‌گذاری و برش‌زدن سطرها و ستون‌های ماتریس","r":[3,4]},{"id":36,"c":"matlab","g":"حل عددی معادلات","t":"حل معادلات جبری خطی و غیرخطی در متلب","u":"https://www.aparat.com/v/f55zf12","d":"25:30","v":3095,"dt":"بهمن 1397","ds":"دستورات fzero, fsolve و solve برای حل معادلات پیچیده","r":[12]},{"id":37,"c":"matlab","g":"حل عددی معادلات","t":"حل معادلات دیفرانسیل در متلب (ode45)","u":"https://www.aparat.com/v/p89348w","d":"21:15","v":1131,"dt":"بهمن 1397","ds":"استفاده از حل‌کننده‌های عددی ODE در متلب","r":[15]},{"id":38,"c":"matlab","g":"حل عددی معادلات","t":"حل سینماتیک معکوس ربات دولینکی با fsolve متلب","u":"https://www.aparat.com/v/ctc5234","d":"23:48","v":282,"dt":"خرداد 1403","ds":"کدنویسی حل عددی معادلات غیرخطی سینماتیک معکوس در متلب","r":[]},{"id":39,"c":"matlab","g":"سیمولینک","t":"حل معادله آشوب/لورنز در سیمولینک","u":"https://www.aparat.com/v/1EvTa","d":"16:40","v":416,"dt":"بهمن 1397","ds":"مدل‌سازی جذاب سیستم‌های آشوب‌ناک Lorenz در Simulink","r":[15]},{"id":40,"c":"matlab","g":"سیمولینک","t":"شبیه‌سازی یک مدار اپ‌امپ در سیمولینک","u":"https://www.aparat.com/v/sP2Sp","d":"15:30","v":1395,"dt":"بهمن 1397","ds":"مدل‌سازی بلوکی و الکترونیکی تقویت‌کننده عملیاتی Op-Amp","r":[]},{"id":41,"c":"matlab","g":"مدل‌سازی سیستم‌های دینامیکی","t":"مدل‌سازی سیستم تعلیق یک‌چهارم خودرو","u":"https://www.aparat.com/v/i57qg74","d":"19:12","v":518,"dt":"آذر 1399","ds":"شبیه‌سازی جرم فنربندی‌شده و فنربندی‌نشده تعلیق خودرو در متلب","r":[10]},{"id":42,"c":"matlab","g":"مدل‌سازی سیستم‌های دینامیکی","t":"مدل‌سازی جامع سیستم تعلیق کامل خودرو (قسمت ۱)","u":"https://www.aparat.com/v/i457a5s","d":"22:10","v":200,"dt":"خرداد 1399","ds":"استخراج معادلات ۷ درجه آزادی تعلیق کامل خودرو در متلب","r":[10]},{"id":43,"c":"matlab","g":"مدل‌سازی سیستم‌های دینامیکی","t":"تحلیل دینامیک خودرو در CarSim و متلب هم‌زمان","u":"https://www.aparat.com/v/n33gn3s","d":"24:10","v":425,"dt":"بهمن 1397","ds":"ارتباط Co-simulation بین CarSim و MATLAB/Simulink","r":[]},{"id":44,"c":"matlab","g":"مدل‌سازی سیستم‌های دینامیکی","t":"مدل‌سازی و شبیه‌سازی مکانیزم لنگ و لغزنده در متلب","u":"https://www.aparat.com/v/r51667j","d":"24:00","v":828,"dt":"اردیبهشت 1400","ds":"کدنویسی کامل سینماتیک لنگ و لغزنده و رسم نمودارهای حرکتی","r":[]},{"id":45,"c":"matlab","g":"مدل‌سازی سیستم‌های دینامیکی","t":"رسم مکانیزم لنگ و لغزنده در SAM و MATLAB","u":"https://www.aparat.com/v/o01gfe2","d":"22:15","v":613,"dt":"اردیبهشت 1400","ds":"مقایسه هم‌زمان نتایج عددی SAM با کدنویسی متلب","r":[]},{"id":46,"c":"matlab","g":"شبیه‌سازی معادلات ریاضی","t":"شبیه‌سازی معادله موج در متلب","u":"https://www.aparat.com/v/n56w446","d":"19:45","v":2120,"dt":"دی 1399","ds":"کدنویسی و انیمیشن‌سازی حرکت امواج در محیط متلب","r":[7]},{"id":47,"c":"python","g":"شروع با پایتون و Google Colab","t":"آموزش پایتون - جلسه اول (مبانی و نصب)","u":"https://www.aparat.com/v/y6rj0","d":"22:14","v":457,"dt":"شهریور 1400","ds":"نصب پایتون، پایتون گوگل کولب (Google Colab) و ساختار اولیه","r":[17]},{"id":48,"c":"python","g":"کتابخانه‌های علمی","t":"آموزش پایتون - جلسه سوم (کتابخانه NumPy)","u":"https://www.aparat.com/v/q75xe16","d":"18:40","v":206,"dt":"مهر 1400","ds":"آرایه‌ها، محاسبات ماتریسی و برداری با NumPy","r":[3,4]},{"id":49,"c":"python","g":"کتابخانه‌های علمی","t":"آموزش پایتون - جلسه پنجم (کتابخانه Matplotlib)","u":"https://www.aparat.com/v/i9725p0","d":"19:15","v":71,"dt":"مهر 1400","ds":"رسم نمودارهای دو بعدی، میله‌ای و قطبی در پایتون","r":[]},{"id":50,"c":"python","g":"کدنویسی کاربردی مهندسی","t":"کلید موفقیت: کدنویسی کاربردی با پایتون","u":"https://www.aparat.com/v/ceim2wo","d":"16:45","v":121,"dt":"آذر 1404","ds":"حل مسائل واقعی مهندسی و تحلیل داده‌ها با پایتون","r":[20]},{"id":51,"c":"ai","g":"یادگیری تقویتی و کنترل فازی","t":"کنترل پاندول معکوس با فازی و یادگیری تقویتی (قسمت اول)","u":"https://www.aparat.com/v/b2579sf","d":"13:21","v":1398,"dt":"بهمن 1397","ds":"پایدارسازی سیستم تعادلی پاندول معکوس با یادگیری تقویتی فازی","r":[17]},{"id":52,"c":"ai","g":"یادگیری تقویتی و کنترل فازی","t":"کنترل فازی و یادگیری تقویتی - پروفسور برنجی","u":"https://www.aparat.com/v/m73b017","d":"14:20","v":524,"dt":"بهمن 1397","ds":"ارائه الگوریتم‌های پیشرفته Fuzzy RL توسط استاد برجسته بین‌المللی","r":[17]},{"id":53,"c":"ai","g":"یادگیری تقویتی و کنترل فازی","t":"کنترل ربات با یادگیری تقویتی (قسمت ۱ از ۵)","u":"https://www.aparat.com/v/u744194","d":"15:10","v":345,"dt":"خرداد 1399","ds":"آموزش گام‌به‌گام عامل هوشمند برای تعقیب مسیر ربات با Q-Learning","r":[17,18]},{"id":54,"c":"ai","g":"ابزارهای هوش مصنوعی برای پژوهش","t":"۲ خط کد در مقابل ۱۲ خط: تفاوت AI و هوش خلاق انسانی","u":"https://www.aparat.com/v/vkcew3q","d":"12:08","v":24,"dt":"خرداد 1405","ds":"چرا هوش مصنوعی هنوز به تجربه و تفکر خلاق مهندس انسان نیاز دارد","r":[]},{"id":55,"c":"ai","g":"ابزارهای هوش مصنوعی برای پژوهش","t":"تولید نقشه ذهنی با هوش مصنوعی و خلاصه ویدیوها","u":"https://www.aparat.com/v/xjxt3vv","d":"13:24","v":328,"dt":"آذر 1404","ds":"استخراج نقشه مفهومی از فیلم‌های یوتیوب و متن با هوش مصنوعی","r":[]},{"id":56,"c":"ai","g":"ابزارهای هوش مصنوعی برای پژوهش","t":"آموزش هوش مصنوعی با ابزار Sider","u":"https://www.aparat.com/v/qzz1k90","d":"07:55","v":1184,"dt":"آذر 1403","ds":"استفاده از افزونه دستیار هوشمند Sider در مرورگر برای پژوهش","r":[]},{"id":57,"c":"research","g":"پروپوزال و مقاله‌نویسی","t":"آغاز یک سفر علمی: پژوهش در عصر نوین","u":"https://www.aparat.com/v/kltc4v8","d":"14:10","v":58,"dt":"آذر 1404","ds":"فلسفه پژوهش و ذهنیت ساختاریافته در پروژه‌های دانشگاهی","r":[]},{"id":58,"c":"research","g":"پروپوزال و مقاله‌نویسی","t":"آشنایی با جستجوی حرفه‌ای در گوگل (Google)","u":"https://www.aparat.com/v/q353g5q","d":"24:30","v":5741,"dt":"آبان 1397","ds":"تکنیک‌ها و اپراتورهای پیشرفته جستجوی منابع علمی","r":[]},{"id":59,"c":"research","g":"پروپوزال و مقاله‌نویسی","t":"چگونه یک پروپوزال حرفه‌ای بنویسیم؟","u":"https://www.aparat.com/v/B7b43","d":"28:10","v":3851,"dt":"آذر 1397","ds":"اصول نگارش بیان مسئله، اهداف، فرضیات و روش‌شناسی","r":[]},{"id":60,"c":"research","g":"پروپوزال و مقاله‌نویسی","t":"نمونه یک پروپوزال کارشناسی ارشد (پربازدیدترین)","u":"https://www.aparat.com/v/5Wgdt","d":"13:31","v":31260,"dt":"آذر 1397","ds":"بررسی واقعی و خط به خط یک پروپوزال استاندارد ارشد","r":[]},{"id":61,"c":"research","g":"پروپوزال و مقاله‌نویسی","t":"چگونه یک مقاله بنویسم؟ - بخش اول","u":"https://www.aparat.com/v/z49t95w","d":"20:15","v":259,"dt":"دی 1399","ds":"ساختار مقاله ISI، چکیده، مقدمه و بدنه اصلی","r":[24]},{"id":62,"c":"research","g":"پروپوزال و مقاله‌نویسی","t":"همه‌چیز در مورد اعتبار مجلات علمی و ضریب تاثیر","u":"https://www.aparat.com/v/a76u081","d":"18:40","v":598,"dt":"شهریور 1393","ds":"شناسایی مجلات معتبر، Impact Factor و مجلات نامعتبر","r":[24]},{"id":63,"c":"research","g":"پروپوزال و مقاله‌نویسی","t":"چگونه در جلسه دفاع ارائه کنیم؟ (قسمت ۱)","u":"https://www.aparat.com/v/LaY18","d":"15:12","v":1503,"dt":"بهمن 1399","ds":"فن بیان، مدیریت زمان و روان‌شناسی جلسه دفاع پایان‌نامه","r":[]},{"id":64,"c":"research","g":"مدیریت منابع (EndNote)","t":"آموزش جامع نرم‌افزار اندنوت ۲۰ (EndNote 20)","u":"https://www.aparat.com/v/y074it3","d":"50:22","v":39509,"dt":"دی 1399","ds":"پربازدیدترین دوره مدیریت منابع، رفرنس‌نویسی خودکار در Word","r":[24]},{"id":65,"c":"research","g":"مدیریت منابع (EndNote)","t":"پوشه‌بندی و گروه‌بندی مقالات در اندنوت ۲۱","u":"https://www.aparat.com/v/ksup7ga","d":"11:25","v":246,"dt":"بهمن 1403","ds":"سازمان‌دهی پیشرفته کتابخانه دیجیتال مقالات","r":[24]},{"id":66,"c":"research","g":"طراحی آزمایش تاگوچی","t":"آموزش روش طراحی آزمایشات تاگوچی (Taguchi)","u":"https://www.aparat.com/v/n5802tk","d":"23:11","v":26261,"dt":"اسفند 1392","ds":"دوره پربیننده آرایه‌های متعامد و کاهش تعداد تست‌های تجربی","r":[]},{"id":67,"c":"research","g":"طراحی آزمایش تاگوچی","t":"کاربرد طراحی آزمایش و تاگوچی در بهبود کارها","u":"https://www.aparat.com/v/a1w47","d":"16:20","v":772,"dt":"دی 1399","ds":"حل مثال‌های عملی مهندسی با متد تاگوچی","r":[]},{"id":68,"c":"research","g":"طراحی آزمایش تاگوچی","t":"تحلیل نسبت سیگنال به نویز S/N Ratio (قسمت ۱)","u":"https://www.aparat.com/v/a64408u","d":"18:30","v":1262,"dt":"بهمن 1397","ds":"محاسبه پاسخ‌های کیفی هرچه بیشتر بهتر و هرچه کمتر بهتر","r":[]},{"id":69,"c":"research","g":"ابزارهای گرافیکی و علم‌سنجی","t":"تحلیل داده‌های پژوهشی با VOSviewer و Scopus","u":"https://www.aparat.com/v/fde32qv","d":"21:40","v":1503,"dt":"دی 1398","ds":"ترسیم نقشه هم‌نویسندگی و درخت واژگان کلیدی مقالات","r":[24]},{"id":70,"c":"research","g":"ابزارهای گرافیکی و علم‌سنجی","t":"آموزش کامل و حرفه‌ای نقشه ذهن در XMind","u":"https://www.aparat.com/v/x69ngw6","d":"25:30","v":6840,"dt":"آذر 1397","ds":"نرم‌افزار قدرتمند ترسیم نقشه ذهنی برای مرور ادبیات","r":[]},{"id":71,"c":"research","g":"ابزارهای گرافیکی و علم‌سنجی","t":"چگونه با Edraw Max فلوچارت حرفه‌ای رسم کنیم؟","u":"https://www.aparat.com/v/y59jil3","d":"17:12","v":19681,"dt":"فروردین 1399","ds":"طراحی فلوچارت‌ها و دیاگرام‌های ساختاریافته پژوهشی","r":[]},{"id":72,"c":"research","g":"ابزارهای گرافیکی و علم‌سنجی","t":"کارگاه آموزش Word با رویکرد مقاله‌نویسی","u":"https://www.aparat.com/v/f94y225","d":"35:10","v":811,"dt":"اسفند 1399","ds":"تنظیم استایل‌ها، فهرست خودکار و فرمول‌نویسی در ورد","r":[24]}];
 
-  filtered.forEach(s => {
-    const phase = phases.find(p => p.id === s.phase);
-    const status = s.available
-      ? '<span class="session-status status-available">فعال</span>'
-      : '<span class="session-status status-locked">به‌زودی</span>';
+const VCATS = [
+  { id: 'math', name: 'ریاضیات مهندسی', icon: 'fa-square-root-variable', color: '#ffb700',
+    intro: 'فوریه، آنالیز مختلط و معادلات با مشتقات جزئی؛ پشتوانه مستقیم فازهای ۱ و ۲ درس. پیشنهاد: پیش از هر جلسه ویدیوهای مرتبط با آن را ببینید.' },
+  { id: 'matlab', name: 'متلب و سیمولینک', icon: 'fa-cubes', color: '#ff6b35',
+    intro: 'دوره درس‌نامه متلب و سیمولینک به همراه کاربردهای آن در دینامیک، رباتیک و خودرو. متلب برای تمرین و درک مفاهیم عالی است؛ اما کدهای پروژه پایانی این درس باید با پایتون نوشته شوند.' },
+  { id: 'python', name: 'پایتون و Colab', icon: 'fa-brands fa-python', color: '#06b6d4',
+    intro: 'زبان رسمی پروژه‌های این درس. از نصب و Google Colab تا NumPy و Matplotlib؛ پیش‌نیاز فاز ۵ (PINN با PyTorch).' },
+  { id: 'ai', name: 'هوش مصنوعی و یادگیری', icon: 'fa-brain', color: '#a855f7',
+    intro: 'کنترل فازی و یادگیری تقویتی به همراه ابزارهای هوش مصنوعی برای پژوهش؛ مکمل فاز ۵.' },
+  { id: 'research', name: 'پژوهش و مقاله‌نویسی', icon: 'fa-feather-pointed', color: '#00d4aa',
+    intro: 'نگارش مقاله، مدیریت منابع، طراحی آزمایش و ابزارهای گرافیکی؛ همراه کارگاه مقاله IEEE (جلسه ۲۴) و گزارش پروژه پایانی.' }
+];
 
-    const item = document.createElement('a');
-    item.className = `session-item${s.available ? '' : ' locked'}`;
-    item.style.setProperty('--phase-color', phase.color);
-    if (s.available) {
-      item.href = `sessions/session-${String(s.n).padStart(2, '0')}/index.html`;
-    }
-    item.innerHTML = `
-      <div class="session-icon">${toFa(s.n)}</div>
-      <div class="session-info">
-        <div class="session-number">
-          <i class="fas fa-layer-group" style="font-size:0.7rem;"></i>
-          فاز ${toFa(s.phase)} — ${phase.name}
-        </div>
-        <div class="session-title">${s.title}</div>
-        <div class="session-meta">
-          <i class="fas fa-clock"></i>
-          ۹۰ دقیقه
-          ${status}
-        </div>
-      </div>
-    `;
-    if (!s.available) {
-      item.addEventListener('click', e => {
-        e.preventDefault();
-        showToast('این جلسه به‌زودی منتشر می‌شود');
-      });
-    }
-    container.appendChild(item);
-  });
+// ================================================================
+// ۴) دائرةالمعارف ریاضیات مهندسی
+// ================================================================
+const GLOSSARY = [
+ // فوریه و سیگنال
+ ['سری فوریه','Fourier Series','فوریه','نمایش تابع متناوب به صورت مجموع سینوس‌ها و کسینوس‌ها با فرکانس‌های مضرب فرکانس پایه.'],
+ ['ضرایب فوریه','Fourier Coefficients','فوریه','ضرایب a₀، aₙ و bₙ که با انتگرال‌گیری تابع ضرب در cos و sin روی یک دوره تناوب به دست می‌آیند.'],
+ ['تعامد','Orthogonality','فوریه','انتگرال حاصل‌ضرب دو تابع پایه متفاوت روی بازه صفر است؛ کلید استخراج ضرایب فوریه و جداسازی متغیرها.'],
+ ['تابع زوج و فرد','Even / Odd Function','فوریه','تابع زوج f(−x)=f(x) فقط جمله کسینوسی و تابع فرد f(−x)=−f(x) فقط جمله سینوسی دارد.'],
+ ['تقارن نیم‌موج','Half-Wave Symmetry','فوریه','اگر f(x+T/2)=−f(x) باشد، فقط هارمونیک‌های فرد باقی می‌مانند.'],
+ ['بسط نیم‌دامنه','Half-Range Expansion','فوریه','گسترش زوج یا فرد تابع تعریف‌شده روی [0,L] برای تولید سری صرفاً کسینوسی یا سینوسی؛ پایه حل PDE با شرط مرزی.'],
+ ['شرایط دیریکله','Dirichlet Conditions','فوریه','شرایط کافی همگرایی سری فوریه: تکه‌ای پیوسته، تعداد متناهی اکسترمم و ناپیوستگی در هر دوره.'],
+ ['پدیده گیبس','Gibbs Phenomenon','فوریه','فراجهش حدود ۹٪ سری فوریه نزدیک ناپیوستگی که با افزایش تعداد جملات از بین نمی‌رود.'],
+ ['قضیه پارسوال','Parseval\'s Theorem','فوریه','انرژی سیگنال در حوزه زمان برابر مجموع مربع ضرایب فوریه است؛ ابزار محاسبه مجموع سری‌های عددی.'],
+ ['انتگرال فوریه','Fourier Integral','فوریه','حد سری فوریه برای توابع غیرمتناوب وقتی دوره تناوب به بی‌نهایت میل می‌کند.'],
+ ['تبدیل فوریه','Fourier Transform','فوریه','نگاشت تابع از حوزه زمان/مکان به حوزه فرکانس: F(ω)=∫f(t)e^(−iωt)dt.'],
+ ['تبدیل فوریه گسسته','DFT','فوریه','نسخه گسسته تبدیل فوریه برای N نمونه؛ هزینه محاسباتی O(N²).'],
+ ['تبدیل فوریه سریع','FFT','فوریه','الگوریتم کولی-توکی برای محاسبه DFT با هزینه O(N log N).'],
+ ['کانولوشن','Convolution','فوریه','عملگر (f*g)(t)=∫f(τ)g(t−τ)dτ؛ در حوزه فرکانس به ضرب ساده تبدیل می‌شود.'],
+ ['تداخل فرکانسی','Aliasing','فوریه','ظاهر شدن فرکانس‌های بالا به صورت فرکانس پایین در نمونه‌برداری ناکافی (fs < 2fmax).'],
+ ['پنجره‌گذاری','Windowing','فوریه','ضرب سیگنال در پنجره (هنینگ، همینگ) برای کاهش نشت طیفی در FFT.'],
+ ['تبدیل لاپلاس','Laplace Transform','فوریه','F(s)=∫₀^∞ f(t)e^(−st)dt؛ تبدیل معادلات دیفرانسیل خطی به معادلات جبری.'],
+ // جبر خطی
+ ['فضای برداری','Vector Space','جبر خطی','مجموعه‌ای با عمل جمع و ضرب اسکالر که اصول بسته بودن، شرکت‌پذیری و وجود صفر و قرینه را دارد.'],
+ ['پایه','Basis','جبر خطی','مجموعه بردارهای مستقل خطی که کل فضا را تولید می‌کنند؛ تعداد آن‌ها بُعد فضاست.'],
+ ['استقلال خطی','Linear Independence','جبر خطی','هیچ برداری ترکیب خطی بقیه نیست؛ معادل ناصفر بودن دترمینان ماتریس ستون‌ها (برای ماتریس مربعی).'],
+ ['تبدیل خطی','Linear Transformation','جبر خطی','نگاشتی که جمع و ضرب اسکالر را حفظ می‌کند و با یک ماتریس نمایش داده می‌شود.'],
+ ['رتبه','Rank','جبر خطی','تعداد سطرها یا ستون‌های مستقل خطی ماتریس؛ برابر تعداد مقادیر تکین ناصفر.'],
+ ['فضای پوچ','Null Space','جبر خطی','مجموعه بردارهای x با Ax=0؛ بُعد آن n − rank(A) است.'],
+ ['مقدار و بردار ویژه','Eigenvalue / Eigenvector','جبر خطی','Av=λv؛ جهت‌هایی که تبدیل فقط آن‌ها را مقیاس می‌کند. در ارتعاشات، فرکانس‌ها و شکل مودها همین‌ها هستند.'],
+ ['قطری‌سازی','Diagonalization','جبر خطی','A=PDP⁻¹ با ستون‌های P بردار ویژه؛ ساده‌سازی توان ماتریس و حل دستگاه ODE.'],
+ ['تجزیه مقادیر تکین','SVD','جبر خطی','A=UΣVᵀ برای هر ماتریس؛ پایه کاهش مرتبه، PCA و حل حداقل مربعات.'],
+ ['شبه‌معکوس','Pseudo-Inverse (Moore–Penrose)','جبر خطی','A⁺=VΣ⁺Uᵀ؛ پاسخ حداقل مربعات دستگاه‌های فرامعین یا فرومعین.'],
+ ['عدد حالت','Condition Number','جبر خطی','κ=σmax/σmin؛ معیار حساسیت پاسخ به خطای داده. عدد بزرگ یعنی دستگاه بدحالت.'],
+ ['ماتریس متقارن مثبت معین','Symmetric Positive Definite','جبر خطی','همه مقادیر ویژه مثبت؛ ماتریس‌های جرم و سختی سازه‌ها از این نوع‌اند.'],
+ ['تحلیل مؤلفه‌های اصلی','PCA','جبر خطی','یافتن جهت‌های بیشینه واریانس داده با SVD؛ کاهش بُعد.'],
+ // مختلط
+ ['عدد مختلط','Complex Number','آنالیز مختلط','z=x+iy=re^(iθ)؛ نمایش دکارتی و قطبی.'],
+ ['فرمول اویلر','Euler\'s Formula','آنالیز مختلط','e^(iθ)=cosθ+i sinθ؛ پل میان توابع نمایی و مثلثاتی.'],
+ ['تابع تحلیلی','Analytic Function','آنالیز مختلط','تابع مختلط مشتق‌پذیر در یک همسایگی؛ معادل برقراری شرایط کوشی-ریمان.'],
+ ['معادلات کوشی-ریمان','Cauchy–Riemann Equations','آنالیز مختلط','uₓ=v_y و u_y=−vₓ؛ شرط لازم تحلیلی بودن. u و v توابع همساز هستند.'],
+ ['قضیه انتگرال کوشی','Cauchy Integral Theorem','آنالیز مختلط','انتگرال تابع تحلیلی روی مسیر بسته در ناحیه همبند ساده صفر است.'],
+ ['نقطه تکین','Singularity','آنالیز مختلط','نقطه‌ای که تابع در آن تحلیلی نیست؛ انواع قطب، تکین برداشتنی و تکین اساسی.'],
+ ['مانده','Residue','آنالیز مختلط','ضریب جمله 1/(z−z₀) در سری لوران؛ با قضیه مانده، انتگرال مسیر بسته = 2πi × مجموع مانده‌ها.'],
+ ['سری لوران','Laurent Series','آنالیز مختلط','بسط تابع حول نقطه تکین شامل توان‌های منفی.'],
+ ['نگاشت همدیس','Conformal Mapping','آنالیز مختلط','نگاشت حافظ زاویه با تابع تحلیلی؛ برای حل معادله لاپلاس در هندسه‌های پیچیده.'],
+ // ODE/PDE
+ ['معادله دیفرانسیل معمولی','ODE','PDE','معادله شامل مشتقات تابعی از یک متغیر مستقل.'],
+ ['معادله با مشتقات جزئی','PDE','PDE','معادله شامل مشتقات جزئی تابعی از چند متغیر مستقل (مثلاً زمان و مکان).'],
+ ['مرتبه و خطی بودن PDE','Order & Linearity','PDE','مرتبه = بالاترین مشتق؛ خطی اگر تابع مجهول و مشتقاتش فقط به توان یک و بدون ضرب در هم ظاهر شوند.'],
+ ['دسته‌بندی PDE مرتبه دوم','Elliptic / Parabolic / Hyperbolic','PDE','با Δ=B²−4AC: منفی بیضوی (لاپلاس)، صفر سهموی (گرما)، مثبت هذلولوی (موج).'],
+ ['شرط مرزی دیریکله','Dirichlet BC','PDE','مقدار تابع روی مرز مشخص است (مثلاً دمای ثابت).'],
+ ['شرط مرزی نویمان','Neumann BC','PDE','مشتق عمودی روی مرز مشخص است (مثلاً شار حرارتی یا عایق).'],
+ ['شرط مرزی رابین','Robin BC','PDE','ترکیب خطی تابع و مشتق آن روی مرز (مثلاً جابجایی حرارتی).'],
+ ['مسئله خوش‌طرح','Well-Posed Problem','PDE','مسئله‌ای که جواب دارد، یکتاست و به داده‌ها پیوسته وابسته است (تعریف هادامار).'],
+ ['جداسازی متغیرها','Separation of Variables','PDE','فرض u(x,t)=X(x)T(t) و تبدیل PDE به چند ODE؛ با سری فوریه ترکیب می‌شود.'],
+ ['مسئله اشتورم-لیوویل','Sturm–Liouville Problem','PDE','مسئله مقدار ویژه ODE با شرایط مرزی که توابع ویژه متعامد تولید می‌کند؛ پایه تئوری جداسازی متغیرها.'],
+ ['روش مشخصه‌ها','Method of Characteristics','PDE','حل PDE مرتبه اول با تبدیل به ODE روی منحنی‌های مشخصه (روش لاگرانژ).'],
+ ['معادله گرما','Heat Equation','PDE','u_t = α²u_xx؛ نمونه سهموی، توصیف نفوذ.'],
+ ['معادله موج','Wave Equation','PDE','u_tt = c²u_xx؛ نمونه هذلولوی، توصیف ارتعاش تار و انتشار موج.'],
+ ['حل دالامبر','D\'Alembert Solution','PDE','u=f(x−ct)+g(x+ct)؛ مجموع دو موج پیش‌رونده و پس‌رونده.'],
+ ['معادله لاپلاس و پواسون','Laplace & Poisson Equations','PDE','∇²u=0 و ∇²u=f؛ نمونه بیضوی، حالت پایدار گرما، پتانسیل و الکترواستاتیک.'],
+ ['تابع گرین','Green\'s Function','PDE','پاسخ سیستم خطی به ضربه نقطه‌ای؛ پاسخ کلی با کانولوشن آن با منبع به دست می‌آید.'],
+ ['معادله برگرز','Burgers\' Equation','PDE','u_t + u·u_x = ν·u_xx؛ مدل ساده غیرخطی جریان با تشکیل شوک؛ مسئله محک PINN.'],
+ // سازه و نانو
+ ['تیر اویلر-برنولی','Euler–Bernoulli Beam','ارتعاشات','مدل تیر با فرض عمود ماندن مقاطع؛ EI·w⁗ + ρA·ẅ = q.'],
+ ['تیر تیموشنکو','Timoshenko Beam','ارتعاشات','مدل تیر با اثر برش و اینرسی دورانی؛ دقیق‌تر برای تیرهای کوتاه و ضخیم.'],
+ ['فرکانس طبیعی','Natural Frequency','ارتعاشات','فرکانسی که سیستم بدون تحریک خارجی در آن نوسان می‌کند.'],
+ ['شکل مود','Mode Shape','ارتعاشات','الگوی فضایی تغییرشکل در هر فرکانس طبیعی؛ تابع ویژه مسئله ارتعاش.'],
+ ['تحلیل مودال','Modal Analysis','ارتعاشات','تجزیه پاسخ سیستم به جمع مودهای مستقل.'],
+ ['تشدید','Resonance','ارتعاشات','افزایش شدید دامنه وقتی فرکانس تحریک به فرکانس طبیعی نزدیک می‌شود.'],
+ ['نانو انبرک','Nano-cantilever / Nanotweezers','ارتعاشات','سازه نانومقیاس یک‌سرگیردار یا دوبازویی که با نیروی الکترواستاتیک تحریک می‌شود؛ کاربرد در حسگرهای NEMS.'],
+ ['نیروی واندروالس','van der Waals Force','ارتعاشات','نیروی جاذبه بین‌مولکولی که در فواصل نانومتری اهمیت می‌یابد (∝ 1/g³).'],
+ ['نیروی کازیمیر','Casimir Force','ارتعاشات','نیروی جاذبه کوانتومی بین دو صفحه رسانا در فاصله بسیار کم (∝ 1/g⁴).'],
+ ['ناپایداری Pull-in','Pull-in Instability','ارتعاشات','ولتاژ بحرانی که بالاتر از آن نیروی الکترواستاتیک بر نیروی برگرداننده غلبه کرده و سازه به الکترود می‌چسبد.'],
+ ['اثر اندازه','Size Effect / Nonlocal Elasticity','ارتعاشات','وابستگی رفتار مکانیکی به ابعاد در مقیاس نانو؛ مدل‌های غیرمحلی ارینگن و تنش کوپل اصلاح‌شده.'],
+ // اختلال
+ ['روش اختلال','Perturbation Method','اختلال','ساخت جواب تقریبی به صورت سری توانی برحسب پارامتر کوچک ε حول یک مسئله قابل حل.'],
+ ['اختلال منظم','Regular Perturbation','اختلال','بسط مستقیم u=u₀+εu₁+ε²u₂+…؛ وقتی ε=0 ماهیت مسئله را تغییر نمی‌دهد.'],
+ ['اختلال تکین','Singular Perturbation','اختلال','وقتی ε در بالاترین مشتق ضرب شده؛ نیاز به لایه مرزی و تطبیق مجانبی.'],
+ ['جمله سکولار','Secular Term','اختلال','جمله‌ای مانند t·sin(t) که با زمان بی‌کران رشد می‌کند و اعتبار بسط ساده را از بین می‌برد.'],
+ ['روش لیندشتد-پوانکاره','Lindstedt–Poincaré Method','اختلال','بسط هم‌زمان جواب و فرکانس برای حذف جملات سکولار در نوسانگرهای غیرخطی.'],
+ ['روش چندمقیاسی','Method of Multiple Scales','اختلال','معرفی زمان‌های سریع و کند T₀=t، T₁=εt؛ تعیین دامنه و فاز متغیر.'],
+ ['معادله دافینگ','Duffing Equation','اختلال','ẍ + ω²x + εx³ = F cos Ωt؛ نوسانگر غیرخطی پایه با سفت‌شوندگی یا نرم‌شوندگی.'],
+ ['روش‌های نیمه‌تحلیلی','HPM / ADM / HAM','اختلال','روش‌های اختلال هموتوپی، تجزیه آدومیان و تحلیل هموتوپی برای مسائل غیرخطی بدون پارامتر کوچک صریح.'],
+ // عددی
+ ['تفاضل محدود','Finite Difference Method','عددی','جایگزینی مشتقات با تفاضل مقادیر روی شبکه؛ پیشرو، پسرو و مرکزی.'],
+ ['شرط CFL','Courant–Friedrichs–Lewy Condition','عددی','شرط پایداری طرح‌های صریح: c·Δt/Δx ≤ 1 برای موج و α·Δt/Δx² ≤ ½ برای گرما.'],
+ ['طرح صریح و ضمنی','Explicit vs Implicit Scheme','عددی','صریح ساده ولی پایداری مشروط دارد؛ ضمنی (مثلاً کرانک-نیکلسون) پایدارتر ولی نیازمند حل دستگاه.'],
+ ['رانگ-کوتا','Runge–Kutta (RK4)','عددی','روش انتگرال‌گیری ODE با خطای سراسری O(h⁴)؛ ode45 متلب و solve_ivp پایتون از RK تطبیقی استفاده می‌کنند.'],
+ ['سختی معادله','Stiffness','عددی','وجود مقیاس‌های زمانی بسیار متفاوت؛ نیازمند حل‌گرهای ضمنی (ode15s یا BDF).'],
+ ['روش طیفی','Spectral Method','عددی','تقریب جواب با توابع پایه سراسری (فوریه، چبیشف)؛ همگرایی نمایی برای جواب‌های هموار.'],
+ ['روش اجزای محدود','Finite Element Method','عددی','تقسیم دامنه به المان‌ها و حل فرم ضعیف با توابع شکل محلی؛ مناسب هندسه‌های پیچیده.'],
+ ['فرم ضعیف','Weak Form','عددی','ضرب PDE در تابع آزمون و انتگرال‌گیری جزءبه‌جزء؛ پایه FEM و روش گالرکین.'],
+ ['روش گالرکین','Galerkin Method','عددی','انتخاب توابع آزمون برابر توابع پایه؛ تبدیل PDE به دستگاه ODE یا جبری.'],
+ ['نیوتن-رافسون','Newton–Raphson','عددی','حل معادلات غیرخطی با خطی‌سازی تکراری؛ همگرایی درجه دوم نزدیک جواب.'],
+ // ML / PINN
+ ['یادگیری ماشین','Machine Learning','یادگیری ماشین','الگوریتم‌هایی که از داده الگو می‌آموزند؛ نظارت‌شده، بدون نظارت و تقویتی.'],
+ ['شبکه عصبی پرسپترون چندلایه','MLP','یادگیری ماشین','لایه‌های متوالی y=σ(Wx+b)؛ تقریب‌گر عمومی توابع پیوسته.'],
+ ['تابع فعال‌سازی','Activation Function','یادگیری ماشین','غیرخطی‌ساز شبکه؛ ReLU، tanh، sigmoid. برای PINN توابع هموار مثل tanh مناسب‌ترند.'],
+ ['تابع هزینه','Loss Function','یادگیری ماشین','معیار خطای پیش‌بینی (مثلاً MSE) که با آموزش کمینه می‌شود.'],
+ ['پس‌انتشار','Backpropagation','یادگیری ماشین','محاسبه گرادیان تابع هزینه نسبت به وزن‌ها با قاعده زنجیره‌ای از خروجی به ورودی.'],
+ ['مشتق‌گیری خودکار','Automatic Differentiation','یادگیری ماشین','محاسبه دقیق مشتقات از روی گراف محاسباتی؛ موتور PINN در PyTorch (autograd).'],
+ ['بیش‌برازش','Overfitting','یادگیری ماشین','یادگیری نویز داده آموزشی و عملکرد ضعیف روی داده جدید؛ با منظم‌سازی و داده اعتبارسنجی کنترل می‌شود.'],
+ ['شبکه عصبی فیزیک‌آگاه','Physics-Informed Neural Network (PINN)','یادگیری ماشین','شبکه‌ای که باقی‌مانده PDE، شرایط مرزی و اولیه را در تابع هزینه می‌گنجاند و بدون داده یا با داده کم PDE را حل می‌کند.'],
+ ['نقاط هم‌محلی','Collocation Points','یادگیری ماشین','نقاط درون دامنه که باقی‌مانده PDE در آن‌ها ارزیابی و کمینه می‌شود.'],
+ ['بایاس طیفی','Spectral Bias','یادگیری ماشین','تمایل شبکه‌ها به یادگیری مؤلفه‌های فرکانس پایین؛ چالش PINN در جواب‌های پرنوسان.'],
+ ['اپراتور عصبی','Neural Operator (DeepONet, FNO)','یادگیری ماشین','یادگیری نگاشت بین فضاهای تابعی؛ حل یک‌باره خانواده‌ای از PDEها.'],
+ // بهینه‌سازی
+ ['گرادیان کاهشی','Gradient Descent','بهینه‌سازی','x ← x − η∇f(x)؛ ساده‌ترین روش بهینه‌سازی بدون قید.'],
+ ['بهینه‌ساز Adam','Adam Optimizer','بهینه‌سازی','ترکیب مومنتوم و نرخ یادگیری تطبیقی؛ پیش‌فرض آموزش شبکه‌های عصبی.'],
+ ['L-BFGS','L-BFGS','بهینه‌سازی','روش شبه‌نیوتنی با حافظه محدود؛ اغلب پس از Adam برای ریزتنظیم PINN استفاده می‌شود.'],
+ ['تابع محدب','Convex Function','بهینه‌سازی','هر کمینه محلی، کمینه سراسری است؛ تضمین همگرایی بسیاری از الگوریتم‌ها.'],
+ ['ضرایب لاگرانژ','Lagrange Multipliers','بهینه‌سازی','تبدیل مسئله با قید تساوی به نقطه ایستای L = f + λg.'],
+ ['شرایط KKT','Karush–Kuhn–Tucker Conditions','بهینه‌سازی','شرایط لازم بهینگی با قیود نامساوی: ایستایی، امکان‌پذیری، نامنفی بودن ضرایب و مکمل‌لنگی.'],
+ ['الگوریتم ژنتیک','Genetic Algorithm','بهینه‌سازی','بهینه‌سازی تکاملی با انتخاب، تقاطع و جهش؛ بدون نیاز به گرادیان.'],
+ ['بهینه‌سازی ازدحام ذرات','Particle Swarm Optimization','بهینه‌سازی','حرکت ذرات بر اساس بهترین تجربه شخصی و جمعی؛ ساده و مؤثر برای مسائل پیوسته.'],
+ ['جبهه پارتو','Pareto Front','بهینه‌سازی','مجموعه جواب‌های غیرمغلوب در بهینه‌سازی چندهدفه.'],
+];
+
+const FORMULAS = [
+ ['ضرایب سری فوریه (دوره 2L)','فوریه','f(x) = a₀ + Σ [aₙ cos(nπx/L) + bₙ sin(nπx/L)]\na₀ = (1/2L) ∫₋ₗᴸ f(x) dx\naₙ = (1/L) ∫₋ₗᴸ f(x) cos(nπx/L) dx\nbₙ = (1/L) ∫₋ₗᴸ f(x) sin(nπx/L) dx','تابع زوج ⇐ bₙ=0 ؛ تابع فرد ⇐ a₀=aₙ=0.'],
+ ['سری فوریه مختلط','فوریه','f(x) = Σₙ cₙ e^(inπx/L)\ncₙ = (1/2L) ∫₋ₗᴸ f(x) e^(−inπx/L) dx','فشرده‌ترین شکل و پایه DFT/FFT.'],
+ ['تساوی پارسوال','فوریه','(1/2L) ∫₋ₗᴸ f² dx = a₀² + ½ Σ (aₙ² + bₙ²)','مثال: از سری f(x)=x نتیجه می‌شود Σ1/n² = π²/6.'],
+ ['جفت‌های مهم تبدیل فوریه','فوریه','e^(−a|t|)  ↔  2a/(a²+ω²)\nrect(t/T)  ↔  T·sinc(ωT/2π)\ne^(−at²)   ↔  √(π/a)·e^(−ω²/4a)\nδ(t)      ↔  1\nf′(t)     ↔  iω F(ω)','قضیه کانولوشن: f*g ↔ F·G'],
+ ['جفت‌های مهم تبدیل لاپلاس','فوریه','1 → 1/s        tⁿ → n!/sⁿ⁺¹\ne^(at) → 1/(s−a)\nsin ωt → ω/(s²+ω²)   cos ωt → s/(s²+ω²)\nf′(t) → sF(s) − f(0)\nf″(t) → s²F(s) − s f(0) − f′(0)','قضایای مقدار اولیه و نهایی برای بررسی سریع جواب.'],
+ ['SVD و شبه‌معکوس','جبر خطی','A = U Σ Vᵀ   (U, V متعامد)\nA⁺ = V Σ⁺ Uᵀ\nx* = A⁺ b   (کمینه ||Ax − b||)\nκ(A) = σ_max / σ_min','در NumPy: U, S, Vt = np.linalg.svd(A)'],
+ ['معادله مشخصه مقادیر ویژه','جبر خطی','det(A − λI) = 0\nΣλᵢ = tr(A) ,  Πλᵢ = det(A)','برای ماتریس متقارن، بردارهای ویژه متعامدند.'],
+ ['کوشی-ریمان و قضیه مانده','آنالیز مختلط','f = u + iv تحلیلی ⟺ uₓ = v_y ,  u_y = −vₓ\n∮_C f(z) dz = 2πi Σ Res(f, zₖ)\nقطب ساده: Res = lim (z−z₀) f(z)\nقطب مرتبه m: Res = 1/(m−1)! · lim dᵐ⁻¹/dzᵐ⁻¹ [(z−z₀)ᵐ f]','کاربرد: حل انتگرال‌های حقیقی ∫₋∞^∞ و انتگرال‌های مثلثاتی.'],
+ ['معادله گرما — میله با دو سر صفر','PDE','u_t = α² u_xx ,  u(0,t)=u(L,t)=0\nu(x,t) = Σ bₙ sin(nπx/L) · e^(−(nπα/L)² t)\nbₙ = (2/L) ∫₀ᴸ f(x) sin(nπx/L) dx','هر مود با نرخ متناسب با n² میرا می‌شود.'],
+ ['معادله موج — تار دو سر بسته','PDE','u_tt = c² u_xx\nu = Σ sin(nπx/L) [Aₙ cos(nπct/L) + Bₙ sin(nπct/L)]\nدالامبر: u = ½[f(x−ct) + f(x+ct)] + (1/2c) ∫ g(s) ds','فرکانس‌های طبیعی ωₙ = nπc/L'],
+ ['معادله لاپلاس — مستطیل','PDE','∇²u = 0 ,  u(x,b) = f(x) ، سایر مرزها صفر\nu = Σ cₙ sin(nπx/a) · sinh(nπy/a)\ncₙ = 2 / (a·sinh(nπb/a)) ∫₀ᵃ f sin(nπx/a) dx','برای مرزهای ناصفر متعدد از جمع آثار استفاده کنید.'],
+ ['تیر اویلر-برنولی','ارتعاشات','EI ∂⁴w/∂x⁴ + ρA ∂²w/∂t² = q(x,t)\nωₙ = (βₙL)² √(EI / ρAL⁴)\nیک‌سرگیردار: cos(βL)cosh(βL) = −1\nβ₁L ≈ 1.875 , β₂L ≈ 4.694 , β₃L ≈ 7.855','دو سر ساده: βₙL = nπ'],
+ ['نانو انبرک الکترواستاتیک','ارتعاشات','EI w⁗ + ρA ẅ = ε₀bV² / 2(g − w)²  +  F_vdW\nF_vdW = A_H b / 6π(g − w)³\nF_Cas = π²ħc b / 240(g − w)⁴','در Pull-in سختی معادل صفر می‌شود (dF/dw = 0).'],
+ ['بسط اختلال منظم','اختلال','u(x; ε) = u₀ + ε u₁ + ε² u₂ + …\nجایگذاری و مرتب‌سازی توان‌های ε:\nε⁰: L[u₀] = 0\nε¹: L[u₁] = −N[u₀]','اگر جمله سکولار ظاهر شد، به لیندشتد یا چندمقیاسی بروید.'],
+ ['لیندشتد-پوانکاره برای دافینگ','اختلال','ẍ + x + εx³ = 0 ,  τ = ωt\nω = 1 + ε ω₁ + … ,  x = x₀ + ε x₁ + …\nω ≈ 1 + (3/8) ε a²','فرکانس به دامنه وابسته است (ویژگی سیستم غیرخطی).'],
+ ['تفاضل محدود','عددی','f′(x) ≈ [f(x+h) − f(x−h)] / 2h      O(h²)\nf″(x) ≈ [f(x+h) − 2f(x) + f(x−h)] / h²   O(h²)\nگرما (صریح): uᵢⁿ⁺¹ = uᵢⁿ + r(uᵢ₊₁ⁿ − 2uᵢⁿ + uᵢ₋₁ⁿ) ,  r = αΔt/Δx² ≤ ½','کرانک-نیکلسون بدون قید پایداری و با دقت O(Δt², Δx²).'],
+ ['رانگ-کوتای مرتبه چهار','عددی','k₁ = f(tₙ, yₙ)\nk₂ = f(tₙ + h/2, yₙ + h k₁/2)\nk₃ = f(tₙ + h/2, yₙ + h k₂/2)\nk₄ = f(tₙ + h, yₙ + h k₃)\nyₙ₊₁ = yₙ + (h/6)(k₁ + 2k₂ + 2k₃ + k₄)','پایتون: scipy.integrate.solve_ivp(..., method="RK45")'],
+ ['تابع هزینه PINN','یادگیری ماشین','L = λ_r·mean|N[u_θ](x_r)|² + λ_b·mean|B[u_θ](x_b)|² + λ_0·mean|u_θ(x,0) − u₀|²\nu_x = torch.autograd.grad(u, x, ones_like(u), create_graph=True)[0]','وزن‌دهی λها و نمونه‌برداری تطبیقی نقاط، کیفیت PINN را به‌شدت تغییر می‌دهد.'],
+ ['بهینه‌ساز Adam','بهینه‌سازی','mₜ = β₁mₜ₋₁ + (1−β₁)gₜ\nvₜ = β₂vₜ₋₁ + (1−β₂)gₜ²\nθ ← θ − η · m̂ₜ / (√v̂ₜ + ε)\nپیش‌فرض: β₁=0.9 , β₂=0.999 , η=1e−3','m̂ و v̂ نسخه‌های تصحیح‌شده بایاس هستند.'],
+ ['شرایط KKT','بهینه‌سازی','min f(x)  s.t.  gᵢ(x) ≤ 0 , hⱼ(x) = 0\n∇f + Σμᵢ∇gᵢ + Σλⱼ∇hⱼ = 0\ngᵢ ≤ 0 , hⱼ = 0 , μᵢ ≥ 0 , μᵢ gᵢ = 0','پایتون: scipy.optimize.minimize(method="SLSQP")'],
+ ['به‌روزرسانی PSO','بهینه‌سازی','vᵢ ← w·vᵢ + c₁r₁(pᵢ − xᵢ) + c₂r₂(g − xᵢ)\nxᵢ ← xᵢ + vᵢ\nمعمول: w ≈ 0.7 , c₁ = c₂ ≈ 1.5','p بهترین موقعیت ذره و g بهترین موقعیت جمع است.'],
+];
+
+const TIPS = [
+ ['الگوریتم حل مسئله سری فوریه','فوریه',['دوره تناوب و L را مشخص کنید.','تقارن (زوج، فرد، نیم‌موج) را بررسی کنید تا ضرایب صفر را حذف کنید.','a₀ را جدا حساب کنید؛ فرمول aₙ برای n=0 معمولاً تقسیم بر صفر می‌دهد.','از cos(nπ)=(−1)ⁿ و sin(nπ)=0 استفاده کنید.','در نقاط ناپیوستگی، سری به میانگین حد چپ و راست همگرا می‌شود.','نتیجه را با رسم چند جمله در پایتون بررسی کنید.']],
+ ['حل PDE با جداسازی متغیرها','PDE',['همگن بودن معادله و شرایط مرزی را بررسی کنید؛ در غیر این صورت ابتدا جواب حالت پایدار را کم کنید.','u=X(x)T(t) و ثابت جداسازی را با علامت مناسب (−λ) انتخاب کنید.','مسئله مقدار ویژه X را با شرایط مرزی حل کنید.','معادله زمانی را برای هر λₙ حل کنید.','جمع آثار و تعیین ضرایب از شرط اولیه با تعامد.']],
+ ['انتخاب روش برای مسئله غیرخطی','اختلال',['پارامتر کوچک دارد؟ اختلال منظم.','جمله سکولار ظاهر شد؟ لیندشتد-پوانکاره یا چندمقیاسی.','پارامتر کوچک در بالاترین مشتق؟ اختلال تکین و لایه مرزی.','پارامتر کوچک ندارد؟ روش‌های عددی (FD، RK، FEM) یا HAM.','برای اعتبارسنجی، همیشه جواب تحلیلی تقریبی را با حل عددی مقایسه کنید.']],
+ ['پیاده‌سازی PINN — چک‌لیست','یادگیری ماشین',['ورودی‌ها را بی‌بعد و در بازه [−1,1] نرمال کنید.','از tanh و ۴ تا ۸ لایه با ۲۰ تا ۵۰ نورون شروع کنید.','در PyTorch برای مشتقات create_graph=True فراموش نشود.','ابتدا Adam و سپس L-BFGS.','وزن جملات هزینه را متعادل کنید؛ اجزای Loss را جداگانه رسم کنید.','جواب را با حل تحلیلی یا عددی مقایسه و خطای L2 نسبی گزارش کنید.','seed تصادفی را ثابت کنید تا نتایج تکرارپذیر باشد.']],
+ ['کار حرفه‌ای با Google Colab','ابزار',['Runtime → Change runtime type → GPU برای آموزش شبکه.','Google Drive را mount کنید تا داده و نتایج ذخیره بمانند.','خروجی‌ها را با plt.savefig(..., dpi=600) و فرمت PNG ذخیره کنید (الزام درس).','برای هر بخش پروژه یک سلول Markdown توضیحی بگذارید.','نوت‌بوک را پیش از تحویل با Restart & Run all کامل اجرا کنید.']],
+ ['نگارش گزارش پروژه در قالب IEEE','پژوهش',['از قالب رسمی IEEE Conference (Word یا LaTeX) استفاده کنید.','ساختار الزامی: Methodology، Results، Comparison، Conclusion (مرور پیشینه لازم نیست).','هر شکل باید محور، واحد، Legend و کپشن کامل داشته باشد.','جدول مقایسه چهار روش (کلاسیک، اختلال، عددی، PINN) از نظر دقت و زمان محاسبه بیاورید.','معادلات را شماره‌گذاری و در متن به آن‌ها ارجاع دهید.']],
+ ['تمرین را چطور تحویل دهیم؟','پژوهش',['تایپ در Word با فرمول‌نویسی استاندارد؛ دست‌نویس پذیرفته نمی‌شود.','خروجی PDF و ارسال فقط به ایمیل درس.','Subject دقیقاً طبق فرمت اعلام‌شده (دکمه کپی در بخش ارزشیابی).','مهلت: یک هفته پس از جلسه مربوط.']],
+ ['اشتباهات رایج در امتحان','فوریه',['فراموش کردن ضریب ½ در a₀ (بسته به تعریف کتاب).','اشتباه در علامت انتگرال‌گیری جزءبه‌جزء؛ از روش جدولی استفاده کنید.','اعمال نکردن شرط مرزی پیش از شرط اولیه.','دسته‌بندی اشتباه PDE به دلیل نادیده گرفتن ضرایب متغیر.','عدم بررسی دامنه اعتبار جواب اختلال.']],
+ ['ترفندهای انتگرال‌گیری','آنالیز مختلط',['∫₀^∞ e^(−ax) cos(bx) dx = a/(a²+b²)','انتگرال‌های ∫₀^2π R(cosθ, sinθ) dθ را با z=e^(iθ) به انتگرال مسیر تبدیل کنید.','برای ∫₋∞^∞ P/Q، مانده‌های نیم‌صفحه بالا را جمع کنید.','انتگرال‌های ناسره را می‌توان با انتگرال فوریه یک تابع معلوم حل کرد.']],
+];
+
+const TOOLS = [
+ ['Google Colab','پایتون','محیط ابری رایگان پایتون با GPU؛ محیط رسمی پروژه‌های این درس.','https://colab.research.google.com'],
+ ['NumPy','پایتون','آرایه‌ها و جبر خطی (linalg.eig، linalg.svd، fft).','https://numpy.org'],
+ ['SciPy','پایتون','حل ODE (solve_ivp)، بهینه‌سازی (optimize)، انتگرال‌گیری و توابع خاص.','https://scipy.org'],
+ ['SymPy','پایتون','محاسبات نمادین: انتگرال، سری فوریه نمادین، حل ODE و لاپلاس.','https://www.sympy.org'],
+ ['Matplotlib','پایتون','رسم نمودارهای مقاله‌ای؛ با dpi=600 ذخیره کنید.','https://matplotlib.org'],
+ ['PyTorch','پایتون','یادگیری عمیق و مشتق‌گیری خودکار؛ پیاده‌سازی PINN در جلسه ۲۰.','https://pytorch.org'],
+ ['DeepXDE','پایتون','کتابخانه آماده PINN برای حل سریع PDEها.','https://deepxde.readthedocs.io'],
+ ['FEniCS / FEniCSx','پایتون','حل PDE با اجزای محدود از روی فرم ضعیف.','https://fenicsproject.org'],
+ ['pymoo','پایتون','بهینه‌سازی تکاملی و چندهدفه (GA، NSGA-II).','https://pymoo.org'],
+ ['MATLAB','متلب','محیط محاسبات عددی؛ مناسب تمرین و درک مفاهیم (در پروژه این درس مجاز نیست).','https://www.mathworks.com'],
+ ['Wolfram Alpha','محاسبه','حل نمادین سریع انتگرال، سری و معادله برای بررسی جواب.','https://www.wolframalpha.com'],
+ ['Desmos','محاسبه','رسم تعاملی توابع و مشاهده سری فوریه با اسلایدر.','https://www.desmos.com/calculator'],
+ ['GeoGebra','محاسبه','هندسه و رسم تعاملی برای درک شهودی.','https://www.geogebra.org'],
+ ['Overleaf','نگارش','نگارش LaTeX آنلاین؛ قالب IEEE Conference آماده دارد.','https://www.overleaf.com'],
+ ['IEEE Template Selector','نگارش','دریافت قالب رسمی Word و LaTeX مقالات IEEE.','https://template-selector.ieee.org'],
+ ['Zotero','نگارش','مدیریت رایگان منابع و استنادها.','https://www.zotero.org'],
+];
+
+const LEARN = [
+ ['MIT 18.03 — Differential Equations','دوره آنلاین','دوره کامل معادلات دیفرانسیل MIT با ویدیو و تمرین.','https://ocw.mit.edu/courses/18-03sc-differential-equations-fall-2011/'],
+ ['MIT 18.06 — Linear Algebra (Gilbert Strang)','دوره آنلاین','مشهورترین دوره جبر خطی جهان.','https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/'],
+ ['3Blue1Brown — Essence of Linear Algebra','ویدیو','شهود هندسی جبر خطی با انیمیشن.','https://www.3blue1brown.com/topics/linear-algebra'],
+ ['3Blue1Brown — Differential Equations','ویدیو','شهود سری فوریه و معادله گرما.','https://www.3blue1brown.com/topics/differential-equations'],
+ ['Steve Brunton — Data-Driven Science & Engineering','ویدیو','فوریه، SVD، یادگیری ماشین و سیستم‌های دینامیکی.','https://www.youtube.com/@Eigensteve'],
+ ['Physics-Informed Neural Networks (Raissi et al., 2019)','مقاله پایه','مقاله اصلی PINN در Journal of Computational Physics.','https://doi.org/10.1016/j.jcp.2018.10.045'],
+ ['Physics-informed machine learning (Karniadakis et al., 2021)','مقاله مروری','مرور جامع یادگیری ماشین فیزیک‌آگاه در Nature Reviews Physics.','https://doi.org/10.1038/s42254-021-00314-5'],
+ ['Paul\'s Online Math Notes','یادداشت','یادداشت‌های روشن معادلات دیفرانسیل و PDE.','https://tutorial.math.lamar.edu'],
+ ['NIST Digital Library of Mathematical Functions','مرجع','مرجع رسمی توابع خاص (بسل، لژاندر، گاما).','https://dlmf.nist.gov'],
+];
+
+const JOURNALS = [
+ ['Journal of Computational Physics','Elsevier','روش‌های عددی و PINN؛ محل انتشار مقاله اصلی PINN.'],
+ ['Computer Methods in Applied Mechanics and Engineering','Elsevier','روش‌های محاسباتی در مکانیک؛ FEM و یادگیری ماشین علمی.'],
+ ['Nonlinear Dynamics','Springer','دینامیک غیرخطی، اختلال و ارتعاشات؛ مناسب پروژه‌های نانو انبرک.'],
+ ['Journal of Sound and Vibration','Elsevier','ارتعاشات تیر و سازه.'],
+ ['Applied Mathematical Modelling','Elsevier','مدل‌سازی ریاضی مسائل مهندسی.'],
+ ['International Journal of Mechanical Sciences','Elsevier','مکانیک جامدات، نانوسازه‌ها و ارتعاشات.'],
+ ['Journal of Microelectromechanical Systems','IEEE','MEMS/NEMS، Pull-in و حسگرها.'],
+ ['IEEE Access','IEEE','مجله دسترسی آزاد چندرشته‌ای با داوری سریع.'],
+ ['Engineering Applications of Artificial Intelligence','Elsevier','کاربرد هوش مصنوعی و بهینه‌سازی در مهندسی.'],
+ ['Iranian Journal of Science and Technology, Trans. Mechanical Engineering','Springer','مجله ایرانی با ناشر بین‌المللی.'],
+ ['Journal of Computational Applied Mechanics','دانشگاه تهران','مکانیک کاربردی و محاسباتی.'],
+ ['مهندسی مکانیک مدرس','دانشگاه تربیت مدرس','مجله فارسی شناخته‌شده مهندسی مکانیک.'],
+];
+
+const DATABASES = [
+ ['Google Scholar','جستجو','جستجوی مقالات و پیگیری استنادها.','https://scholar.google.com'],
+ ['ScienceDirect','پایگاه','مقالات Elsevier.','https://www.sciencedirect.com'],
+ ['IEEE Xplore','پایگاه','مقالات و قالب‌های IEEE.','https://ieeexplore.ieee.org'],
+ ['arXiv (math.NA, cs.LG, physics.comp-ph)','پیش‌انتشار','آخرین پیش‌انتشارهای PINN و روش‌های عددی.','https://arxiv.org'],
+ ['Scimago Journal Rank','رتبه‌بندی','مشاهده چارک مجلات.','https://www.scimagojr.com'],
+ ['پایگاه استنادی علوم جهان اسلام (ISC)','نمایه','اعتبار مجلات و همایش‌های داخلی.','https://isc.ac'],
+ ['ایرانداک','پژوهش','ثبت پیشنهاد پایان‌نامه و همانندجویی.','https://irandoc.ac.ir'],
+ ['فهرست مجلات نامعتبر وزارت علوم','اعتبارسنجی','پیش از ارسال مقاله بررسی شود.','https://journals.msrt.ir'],
+ ['SID و مگیران','مقالات فارسی','جستجو در مقالات فارسی.','https://www.sid.ir'],
+ ['Connected Papers','کشف منابع','گراف مقالات مرتبط.','https://www.connectedpapers.com'],
+];
+
+// ================================================================
+// ۵) رندر بخش‌ها
+// ================================================================
+const videosForSession = n => VIDEOS.filter(v => v.r.includes(n));
+
+// نقشه راه
+document.getElementById('roadmapGrid').innerHTML = PHASES.map(p => `
+    <button class="phase-card" data-phase="${p.id}" style="--pc:${p.color}">
+        <div class="phase-num">${fa(p.id)}</div>
+        <div class="phase-icon"><i class="fas ${p.icon}"></i></div>
+        <h4>${p.name}</h4>
+        <div class="topics">${p.topics}</div>
+        <div class="range">جلسات ${fa(p.range[0])} تا ${fa(p.range[1])}</div>
+    </button>`).join('');
+
+document.getElementById('phaseFilter').innerHTML =
+    `<button class="chip active" data-phase="all">همه جلسات</button>` +
+    PHASES.map(p => `<button class="chip" data-phase="${p.id}">فاز ${fa(p.id)}: ${p.name}</button>`).join('');
+
+function renderSyllabus(phase = 'all') {
+    let html = '';
+    PHASES.forEach(p => {
+        if (phase !== 'all' && +phase !== p.id) return;
+        html += `<tr class="phase-row"><td colspan="3"><i class="fas ${p.icon}"></i> فاز ${fa(p.id)} — ${p.name}</td></tr>`;
+        SESSIONS.filter(s => s.n >= p.range[0] && s.n <= p.range[1]).forEach(s => {
+            const vids = videosForSession(s.n).length;
+            html += `<tr id="session-${s.n}">
+                <td><span class="session-badge">${fa(s.n)}</span></td>
+                <td class="c-topic">${s.title}
+                    ${vids ? `<br><button class="vid-count" data-session="${s.n}"><i class="fas fa-circle-play"></i> ${fa(vids)} ویدیوی مرتبط در آپارات</button>` : ''}</td>
+                <td class="c-links"><div class="link-group">
+                    <a class="s-btn lesson" href="${CONFIG.sessionPath(s.n)}" data-check><i class="fas fa-chalkboard-teacher"></i> جلسه ${fa(s.n)}</a>
+                    <a class="s-btn podcast" href="${CONFIG.podcastPath(s.n)}" data-check><i class="fas fa-podcast"></i> پادکست ${fa(s.n)}</a>
+                </div></td>
+            </tr>`;
+        });
+    });
+    document.getElementById('syllabusBody').innerHTML = html;
+    verifyLinks();
 }
 
-/* ═══════════════════════════════════════════
-   فیلتر جلسات (با کلاس مستقل filter-btn)
-   ═══════════════════════════════════════════ */
-document.querySelectorAll('.filter-btn').forEach(btn => {
-  btn.addEventListener('click', function() {
-    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-    this.classList.add('active');
-    renderSessions(this.dataset.filter);
-    playClick();
-  });
+const linkCache = {};
+function verifyLinks() {
+    if (!CONFIG.checkLinks || !/^https?:/.test(location.protocol)) return;
+    document.querySelectorAll('#syllabusBody a[data-check]').forEach(a => {
+        const url = a.getAttribute('href');
+        if (!(url in linkCache)) linkCache[url] = fetch(url, { method: 'HEAD', cache: 'no-store' }).then(r => r.ok).catch(() => true);
+        linkCache[url].then(ok => { if (!ok) { a.classList.add('missing'); a.setAttribute('aria-disabled', 'true'); } });
+    });
+}
+
+function setPhase(phase, scroll) {
+    document.querySelectorAll('#phaseFilter .chip').forEach(c => c.classList.toggle('active', c.dataset.phase == phase));
+    renderSyllabus(phase);
+    if (scroll) document.getElementById('syllabus').scrollIntoView({ behavior: 'smooth' });
+}
+document.getElementById('phaseFilter').addEventListener('click', e => {
+    const c = e.target.closest('.chip'); if (c) { playClick(); setPhase(c.dataset.phase); }
 });
+document.getElementById('roadmapGrid').addEventListener('click', e => {
+    const c = e.target.closest('.phase-card'); if (!c) return;
+    playClick();
+    const p = PHASES[c.dataset.phase - 1];
+    showToast(`فاز ${fa(p.id)}: ${p.name}`);
+    setPhase(c.dataset.phase, true);
+});
+document.getElementById('syllabusBody').addEventListener('click', e => {
+    const b = e.target.closest('.vid-count'); if (!b) return;
+    showSessionVideos(+b.dataset.session);
+});
+renderSyllabus();
 
-/* ═══════════════════════════════════════════
-   رندر پروژه‌ها
-   ═══════════════════════════════════════════ */
-function renderProjects() {
-  const grid = document.getElementById('projectsGrid');
-  projects.forEach(p => {
-    const card = document.createElement('div');
-    card.className = 'phase-card';
-    card.style.setProperty('--phase-color', 'var(--gold)');
-    card.innerHTML = `
-      <div class="phase-number" style="background: var(--gold); color: var(--dark);">${toFa(p.n)}</div>
-      <div class="phase-name">${p.title}</div>
-      <div class="phase-desc">${p.desc}</div>
-      <div style="display:flex; flex-wrap:wrap; gap:6px; margin-top:10px;">
-        ${p.tags.map(t => `<span style="padding:3px 10px; border-radius:6px; background:rgba(255,255,255,0.05); color: var(--text-dim); font-size:0.7rem; border:1px solid var(--card-border);">${t}</span>`).join('')}
-      </div>
-      <div style="margin-top:14px; padding:10px; border-radius:10px; background:rgba(255,71,87,0.08); border:1px solid rgba(255,71,87,0.25);">
-        <p style="font-size:0.72rem; color: var(--danger); line-height:1.7;">
-          <i class="fas fa-user"></i> انفرادی — <i class="fab fa-python"></i> Python + Colab — <i class="fas fa-file-alt"></i> مقاله IEEE
-        </p>
-      </div>
-    `;
-    grid.appendChild(card);
-  });
+function goToSession(n) {
+    setPhase('all');
+    const row = document.getElementById('session-' + n);
+    if (!row) return;
+    row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    row.classList.remove('flash'); void row.offsetWidth; row.classList.add('flash');
 }
 
-/* ═══════════════════════════════════════════
-   رندر تمرین‌ها
-   ═══════════════════════════════════════════ */
-function renderHomeworks() {
-  const list = document.getElementById('homeworksList');
-  homeworks.forEach(hw => {
-    const item = document.createElement('div');
-    item.className = 'hw-item';
-    item.innerHTML = `
-      <div class="hw-num">${toFa(hw.n)}</div>
-      <div class="hw-info">
-        <div class="hw-title">${hw.title}</div>
+// پروژه‌ها و تمرین‌ها و مراجع
+document.getElementById('projectsGrid').innerHTML = PROJECTS.map((p, i) => `
+    <div class="project-card reveal">
+        <div class="project-head"><div class="project-num">${fa(i + 1)}</div><h3>${p.title}</h3></div>
+        <p class="project-desc">${p.desc}</p>
+        <div class="tags">${p.tags.map(t => `<span>${t}</span>`).join('')}</div>
+    </div>`).join('');
+
+document.getElementById('hwGrid').innerHTML = HOMEWORKS.map((h, i) => `
+    <div class="hw-card reveal">
+        <span class="hw-n">تمرین ${fa(i + 1)} — ۱ نمره</span>
+        <h4>${h.title}</h4>
         <div class="hw-meta">
-          <i class="fas fa-book"></i> جلسات ${toFa(hw.from)} تا ${toFa(hw.to)}
+            <span><i class="fas fa-layer-group"></i> جلسات ${fa(h.from)} تا ${fa(h.to)}</span>
+            <span><i class="fas fa-calendar-check"></i> مهلت: ${h.deadline}</span>
         </div>
-      </div>
-      <div class="hw-deadline">${hw.deadline}</div>
-    `;
-    list.appendChild(item);
-  });
+    </div>`).join('');
+
+document.getElementById('refsGrid').innerHTML = REFERENCES.map(r => `
+    <div class="ref-item"><span class="ref-type">${r.type}</span>
+        <div class="rt"><b>${r.title}</b><span>${r.author}</span></div></div>`).join('');
+
+// ================================================================
+// ۶) کتابخانه ویدیویی
+// ================================================================
+const libState = { cat: 'math', q: '', sort: 'order', session: null };
+const durSec = d => { const p = d.split(':').map(Number); return p.length === 3 ? p[0]*3600+p[1]*60+p[2] : p[0]*60+(p[1]||0); };
+const fmtDur = s => { const h = Math.floor(s/3600), m = Math.round((s%3600)/60); return h ? `${fa(h)} ساعت و ${fa(m)} دقیقه` : `${fa(m)} دقیقه`; };
+const fmtViews = v => v >= 1000 ? fa((v/1000).toFixed(v >= 10000 ? 0 : 1)) + ' هزار' : fa(v);
+const HOT = new Set([...VIDEOS].sort((a, b) => b.v - a.v).slice(0, 6).map(v => v.id));
+const norm = s => (s || '').toLowerCase().replace(/[يى]/g, 'ی').replace(/ك/g, 'ک').replace(/[ً-ٟ‌]/g, '').replace(/[أإآ]/g, 'ا');
+const esc = s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+function highlight(html, q) {
+    if (!q) return html;
+    const re = new RegExp(`(${esc(q)})`, 'gi');
+    return html.replace(/(<[^>]+>)|([^<]+)/g, (m, tag, txt) => tag ? tag : txt.replace(re, '<mark>$1</mark>'));
 }
 
-/* ═══════════════════════════════════════════
-   رندر مراجع
-   ═══════════════════════════════════════════ */
-function renderRefs() {
-  const grid = document.getElementById('refsGrid');
-  references.forEach(r => {
-    const card = document.createElement('div');
-    card.className = 'ref-card';
-    card.innerHTML = `
-      <div class="ref-type"><i class="fas fa-bookmark"></i> ${r.type}</div>
-      <div class="ref-title">${r.title}</div>
-      <div class="ref-author">${r.author}</div>
-    `;
-    grid.appendChild(card);
-  });
+function renderLibCats() {
+    document.getElementById('libCats').innerHTML = VCATS.map(c => {
+        const vs = VIDEOS.filter(v => v.c === c.id);
+        const tot = vs.reduce((s, v) => s + durSec(v.d), 0);
+        const ic = c.icon.startsWith('fa-brands') ? c.icon : 'fas ' + c.icon;
+        return `<button class="lib-cat ${libState.cat === c.id && !libState.session ? 'active' : ''}" data-cat="${c.id}" style="--cc:${c.color}">
+            <div class="ci"><i class="${ic}"></i></div>
+            <h4>${c.name}</h4>
+            <div class="cm"><b>${fa(vs.length)}</b> ویدیو · ${fmtDur(tot)}</div>
+        </button>`;
+    }).join('');
 }
 
-/* ═══════════════════════════════════════════
-   تب‌ها
-   ═══════════════════════════════════════════ */
-document.querySelectorAll('.tab-btn').forEach(btn => {
-  btn.addEventListener('click', function() {
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-    this.classList.add('active');
-    const target = document.getElementById(this.dataset.tab);
-    if (target) target.classList.add('active');
+function videoCard(v, q) {
+    const cat = VCATS.find(c => c.id === v.c);
+    return `<a class="video-card" href="${v.u}" target="_blank" rel="noopener" style="--cc:${cat.color}">
+        ${HOT.has(v.id) ? '<span class="badge-hot"><i class="fas fa-fire"></i> پربازدید</span>' : ''}
+        <div class="play"><i class="fas fa-play"></i><span class="idx">${fa(v.d)}</span></div>
+        <div class="vbody">
+            <h5>${highlight(v.t, q)}</h5>
+            <div class="vdesc">${highlight(v.ds, q)}</div>
+            <div class="vmeta">
+                <span><i class="fas fa-eye"></i>${fmtViews(v.v)} بازدید</span>
+                <span><i class="fas fa-calendar"></i>${fa(v.dt)}</span>
+            </div>
+            ${v.r.length ? `<div class="rel">${v.r.map(n => `<button data-goto="${n}" title="${SESSIONS[n-1].title}">جلسه ${fa(n)}</button>`).join('')}</div>` : ''}
+        </div>
+    </a>`;
+}
+
+function renderLib() {
+    const q = libState.q.trim(), nq = norm(q);
+    let list;
+    let intro = '';
+    if (libState.session) {
+        const s = SESSIONS[libState.session - 1];
+        list = videosForSession(libState.session);
+        intro = `<div class="lib-intro" style="--cc:var(--accent)"><i class="fas fa-link"></i><div>ویدیوهای مرتبط با <b>جلسه ${fa(s.n)}: ${s.title}</b> — <a href="#" id="libClearSession" style="color:var(--accent)">نمایش همه دسته‌ها</a></div></div>`;
+    } else if (nq) {
+        list = VIDEOS.filter(v => norm(v.t + ' ' + v.ds + ' ' + v.g).includes(nq));
+        intro = `<div class="lib-intro" style="--cc:var(--cyan)"><i class="fas fa-search"></i><div>${fa(list.length)} ویدیو برای «${q}» در همه دسته‌ها</div></div>`;
+    } else {
+        const cat = VCATS.find(c => c.id === libState.cat);
+        list = VIDEOS.filter(v => v.c === libState.cat);
+        intro = `<div class="lib-intro" style="--cc:${cat.color}"><i class="fas fa-lightbulb"></i><div>${cat.intro}</div></div>`;
+    }
+    // حذف تکراری‌ها در جستجو/جلسه
+    if (libState.session || nq) { const seen = new Set(); list = list.filter(v => !seen.has(v.u) && seen.add(v.u)); }
+    document.getElementById('libIntro').innerHTML = intro;
+
+    const body = document.getElementById('libBody');
+    if (!list.length) { body.innerHTML = `<div class="lib-empty"><i class="fas fa-video-slash" style="font-size:26px;display:block;margin-bottom:8px"></i>ویدیویی یافت نشد.</div>`; return; }
+
+    if (libState.sort === 'views') {
+        const sorted = [...list].sort((a, b) => b.v - a.v);
+        body.innerHTML = `<div class="video-grid">${sorted.map(v => videoCard(v, q)).join('')}</div>`;
+        return;
+    }
+    const groups = [];
+    list.forEach(v => { let g = groups.find(x => x.name === v.g && x.c === v.c); if (!g) groups.push(g = { name: v.g, c: v.c, items: [] }); g.items.push(v); });
+    body.innerHTML = groups.map((g, i) => {
+        const cat = VCATS.find(c => c.id === g.c);
+        const tot = g.items.reduce((s, v) => s + durSec(v.d), 0);
+        return `<div class="lib-group" style="--cc:${cat.color}">
+            <div class="lib-group-head"><span class="gn">${fa(i + 1)}</span><h3>${g.name}</h3><span class="gm">${fa(g.items.length)} ویدیو · ${fmtDur(tot)}</span></div>
+            <div class="video-grid">${g.items.map(v => videoCard(v, q)).join('')}</div>
+        </div>`;
+    }).join('');
+}
+
+function showSessionVideos(n) {
+    libState.session = n; libState.q = ''; document.getElementById('libSearch').value = '';
+    renderLibCats(); renderLib();
+    document.getElementById('tutorials').scrollIntoView({ behavior: 'smooth' });
+}
+
+document.getElementById('libCats').addEventListener('click', e => {
+    const b = e.target.closest('.lib-cat'); if (!b) return;
     playClick();
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  });
+    Object.assign(libState, { cat: b.dataset.cat, session: null, q: '' });
+    document.getElementById('libSearch').value = '';
+    renderLibCats(); renderLib();
 });
+document.getElementById('libSort').addEventListener('click', e => {
+    const b = e.target.closest('.chip'); if (!b) return;
+    libState.sort = b.dataset.sort;
+    document.querySelectorAll('#libSort .chip').forEach(c => c.classList.toggle('active', c === b));
+    renderLib();
+});
+let libTimer;
+document.getElementById('libSearch').addEventListener('input', e => {
+    clearTimeout(libTimer);
+    libTimer = setTimeout(() => { libState.q = e.target.value; libState.session = null; renderLibCats(); renderLib(); }, 180);
+});
+document.getElementById('tutorials').addEventListener('click', e => {
+    const g = e.target.closest('[data-goto]');
+    if (g) { e.preventDefault(); e.stopPropagation(); goToSession(+g.dataset.goto); return; }
+    if (e.target.id === 'libClearSession') { e.preventDefault(); libState.session = null; renderLibCats(); renderLib(); }
+});
+renderLibCats(); renderLib();
+document.getElementById('statVideos').textContent = fa(new Set(VIDEOS.map(v => v.u)).size);
 
-function switchTab(tabId) {
-  const btn = document.querySelector(`[data-tab="${tabId}"]`);
-  if (btn) btn.click();
+// ================================================================
+// ۷) دائرةالمعارف
+// ================================================================
+const WIKI = [];
+GLOSSARY.forEach(([f, e, c, d]) => WIKI.push({ sec: 'glossary', title: f, en: e, cat: c, body: `<p>${d}</p>` }));
+FORMULAS.forEach(([t, c, f, n]) => WIKI.push({ sec: 'formulas', title: t, cat: c, body: `<div class="formula">${f}</div><p>${n}</p>` }));
+TIPS.forEach(([t, c, items]) => WIKI.push({ sec: 'tips', title: t, cat: c, body: `<ul>${items.map(i => `<li>${i}</li>`).join('')}</ul>` }));
+TOOLS.forEach(([t, c, d, l]) => WIKI.push({ sec: 'tools', title: t, cat: c, body: `<p>${d}</p>`, link: l, ltr: true }));
+LEARN.forEach(([t, c, d, l]) => WIKI.push({ sec: 'learn', title: t, cat: c, body: `<p>${d}</p>`, link: l, ltr: true }));
+JOURNALS.forEach(([t, p, d]) => WIKI.push({ sec: 'journals', title: t, en: p, cat: /[A-Za-z]/.test(p) && !/دانشگاه/.test(p) ? 'بین‌المللی' : 'ایران', body: `<p>${d}</p>`, ltr: /^[A-Za-z]/.test(t) }));
+DATABASES.forEach(([t, c, d, l]) => WIKI.push({ sec: 'databases', title: t, cat: c, body: `<p>${d}</p>`, link: l }));
+
+const SECTIONS = [
+    { id: 'all', label: 'همه', icon: 'layer-group' },
+    { id: 'glossary', label: 'واژه‌نامه', icon: 'spell-check' },
+    { id: 'formulas', label: 'فرمول‌نامه', icon: 'square-root-variable' },
+    { id: 'tips', label: 'نکات و روش حل', icon: 'lightbulb' },
+    { id: 'tools', label: 'ابزارها و کتابخانه‌ها', icon: 'laptop-code' },
+    { id: 'learn', label: 'دوره‌ها و منابع آنلاین', icon: 'graduation-cap' },
+    { id: 'journals', label: 'مجلات', icon: 'newspaper' },
+    { id: 'databases', label: 'پایگاه‌های پژوهشی', icon: 'database' }
+];
+const SEC_LABEL = Object.fromEntries(SECTIONS.map(s => [s.id, s.label]));
+const wikiState = { sec: 'glossary', cat: 'all', q: '', letter: 'all' };
+
+function renderWikiTabs() {
+    document.getElementById('wikiTabs').innerHTML = SECTIONS.map(s => {
+        const n = s.id === 'all' ? WIKI.length : WIKI.filter(w => w.sec === s.id).length;
+        return `<button class="wiki-tab ${wikiState.sec === s.id ? 'active' : ''}" data-sec="${s.id}"><i class="fas fa-${s.icon}"></i> ${s.label} <span class="count">${fa(n)}</span></button>`;
+    }).join('');
 }
-
-/* ═══════════════════════════════════════════
-   Web Audio API
-   ═══════════════════════════════════════════ */
-let audioCtx = null;
-let soundEnabled = true;
-let musicEnabled = false;
-let musicOscillators = [];
-
-function initAudio() {
-  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+function renderWikiFilters() {
+    const pool = WIKI.filter(w => wikiState.sec === 'all' || w.sec === wikiState.sec);
+    const cats = [...new Set(pool.map(w => w.cat))];
+    document.getElementById('wikiFilters').innerHTML = (cats.length > 1 && wikiState.sec !== 'all')
+        ? `<button class="chip ${wikiState.cat === 'all' ? 'active' : ''}" data-cat="all">همه دسته‌ها</button>` +
+          cats.map(c => `<button class="chip ${wikiState.cat === c ? 'active' : ''}" data-cat="${c}">${c}</button>`).join('') : '';
+    const alpha = document.getElementById('wikiAlpha');
+    if (wikiState.sec === 'glossary') {
+        const letters = [...new Set(pool.map(w => w.title.trim()[0]))].sort((a, b) => a.localeCompare(b, 'fa'));
+        alpha.innerHTML = `<button class="${wikiState.letter === 'all' ? 'active' : ''}" data-letter="all">همه</button>` +
+            letters.map(l => `<button class="${wikiState.letter === l ? 'active' : ''}" data-letter="${l}">${l}</button>`).join('');
+        alpha.style.display = 'flex';
+    } else { alpha.innerHTML = ''; alpha.style.display = 'none'; }
 }
+function renderWiki() {
+    const rawQ = wikiState.q.trim(), q = norm(rawQ);
+    let items = WIKI.filter(w => {
+        if (wikiState.sec !== 'all' && w.sec !== wikiState.sec) return false;
+        if (wikiState.cat !== 'all' && w.cat !== wikiState.cat) return false;
+        if (wikiState.sec === 'glossary' && wikiState.letter !== 'all' && w.title.trim()[0] !== wikiState.letter) return false;
+        if (q) return norm(w.title + ' ' + (w.en || '') + ' ' + w.cat + ' ' + w.body.replace(/<[^>]+>/g, ' ')).includes(q);
+        return true;
+    });
+    if (wikiState.sec === 'glossary') items.sort((a, b) => a.title.localeCompare(b.title, 'fa'));
+    document.getElementById('wikiMeta').textContent = `${fa(items.length)} مورد` + (rawQ ? ` برای «${rawQ}»` : '');
+    document.getElementById('wikiGrid').innerHTML = items.length ? items.map(w => `
+        <article class="wiki-card">
+            <div class="w-head">
+                <div><h4 ${w.ltr ? 'dir="ltr" style="text-align:left"' : ''}>${highlight(w.title, rawQ)}</h4>
+                ${w.en ? `<span class="en">${highlight(w.en, rawQ)}</span>` : ''}</div>
+                <span class="w-cat">${wikiState.sec === 'all' ? SEC_LABEL[w.sec] : w.cat}</span>
+            </div>
+            ${highlight(w.body, rawQ)}
+            ${w.link ? `<a class="w-link" href="${w.link}" target="_blank" rel="noopener"><i class="fas fa-arrow-up-right-from-square"></i> ${w.link.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '').slice(0, 45)}</a>` : ''}
+        </article>`).join('')
+        : `<div class="wiki-empty"><i class="fas fa-magnifying-glass" style="font-size:28px;margin-bottom:10px;display:block"></i>موردی یافت نشد.</div>`;
+}
+function refreshWiki() { renderWikiTabs(); renderWikiFilters(); renderWiki(); }
+document.getElementById('wikiTabs').addEventListener('click', e => {
+    const t = e.target.closest('.wiki-tab'); if (!t) return;
+    playClick(); Object.assign(wikiState, { sec: t.dataset.sec, cat: 'all', letter: 'all' }); refreshWiki();
+});
+document.getElementById('wikiFilters').addEventListener('click', e => {
+    const c = e.target.closest('.chip'); if (!c) return; wikiState.cat = c.dataset.cat; renderWikiFilters(); renderWiki();
+});
+document.getElementById('wikiAlpha').addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b) return; wikiState.letter = b.dataset.letter; renderWikiFilters(); renderWiki();
+});
+let wikiTimer;
+document.getElementById('wikiSearch').addEventListener('input', e => {
+    clearTimeout(wikiTimer);
+    wikiTimer = setTimeout(() => {
+        wikiState.q = e.target.value;
+        if (wikiState.q.trim()) Object.assign(wikiState, { sec: 'all', cat: 'all', letter: 'all' });
+        refreshWiki();
+    }, 180);
+});
+refreshWiki();
+document.getElementById('statWiki').textContent = fa(WIKI.length);
+
+// ================================================================
+// ۸) آزمایشگاه زنده سری فوریه
+// ================================================================
+(function fourierLab() {
+    const cv = document.getElementById('fourierCanvas'), ctx = cv.getContext('2d');
+    const slider = document.getElementById('nTerms'), nVal = document.getElementById('nVal'), fEl = document.getElementById('fFormula');
+    let wave = 'square', phase = 0;
+    const WAVES = {
+        square: { f: x => Math.sign(Math.sin(x)), term: (k, x) => { const n = 2*k-1; return 4/(Math.PI*n) * Math.sin(n*x); }, tex: 'f(x) = (4/π) Σ sin((2k−1)x) / (2k−1)' },
+        saw:    { f: x => { const y = ((x + Math.PI) % (2*Math.PI) + 2*Math.PI) % (2*Math.PI) - Math.PI; return y / Math.PI; }, term: (k, x) => 2/Math.PI * Math.pow(-1, k+1) * Math.sin(k*x)/k, tex: 'f(x) = (2/π) Σ (−1)^(k+1) sin(kx) / k' },
+        tri:    { f: x => 2/Math.PI * Math.asin(Math.sin(x)), term: (k, x) => { const n = 2*k-1; return 8/(Math.PI*Math.PI) * Math.pow(-1, k-1) * Math.sin(n*x)/(n*n); }, tex: 'f(x) = (8/π²) Σ (−1)^(k−1) sin((2k−1)x) / (2k−1)²' }
+    };
+    function resize() { const r = cv.getBoundingClientRect(), d = window.devicePixelRatio || 1; cv.width = r.width * d; cv.height = r.height * d; ctx.setTransform(d, 0, 0, d, 0, 0); }
+    function draw() {
+        const w = cv.clientWidth, h = cv.clientHeight, N = +slider.value, W = WAVES[wave];
+        ctx.clearRect(0, 0, w, h);
+        const X = x => (x + 2*Math.PI) / (4*Math.PI) * w, Y = y => h/2 - y * h * 0.36;
+        ctx.strokeStyle = 'rgba(255,255,255,.08)'; ctx.lineWidth = 1;
+        for (let i = -2; i <= 2; i++) { ctx.beginPath(); ctx.moveTo(X(i*Math.PI), 0); ctx.lineTo(X(i*Math.PI), h); ctx.stroke(); }
+        ctx.beginPath(); ctx.moveTo(0, Y(0)); ctx.lineTo(w, Y(0)); ctx.stroke();
+        // تابع اصلی
+        ctx.strokeStyle = 'rgba(255,255,255,.35)'; ctx.lineWidth = 1.5; ctx.setLineDash([5, 5]); ctx.beginPath();
+        for (let px = 0; px <= w; px++) { const x = px / w * 4*Math.PI - 2*Math.PI; const y = W.f(x); px ? ctx.lineTo(px, Y(y)) : ctx.moveTo(px, Y(y)); }
+        ctx.stroke(); ctx.setLineDash([]);
+        // هارمونیک‌ها (کم‌رنگ)
+        for (let k = 1; k <= Math.min(N, 6); k++) {
+            ctx.strokeStyle = `hsla(${180 + k*25}, 80%, 60%, .25)`; ctx.lineWidth = 1; ctx.beginPath();
+            for (let px = 0; px <= w; px += 2) { const x = px / w * 4*Math.PI - 2*Math.PI; const y = W.term(k, x + phase*0); px ? ctx.lineTo(px, Y(y)) : ctx.moveTo(px, Y(y)); }
+            ctx.stroke();
+        }
+        // مجموع جزئی
+        const grad = ctx.createLinearGradient(0, 0, w, 0); grad.addColorStop(0, '#ffb700'); grad.addColorStop(1, '#ff6b35');
+        ctx.strokeStyle = grad; ctx.lineWidth = 2.6; ctx.beginPath();
+        for (let px = 0; px <= w; px++) { const x = px / w * 4*Math.PI - 2*Math.PI; let y = 0; for (let k = 1; k <= N; k++) y += W.term(k, x); px ? ctx.lineTo(px, Y(y)) : ctx.moveTo(px, Y(y)); }
+        ctx.stroke();
+        // نقطه متحرک
+        const xm = (phase % (4*Math.PI)) - 2*Math.PI; let ym = 0; for (let k = 1; k <= N; k++) ym += W.term(k, xm);
+        ctx.fillStyle = '#00d4aa'; ctx.beginPath(); ctx.arc(X(xm), Y(ym), 5, 0, 2*Math.PI); ctx.fill();
+        nVal.textContent = fa(N); fEl.textContent = W.tex + '   ,   N = ' + N;
+    }
+    function loop() { phase += 0.02; draw(); requestAnimationFrame(loop); }
+    slider.addEventListener('input', draw);
+    document.getElementById('waveSwitch').addEventListener('click', e => {
+        const b = e.target.closest('button'); if (!b) return;
+        wave = b.dataset.w; document.querySelectorAll('#waveSwitch button').forEach(x => x.classList.toggle('active', x === b)); playClick(); draw();
+    });
+    window.addEventListener('resize', () => { resize(); draw(); });
+    resize();
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) draw(); else loop();
+})();
+
+// باران نمادهای ریاضی
+(function mathRain() {
+    const syms = ['∫', '∑', '∂', '∇²', 'π', 'λ', 'ω', 'e^{iπ}', 'Σaₙcos', 'Δt', '∮', 'σ', 'ε', '∞', 'ℒ{f}', 'det(A−λI)', 'u_tt=c²u_xx'];
+    const box = document.getElementById('mathRain');
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    for (let i = 0; i < 22; i++) {
+        const s = document.createElement('span');
+        s.textContent = syms[i % syms.length];
+        s.style.left = (Math.random() * 100) + '%';
+        s.style.fontSize = (14 + Math.random() * 22) + 'px';
+        s.style.animationDuration = (18 + Math.random() * 22) + 's';
+        s.style.animationDelay = (-Math.random() * 40) + 's';
+        box.appendChild(s);
+    }
+})();
+
+// ================================================================
+// ۹) صدا، هدر، توست، نمودار، انیمیشن
+// ================================================================
+let audioCtx = null, soundEnabled = true;
 function playClick() {
-  if (!soundEnabled) return;
-  initAudio();
-  const osc = audioCtx.createOscillator();
-  const gain = audioCtx.createGain();
-  osc.connect(gain); gain.connect(audioCtx.destination);
-  osc.frequency.value = 800; osc.type = 'sine';
-  gain.gain.setValueAtTime(0.06, audioCtx.currentTime);
-  gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.1);
-  osc.start(); osc.stop(audioCtx.currentTime + 0.1);
+    if (!soundEnabled) return;
+    try {
+        audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+        const o = audioCtx.createOscillator(), g = audioCtx.createGain();
+        o.connect(g); g.connect(audioCtx.destination);
+        o.frequency.setValueAtTime(800, audioCtx.currentTime); o.frequency.exponentialRampToValueAtTime(600, audioCtx.currentTime + .05);
+        g.gain.setValueAtTime(.06, audioCtx.currentTime); g.gain.exponentialRampToValueAtTime(.001, audioCtx.currentTime + .05);
+        o.start(); o.stop(audioCtx.currentTime + .05);
+    } catch (e) {}
 }
-function playSuccess() {
-  if (!soundEnabled) return;
-  initAudio();
-  [523.25, 659.25, 783.99, 1046.5].forEach((freq, i) => {
-    const osc = audioCtx.createOscillator();
-    const gain = audioCtx.createGain();
-    osc.connect(gain); gain.connect(audioCtx.destination);
-    osc.frequency.value = freq; osc.type = 'sine';
-    const t = audioCtx.currentTime + i * 0.08;
-    gain.gain.setValueAtTime(0.05, t);
-    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.25);
-    osc.start(t); osc.stop(t + 0.3);
-  });
-}
-function startMusic() {
-  if (!audioCtx) initAudio();
-  [110, 164.81, 220, 329.63].forEach(freq => {
-    const osc = audioCtx.createOscillator();
-    const gain = audioCtx.createGain();
-    osc.connect(gain); gain.connect(audioCtx.destination);
-    osc.frequency.value = freq; osc.type = 'sine';
-    gain.gain.value = 0.012;
-    osc.start();
-    musicOscillators.push({ osc, gain });
-  });
-}
-function stopMusic() {
-  musicOscillators.forEach(({ osc, gain }) => {
-    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.5);
-    setTimeout(() => osc.stop(), 600);
-  });
-  musicOscillators = [];
-}
+const toast = document.getElementById('toast'); let toastTimeout;
+function showToast(msg) { clearTimeout(toastTimeout); toast.textContent = msg; toast.classList.add('show'); toastTimeout = setTimeout(() => toast.classList.remove('show'), 2500); }
 
-document.getElementById('soundToggle').addEventListener('click', function() {
-  soundEnabled = !soundEnabled;
-  this.classList.toggle('active', soundEnabled);
-  this.innerHTML = soundEnabled ? '<i class="fas fa-volume-up"></i>' : '<i class="fas fa-volume-mute"></i>';
-  if (soundEnabled) playClick();
-  showToast(soundEnabled ? 'صدا فعال شد' : 'صدا غیرفعال شد');
+document.getElementById('soundToggle').addEventListener('click', function () {
+    soundEnabled = !soundEnabled;
+    this.innerHTML = soundEnabled ? '<i class="fas fa-volume-up"></i>' : '<i class="fas fa-volume-mute"></i>';
+    if (soundEnabled) playClick();
+    showToast(soundEnabled ? 'افکت صوتی روشن شد' : 'افکت صوتی خاموش شد');
 });
-
-document.getElementById('musicToggle').addEventListener('click', function() {
-  musicEnabled = !musicEnabled;
-  this.classList.toggle('active', musicEnabled);
-  if (musicEnabled) { startMusic(); showToast('موسیقی فعال شد'); }
-  else { stopMusic(); showToast('موسیقی غیرفعال شد'); }
-  playClick();
+document.getElementById('fullscreenToggle').addEventListener('click', function () {
+    if (!document.fullscreenElement) { document.documentElement.requestFullscreen?.(); this.innerHTML = '<i class="fas fa-compress"></i>'; }
+    else { document.exitFullscreen(); this.innerHTML = '<i class="fas fa-expand"></i>'; }
 });
+document.querySelectorAll('[data-copy]').forEach(b => b.addEventListener('click', () => {
+    const t = document.getElementById(b.dataset.copy).textContent;
+    (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).then(() => showToast('فرمت Subject کپی شد'), () => showToast('کپی انجام نشد؛ متن را دستی انتخاب کنید'));
+}));
 
-document.getElementById('themeToggle').addEventListener('click', function() {
-  document.body.classList.toggle('light-mode');
-  const isLight = document.body.classList.contains('light-mode');
-  this.innerHTML = isLight ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
-  showToast(isLight ? 'حالت روشن' : 'حالت تاریک');
-  playClick();
-});
+const mobileMenu = document.getElementById('mobileMenu');
+mobileMenu.innerHTML = document.getElementById('navLinks').innerHTML;
+document.getElementById('menuToggle').addEventListener('click', () => mobileMenu.classList.toggle('open'));
+mobileMenu.addEventListener('click', e => { if (e.target.closest('a')) mobileMenu.classList.remove('open'); });
 
-document.getElementById('fullscreenToggle').addEventListener('click', function() {
-  if (!document.fullscreenElement) {
-    document.documentElement.requestFullscreen();
-    this.innerHTML = '<i class="fas fa-compress"></i>';
-  } else {
-    document.exitFullscreen();
-    this.innerHTML = '<i class="fas fa-expand"></i>';
-  }
-  playClick();
-});
+const navAnchors = document.querySelectorAll('#navLinks .nav-link');
+const sectionObserver = new IntersectionObserver(entries => {
+    entries.forEach(en => { if (en.isIntersecting) navAnchors.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + en.target.id)); });
+}, { rootMargin: '-40% 0px -55% 0px' });
+['hero', 'roadmap', 'syllabus', 'assessment', 'projects', 'homeworks', 'tutorials', 'encyclopedia', 'references', 'contact'].forEach(id => sectionObserver.observe(document.getElementById(id)));
 
-/* ═══════════════════════════════════════════
-   Toast و ابزار
-   ═══════════════════════════════════════════ */
-function showToast(msg) {
-  const container = document.getElementById('toastContainer');
-  const toast = document.createElement('div');
-  toast.className = 'toast';
-  toast.innerHTML = `<i class="fas fa-info-circle"></i> ${msg}`;
-  container.appendChild(toast);
-  setTimeout(() => {
-    toast.style.opacity = '0';
-    toast.style.transform = 'translateX(60px)';
-    setTimeout(() => toast.remove(), 300);
-  }, 2600);
-}
-function copyEmail() {
-  navigator.clipboard.writeText('m.goharimanesh@gmail.com').then(() => {
-    showToast('ایمیل کپی شد ✓');
-    playSuccess();
-  });
-}
-function toFa(n) {
-  const fa = ['۰','۱','۲','۳','۴','۵','۶','۷','۸','۹'];
-  return String(n).replace(/\d/g, d => fa[d]);
+const toTop = document.getElementById('toTop');
+window.addEventListener('scroll', () => toTop.classList.toggle('show', window.scrollY > 800), { passive: true });
+toTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+
+if (window.Chart) {
+    new Chart(document.getElementById('assessmentChart'), {
+        type: 'doughnut',
+        data: { labels: ['پایان‌ترم', 'تمرین‌ها', 'پروژه پایانی'], datasets: [{ data: [6, 8, 6], backgroundColor: ['#ffb700', '#a855f7', '#00d4aa'], borderColor: '#050818', borderWidth: 4, hoverOffset: 10 }] },
+        options: { responsive: true, cutout: '65%', plugins: {
+            legend: { position: 'bottom', labels: { color: '#fff', font: { family: 'Vazirmatn', size: 13, weight: '600' }, padding: 15, usePointStyle: true, pointStyle: 'circle' } },
+            tooltip: { backgroundColor: 'rgba(5,8,24,.95)', titleColor: '#ffb700', bodyColor: '#fff', borderColor: '#ffb700', borderWidth: 1, padding: 12,
+                titleFont: { family: 'Vazirmatn', size: 14, weight: '700' }, bodyFont: { family: 'Vazirmatn', size: 13 },
+                callbacks: { label: c => `${c.label}: ${fa(c.parsed)} نمره` } } } }
+    });
 }
 
-/* ═══════════════════════════════════════════
-   نوار پیشرفت اسکرول
-   ═══════════════════════════════════════════ */
-window.addEventListener('scroll', () => {
-  const h = document.documentElement.scrollHeight - window.innerHeight;
-  const p = (window.scrollY / h) * 100;
-  document.getElementById('progressBar').style.width = p + '%';
-});
+const revealObserver = new IntersectionObserver(entries => {
+    entries.forEach(en => { if (en.isIntersecting) { en.target.classList.add('visible'); revealObserver.unobserve(en.target); } });
+}, { threshold: 0.06, rootMargin: '0px 0px -40px 0px' });
+document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
 
-/* ═══════════════════════════════════════════
-   Reveal on scroll
-   ═══════════════════════════════════════════ */
-const observer = new IntersectionObserver(entries => {
-  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
-}, { threshold: 0.1 });
-document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
-
-/* ═══════════════════════════════════════════
-   ذرات پس‌زمینه
-   ═══════════════════════════════════════════ */
-const canvas = document.getElementById('bgCanvas');
-const ctx = canvas.getContext('2d');
-let particles = [];
-
-function resizeCanvas() {
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-}
-resizeCanvas();
-window.addEventListener('resize', resizeCanvas);
-
-class Particle {
-  constructor() { this.reset(); }
-  reset() {
-    this.x = Math.random() * canvas.width;
-    this.y = Math.random() * canvas.height;
-    this.size = Math.random() * 2 + 0.5;
-    this.speedX = (Math.random() - 0.5) * 0.4;
-    this.speedY = (Math.random() - 0.5) * 0.4;
-    this.opacity = Math.random() * 0.5 + 0.2;
-    const colors = ['#00d4aa', '#06b6d4', '#a855f7', '#ffb700'];
-    this.color = colors[Math.floor(Math.random() * colors.length)];
-  }
-  update() {
-    this.x += this.speedX;
-    this.y += this.speedY;
-    if (this.x < 0 || this.x > canvas.width || this.y < 0 || this.y > canvas.height) this.reset();
-  }
-  draw() {
-    ctx.beginPath();
-    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-    ctx.fillStyle = this.color;
-    ctx.globalAlpha = this.opacity;
-    ctx.fill();
-    ctx.globalAlpha = 1;
-  }
-}
-for (let i = 0; i < 70; i++) particles.push(new Particle());
-
-function animateParticles() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  particles.forEach(p => { p.update(); p.draw(); });
-  requestAnimationFrame(animateParticles);
-}
-animateParticles();
-
-/* ═══════════════════════════════════════════
-   راه‌اندازی
-   ═══════════════════════════════════════════ */
-renderSessions();
-renderProjects();
-renderHomeworks();
-renderRefs();
-
-setTimeout(() => showToast('به درس ریاضیات مهندسی پیشرفته خوش آمدید 🌟'), 800);
+console.log('%c∂ ریاضیات مهندسی پیشرفته | دکتر مسعود گوهری‌منش', 'color:#ffb700;font-size:18px;font-weight:bold;');
+console.log('%c© نیمسال اول ۱۴۰۵–۱۴۰۶ — Powered by Dr. Masoud Goharimanesh', 'color:#a855f7;font-size:12px;');
 </script>
-
 </body>
 </html>
